@@ -1,0 +1,98 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing,fit,backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{animate}
+\usepackage[hidelinks]{hyperref}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% Phases as in the figures: climb green, search orange, transition blue; neutrals for text.
+\definecolor{climb}{HTML}{1BAF7A}
+\definecolor{search}{HTML}{EB6834}
+\definecolor{transition}{HTML}{2A78D6}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{muted}{HTML}{9A9893}
+\definecolor{light}{HTML}{E6E5E1}
+
+\tikzset{
+  >={Stealth[length=1.8mm]},
+  every picture/.style={line cap=round, line join=round},
+  lbl/.style={font=\footnotesize},
+  note/.style={font=\footnotesize, text=ink2},
+  panel/.style={font=\small\bfseries, anchor=west},
+  state/.style={circle, draw=#1, fill=#1!12, line width=1pt, minimum size=15mm, align=center, font=\small},
+  box/.style={draw=ink2, fill=white, rounded corners=1.5pt, align=center, font=\small, inner sep=4pt},
+}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\newtcolorbox{inwords}{enhanced, breakable, colback=transition!5!white, colframe=transition, boxrule=0pt,
+  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt,
+  before upper={\textbf{In words.}\ }}
+\newtcolorbox{keypoint}[1]{enhanced, breakable, colback=search!6!white, colframe=search, boxrule=0pt,
+  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt,
+  before upper={\textbf{#1}\par\smallskip}}
+
+\newcommand{\st}[1]{\textsf{#1}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\cl}{\st{climb}}
+\newcommand{\se}{\st{search}}
+\newcommand{\tr}{\st{transition}}
+% An animation written by plots.py; viewers that cannot play it show its last frame, the
+% static figure.
+\newcommand{\animated}[1]{\animategraphics[width=\textwidth,controls={play,step,stop},loop,poster=last,
+  timeline=figures/#1_frames.tln]{8}{figures/#1_frames}{}{}}
+\newcommand{\animmark}{\textcolor{transition}{$\blacktriangleright$}\ }
+
+\title{\textbf{Flight phases with a hidden Markov model}\\[4pt]
+  \large Vilpellet's labelling from scratch, what we keep,\\ and how far it reaches below 1~Hz}
+\author{Matteo Di Sante}
+\date{Method note, working version, 20 October 2026}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\tableofcontents
+\input{sections/at_a_glance}
+\input{sections/problem}
+\input{sections/hmm}
+\input{sections/method}
+\input{sections/conflicts}
+\input{sections/keep_change}
+\input{sections/cadence}
+\input{sections/implementation}
+\appendix
+\input{sections/parameters}
+\input{sections/references}
+
+\end{document}

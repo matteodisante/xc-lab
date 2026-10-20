@@ -1,0 +1,52 @@
+\section{Implementation in xc-dynamics}\label{sec:implementation}
+
+The plan agreed on 20 October 2026, with the interpolation fixed by Section~\ref{sec:cadence}. The
+rewrite in this folder, \texttt{phases.py}, is the reference to test against; the code of
+xc-dynamics is written there from scratch, as for every lab result.
+
+\begin{enumerate}
+  \item \textbf{An area \texttt{phases}} (``segment'' already names a piece of a split flight),
+        with its source, scripts, configuration, tests and reference page, named like the other
+        areas.
+  \item \textbf{One piece at a time} (Figure~\ref{fig:overview}): the fixes of one
+        pre-processing segment, cut again wherever a gap exceeds $\max(4\,\mathrm{s},2\Delta)$;
+        a piece logged every more than 5~s, or shorter than 30~s, stays unlabelled.
+  \item \textbf{A regular 1-s grid} through a cubic spline of $(e,n,u)$ over the real fixes of the
+        piece.
+  \item \textbf{The method of Section~\ref{sec:method}} on the grid, then the labels of the real
+        fixes only.
+  \item \textbf{Storage as runs}: one row per run of one phase (flight, segment, phase, first and
+        last time, number of fixes, whether a cut or the end of the piece censors it), written
+        in one pass over the whole archive.
+\end{enumerate}
+
+\paragraph{Configuration.} Every constant goes in \texttt{configs/phases.yaml}, a sketch of which
+follows; the fitted values are those of Appendix~\ref{app:parameters}.
+\begin{verbatim}
+grid:
+  min_gap_s: 4.0          # a longer gap ends a piece,
+  gap_steps: 2            # or two logging steps if longer
+  max_interval_s: 5.0     # coarser loggers stay unlabelled
+  interpolation: cubic
+features:
+  smoothing_fixes: 6      # Gaussian, standard deviation one fix
+  turn_mean_fixes: 6
+  window_fixes: 30
+  beta: 0.9
+  alpha_rad: {para: 0.20960958, hang: 0.17398039}
+decoding:
+  vote_fixes: 90
+model:                    # Vilpellet's fitted values
+  states: [climb, search, transition]
+  initial: [...]
+  transition: [...]
+  emission: [...]
+\end{verbatim}
+
+\paragraph{Tests.} The same labels as \texttt{phases.py}, and through it as the reference script, on
+synthetic tracks with a glide, a thermal and a search; the small example of
+Section~\ref{sec:toy}; and, when the disk is mounted, the cadence check of
+Section~\ref{sec:cadence} on a few flights.
+
+\paragraph{After that.} Visual checks on a few flights of each logging interval and of each
+discipline, and only then the changes of Section~\ref{sec:keep} that wait for evidence.

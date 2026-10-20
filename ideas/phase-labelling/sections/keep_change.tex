@@ -1,0 +1,40 @@
+\section{What we keep, what we change}\label{sec:keep}
+
+His segmentation already labels flights well, so we change only what running it in xc-dynamics on
+every flight requires (Table~\ref{tab:keep}). The method itself, features, parameters and
+decoding, stays as his code runs it.
+
+\begin{table}
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright}p{2.3cm} >{\raggedright}X >{\raggedright}X >{\raggedright\arraybackslash}p{4.1cm}@{}}
+\toprule
+ & Vilpellet's code & ours & why \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{kept}} \\
+input & latitude, longitude, GNSS height of the IGC fixes & the same, after the xc-dynamics pre-processing & the pre-processing deletes bad fixes and smooths nothing, so the features see what his saw \\ \addlinespace
+features & frame, smoothing, turn, climb rate, $S$, $R$, $O$, $\alpha$ (Section~\ref{sec:method}) & the same & the emissions were fitted on them \\ \addlinespace
+model & emissions, $A$, $\nu$ & the same, not refitted & no labels to refit against; his labels look right \\ \addlinespace
+decoding & Viterbi, then a majority vote over 90 fixes & the same & \\ \addlinespace
+\multicolumn{4}{@{}l}{\textit{changed or added}} \\
+unit & the whole track & one piece of the pre-processing & no window and no run crosses a split \\ \addlinespace
+time & fixes as they come; windows count fixes, across gaps too & a regular 1-s grid per piece, interpolated with a cubic spline & windows mean seconds again; 2--5~s loggers become usable (Section~\ref{sec:cadence}) \\ \addlinespace
+gaps & none & a gap longer than $\max(4\,\mathrm{s},2\Delta)$ ends a piece & interpolation does not bridge a hole in the track \\ \addlinespace
+labels & every fix & real fixes only; interpolated seconds only feed the features & no invented fix enters a statistic \\ \addlinespace
+eligibility & mean step below 1.2~s; at least 3600 fixes & any interval up to 5~s; a piece shorter than 30~s stays unlabelled & 3600 fixes selected flights for his study and is not part of the method \\ \addlinespace
+state names & \texttt{regime\_map} swaps climb and transition & from the emissions & Section~\ref{sec:naming} \\ \addlinespace
+\multicolumn{4}{@{}l}{\textit{left out}} \\
+his advice & drop the last 10 minutes, short runs, searches not followed by a climb & not part of the labelling & they select runs for an analysis, which must say so \\
+\bottomrule
+\end{tabularx}
+\caption{From his code to ours.}
+\label{tab:keep}
+\end{table}
+
+Four changes wait for evidence. They are made only if checks on real flights show the problem:
+emissions for hang gliders, which reuse those fitted on paragliders; $\alpha$ estimated again on
+our data; a shorter vote, if the 90-fix majority erases real short climbs; the climb rate from
+the recorded altitude, as in the frame of the thesis, instead of the height above the tangent
+plane (Section~\ref{sec:frame}). The last one changes no label on the flight saved by
+\texttt{cadence.py}, which stays within about 10~km of its first fix; long flights will tell.

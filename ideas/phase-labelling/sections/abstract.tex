@@ -1,0 +1,14 @@
+\begin{abstract}
+\noindent
+Jérémie Vilpellet labels every fix of a soaring flight as \tr, \se\ or \cl\ with a three-state
+hidden Markov model fed by three binary features: whether the track is straight, whether it rises,
+and whether it turns one way~\cite{vilpellet2026,vilpellet2025}. This note explains the method from
+scratch, for a reader who has never met a hidden Markov model; lists where his paper and his code
+disagree; states what we keep and what we change to bring it into xc-dynamics; and measures how
+far it reaches below 1~Hz. Every parameter of the method was fitted on 1-Hz tracks and counts
+fixes, so a track logged every $\Delta$ seconds is first interpolated onto a 1-s grid. On 300
+paraglider flights logged at 1~Hz and thinned to one fix every $\Delta$ seconds, the labels of the
+full flight come back on 99.0\% of the kept fixes at $\Delta=2$~s and on 97.5\% at $\Delta=5$~s
+when the interpolation is a cubic spline; linear interpolation loses one climbing fix in ten at
+5~s, and at 10~s neither works.
+\end{abstract}

@@ -1,0 +1,45 @@
+\section{The paper and the code}\label{sec:conflicts}
+
+The paper~\cite{vilpellet2026} describes the method in its appendix; the internship
+report~\cite{vilpellet2025} gives the feature definitions in more detail; the code~\cite{vilpellet2025code}
+is what produced the labels. Table~\ref{tab:conflicts} lists where they disagree. Each point was
+checked on the code; the file and line are given where they help.
+
+\begin{table}
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright}p{0.4cm} >{\raggedright}p{2.2cm} >{\raggedright}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+ & topic & paper (and report) & code \\
+\midrule
+1 & windows & ``a rolling time window of 30 s'' & 30 \emph{fixes}; smoothing over 6 fixes, vote over 90: seconds only at 1~Hz \\ \addlinespace
+2 & one-sign feature & ``sign preserved for at least 90\% of samples within the window''; the report counts all the turns of the window & at least 14 of the \emph{15 largest} $|\theta|$ of the 30 share a sign (\texttt{sliding\_}\allowbreak\texttt{window\_}\allowbreak\texttt{sign\_check}) \\ \addlinespace
+3 & straight feature & ``below a prescribed threshold for at least 90\% of the window'' & more than 90\%: at least 28 of 30 instead of 27 \\ \addlinespace
+4 & smoothing & not mentioned & Gaussian smoothing of the positions over 6 fixes; mean of the turn over 6 fixes \\ \addlinespace
+5 & output & the Viterbi path & the Viterbi path, then a majority vote over 90 fixes (\texttt{roll\_majority}) \\ \addlinespace
+6 & estimation & ``the final parameter estimates are determined entirely by the data'' (Baum--Welch) & the training model never updates $A$: the line is commented out (\texttt{hmm\_model\_}\allowbreak\texttt{bernouilli\_}\allowbreak\texttt{dependant.py}, line 222). The $A$ in use carries the marks of the constraint function \texttt{apply\_}\allowbreak\texttt{constraint}, whose call is commented out too (line 241): diagonal of \se\ at its bound $0.99$, off-diagonal entries of the \cl\ and \se\ rows in ratio exactly 2:1. Five rounds only; values kept as ``a local max that is visually satisfying'' \\ \addlinespace
+7 & parameters & ``24 parameters'' & $3\times8$ emissions, $3\times3$ transitions and 3 initial values: 36 numbers, 29 free \\ \addlinespace
+8 & training data & calibrated on the dataset of the paper: 49\,939 paraglider flights, 2016--2021 & 2019 flights from four Alpine take-off names; one set of parameters for every aircraft, with only $\alpha$ changed \\ \addlinespace
+9 & selection & at least 1~Hz, one hour and 15~km, without spatial or temporal discontinuities & distinct times, mean step below 1.2~s, more than 3600 fixes; windows count fixes across any time gap \\ \addlinespace
+10 & state names & transition, search, climb & the inference script swaps climb and transition (\texttt{regime\_map}, Section~\ref{sec:naming}) \\ \addlinespace
+11 & height & in the ENU frame ``$z$ retains the physical interpretation of altitude'' & the up coordinate of the plane tangent at the first fix, below the altitude by $d^2/2R$; the climb rate loses $(d/R)\,\dot d$ (Section~\ref{sec:frame}) \\
+\bottomrule
+\end{tabularx}
+\caption{Where the paper and the code disagree.}
+\label{tab:conflicts}
+\end{table}
+
+Three facts appear in neither text: the initial probability of \tr\ is zero in practice
+(Section~\ref{sec:decoding}); $\alpha$ is a per-fix angle, so its meaning changes with the logging
+interval; and the scripts do not record whether $\alpha$ was estimated on the raw or on the
+smoothed turn.
+
+\begin{keypoint}{What this means for us.}
+The emissions were fitted on the features of the code, so we follow the code wherever the two
+disagree on the features, the smoothing and the vote (points 1--5). Point~6 means that the shipped
+training script does not regenerate the shipped parameters: if the model is ever refitted, the
+update of $A$ must be switched on and any constraint stated. Point~10 is a naming slip, and we name
+the states from their emissions. Point~11 matters only far from the first fix of a piece, and is
+one of the changes that wait for evidence (Section~\ref{sec:keep}).
+\end{keypoint}

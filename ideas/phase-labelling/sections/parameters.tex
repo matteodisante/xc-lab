@@ -1,0 +1,37 @@
+\section{The fitted parameters}\label{app:parameters}
+
+The values of the inference script~\cite{vilpellet2025code}, in the order \cl, \se, \tr, which is
+the order of its states (Section~\ref{sec:naming}).
+
+\begin{center}
+\small
+\begin{tabular}{@{}l l l l@{}}
+\toprule
+symbol & \cl & \se & \tr \\
+\midrule
+0 $(0,0,0)$ & $1.54243294\times10^{-11}$ & $3.25680580\times10^{-1}$ & $6.93534587\times10^{-6}$ \\
+1 $(0,0,1)$ & $5.07106916\times10^{-4}$ & $1.77503496\times10^{-1}$ & $1.04473011\times10^{-8}$ \\
+2 $(0,1,0)$ & $8.72065952\times10^{-5}$ & $4.95899060\times10^{-1}$ & $2.91554932\times10^{-6}$ \\
+3 $(0,1,1)$ & $9.98979845\times10^{-1}$ & $7.21547291\times10^{-4}$ & $1.93493842\times10^{-10}$ \\
+4 $(1,0,0)$ & $8.52234426\times10^{-21}$ & $6.96932383\times10^{-5}$ & $7.38362033\times10^{-1}$ \\
+5 $(1,0,1)$ & $1.25568196\times10^{-12}$ & $1.93093305\times10^{-5}$ & $1.40643862\times10^{-2}$ \\
+6 $(1,1,0)$ & $7.85199401\times10^{-13}$ & $1.06025552\times10^{-4}$ & $2.41340621\times10^{-1}$ \\
+7 $(1,1,1)$ & $4.25841826\times10^{-4}$ & $2.89805651\times10^{-7}$ & $6.22309818\times10^{-3}$ \\
+\midrule
+initial $\nu$ & $5.66075578\times10^{-2}$ & $9.43392442\times10^{-1}$ & $5.88699965\times10^{-29}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Emission probabilities $b_j(x)$, one column per phase, and the initial distribution. The symbol is
+written as (straight, rising, one sign).
+
+\[
+  A=\begin{pmatrix}
+    0.98961359 & 0.00346214 & 0.00692427\\
+    0.00666667 & 0.99000000 & 0.00333333\\
+    0.00099934 & 0.00712054 & 0.99188012
+  \end{pmatrix},
+\]
+$\alpha=0.20960958$~rad per fix for paragliders and $0.17398039$ for hang gliders.
+Windows: smoothing 6 fixes (Gaussian, standard deviation one fix), turn mean 6, features 30
+($\beta=0.9$), vote 90.

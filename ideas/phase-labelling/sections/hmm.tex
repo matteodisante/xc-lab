@@ -1,0 +1,200 @@
+\section{Hidden Markov models from zero}\label{sec:hmm}
+
+\subsection{A chain of phases}\label{sec:chain}
+
+Number the fixes $k=1,2,\dots,K$ and call $Q_k$ the phase of fix $k$. Suppose for a moment that we
+could see it. The simplest model of how phases follow each other is a \emph{Markov chain}: the
+phase of the next fix depends only on the phase of the current one,
+\begin{equation}\label{eq:markov}
+  P(Q_{k+1}=j \mid Q_k=i,\ Q_{k-1},\dots,Q_1) = a_{ij}.
+\end{equation}
+The numbers $a_{ij}$ form the \emph{transition matrix} $A$. Row $i$ lists where phase $i$ goes
+next, so each row sums to 1. The first phase is drawn from the \emph{initial distribution}
+$\nu_j=P(Q_1=j)$. Vilpellet's chain, one step per second (Figure~\ref{fig:chain}), is
+\begin{equation}\label{eq:A}
+  A=\begin{pmatrix} 0.9896 & 0.0035 & 0.0069\\ 0.0067 & 0.9900 & 0.0033\\ 0.0010 & 0.0071 & 0.9919 \end{pmatrix}
+  \qquad\text{(rows and columns: \cl, \se, \tr).}
+\end{equation}
+
+The diagonal says how sticky each phase is: a climb goes on to the next fix with probability
+0.9896. A run of phase $i$ therefore lasts $n$ fixes with probability $a_{ii}^{\,n-1}(1-a_{ii})$, a
+geometric law with mean $1/(1-a_{ii})$: 96~s for a climb, 100~s for a search, 123~s for a
+transition. The chain has no memory of how long it has been in a phase: a climb that has lasted
+ten minutes ends at the next fix with the same probability as one that has just begun.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm, every loop/.style={min distance=11mm, looseness=6}]
+  \node[state=climb] (C) at (0,0) {\cl\\[-1pt]{\footnotesize 96 s}};
+  \node[state=search] (S) at (4.2,2.4) {\se\\[-1pt]{\footnotesize 100 s}};
+  \node[state=transition] (T) at (8.4,0) {\tr\\[-1pt]{\footnotesize 123 s}};
+  \path[->, ink2, line width=0.7pt, font=\footnotesize]
+    (C) edge[loop left] node[left] {0.9896} (C)
+    (S) edge[loop above] node[above] {0.9900} (S)
+    (T) edge[loop right] node[right] {0.9919} (T)
+    (C) edge[bend left=12] node[above left=-2pt] {0.0035} (S)
+    (S) edge[bend left=12] node[below right=-2pt] {0.0067} (C)
+    (C) edge[bend left=10] node[above] {0.0069} (T)
+    (T) edge[bend left=10] node[below] {0.0010} (C)
+    (S) edge[bend left=12] node[above right=-2pt] {0.0033} (T)
+    (T) edge[bend left=12] node[below left=-2pt] {0.0071} (S);
+\end{tikzpicture}
+\caption{Vilpellet's chain of phases. Arrows carry the probability of the next fix's phase given the
+current one; under each name, the mean duration $1/(1-a_{ii})$ seconds that the chain alone implies.}
+\label{fig:chain}
+\end{figure}
+
+\begin{inwords}
+$A$ is a table of habits: what usually follows what, one second at a time. It knows nothing about
+the track.
+\end{inwords}
+
+\subsection{Hidden phases, visible symbols}\label{sec:hidden}
+
+We never see $Q_k$. At each fix we see something else, $X_k$: in Vilpellet's method one of eight
+symbols computed from the track (Section~\ref{sec:method}). Each phase produces the symbols with
+its own probabilities, the \emph{emission probabilities}
+\begin{equation}\label{eq:emission}
+  b_j(x) = P(X_k=x \mid Q_k=j).
+\end{equation}
+The model assumes that once the phase of fix $k$ is known, its symbol depends on nothing else:
+neither on the other phases nor on the other symbols. The probability of a phase sequence
+$q_1,\dots,q_K$ together with the symbols $x_1,\dots,x_K$ is then a product of one factor per
+fix (Figure~\ref{fig:graphical}):
+\begin{equation}\label{eq:joint}
+  P(q_{1:K},x_{1:K}) = \nu_{q_1}\,b_{q_1}(x_1)\prod_{k=2}^{K} a_{q_{k-1}q_k}\,b_{q_k}(x_k).
+\end{equation}
+This is a \emph{hidden Markov model} (HMM)~\cite{rabiner1989,zucchini2016}: a Markov chain that we
+cannot see, observed through noisy symbols. Movement ecology labels the behaviour of animals from
+GPS tracks with the same model, taking as observations the step length and the turning angle of
+each fix, drawn from a law per state such as a gamma and a von
+Mises~\cite{langrock2012,michelot2016}. Vilpellet's observations are of another kind: yes/no
+summaries of 30 fixes of track, which Section~\ref{sec:assumptions} returns to.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+    hid/.style={circle, draw=ink, line width=0.8pt, minimum size=9mm, font=\small},
+    obs/.style={rectangle, draw=ink, fill=light, line width=0.8pt, minimum size=8mm, font=\small}]
+  \foreach \k/\x in {1/0, 2/2.2, 3/4.4, 4/6.6} {
+    \node[hid] (q\k) at (\x,1.6) {$Q_{\k}$};
+    \node[obs] (x\k) at (\x,0) {$X_{\k}$};
+    \draw[->, ink2, line width=0.8pt] (q\k) -- node[right, lbl] {$b$} (x\k);
+  }
+  \node[hid] (qK) at (9.4,1.6) {$Q_K$};
+  \node[obs] (xK) at (9.4,0) {$X_K$};
+  \draw[->, ink2, line width=0.8pt] (qK) -- node[right, lbl] {$b$} (xK);
+  \foreach \a/\b in {q1/q2, q2/q3, q3/q4} \draw[->, ink2, line width=0.8pt] (\a) -- node[above, lbl] {$A$} (\b);
+  \draw[->, ink2, line width=0.8pt, dashed] (q4) -- (qK);
+  \node[note, anchor=west] at (10.2,1.6) {phases: hidden};
+  \node[note, anchor=west] at (10.2,0) {symbols: seen};
+\end{tikzpicture}
+\caption{A hidden Markov model. Each phase depends only on the previous one, through $A$; each
+symbol depends only on the phase of its own fix, through $b$.}
+\label{fig:graphical}
+\end{figure}
+
+\subsection{A small example}\label{sec:toy}
+
+Take two phases, climb $C$ and glide $G$, and one yes/no symbol: does the pilot rise (1) or sink
+(0) at this step? Let both phases start with probability $0.5$, stay with probability $0.9$ and
+switch with $0.1$, and let $b_C(1)=0.9$ and $b_G(1)=0.2$. The pilot shows
+\[
+  x = 1,\ 1,\ 0,\ 1,\ 1,\ 0,\ 0,\ 0 .
+\]
+Reading each symbol alone, the likelier phase is $C$ after a 1 and $G$ after a 0, which gives
+$C\,C\,G\,C\,C\,G\,G\,G$: the single 0 at step 3 makes the pilot glide for one step. With the
+chain, compare two sequences that differ only at step 3. By~\eqref{eq:joint} all their other
+factors are equal, and
+\[
+  \frac{P(\dots C\,C\,C\dots)}{P(\dots C\,G\,C\dots)}
+  = \frac{a_{CC}\,b_C(0)\,a_{CC}}{a_{CG}\,b_G(0)\,a_{GC}}
+  = \frac{0.9\cdot0.1\cdot0.9}{0.1\cdot0.8\cdot0.1}\approx10 .
+\]
+Staying in the climb costs one unlikely symbol, $0.1$ instead of $0.8$; leaving and coming back
+costs two unlikely changes, $0.1\times0.1$. The isolated sink is read as noise. The zeros from
+step 6 on persist, and the best sequence switches to $G$ at step 6
+(Figure~\ref{fig:trellis}). This is the job of the HMM in Vilpellet's method: a phase changes only
+when the evidence persists.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1.65cm,y=1cm,
+    cell/.style={rectangle, draw=muted, rounded corners=1pt, minimum width=1.0cm, minimum height=0.6cm, font=\footnotesize, fill=white}]
+  \foreach \k/\ob/\vc/\vg in {1/1/.818/.182, 2/1/.953/.047, 3/0/.529/.471, 4/1/.835/.165,
+                              5/1/.958/.042, 6/0/.529/.471, 7/0/.123/.877, 8/0/.017/.983} {
+    \node[lbl] at (\k,2.05) {$k=\k$};
+    \node[font=\small\bfseries] at (\k,1.6) {$x=\ob$};
+    \node[cell] (c\k) at (\k,0.8) {\vc};
+    \node[cell] (g\k) at (\k,-0.4) {\vg};
+  }
+  \node[lbl, anchor=east] at (0.45,0.8) {$\delta_k(C)$};
+  \node[lbl, anchor=east] at (0.45,-0.4) {$\delta_k(G)$};
+  \foreach \k/\pc/\pg in {2/0/1, 3/0/0, 4/0/1, 5/0/1, 6/0/0, 7/0/1, 8/0/1} {
+    \pgfmathtruncatemacro{\j}{\k-1}
+    \ifnum\pc=0 \draw[->, muted] (c\j.east) -- (c\k.west); \else \draw[->, muted] (g\j.east) -- (c\k.west); \fi
+    \ifnum\pg=0 \draw[->, muted] (c\j.east) -- (g\k.west); \else \draw[->, muted] (g\j.east) -- (g\k.west); \fi
+  }
+  \foreach \k in {1,...,5} \node[cell, draw=climb, line width=1.2pt, fill=climb!12] at (c\k) {};
+  \foreach \k/\v in {1/.818, 2/.953, 3/.529, 4/.835, 5/.958} \node[font=\footnotesize] at (c\k) {\v};
+  \foreach \k in {6,7,8} \node[cell, draw=transition, line width=1.2pt, fill=transition!12] at (g\k) {};
+  \foreach \k/\v in {6/.471, 7/.877, 8/.983} \node[font=\footnotesize] at (g\k) {\v};
+  \foreach \a/\b in {c1/c2, c2/c3, c3/c4, c4/c5} \draw[->, climb, line width=1.4pt] (\a.east) -- (\b.west);
+  \draw[->, ink, line width=1.4pt] (c5.east) -- (g6.west);
+  \foreach \a/\b in {g6/g7, g7/g8} \draw[->, transition, line width=1.4pt] (\a.east) -- (\b.west);
+\end{tikzpicture}
+\caption{Viterbi on the small example. Each cell holds $\delta_k(j)$, the probability of the best
+sequence ending in phase $j$ at step $k$, divided by the sum of the column; the grey arrow into each
+cell comes from its best predecessor. Steps 3 and 6 have the same scores, yet the path stays in $C$
+at step 3 and leaves it at step 6: the decision depends on the symbols that follow, which is why
+Viterbi reads the whole sequence before deciding.}
+\label{fig:trellis}
+\end{figure}
+
+\subsection{Decoding and fitting}\label{sec:three}
+
+\paragraph{The best phase sequence (Viterbi).} Write $\delta_k(j)$ for the highest
+probability~\eqref{eq:joint} of any phase sequence of the first $k$ fixes that ends in phase $j$.
+The best sequence ending in $j$ at fix $k$ comes from the best sequence ending in some $i$ at fix
+$k-1$, so
+\begin{equation}\label{eq:viterbi}
+  \delta_1(j)=\nu_j\,b_j(x_1),\qquad
+  \delta_k(j)=\max_i\bigl[\delta_{k-1}(i)\,a_{ij}\bigr]\,b_j(x_k),\qquad
+  \psi_k(j)=\arg\max_i\bigl[\delta_{k-1}(i)\,a_{ij}\bigr].
+\end{equation}
+At the last fix one takes the best phase and follows the pointers $\psi$ backwards~\cite{viterbi1967,forney1973}.
+The cost is $K\times S^2$ operations for $S$ phases, against the $S^K$ sequences one would
+otherwise compare. The scores shrink at every fix and fall below the smallest number a computer
+holds after a few hundred fixes; dividing the column by its sum at each fix, as Vilpellet's code
+does, or working with logarithms, keeps them finite and leaves the path unchanged.
+
+\paragraph{The parameters (Baum--Welch).} When $A$, $\nu$ and $b$ are unknown they are fitted by
+expectation--maximisation~\cite{baum1970,rabiner1989}. Replacing the maximum of~\eqref{eq:viterbi}
+by a sum, a forward and a backward pass give, under the current parameters, the probability
+$\gamma_k(j)$ of each phase at each fix and the probability $\xi_k(i,j)$ of each change between
+consecutive fixes, given all the symbols. Each round then re-estimates the parameters as expected
+counts:
+\begin{equation}\label{eq:baumwelch}
+  \nu_j=\gamma_1(j),\qquad
+  a_{ij}=\frac{\sum_k\xi_k(i,j)}{\sum_k\gamma_k(i)},\qquad
+  b_j(x)=\frac{\sum_{k:\,x_k=x}\gamma_k(j)}{\sum_k\gamma_k(j)} .
+\end{equation}
+No round lowers the probability of the data, and the rounds stop at a local maximum, so the
+starting guess matters. The middle formula is the update of $A$ that Vilpellet's training code
+leaves out (Section~\ref{sec:conflicts}). The names of the states are not learnt: a state is
+``climb'' only because its emissions look like a climb.
+
+\begin{inwords}
+Viterbi finds the best phase sequence; Baum--Welch fits the parameters by alternating ``guess the
+phases softly'' and ``count''.
+\end{inwords}
+
+\subsection{What the model assumes}\label{sec:assumptions}
+
+Three assumptions: phases have no memory, so their durations are geometric; symbols are
+independent once the phases are known; the same parameters hold at every fix of every flight.
+Vilpellet's symbols are computed over 30-s windows, so two consecutive symbols share 29 of their
+30 fixes and are far from independent: the model counts the same evidence about thirty times. The
+paper accepts this as approximately true at the scale of 30~s~\cite{vilpellet2026}. In practice
+the windows carry the persistence and the HMM settles the changes of phase. None of the
+probabilities the model computes is calibrated; only the labels are used.

@@ -1,0 +1,67 @@
+\section*{The method at a glance}
+\addcontentsline{toc}{section}{The method at a glance}
+
+Figure~\ref{fig:overview} follows one segment of flight through the labelling;
+Table~\ref{tab:glossary} gives each object in plain words. Figure~\ref{fig:window}, marked
+\animmark, is animated: in Adobe Acrobat Reader, or another viewer that runs the JavaScript of PDF
+files, the buttons below it play the animation; other viewers show the figure as printed. The note
+answers four questions:
+\begin{enumerate}[label=\arabic*.]
+  \item \emph{How does the labelling work?} Sections~\ref{sec:hmm} (hidden Markov models, from
+        zero) and~\ref{sec:method} (Vilpellet's method, step by step).
+  \item \emph{Where do the paper and the code disagree?} Section~\ref{sec:conflicts}.
+  \item \emph{What do we keep, and what do we change?} Section~\ref{sec:keep}.
+  \item \emph{Can it label tracks logged every 2 or 5 seconds?} Section~\ref{sec:cadence}: yes, after
+        a cubic-spline interpolation onto a 1-s grid; not every 10 seconds.
+\end{enumerate}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm, stage/.style={box, text width=3.2cm, minimum height=1.15cm},
+    ours/.style={stage, fill=light!70}]
+  \node[ours] (a) at (0,0) {one segment of\\the pre-processing};
+  \node[ours] (b) at (3.95,0) {cut at gaps longer\\than $\max(4\,\mathrm{s},2\Delta)$};
+  \node[ours] (c) at (7.9,0) {cubic spline onto\\a 1-s grid};
+  \node[stage] (d) at (11.85,0) {local frame,\\positions smoothed};
+  \node[stage] (e) at (11.85,-1.95) {turn $\theta$ and\\climb rate $v_z$ per fix};
+  \node[stage] (f) at (7.9,-1.95) {three yes/no features\\over 30 fixes};
+  \node[stage] (g) at (3.95,-1.95) {one symbol of 8\\per fix};
+  \node[stage] (h) at (0,-1.95) {Viterbi: most likely\\phase sequence};
+  \node[stage] (i) at (0,-3.9) {majority over\\90 fixes};
+  \node[ours] (j) at (3.95,-3.9) {labels of the\\real fixes only};
+  \node[ours] (k) at (7.9,-3.9) {one row per run of\\\textcolor{transition}{\textbf{transition}}, \textcolor{search}{\textbf{search}}\\or \textcolor{climb}{\textbf{climb}}};
+  \foreach \u/\v in {a/b, b/c, c/d, d/e, e/f, f/g, g/h, h/i, i/j, j/k} \draw[->, ink2, line width=0.8pt] (\u) -- (\v);
+  \node[note, above=1pt] at (d.north) {\S\ref{sec:frame}};
+  \node[note, below=1pt] at (e.south) {\S\ref{sec:turn}};
+  \node[note, below=1pt] at (f.south) {\S\ref{sec:features}};
+  \node[note, below=1pt] at (g.south) {\S\ref{sec:emissions}};
+  \node[note, above=1pt] at (h.north) {\S\ref{sec:three}};
+  \node[note, left=1pt] at (i.west) {\S\ref{sec:decoding}};
+\end{tikzpicture}
+\caption{The labelling of one segment of flight. White: Vilpellet's method as his code runs it
+(Section~\ref{sec:method}); grey: what xc-dynamics adds around it, the 1-s grid that lets coarser
+loggers in (Section~\ref{sec:cadence}) and the storage (Section~\ref{sec:implementation}).}
+\label{fig:overview}
+\end{figure}
+
+\begin{table}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}l X l@{}}
+\toprule
+Object & In words & Section \\
+\midrule
+fix & one recorded position; on the 1-s grid, one per second & \ref{sec:problem} \\
+turn $\theta_k$ & how much the heading changes at fix $k$, in radians, positive to the left & \ref{sec:turn} \\
+features $S,R,O$ & three yes/no answers about the 30 fixes around a fix: straight? rising? turning one way? & \ref{sec:features} \\
+symbol & the three answers written as one number from 0 to 7 & \ref{sec:emissions} \\
+state, phase & the hidden label of a fix: \cl, \se\ or \tr & \ref{sec:chain} \\
+transition matrix $A$ & the probability of passing from one phase to another between two fixes & \ref{sec:chain} \\
+emission $b_j(x)$ & the probability of seeing symbol $x$ while in phase $j$ & \ref{sec:hidden} \\
+Viterbi path & the phase sequence with the highest probability given all the symbols & \ref{sec:three} \\
+majority vote & each fix takes the phase most common in the 90 fixes around it & \ref{sec:decoding} \\
+\bottomrule
+\end{tabularx}
+\caption{A minimal dictionary.}
+\label{tab:glossary}
+\end{table}
