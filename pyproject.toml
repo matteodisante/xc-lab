@@ -12,6 +12,8 @@ dependencies = [
     "pandas>=2.2",
     "pyarrow>=14.0",
     "scipy>=1.11",
+    # Vilpellet's tail fits; 2.0 bounds alpha to [0, 3] by default, so mu could not exceed 2.
+    "powerlaw==1.5",
 ]
 
 [tool.uv.sources]
@@ -31,6 +33,6 @@ build-backend = "hatchling.build"
 packages = ["lab"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "ideas"]
-# Idea folders are not packages and reuse file names like test_run.py.
+testpaths = ["tests", "ideas", "analyses"]
+# Idea and analysis folders are not packages and reuse file names like test_run.py.
 addopts = "-ra --import-mode=importlib"

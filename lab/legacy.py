@@ -14,6 +14,7 @@ from pathlib import Path
 import pandas as pd
 from soaring.analysis import igc
 from soaring.analysis.config import load_preproc_config
+from soaring.analysis.derived import stream_flights
 from soaring.analysis.preproc.pipeline import FlightResult, run_flight
 from soaring.analysis.segmentation.vilpellet import (
     UNCLASSIFIED,
@@ -31,6 +32,7 @@ __all__ = [
     "VilpelletTrack",
     "clean_flight",
     "segment",
+    "stream_flights",  # one whole flight at a time from soaring's fixes.parquet on SSD_DISANTE
 ]
 
 _preproc_config = cache(load_preproc_config)

@@ -8,7 +8,10 @@ This repository tests ideas fast; results that reach the thesis are rewritten th
 
 ## Layout
 
-- `ideas/YYYY-MM-DD-slug/`: one idea per folder, with its code, tests and notes.
+- `ideas/<slug>/`: one idea per folder, with its code, tests and notes; `ideas/README.md`
+  lists them with their status.
+- `analyses/<topic>/`: quantities computed on the flight data, as figures and numbers; one
+  folder per topic, `analyses/README.md` lists them.
 - `meetings/YYYY-MM-DD/`: the slides for one weekly meeting.
 - `lab/`: helpers shared by several ideas. `lab/legacy.py` borrows the Vilpellet
   segmenter from [soaring-anomalous-transport](https://github.com/matteodisante/soaring-anomalous-transport)
