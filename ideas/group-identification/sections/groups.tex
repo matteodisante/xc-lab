@@ -1,0 +1,332 @@
+\section{From pairs to groups}\label{sec:groups}
+
+\subsection{Pair intervals}\label{sec:pair-intervals}
+
+The instantaneous contact flickers wherever one of the quantities sits close to its threshold: a
+horizontal distance near $\varepsilon_h$ in glide, a height difference near $\varepsilon_z$, an
+angle near $\theta_{\max}$. It also flickers at the changes of state, when the heading condition
+switches on and off, and wherever the phase labelling is wrong on a few fixes.
+
+\begin{definition}[pair interval]\label{def:pair-interval}
+For each pair consider the maximal runs of consecutive grid instants with $a_{ij}=1$. Two runs
+separated by a gap shorter than $g$ are joined; the resulting runs shorter than $\tau^*$ are
+dropped. Each remaining run is a half-open interval $[t_{\rm on}, t_{\rm off})$, and the set of
+the intervals of the day is $\I$.
+\end{definition}
+
+Joining the short gaps plays the role of the robustness of Buchin et al.~\cite[§4]{buchin2015},
+which ignores interruptions shorter than $\alpha$; the maximal segments of Li et
+al.~\cite{li2013,ruzzo1999} are an alternative. The threshold $\tau^*$ is fixed by the null model
+(Section~\ref{sec:calibration}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1.0cm,y=1cm,
+    row/.style={font=\footnotesize, anchor=east}]
+  \foreach \y in {2,1,0} \fill[light] (0,\y-0.17) rectangle (12,\y+0.17);
+  \node[row] at (-0.1,2) {$a_{ij}(t)$};
+  \node[row] at (-0.1,1) {gaps $<g$ filled};
+  \node[row] at (-0.1,0) {pieces $<\tau^*$ dropped};
+  \foreach \a/\b in {0.4/2.0, 2.3/4.4, 4.8/5.2, 7.0/7.5, 9.0/10.9, 11.2/11.4} \fill[aqua] (\a,1.83) rectangle (\b,2.17);
+  \foreach \a/\b in {0.4/5.2, 7.0/7.5, 9.0/11.4} \fill[aqua] (\a,0.83) rectangle (\b,1.17);
+  \foreach \a/\b in {2.0/2.3, 4.4/4.8, 10.9/11.2} \fill[pattern=north east lines, pattern color=white] (\a,0.83) rectangle (\b,1.17);
+  \foreach \a/\b in {0.4/5.2, 9.0/11.4} \fill[aqua] (\a,-0.17) rectangle (\b,0.17);
+  \draw[ink2, line width=0.7pt] (7.0,-0.17) -- (7.5,0.17) (7.0,0.17) -- (7.5,-0.17);
+  \foreach \x/\l in {0.4/t_{\rm on}, 5.2/t_{\rm off}, 9.0/t_{\rm on}, 11.4/t_{\rm off}} \node[lbl, below] at (\x,-0.2) {$\l$};
+  \draw[<->, ink2] (5.2,1.45) -- node[above, lbl] {gap $>g$} (7.0,1.45);
+  \draw[|-|, ink2] (0,-1.05) -- node[below, lbl] {$g$} (0.9,-1.05);
+  \draw[|-|, ink2] (1.6,-1.05) -- node[below, lbl] {$\tau^*$} (3.1,-1.05);
+\end{tikzpicture}
+\caption{From the contact to the pair intervals. Top: the contact of one pair, with the flicker
+of the instantaneous condition. Middle: gaps shorter than $g$ are filled (hatched). Bottom: runs
+shorter than $\tau^*$ are dropped; two intervals remain.}
+\label{fig:pair-intervals}
+\end{figure}
+
+\subsection{The problem of non-transitivity}\label{sec:transitivity}
+
+\begin{remark}
+The relation ``$i$ and $j$ are in contact'' is symmetric but not transitive. If 1 flies with 8
+in the first part of the afternoon and 8 flies with 14 later, 1 and 14 may never have met.
+\end{remark}
+
+A partition into groups presupposes an \emph{equivalence relation}, a relation $\sim$ that is
+reflexive ($i\sim i$), symmetric ($i\sim j\Rightarrow j\sim i$) and transitive ($i\sim j$ and
+$j\sim k\Rightarrow i\sim k$). Contact lacks the third property, so any partition must give up
+something (Figure~\ref{fig:transitivity}):
+\begin{enumerate}[label=(\alph*)]
+  \item direct contact between all members: taking the transitive closure puts 1 and 14 in the
+        same group although they never met;
+  \item the partition: groups may overlap, here $\{1,8\}$ and $\{8,14\}$;
+  \item the static picture: the groups are defined instant by instant.
+\end{enumerate}
+We adopt (c): at every instant the groups are the connected components of the graph of active
+contacts, as the components of Buchin et al.~\cite{buchin2015}, and the evolution in time is
+described without giving the groups a persistent identity. Their maximal groups, which may
+overlap, are a form of (b).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \draw[->, ink2] (0,0) -- (7.3,0) node[right, lbl, ink] {$t$};
+    \foreach \x/\h in {0/13:00, 2.4/14:00, 4.8/15:00, 7.0/16:00} {
+      \draw[ink2] (\x,-0.06) -- (\x,0.06); \node[lbl, below] at (\x,-0.06) {\h};
+    }
+    \fill[blueI] (0.2,0.85) rectangle (3.4,1.15);
+    \node[lbl, anchor=east] at (0.1,1.0) {1--8};
+    \fill[orangeJ] (4.0,0.35) rectangle (6.8,0.65);
+    \node[lbl, anchor=west] at (6.9,0.5) {8--14};
+    \node[panel] at (0,1.65) {pair intervals};
+  \end{scope}
+  \begin{scope}[shift={(8.6,0)}]
+    \node[panel] at (0,1.65) {(a) transitive closure};
+    \draw[ink2, rounded corners=8pt, fill=light!60] (0,-0.3) rectangle (2.7,1.25);
+    \node[flight] at (0.45,0.5) {1}; \node[flight] at (1.35,0.5) {8}; \node[flight] at (2.25,0.5) {14};
+    \node[note, anchor=north west, align=left] at (0,-0.45) {one group all afternoon:\\1 and 14 never met};
+  \end{scope}
+  \begin{scope}[shift={(0,-3.4)}]
+    \node[panel] at (0,1.65) {(b) overlapping groups};
+    \draw[blueI, line width=0.9pt] (0.95,0.5) ellipse (0.95 and 0.6);
+    \draw[orangeJ, line width=0.9pt] (1.85,0.5) ellipse (0.95 and 0.6);
+    \node[flight] at (0.45,0.5) {1}; \node[flight] at (1.4,0.5) {8}; \node[flight] at (2.35,0.5) {14};
+    \node[note, anchor=north west, align=left] at (0,-0.4) {8 belongs to two groups};
+  \end{scope}
+  \begin{scope}[shift={(4.6,-3.4)}]
+    \node[panel] at (0,1.65) {(c) instant by instant (our choice)};
+    \node[lbl] at (0.9,1.15) {13:30};
+    \draw[edge] (0.45,0.45) -- (1.35,0.45);
+    \node[inE1] at (0.45,0.45) {1}; \node[inE1] at (1.35,0.45) {8}; \node[flight] at (0.9,-0.35) {14};
+    \node[lbl] at (3.6,1.15) {15:30};
+    \draw[edge] (3.15,0.45) -- (4.05,0.45);
+    \node[flight] at (3.6,-0.35) {1}; \node[inE2] at (3.15,0.45) {8}; \node[inE2] at (4.05,0.45) {14};
+    \node[note, anchor=west, align=left] at (4.6,0.3) {groups are the connected\\components at each instant};
+  \end{scope}
+\end{tikzpicture}
+\caption{Non-transitivity. Flights 1 and 8 are in contact early in the afternoon, 8 and 14 later;
+1 and 14 never meet. The three ways out: (a) one group containing all three, (b) two overlapping
+groups, (c) the groups of each instant, adopted here.}
+\label{fig:transitivity}
+\end{figure}
+
+\subsection{Configurations}\label{sec:configurations}
+
+The active graph at instant $t$ is
+\begin{equation}\label{eq:graph}
+  \begin{gathered}
+  G(t)=\bigl(V(t),E(t)\bigr),\qquad V(t)=\{i:\ t\in T^\dep_i\},\\
+  E(t)=\bigl\{\{i,j\}:\ \exists\,(i,j,t_{\rm on},t_{\rm off})\in\I,\ t\in[t_{\rm on},t_{\rm off})\bigr\}.
+  \end{gathered}
+\end{equation}
+
+\begin{inwords}
+$V(t)$ are the pilots that at instant $t$ have already departed, have not landed yet and have a
+position; $E(t)$
+are the pairs whose contact interval contains $t$. A connected component of $G(t)$ is a group at
+instant $t$: its pilots are joined to each other by chains of contacts.
+\end{inwords}
+
+\begin{definition}[configuration]
+A configuration $c$ is given by a set of flights $M_c$, its members, with $|M_c|\ge2$, and by an
+interval of time $[t^{\rm start}_c, t^{\rm end}_c)$, such that $M_c$ is a connected component of
+$G(t)$ at every $t$ of the interval and the interval is maximal. We write
+$c=\bigl(M_c,[t^{\rm start}_c,t^{\rm end}_c)\bigr)$.
+\end{definition}
+
+\begin{doubt}{Inside a configuration the members are fixed.}
+Any change of members, one pilot joining or one leaving, ends the configuration and starts
+another. What can change inside a configuration is only the set of edges among its members.
+\end{doubt}
+
+The configurations are the edges of the Reeb graph of~\cite{buchin2015} with at least two
+entities, built on the graph of delayed contacts instead of simultaneous proximity. An edge that
+appears or disappears inside a component without changing its members, for example closing a
+triangle, does not create a new configuration (Figure~\ref{fig:configurations}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \sx/\t/\tri/\four in {0/t_1/0/0, 4.3/t_2/1/0, 8.6/t_3/1/1} {
+    \begin{scope}[shift={(\sx,0)}]
+      \node[lbl] at (1.3,2.55) {$G(\t)$};
+      \coordinate (a) at (0.3,1.0); \coordinate (b) at (1.0,2.0); \coordinate (c) at (1.7,1.0); \coordinate (d) at (2.8,1.0);
+      \draw[edge] (a) -- (b) -- (c);
+      \ifnum\tri=1 \draw[edge] (a) -- (c); \fi
+      \ifnum\four=1 \draw[edge] (c) -- (d); \fi
+      \ifnum\four=1
+        \node[inE2] at (a) {1}; \node[inE2] at (b) {2}; \node[inE2] at (c) {3}; \node[inE2] at (d) {4};
+      \else
+        \node[inE1] at (a) {1}; \node[inE1] at (b) {2}; \node[inE1] at (c) {3}; \node[flight] at (d) {4};
+      \fi
+    \end{scope}
+  }
+  \begin{scope}[shift={(0,-2.9)}]
+    \draw[->, ink2] (0,0) -- (12.4,0) node[right, lbl, ink] {$t$};
+    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,0) -- (\x,4.9); \node[lbl, below] at (\x,0) {$\l$};}
+    \foreach \a/\b/\y/\n in {0.3/11.8/2.1/1--2, 0.3/11.8/1.7/2--3, 4.6/11.8/1.3/1--3, 8.6/11.8/0.9/3--4} {
+      \fill[ink2] (\a,\y-0.09) rectangle (\b,\y+0.09);
+      \node[lbl, anchor=east] at (0.2,\y) {\n};
+    }
+    \fill[blueI] (0.3,0.25) rectangle (8.55,0.6); \node[font=\footnotesize, text=white] at (4.4,0.425) {$c$: $\{1,2,3\}$};
+    \fill[orangeJ] (8.65,0.25) rectangle (11.8,0.6); \node[font=\footnotesize, text=white] at (10.2,0.425) {$c'$: $\{1,2,3,4\}$};
+    \node[lbl, anchor=east] at (0.2,0.425) {config.};
+  \end{scope}
+\end{tikzpicture}
+\caption{Configurations. Top: the active graph at three instants. Bottom: the pair intervals of
+the four flights and the configurations they produce. At $t_2$ the edge 1--3 closes a triangle:
+the component keeps its members and $c$ goes on. When 4 joins, $c$ ends and $c'$ starts.}
+\label{fig:configurations}
+\end{figure}
+
+\begin{proposition}
+At every instant each flight belongs to at most one configuration.
+\end{proposition}
+
+\begin{proof}
+The connected components of $G(t)$ form a partition of $V(t)$.
+\end{proof}
+
+The membership of flight $i$ at instant $t$ is therefore well defined:
+\begin{equation}\label{eq:membership}
+  \gamma_i(t)=\begin{cases}
+    \st{L} & \text{if } k^0_i\le t<k^\dep_i \text{ (local phase), or the flight is local},\\
+    c & \text{if } i\in M_c \text{ and } t\in[t^{\rm start}_c,t^{\rm end}_c),\\
+    \st{S} & \text{if } t\in T^\dep_i \text{ otherwise (solo flight).}
+  \end{cases}
+\end{equation}
+The grid instants in a gap of the track, where the flight has no position, get no label.
+
+\subsection{Episodes}\label{sec:episodes}
+
+\begin{definition}[episode]
+Two configurations are linked, $c\to c'$, if one starts exactly when the other ends and they have
+at least one member in common:
+\begin{equation}\label{eq:link}
+  c\to c' \iff t^{\rm start}_{c'}=t^{\rm end}_c\ \wedge\ M_c\cap M_{c'}\ne\emptyset .
+\end{equation}
+An episode is a connected component of the undirected graph associated with $\to$.
+\end{definition}
+
+\begin{inwords}
+An episode is a chain of configurations without interruption: each one starts at the instant the
+previous one ends and keeps at least one of its members. Two configurations of the same episode
+need not share anyone; the chain joins them.
+\end{inwords}
+
+In the language of~\cite{buchin2015}, an episode is a connected component of the Reeb graph after
+removing the edges of single pilots. Four properties matter (Figure~\ref{fig:episodes}).
+\begin{enumerate}[label=(\roman*)]
+  \item A split produces two configurations linked to the same previous one: they stay in the same
+        episode. The same holds for a merge.
+  \item If the group dissolves completely, the chain breaks and the episode ends; a group that
+        forms again later opens a new episode.
+  \item No threshold is needed: one member in common is enough.
+  \item The same flight can belong to several episodes of the same day, at different times.
+\end{enumerate}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1.4cm,y=1cm,
+    conf/.style={draw=none, minimum height=5mm, inner sep=0pt, font=\footnotesize, text=white},
+    link/.style={->, ink, line width=0.7pt}]
+  \draw[->, ink2] (0,-0.4) -- (9.6,-0.4) node[right, lbl, ink] {$t$};
+  \def\confbox#1#2#3#4#5{\fill[#5] (#1,#3-0.25) rectangle (#2,#3+0.25); \node[font=\footnotesize, text=white] at ({(#1+#2)/2},#3) {#4};}
+  \confbox{0}{1.95}{2.6}{$c_1\,\{1,2\}$}{blueI}
+  \confbox{0}{1.95}{0.9}{$c_2\,\{3,4\}$}{blueI}
+  \confbox{2.05}{3.95}{1.75}{$c_3\,\{1,2,3,4\}$}{blueI}
+  \confbox{4.05}{5.95}{2.6}{$c_4\,\{1,2\}$}{blueI}
+  \confbox{4.05}{5.45}{0.9}{$c_5\,\{3,4\}$}{blueI}
+  \confbox{7.5}{9.0}{1.75}{$c_6\,\{2,5\}$}{orangeJ}
+  \draw[link] (1.95,2.6) -- (2.05,1.85);
+  \draw[link] (1.95,0.9) -- (2.05,1.65);
+  \draw[link] (3.95,1.85) -- (4.05,2.6);
+  \draw[link] (3.95,1.65) -- (4.05,0.9);
+  \node[note] at (2.0,3.15) {merge};
+  \node[note] at (4.0,3.15) {split};
+  \node[note, align=center] at (6.6,1.25) {dissolved:\\the chain breaks};
+  \node[note, align=center] at (8.25,0.85) {new episode;\\flight 2 again};
+  \draw[decorate, decoration={brace, mirror, amplitude=5pt}, blueI] (0,0.2) -- (5.95,0.2) node[midway, below=5pt, lbl, ink] {episode E1};
+  \draw[decorate, decoration={brace, mirror, amplitude=5pt}, orangeJ] (7.5,0.2) -- (9.0,0.2) node[midway, below=5pt, lbl, ink] {E2};
+\end{tikzpicture}
+\caption{Episodes. Arrows are the links~\eqref{eq:link}. The merge of $c_1$ and $c_2$ into $c_3$
+and the split of $c_3$ into $c_4$ and $c_5$ keep all five configurations in episode E1, although
+$c_1$ and $c_5$ share no member. After the group dissolves, $c_6$ has no predecessor and opens E2:
+flight 2 belongs to both episodes.}
+\label{fig:episodes}
+\end{figure}
+
+\begin{remark}[why not a persistent group name]
+One could keep the same group name when the overlap of the members between two instants exceeds a
+threshold, as methods that track communities in evolving networks do with the Jaccard
+index~\cite{greene2010}. The choice has three defects: the threshold is arbitrary; if the members are replaced one at a time the group keeps its name even when none
+of the initial members is left; in splits and merges there is no natural criterion to decide who
+inherits the name. The episode does not claim to be ``the same group'': it records only the
+continuity, while the configuration records the composition.
+\end{remark}
+
+\subsection{Dependency blocks}\label{sec:blocks}
+
+\begin{definition}[block]
+For each day consider the bipartite graph flights--episodes, with an edge between a flight and
+every episode it belongs to. Its connected components, restricted to the flights, are the
+\emph{dependency blocks}; a flight never in a group is a block on its own.
+\end{definition}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1.35cm,y=1cm,
+    ep/.style={rectangle, draw=ink, line width=0.6pt, minimum size=5.6mm, inner sep=1pt, font=\footnotesize, fill=white}]
+  \foreach \f/\x/\s in {1/0/inE1, 2/1/inE1, 3/2/inE1, 4/3/inE1, 5/4/flight, 6/5/inE2, 7/6/inE2, 8/7/inE2}
+    \node[\s] (f\f) at (\x,1.6) {\f};
+  \foreach \e/\x in {1/1, 2/2.5, 3/5.5, 4/6.5} \node[ep] (e\e) at (\x,0) {E\e};
+  \foreach \e/\f in {1/1, 1/2, 1/3, 2/3, 2/4, 3/6, 3/7, 4/7, 4/8} \draw[ink2, line width=0.7pt] (e\e) -- (f\f);
+  \node[lbl, anchor=east] at (-0.45,1.6) {flights};
+  \node[lbl, anchor=east] at (-0.45,0) {episodes};
+  \draw[decorate, decoration={brace, amplitude=5pt}, blueI] (-0.2,2.05) -- (3.2,2.05) node[midway, above=5pt, lbl, ink] {block $\{1,2,3,4\}$};
+  \node[lbl, above=11pt] at (f5) {block $\{5\}$};
+  \draw[decorate, decoration={brace, amplitude=5pt}, orangeJ] (4.8,2.05) -- (7.2,2.05) node[midway, above=5pt, lbl, ink] {block $\{6,7,8\}$};
+\end{tikzpicture}
+\caption{Dependency blocks of a day. Flight 3 is in episodes E1 and E2, so flights 1--4 form one
+block although 1 and 4 share no episode; flight 5 never flies in a group.}
+\label{fig:blocks}
+\end{figure}
+
+\begin{proposition}
+The blocks are the finest partition of the flights in which the members of every episode are in
+the same block.
+\end{proposition}
+
+\begin{proof}
+A partition with this property must contain the transitive closure of the relation ``share an
+episode'', whose classes are exactly the connected components of the bipartite graph; these, in
+turn, satisfy the property.
+\end{proof}
+
+The blocks are the units resampled in the bootstrap (Section~\ref{sec:comparison}): flights of
+different blocks never shared an episode, flights of the same block did. Buchin et al.\ already
+note that a grouping structure splits the trajectories into independent data
+sets~\cite[§1]{buchin2015}.
+
+\subsection{An example day}\label{sec:example-day}
+
+Figure~\ref{fig:day} follows a day with five flights. At 11:40 flights 1, 8 and 22 meet (edges 1--8 and 8--22): configuration
+$c_1=\{1,8,22\}$ starts. At 12:05 the edge 1--22 closes the triangle: the members do not change
+and $c_1$ goes on. At 12:55 the edge 1--8 closes and 1 changes route: $c_1$ ends and
+$c_2=\{8,22\}$ starts; they share 8 and 22, so $c_1\to c_2$. At 13:30 the edge 8--14 opens:
+$c_3=\{8,14,22\}$, and $c_2\to c_3$. At 14:10 the group dissolves and episode E1 ends. At 15:00
+flights 8 and 22 meet again: $c_4=\{8,22\}$ has no predecessor and opens episode E2.
+
+Flights 1 and 14 belong to the same episode without ever being in the same configuration; 8 and
+22 belong to two episodes; 1, 8, 14 and 22 form one dependency block, and flight 5, never in a
+group, a block of its own.
+
+\begin{figure}
+\centering
+\animated{example_day}
+\caption{\animmark An example day; the animation runs the day from 11:00 to 16:00 and stops at
+each event. Top: the active graph $G(t)$ at the five dotted instants; filled nodes are in a configuration, coloured by episode; dashed nodes are in the
+local phase, faint ones not in flight. Bottom: the membership $\gamma_i(t)$ of each flight:
+hatched is the local phase \st{L}, grey is solo \st{S}, coloured segments are the configurations
+$c_1$--$c_4$, and the last row spans the episodes.}
+\label{fig:day}
+\end{figure}

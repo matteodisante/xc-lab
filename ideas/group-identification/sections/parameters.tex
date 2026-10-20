@@ -1,0 +1,22 @@
+\section{Choices to declare}\label{sec:parameters}
+
+The starting values are in Table~\ref{tab:notation}. The thesis should state these choices, each
+argued in the section given:
+\begin{itemize}
+  \item $\varepsilon_z$ encodes the notion of ``together'': shared thermals if tight, visual
+        contact if wide (Section~\ref{sec:delta});
+  \item $\delta$ is tied to the visual range through $v_\xc$, which must be measured on the data
+        (Section~\ref{sec:delta});
+  \item headings are compared only when both pilots glide; climb, search and unclassified fixes
+        turn the condition off (Section~\ref{sec:roles});
+  \item contacts before the departure are ignored: a group formed on the takeoff is recognised
+        only after the exit from $R_\dep$ (Section~\ref{sec:local});
+  \item grid positions are interpolated across at most $h_{\max}$, so tracks logged more coarsely
+        enter with gaps (Section~\ref{sec:phase0});
+  \item the signed median delay leaves out the instants of search, where altitude does not
+        resolve the delay (Section~\ref{sec:phase3});
+  \item the null model assumes that surrogate pairs meet by chance as often as real pairs; with
+        long shifts the weather changes (Section~\ref{sec:null});
+  \item the errors of the phase labelling reach the heading condition: a climb labelled as glide
+        compares headings that turn, and joining the short gaps mitigates the problem.
+\end{itemize}

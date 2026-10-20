@@ -1,0 +1,112 @@
+\section*{The method at a glance}
+\addcontentsline{toc}{section}{The method at a glance}
+
+Figure~\ref{fig:overview} follows the method from two tracks to the units of the statistical
+analysis, and Table~\ref{tab:glossary} says what each object is in plain words, with the section
+that defines it. Figures~\ref{fig:contact}, \ref{fig:clock} and~\ref{fig:day}, marked
+\animmark, are animated: in Adobe Acrobat Reader, or another viewer that runs the JavaScript of
+PDF files, the buttons below them play the animation; other viewers show the figure as printed.
+The same animations are GIF files in the folder \texttt{animations/}.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % 1: two tracks
+  \begin{scope}[shift={(0,0)}]
+    \node[panel] at (0,3.25) {1\enspace Two tracks};
+    \draw[track i] plot[smooth] coordinates {(0.2,1.3) (1.2,1.9) (2.4,1.8) (3.4,2.45) (4.4,2.8)};
+    \draw[track j] plot[smooth] coordinates {(0.2,0.85) (1.2,1.45) (2.4,1.35) (3.4,2.0) (4.4,2.35)};
+    \node[pt i] (xi) at (3.4,2.45) {};
+    \node[hollow j] (xj) at (1.2,1.45) {};
+    \node[lbl, blueI, above=1pt] at (xi) {$\x_i(t)$};
+    \node[lbl, orangeJ, below=2pt] at (xj) {$\x_j(t)$};
+    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies the route of $i$,\\a little later};
+  \end{scope}
+  % 2: correspondences
+  \begin{scope}[shift={(5.45,0)}]
+    \node[panel] at (0,3.25) {2\enspace Correspondences $\M_{ij}$};
+    \fill[light] (0,0) -- (0.6,0) -- (2.6,2.0) -- (2.6,2.6) -- (2.0,2.6) -- (0,0.6) -- cycle;
+    \draw[muted, densely dashed] (0,0) -- (2.6,2.6);
+    \fill[aqua, rotate around={45:(1.15,1.5)}] (1.15,1.5) ellipse (0.78 and 0.12);
+    \draw[->, ink2] (0,0) -- (2.85,0) node[right, lbl, ink] {$t$};
+    \draw[->, ink2] (0,0) -- (0,2.85) node[above, lbl, ink] {$t'$};
+    \node[note, align=left, anchor=west] at (2.75,1.55) {pairs of\\instants;\\above the\\diagonal:\\$j$ is later};
+  \end{scope}
+  % 3: contact
+  \begin{scope}[shift={(10.9,0)}]
+    \node[panel] at (0,3.25) {3\enspace Contact $a_{ij}(t)$};
+    \draw[->, ink2] (0,1.0) -- (4.5,1.0) node[right, lbl, ink] {$t$};
+    \fill[light] (0,1.3) rectangle (4.3,1.8);
+    \foreach \a/\b in {0.3/1.15, 1.3/2.2, 2.75/2.9, 3.55/3.66} \fill[aqua] (\a,1.3) rectangle (\b,1.8);
+    \node[note, align=left, anchor=north west] at (0,0.75) {$1$ when one of the two pilots\\is on the path of the other};
+  \end{scope}
+  % 4: pair intervals
+  \begin{scope}[shift={(0,-4.2)}]
+    \node[panel] at (0,3.25) {4\enspace Pair intervals};
+    \fill[light] (0,2.1) rectangle (4.3,2.5);
+    \foreach \a/\b in {0.3/1.15, 1.3/2.2, 2.75/2.9, 3.55/3.66} \fill[aqua!45] (\a,2.1) rectangle (\b,2.5);
+    \fill[light] (0,1.2) rectangle (4.3,1.6);
+    \fill[aqua] (0.3,1.2) rectangle (2.2,1.6);
+    \draw[->, ink2] (0,0.9) -- (4.5,0.9) node[right, lbl, ink] {$t$};
+    \node[lbl, below] at (0.3,0.9) {$t_{\rm on}$};
+    \node[lbl, below] at (2.2,0.9) {$t_{\rm off}$};
+    \node[note, align=left, anchor=north west] at (0,0.35) {short gaps filled, short pieces dropped};
+  \end{scope}
+  % 5: groups at each instant
+  \begin{scope}[shift={(5.45,-4.2)}]
+    \node[panel] at (0,3.25) {5\enspace Groups at each instant};
+    \coordinate (n1) at (0.45,1.9); \coordinate (n8) at (1.4,2.55); \coordinate (n22) at (1.4,1.25);
+    \coordinate (n14) at (2.45,1.9); \coordinate (n5) at (0.45,0.75);
+    \draw[edge] (n1) -- (n8) -- (n22);
+    \node[inE1] at (n1) {1}; \node[inE1] at (n8) {8}; \node[inE1] at (n22) {22};
+    \node[flight] at (n14) {14}; \node[flight] at (n5) {5};
+    \node[note, align=left, anchor=west] at (2.85,1.75) {a fixed set\\of flights over\\a maximal\\interval:\\a configuration};
+  \end{scope}
+  % 6: episodes and blocks
+  \begin{scope}[shift={(10.9,-4.2)}]
+    \node[panel] at (0,3.25) {6\enspace Episodes and blocks};
+    \foreach \a/\b/\n in {0.1/1.15/1, 1.2/1.75/2, 1.8/2.6/3} {
+      \fill[blueI] (\a,1.9) rectangle (\b,2.4);
+      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$c_\n$};
+    }
+    \fill[orangeJ] (3.3,1.9) rectangle (4.1,2.4);
+    \node[font=\footnotesize, text=white] at (3.7,2.15) {$c_4$};
+    \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (0.1,1.8) -- (2.6,1.8)
+      node[midway, below=4pt, lbl, ink] {episode E1};
+    \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (3.3,1.8) -- (4.1,1.8)
+      node[midway, below=4pt, lbl, ink] {E2};
+    \node[note, align=left, anchor=north west] at (0,0.75) {block: the flights tied by episodes,\\resampled together};
+  \end{scope}
+  % reading order
+  \foreach \y in {1.6, -2.6} {
+    \draw[->, muted, line width=0.8pt] (4.75,\y) -- (5.3,\y);
+    \draw[->, muted, line width=0.8pt] (10.2,\y) -- (10.75,\y);
+  }
+\end{tikzpicture}
+\caption{The method in six steps. Panels 1--3: the pair contact (Section~\ref{sec:contact}).
+Panels 4--6: from pairs to groups (Section~\ref{sec:groups}). Flights 1, 8, 22, 14 and 5 are the
+example day of Figure~\ref{fig:day}.}
+\label{fig:overview}
+\end{figure}
+
+\begin{table}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}l X l l@{}}
+\toprule
+Object & In words & Symbol & Section \\
+\midrule
+Departure & the first fix farther than $R_\dep$ from the takeoff & $k_i^\dep$ & \ref{sec:local} \\
+Correspondence & two instants, $t$ on the clock of $i$ and $t'$ on that of $j$, at most $\delta$ apart, at which the two pilots pass the same place within the tolerances & $(t,t')\in\M_{ij}$ & \ref{sec:correspondences} \\
+Contact & at instant $t$, one of the two pilots is on the path of the other & $a_{ij}(t)=1$ & \ref{sec:correspondences} \\
+Pair interval & a stretch of contact, with short gaps filled and short pieces dropped & $[t_{\rm on},t_{\rm off})$ & \ref{sec:pair-intervals} \\
+Group at instant $t$ & the pilots joined to each other by chains of contacts at $t$ & component of $G(t)$ & \ref{sec:configurations} \\
+Configuration & a fixed set of flights that stays one group over a maximal interval & $c$ & \ref{sec:configurations} \\
+Membership & the label of flight $i$ at instant $t$: local phase, solo, or its configuration & $\gamma_i(t)$ & \ref{sec:configurations} \\
+Episode & a chain of configurations, each starting when the previous one ends and sharing a member with it & & \ref{sec:episodes} \\
+Dependency block & the flights tied together by episodes; the bootstrap resamples them together & & \ref{sec:blocks} \\
+\bottomrule
+\end{tabularx}
+\caption{A minimal dictionary of the objects of the method.}
+\label{tab:glossary}
+\end{table}

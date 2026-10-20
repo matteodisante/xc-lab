@@ -1,0 +1,207 @@
+\section{Relation to the literature}\label{sec:literature}
+
+This section says where each ingredient of the method comes from and what, as far as a targeted
+but not exhaustive search shows, has not been done yet.
+
+\subsection{Trajectory similarity with a temporal tolerance}
+
+The LCSS of Vlachos, Kollios and Gunopulos~\cite{vlachos2002} matches two points when they are
+closer than $\varepsilon$ in every coordinate and their \emph{indices} in the two sequences differ
+by at most $\delta$. The similarity $S_1$ is the length of the common subsequence divided by the
+length of the shorter track, and the variant $S_2$ maximises $S_1$ over all spatial translations,
+to recognise parallel movements. The EDR of Chen, Özsu and Oria~\cite{chen2005} and DTW with a
+Sakoe--Chiba band~\cite{sakoe1978} bound the shift in the same way. These measures return a
+single number per pair of tracks: they say how similar two tracks are, and not \emph{when} two
+pilots are together. A bound on indices counted from the first point of each track also mixes
+the shift between the takeoffs with the delay in flight, and $S_2$ matches precisely the parallel
+routes that we want to exclude.
+
+The measures of joint movement that do say when are built on simultaneous fixes. The proximity
+index Prox is the share of simultaneous fixes closer than a threshold~\cite[§3.1]{joo2018}: with
+$\delta=0$ and without the conditions on height and heading, it is the share of the flight of $i$
+in contact with $j$ in the sense of Section~\ref{sec:correspondences}.
+
+\subsection{Following with a delay}\label{sec:following}
+
+The closest precedent of our pair contact is the following of Li, Wu and Crofoot~\cite{li2013},
+defined on tracks sampled at the same instants (Figure~\ref{fig:li}). At instant $i$ the local
+lag $\Delta(i)$ is the shift $t$, with $|t|\le l_{\max}$, that minimises the distance between the
+position $r_i$ of $R$ and the position $s_{i-t}$ of $S$. The instant is \emph{valid} if this
+minimum distance is below $d_{\max}$, and $R$ follows $S$ at a valid instant if $\Delta(i)>0$
+(§IV-A). The lag is therefore local and free to vary, and its sign separates the follower from
+the leader. Two individuals that merely move together lead and follow equally often, so the
+following intervals are the stretches with more following instants than the half expected
+without following: the maximal segments of $f(i)-1/2$, with $f(i)=1$ when $R$ follows and $0$
+otherwise, found in linear time~\cite{ruzzo1999} (§IV-B) and checked with the roles
+reversed (§IV-C). The threshold $d_{\max}$ only discards the instants without interaction, and
+does not move the minimiser.
+
+Our contact keeps the window of lags and the distance threshold, and leaves the sign out: the
+contact of $i$ with $j$ at instant $t$ is the validity of $t$, with tolerances on height and
+heading added (Section~\ref{sec:correspondences}). We want the pairs that fly together, whether
+or not one of them leads; who follows whom comes back afterwards, through the median lag of each
+contact (Section~\ref{sec:phase3}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[track i, line width=8pt, blueI!22] plot[smooth] coordinates {(2.1,1.35) (3.4,1.85) (4.8,1.75) (6.2,2.25) (7.5,2.6)};
+  \draw[track i] plot[smooth] coordinates {(0,0.6) (1.0,1.0) (2.1,1.35) (3.4,1.85) (4.8,1.75) (6.2,2.25) (7.5,2.6) (8.8,3.0) (10,3.2)};
+  \foreach \p in {(1.0,1.0),(2.1,1.35),(3.4,1.85),(4.8,1.75),(6.2,2.25),(7.5,2.6),(8.8,3.0)} \fill[blueI] \p circle (1.3pt);
+  \node[lbl, above left=-1pt] at (2.1,1.35) {$s_{i-l_{\max}}$};
+  \node[lbl, above left] at (7.5,2.6) {$s_{i+l_{\max}}$};
+  \node[pt i] (si) at (4.8,1.75) {};
+  \node[lbl, blueI, below right=-1pt] at (si) {$s_i$};
+  \draw[track j] plot[smooth] coordinates {(0,0.0) (1.2,0.45) (2.5,0.95) (3.35,1.35)};
+  \node[pt j] (ri) at (3.35,1.35) {};
+  \node[lbl, orangeJ, below right] at (ri) {$r_i$};
+  \node[pt i] (sd) at (3.4,1.85) {};
+  \draw[ink, densely dashed] (ri) -- (sd);
+  \node[lbl, above left] at (sd) {$s_{i-\Delta(i)}$};
+  \node[lbl, blueI] at (10.3,3.2) {$S$};
+  \node[lbl, orangeJ] at (-0.3,0.0) {$R$};
+  \draw[decorate, decoration={brace, amplitude=4pt}, ink2] (2.1,2.35) -- (7.3,3.25)
+    node[midway, above=6pt, lbl, ink, sloped] {points of $S$ recorded from $i-l_{\max}$ to $i+l_{\max}$};
+  \node[note, align=left, anchor=west] at (8.4,1.2) {closest point: $s_{i-\Delta(i)}$\\with $\Delta(i)>0$: $S$ passed\\there first, so $R$ follows $S$};
+\end{tikzpicture}
+\caption{Following with a local lag~\cite{li2013}. At instant $i$, the track of $S$ is searched
+in the time window $[i-l_{\max}, i+l_{\max}]$ (shaded) for the point closest to the position
+$r_i$ of $R$. The best lag $\Delta(i)$ is positive: $R$ is now where $S$ was $\Delta(i)$
+earlier.}
+\label{fig:li}
+\end{figure}
+
+Nagy et al.~\cite{nagy2010} measure the delay between two pigeons as the shift that maximises the
+correlation of their headings, and build leader--follower hierarchies from its sign. In a thermal
+the heading turns through $2\pi$ every 20--30~s, so this correlation, like the distance of
+Section~\ref{sec:roles}, repeats with the period of the turn. Konzack et al.~\cite{konzack2017}
+display such local delays between simultaneously recorded tracks in a ``delay space'', comparing
+Fréchet, DTW and edit-distance matchings. FLICA and its package
+mFLICA~\cite{amornbunchornvej2018a,amornbunchornvej2018b,amornbunchornvej2021} infer a following
+network in sliding time windows, with DTW restricted to a Sakoe--Chiba band, and call the faction
+of a leader the individuals that reach it through a directed path: groups built from delayed
+following, but directed, with leaders, and on windows. The following of Andersson et
+al.~\cite{andersson2007} is instantaneous: an individual follows another that is in a sector
+ahead of it with a similar heading.
+
+\subsection{Group structure in time}
+
+Buchin et al.~\cite{buchin2015} call two entities directly connected at time $t$ if their
+$\varepsilon$-discs overlap, and $\varepsilon$-connected if a chain of direct connections joins
+them at that instant; the maximal $\varepsilon$-connected sets, the components, partition the
+entities at every instant. The Reeb graph records how the components evolve: its vertices are the
+events (start, end, merge, split), and each edge is a fixed set of entities that forms one
+component over an interval of time (Figure~\ref{fig:reeb}). On it they define the maximal groups,
+sets of at least $m$ entities that stay inside one component for at least a duration $\delta$;
+maximal groups may overlap, and an entity can belong to several at once. Two more ideas of theirs
+reappear below: a robust structure ignores interruptions shorter than $\alpha$, by calling two
+entities connected at $t$ when they were directly connected at some instant within $\alpha/2$ of
+$t$ (§4); and the grouping structure can split the trajectories into independent data sets
+(§1). The proximity is always simultaneous.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+    vtx/.style={circle, fill=ink, inner sep=1.5pt},
+    single/.style={muted, line width=0.9pt},
+    multi/.style={blueI, line width=2.6pt},
+    set/.style={font=\footnotesize, fill=white, inner sep=1pt}]
+  \coordinate (s1) at (0,2.2); \coordinate (s2) at (0,1.0); \coordinate (s3) at (0,0.0);
+  \coordinate (m1) at (3.0,1.6); \coordinate (sp) at (6.0,1.6); \coordinate (m2) at (9.0,0.5);
+  \coordinate (e1) at (12.5,2.3); \coordinate (e2) at (12.5,0.5);
+  \draw[multi] (s1) to[out=0, in=170] node[set, pos=0.45, above=1pt] {$\{a,b\}$} (m1);
+  \draw[single] (s2) to[out=0, in=190] node[set, pos=0.45, below=1pt] {$\{c\}$} (m1);
+  \draw[multi] (m1) -- node[set, above=1pt] {$\{a,b,c\}$} (sp);
+  \draw[single] (sp) to[out=10, in=180] node[set, pos=0.55, above=1pt] {$\{a\}$} (e1);
+  \draw[multi] (sp) to[out=-10, in=170] node[set, pos=0.45, above right=0pt] {$\{b,c\}$} (m2);
+  \draw[single] (s3) to[out=0, in=190] node[set, pos=0.5, below=1pt] {$\{d\}$} (m2);
+  \draw[multi] (m2) -- node[set, above=1pt] {$\{b,c,d\}$} (e2);
+  \foreach \v in {s1,s2,s3,m1,sp,m2,e1,e2} \node[vtx] at (\v) {};
+  \node[note, below=3pt] at (m1) {merge};
+  \node[note, below=3pt] at (sp) {split};
+  \node[note, below=3pt] at (m2) {merge};
+  \draw[->, ink2] (-0.2,-0.8) -- (12.9,-0.8) node[right, lbl, ink] {$t$};
+\end{tikzpicture}
+\caption{The grouping structure of Buchin et al.~\cite{buchin2015} as a Reeb graph. Each edge is a
+fixed set of entities that forms one connected component over an interval; vertices are starts,
+ends, merges and splits. The thick edges have at least two entities: in this note they become the
+configurations (Section~\ref{sec:configurations}), built on delayed contacts.}
+\label{fig:reeb}
+\end{figure}
+
+\subsection{Interaction indices and null models}
+
+Joo et al.~\cite{joo2018} sort the metrics of joint movement between pairs by what they capture,
+proximity or coordination. Long et al.~\cite{long2014} compare eight of them on simulated tracks
+and on deer: the indices that rest on a statistical test report interactions that are not there,
+more often the finer the sampling, and the indices that return one number per pair miss the
+interactions that come and go; the wildlifeDI package~\cite{long2022} extends the analysis to
+contacts in high-frequency data. Spiegel et al.~\cite{spiegel2016} build a null model by shuffling
+whole days of each individual's path among its days: each individual keeps its use of space, and
+the synchrony between individuals is lost.
+
+\subsection{Collective soaring}
+
+Ákos, Nagy and Vicsek~\cite{akos2008} compare the soaring of birds with that of paraglider and
+hang-glider pilots on GPS tracks; falcons, storks and paragliders circle with radii of 20--26~m.
+In migrating white storks a few leaders find and explore the thermals and the others follow them,
+leaving the thermals earlier and lower~\cite{flack2018}; inside a thermal, flock mates
+synchronise their circling~\cite{nagy2018}. Vultures informed by other birds of the next updraft
+glide towards it faster~\cite{williams2018}. We found no work that identifies group flights
+systematically in large free-flight datasets.
+
+\subsection{What we take and what is new}
+
+The method is not a new general algorithm for grouping trajectories. The pair contact is the
+proximity with a local lag of Li et al.~\cite{li2013}, the group structure is that of Buchin et
+al.~\cite{buchin2015}, and groups built from delayed relations exist in
+mFLICA~\cite{amornbunchornvej2021}, with other definitions (Table~\ref{tab:origin}). What we did
+not find in the literature is:
+\begin{enumerate}[label=(\roman*)]
+  \item the Reeb structure built on contacts with a local delay instead of simultaneous proximity;
+  \item the adaptations to thermal flight, in particular altitude as the clock that keeps the
+        delay defined during the spiral, where the minimiser of the horizontal distance used
+        in~\cite{li2013} is degenerate (Section~\ref{sec:roles});
+  \item the application to a free-flight dataset of this size, with thresholds calibrated on a
+        null model.
+\end{enumerate}
+The contribution is therefore a physically motivated adaptation and a scalable implementation,
+more than a new method in itself, and the thesis should present it in these terms.
+
+\begin{table}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright}p{2.1cm} >{\raggedright}p{2.6cm} >{\raggedright}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+Component & Precedent & What we take & What we change \\
+\midrule
+Pair contact with a delay & Li et al.~\cite{li2013}; tolerance in~\cite{vlachos2002,chen2005,sakoe1978} &
+  window of lags and distance threshold; local lag, free to vary &
+  height tolerance (altitude as a clock in thermals); heading only in glide; local phase
+  excluded; no sign in the contact, $a_{ij}=a_{ji}$ (the sign returns in $\ell_{\rm med}$) \\ \addlinespace
+Contact intervals & robustness in~\cite{buchin2015}; maximal segments in~\cite{li2013} &
+  tolerance to short interruptions &
+  gaps shorter than $g$ filled; minimum duration calibrated on a null model \\ \addlinespace
+Groups in time & Buchin et al.~\cite{buchin2015} & components and their Reeb graph; configurations
+  are its edges with at least two entities &
+  built on delayed contacts; episodes are the connected parts of the Reeb graph without single
+  entities; no maximal groups \\ \addlinespace
+Groups from following & mFLICA~\cite{amornbunchornvej2021} & -- &
+  undirected groups without leaders; exact intervals instead of sliding windows \\ \addlinespace
+Null model & Spiegel et al.~\cite{spiegel2016}; SAM~\cite{tusher2001} & time shift of the tracks;
+  false discovery rate as chance count over observed count &
+  shift within the day, drawn from the real delays between takeoffs; chance count per unit of
+  exposure \\ \addlinespace
+Computation & filter--refine scheme & -- &
+  no-loss lemma for delayed contacts; KD-tree with a time coordinate \\
+\bottomrule
+\end{tabularx}
+\caption{Where the ingredients of the method come from.}
+\label{tab:origin}
+\end{table}
+
+\paragraph{Essential reading.} The two readings to do first are Li et al.~\cite{li2013},
+Sections~II and~IV (following, local lag, score), and Buchin et al.~\cite{buchin2015}, Sections~1,
+2.1 and~4 of the arXiv version (groups, Reeb graph, robustness). Long et al.~\cite{long2014} and
+Spiegel et al.~\cite{spiegel2016} serve the null model; Vlachos et al.~\cite{vlachos2002} and Joo
+et al.~\cite{joo2018} place the measures of similarity and proximity.

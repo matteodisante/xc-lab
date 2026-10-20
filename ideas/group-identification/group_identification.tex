@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing,patterns,fit,backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage[most]{tcolorbox}
+\usepackage{animate}
+\usepackage[hidelinks]{hyperref}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% Colours of the figures: i, j and a third flight; neutrals for text, grids and fills.
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{aqua}{HTML}{1BAF7A}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{muted}{HTML}{9A9893}
+\definecolor{light}{HTML}{E6E5E1}
+
+\tikzset{
+  >={Stealth[length=1.8mm]},
+  every picture/.style={line cap=round, line join=round},
+  track i/.style={blueI, line width=1.1pt},
+  track j/.style={orangeJ, line width=1.1pt},
+  track k/.style={aqua, line width=1.1pt},
+  pt/.style={circle, inner sep=1.5pt, draw=ink, line width=0.4pt},
+  pt i/.style={pt, fill=blueI},
+  pt j/.style={pt, fill=orangeJ},
+  pt k/.style={pt, fill=aqua},
+  hollow j/.style={circle, inner sep=1.5pt, draw=orangeJ, fill=white, line width=0.9pt},
+  lbl/.style={font=\footnotesize},
+  note/.style={font=\footnotesize, text=ink2},
+  tol/.style={draw=ink2, densely dashed, line width=0.5pt},
+  flight/.style={circle, draw=ink, line width=0.6pt, minimum size=5.6mm, inner sep=0pt, font=\footnotesize, fill=white},
+  inE1/.style={flight, fill=blueI, text=white},
+  inE2/.style={flight, fill=orangeJ, text=white},
+  edge/.style={ink, line width=1.2pt},
+  bar/.style={draw=none, minimum height=3mm, inner sep=0pt},
+  panel/.style={font=\small\bfseries, anchor=west},
+}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{plain}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+
+\newtcolorbox{inwords}{enhanced, breakable, colback=blueI!5!white, colframe=blueI, boxrule=0pt,
+  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt,
+  before upper={\textbf{In words.}\ }}
+\newtcolorbox{doubt}[1]{enhanced, breakable, colback=orangeJ!6!white, colframe=orangeJ, boxrule=0pt,
+  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt,
+  before upper={\textbf{#1}\par\smallskip}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\vh}{\hat{\mathbf{v}}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\dep}{\mathrm{dep}}
+\newcommand{\fin}{\mathrm{fin}}
+\newcommand{\xc}{\mathrm{xc}}
+\newcommand{\vis}{\mathrm{vis}}
+\newcommand{\st}[1]{\textsf{#1}}
+\newcommand{\ind}{\mathbf{1}}
+% An animation written by plots.py; viewers that cannot play it show its last frame, the
+% static figure.
+\newcommand{\animated}[1]{\animategraphics[width=\textwidth,controls={play,step,stop},loop,poster=last,
+  timeline=figures/#1_frames.tln]{8}{figures/#1_frames}{}{}}
+\newcommand{\animmark}{\textcolor{blueI}{$\blacktriangleright$}\ }
+
+\title{\textbf{Group flights in free flight}\\[4pt]
+  \large Delayed contacts, configurations and episodes:\\ a method to label every instant of every flight}
+\author{Matteo Di Sante}
+\date{Method note, working version, 20 October 2026\\[2pt]
+  \small English version, with figures and animations, of the Italian note of 14 October 2026}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\tableofcontents
+\input{sections/at_a_glance}
+\input{sections/motivation}
+\input{sections/literature}
+\input{sections/data}
+\input{sections/pair_contact}
+\input{sections/groups}
+\input{sections/algorithm}
+\input{sections/calibration}
+\input{sections/outputs}
+\input{sections/comparison}
+\input{sections/parameters}
+\input{sections/references}
+
+\end{document}

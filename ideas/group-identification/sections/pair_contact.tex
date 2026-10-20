@@ -1,0 +1,357 @@
+\section{The pair contact}\label{sec:contact}
+
+\subsection{Local phase}\label{sec:local}
+
+Near the takeoff every pilot is close to every other, ridge soaring or waiting for the thermals,
+and a contact in this phase says nothing about (R3). The departure is the first fix farther than
+$R_\dep$ from the takeoff:
+\begin{equation}\label{eq:departure}
+  k^\dep_i = \min\bigl\{k:\ \|\x_i(k)-\x_i(k^0_i)\| > R_\dep\bigr\}.
+\end{equation}
+From then on the flight is evaluated on $T^\dep_i$, the instants of the common grid, one every
+$\Delta$ seconds, from the departure to the landing at which the flight has a position
+(Section~\ref{sec:phase0}). The instants before the departure are not evaluated, and a flight
+that never leaves the disc is \emph{local}. Both get the state \st{L} and do not count as solo
+flight (Figure~\ref{fig:local}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \fill[light!60] (0,0) circle (1.6);
+    \draw[tol] (0,0) circle (1.6);
+    \draw[ink2] (0,0) -- (-1.6,0) node[pos=0.6, above, lbl] {$R_\dep$};
+    \draw[track i] plot[smooth, tension=0.6] coordinates {(0,0) (0.55,0.25) (-0.45,0.45) (0.6,0.62)
+      (-0.35,0.85) (0.15,1.05) (0.45,0.9) (0.3,0.7) (0.05,0.95) (0.6,1.05) (1.1,0.9) (1.46,0.66) (2.3,0.95) (3.3,1.4)};
+    \draw[track j] plot[smooth cycle, tension=0.8] coordinates {(-0.9,-0.4) (-0.3,-0.75) (0.4,-0.6) (-0.2,-0.3)};
+    \fill[ink] (0,0.13) -- ++(-0.12,-0.2) -- ++(0.24,0) -- cycle;
+    \node[pt] (ex) at (1.46,0.66) {};
+    \node[lbl, anchor=west, align=left] at (1.75,0.25) {$k^\dep_i$: first exit};
+    \node[note, anchor=north west, align=left] at (-1.9,-1.75) {flight $j$ never leaves the disc:\\a local flight, all \st{L}};
+    \node[lbl, blueI] at (3.45,1.6) {$i$};
+    \node[note, anchor=south] at (0,1.65) {takeoff area};
+  \end{scope}
+  \begin{scope}[shift={(4.7,0)}]
+    \draw[->, ink2] (0,0) -- (9.0,0) node[right, lbl, ink] {$k$};
+    \fill[pattern=north east lines, pattern color=muted] (0.2,0.15) rectangle (2.6,0.55);
+    \draw[muted] (0.2,0.15) rectangle (2.6,0.55);
+    \node[lbl] at (1.4,0.85) {\st{L}};
+    \foreach \x in {2.6,2.95,...,8.6} \fill[blueI] (\x,0.35) circle (1.4pt);
+    \draw[ink2] (0.2,-0.08) -- (0.2,0.08); \node[lbl, below] at (0.2,-0.1) {$k^0_i$};
+    \draw[ink2] (2.6,-0.08) -- (2.6,0.08); \node[lbl, below] at (2.6,-0.1) {$k^\dep_i$};
+    \draw[ink2] (8.6,-0.08) -- (8.6,0.08); \node[lbl, below] at (8.6,-0.1) {$k^\fin_i$};
+    \draw[decorate, decoration={brace, amplitude=4pt}, ink2] (2.6,0.75) -- (8.6,0.75)
+      node[midway, above=5pt, lbl, ink] {$T^\dep_i$: one instant every $\Delta$};
+    \draw[<->, ink2] (2.95,-0.55) -- (3.3,-0.55) node[midway, below, lbl] {$\Delta$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Local phase. Left: near the takeoff the pilot ridge soars and circles inside the disc of
+radius $R_\dep$; the departure $k^\dep_i$ is the first fix outside it. A flight that never leaves
+the disc is local. Right: the same flight in time; before the departure the state is \st{L}, after
+it the flight is evaluated on the grid instants $T^\dep_i$.}
+\label{fig:local}
+\end{figure}
+
+\subsection{Correspondences and contact}\label{sec:correspondences}
+
+\begin{definition}[correspondence]\label{def:correspondence}
+For two flights $i\ne j$, the set of correspondences is
+\begin{equation}\label{eq:correspondences}
+  \begin{split}
+  \M_{ij} = \Bigl\{(t,t')\in T^\dep_i\times T^\dep_j:\ & |t'-t|\le\delta,\ \ \|\x_i(t)-\x_j(t')\|<\varepsilon_h,\\
+  & |z_i(t)-z_j(t')|<\varepsilon_z,\ \ D_{ij}(t,t')=1\Bigr\},
+  \end{split}
+\end{equation}
+where the heading condition is active only when both pilots glide:
+\begin{equation}\label{eq:heading}
+  D_{ij}(t,t') = \begin{cases}
+    \ind\bigl[\vh_i(t)\cdot\vh_j(t') > \cos\theta_{\max}\bigr] & \text{if } s_i(t)=s_j(t')=\st{transition},\\
+    1 & \text{otherwise.}
+  \end{cases}
+\end{equation}
+\end{definition}
+
+\begin{inwords}
+$\M_{ij}$ is a set of \emph{pairs of instants}. The pair $(t,t')$ belongs to it when $j$, at its
+instant $t'$, is where $i$ is at its instant $t$: within $\varepsilon_h$ horizontally and
+$\varepsilon_z$ vertically, with the two instants at most $\delta$ apart, and heading the same way
+if both glide. In the $(t,t')$ plane of Figure~\ref{fig:contact} it is a region inside the band
+$|t'-t|\le\delta$.
+\end{inwords}
+
+\begin{figure}
+\centering
+\animated{contact}
+\caption{\animmark Correspondences and contact for a synthetic pair; the animation runs the
+instant $t$ from 0 to 1200~s. Left: plan view around $i$ at $t=420$~s. Pilot $j$ flies the route of $i$ 120~s later and 250~m to
+the side; the circle has radius $\varepsilon_h$; the orange band is the part of the track of $j$
+flown between $t-\delta$ and $t+\delta$; the dark dots are the instants $t'$ with
+$(t,t')\in\M_{ij}$, and the segment joins $\x_i(t)$ to the closest of them, at delay $l=+120$~s.
+At the same instant $j$ is about 1~km away: there is no simultaneous proximity. Top right: $\M_{ij}$
+(green) in the $(t,t')$ plane, inside the band $|t'-t|\le\delta$ (grey); the black segment is the
+column of the instant of the left panel. $\M_{ij}$ lies above the diagonal because $j$ passes
+later. Bottom right: $m_{ij}$ projects $\M_{ij}$ on the $t$ axis, $m_{ji}$ on the $t'$ axis, and
+$a_{ij}$ is their union: $i$ is on the path of $j$ from 90 to 775~s, $j$ on the path of $i$ from
+220 to 885~s. Model: $i$ flies at 8~m/s along $y=600\sin(2\pi s/8\,\mathrm{km})$~m, where $s$ is
+the distance flown; $j$ joins the route at 300~s and leaves it at 800~s, drifting sideways at
+3~m/s; altitude and heading conditions hold throughout.}
+\label{fig:contact}
+\end{figure}
+
+\begin{definition}[contact]\label{def:contact}
+\begin{equation}\label{eq:contact}
+  m_{ij}(t) = \ind\bigl[\exists\, t':\ (t,t')\in\M_{ij}\bigr],\quad
+  m_{ji}(t') = \ind\bigl[\exists\, t:\ (t,t')\in\M_{ij}\bigr],\quad
+  a_{ij}(t) = m_{ij}(t)\vee m_{ji}(t).
+\end{equation}
+\end{definition}
+
+The conditions in~\eqref{eq:correspondences} are symmetric, so $\M_{ji}$ is $\M_{ij}$ with the
+coordinates swapped and $a_{ij}=a_{ji}$.
+
+\begin{inwords}
+$m_{ij}(t)=1$ when, at instant $t$, pilot $i$ is at a place that $j$ visits within $\delta$,
+before or after; $m_{ji}(t)=1$ when, at instant $t$, pilot $j$ is at a place that $i$ visits
+within $\delta$. Their union $a_{ij}(t)$ is the symmetric indicator of contact between $i$ and
+$j$ at time $t$: at least one of the two is on the path of the other, within the delay $\delta$.
+\end{inwords}
+
+For the distance alone, $m_{ij}(t)=1$ is the validity of instant $t$ in the sense of Li et
+al.~\cite[§IV-A]{li2013} (Section~\ref{sec:following}): the distance minimised over the delays is
+below $\varepsilon_h$ exactly when some delay brings it below. The vertical tolerance, the heading
+condition tied to the flight phase and the symmetry of $a_{ij}$ are ours; the sign of the delay
+remains available to tell who follows whom (Section~\ref{sec:phase3}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \node[panel] at (0,2.75) {(a) both glide};
+    \draw[track i, ->] (0.2,0.9) -- (3.6,1.5);
+    \draw[track j, ->] (0.2,0.35) -- (3.6,1.15);
+    \draw[ink2] (2.2,1.25) arc (10:2:1.4);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {angle $<\theta_{\max}$: \checkmark};
+    \node[lbl, blueI, right] at (3.6,1.5) {$i$};
+    \node[lbl, orangeJ, right] at (3.6,1.15) {$j$};
+  \end{scope}
+  \begin{scope}[shift={(5.2,0)}]
+    \node[panel] at (0,2.75) {(b) crossing};
+    \draw[track i, ->] (0.2,1.2) -- (3.6,1.2);
+    \draw[track j, ->] (2.15,0.3) -- (1.9,2.15);
+    \draw[tol] (2.0,1.2) circle (0.75);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {close, heading elsewhere:\\$\times$, excluded by~\eqref{eq:heading}};
+    \node[lbl, blueI, right] at (3.6,1.2) {$i$};
+    \node[lbl, orangeJ, right] at (1.9,2.1) {$j$};
+  \end{scope}
+  \begin{scope}[shift={(10.4,0)}]
+    \node[panel] at (0,2.75) {(c) climb or search};
+    \draw[track j] plot[smooth, tension=0.7] coordinates {(0.6,0.6) (1.3,0.3) (2.0,0.65) (1.7,1.3) (1.0,1.25) (0.8,0.85) (1.4,0.6) (2.15,0.95) (1.95,1.75) (1.15,1.85) (0.85,1.45)};
+    \foreach \p/\a in {(1.3,0.3)/0, (2.0,0.65)/80, (1.7,1.3)/150, (1.0,1.25)/210, (2.15,0.95)/70, (1.15,1.85)/180}
+      \draw[->, ink, line width=0.7pt] \p -- ++(\a:0.45);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {the heading turns:\\no condition};
+  \end{scope}
+\end{tikzpicture}
+\caption{The heading condition~\eqref{eq:heading}. (a) Two gliders on the same route: their
+headings differ by less than $\theta_{\max}$. (b) A glider that crosses the area of $i$ heading
+elsewhere is close, and the condition excludes it. (c) In a climb or a search the heading turns
+continuously and says nothing about the route: the condition is off.}
+\label{fig:heading}
+\end{figure}
+
+\subsection{The role of each term}\label{sec:roles}
+
+\paragraph{Delay.} With $t'=t$ the condition is simultaneous proximity; with $t'\ne t$ it
+recognises similar but shifted tracks, the case of (R2)--(R3). If $t'>t$, $j$ passes where $i$
+was, later: $j$ follows $i$. In Figure~\ref{fig:contact} all of $\M_{ij}$ lies above the
+diagonal.
+
+\paragraph{Horizontal tolerance.} $\varepsilon_h$ translates the ``nearby places'' of (R3): the
+tracks need not pass through the same points.
+
+\paragraph{Altitude as a clock.} In a thermal, $j$ circles over the same spot for minutes, with a
+typical spiral radius of 20--26~m~\cite{akos2008}. The horizontal distance
+$\|\x_i(t)-\x_j(t+l)\|$, as a function of the delay $l$, oscillates with the period of the spiral
+and has nearly equal minima for the whole stay (Figure~\ref{fig:clock}, top right). The minimiser
+used in~\cite{li2013} is then degenerate, and the estimated delay becomes noise with an amplitude
+equal to the duration of the thermal. Altitude removes most of the ambiguity. During the climb
+at rate
+$w$, pilot $j$ gains $wl$ metres in $l$ seconds:
+\begin{equation}\label{eq:climb}
+  z_j(t+l)\simeq z_j(t)+w\,l .
+\end{equation}
+Write $\Delta z = z_i(t)-z_j(t)$ for how far $j$ is below $i$ at time $t$. The vertical condition
+then reads
+\begin{equation*}
+  |z_i(t)-z_j(t+l)|<\varepsilon_z
+  \iff |\Delta z - w\,l| < \varepsilon_z
+  \iff \Delta z-\varepsilon_z < w\,l < \Delta z+\varepsilon_z ,
+\end{equation*}
+that is, dividing by $w>0$,
+\begin{equation}\label{eq:window}
+  l\in\left(\frac{z_i(t)-z_j(t)-\varepsilon_z}{w},\ \frac{z_i(t)-z_j(t)+\varepsilon_z}{w}\right),
+\end{equation}
+an interval of width $2\varepsilon_z/w$ around the true delay $\Delta z/w$. With
+$\varepsilon_z=300$~m and $w=2$~m/s the delay is resolved within $\pm150$~s. A pilot $\Delta z$
+lower in the same thermal is matched with a delay $l\approx\Delta z/w$: the time it needs to reach
+the altitude of $i$. The match exists as long as the interval~\eqref{eq:window} meets
+$[-\delta,\delta]$, that is for $|\Delta z|<\varepsilon_z+w\delta$: with the starting values, up
+to 900~m of height difference.
+
+In a search the climb rate is close to zero and altitude no longer measures time: the contact
+stays well defined, while the delay that realises it does not. Section~\ref{sec:phase3} takes this
+into account when it estimates who follows whom.
+
+\begin{figure}
+\centering
+\animated{altitude_clock}
+\caption{\animmark Altitude as a clock, for one instant $t$ and every delay $l$; the animation
+runs the delay $l$ from $-300$ to $300$~s. Left: $i$ and $j$ in the same thermal, $j$ lower by $\Delta z=200$~m; the band is
+$z_i(t)\pm\varepsilon_z$. Top right: the horizontal distance between $\x_i(t)$ and $\x_j(t+l)$;
+inside the thermal it never exceeds 50~m, far below $\varepsilon_h=500$~m, and has an equal
+minimum at every turn, so it cannot fix the delay. Middle right: the altitude of $j$ at $t+l$
+crosses the band in a single window. Bottom: the delays that satisfy each condition and both; the
+accepted delays are $-50<l<250$~s, the interval~\eqref{eq:window}, centred on $\Delta z/w=100$~s.
+Before $l=-120$~s, $j$ was gliding towards the thermal: at $l\approx-280$~s it had the right
+altitude but was 1.4~km away. Model: $j$ circles with radius 25~m, one turn every 20~s, climbing at
+$w=2$~m/s; it arrives at 9~m/s, sinking at 1~m/s; $i$ is on the same circle.}
+\label{fig:clock}
+\end{figure}
+
+\paragraph{Why not an isotropic 3D distance.} Horizontally a group spreads over scales of a
+kilometre, vertically it overlaps within a few hundred metres. A single $\varepsilon$ in
+$\|\Delta\x\|_{3D}<\varepsilon$ either makes altitude irrelevant, if it is of the order of a
+kilometre, or penalises the normal horizontal spread in glide, if it is of the order of 300~m
+(Figure~\ref{fig:isotropic}).
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=3cm,y=3cm]
+  \fill[aqua!18] (0,-0.3) rectangle (0.5,0.3);
+  \draw[aqua, line width=1pt] (0,-0.3) rectangle (0.5,0.3);
+  \draw[ink2, densely dashed] (0,1) arc (90:-90:1);
+  \draw[ink2, densely dotted, line width=0.8pt] (0,0.3) arc (90:-90:0.3);
+  \draw[->, ink2] (0,0) -- (1.25,0) node[right, lbl, ink] {$\|\x_i(t)-\x_j(t')\|$ (km)};
+  \draw[->, ink2] (0,-1.05) -- (0,1.1) node[above, lbl, ink] {$z_j(t')-z_i(t)$ (km)};
+  \foreach \v in {0.5,1} \draw[ink2] (\v,-0.02) -- (\v,0.02) node[below right=0pt, lbl] {\v};
+  \foreach \v in {-1,-0.5,0.5,1} \draw[ink2] (-0.02,\v) -- (0.02,\v) node[left=3pt, lbl] {\v};
+  \node[pt k] (A) at (0.42,0.06) {};
+  \node[lbl, above right=-1pt] at (A) {A};
+  \node[pt] (B) at (0.12,0.78) {};
+  \node[lbl, right] at (B) {B};
+  \node[note, align=left, anchor=west] at (2.3,0.75) {dashed: 3D ball, $\varepsilon=1$~km};
+  \node[note, align=left, anchor=west] at (2.3,0.55) {dotted: 3D ball, $\varepsilon=300$~m};
+  \node[note, align=left, anchor=west, text=aqua!70!ink] at (2.3,0.35) {box: $\varepsilon_h=500$~m, $\varepsilon_z=300$~m};
+  \node[note, align=left, anchor=west] at (2.3,-0.35) {A: glide partner 420 m to the side,\\\phantom{A: }missed by the 300 m ball};
+  \node[note, align=left, anchor=west] at (2.3,-0.75) {B: 780 m higher,\\\phantom{B: }accepted by the 1 km ball};
+\end{tikzpicture}
+\caption{Tolerance regions for the separation between $(\x_i(t),z_i(t))$ and $(\x_j(t'),z_j(t'))$.
+The box of~\eqref{eq:correspondences} is wide and flat, like a group: it keeps A and rejects B.
+A single 3D radius either rejects A or accepts B.}
+\label{fig:isotropic}
+\end{figure}
+
+\paragraph{Heading only in glide.} In glide the path is nearly straight and $\vh$ is the
+direction of the route: condition~\eqref{eq:heading} excludes a pilot who crosses the same area
+heading elsewhere (Figure~\ref{fig:heading}). In a climb the heading turns by $2\pi$ in about
+twenty seconds and carries no information on the route. In a search the pilot turns often, with
+partial circles and changes of heading, and the instantaneous heading says little about the route
+too: the condition is off whenever one of the two pilots is not in \st{transition}, unclassified
+fixes included. A rejected alternative is the velocity averaged over a window of a few minutes,
+with a minimum speed: in a long thermal without wind the mean velocity is nearly zero, and the
+threshold would remove the contacts exactly while two pilots share the thermal.
+
+\subsection{Choice of the maximum delay}\label{sec:delta}
+
+If $j$ retraces the track of $i$ with a constant delay $\ell$, $\x_j(t)=\x_i(t-\ell)$, the
+distance between the two pilots at the same instant is the distance between two points of the
+track of $i$ flown $\ell$ apart,
+\[
+  \|\x_i(t)-\x_j(t)\| = \|\x_i(t)-\x_i(t-\ell)\| \le v_{\max}\,\ell ,
+\]
+and $v_\xc\,\ell$ on average once $\ell$ is longer than a climb--glide cycle, $v_\xc$ being the
+mean speed of advance. The distance at the same instant grows with the delay. Requiring that two
+pilots shifted by any delay up to $\delta$ stay within visual range means
+$v_\xc\,\delta\le\varepsilon_\vis$ (Figure~\ref{fig:delta}):
+\begin{equation}\label{eq:delta}
+  \delta\lesssim\frac{\varepsilon_\vis}{v_\xc},
+\end{equation}
+so $\delta\approx5$~min for $\varepsilon_\vis\approx1.5$~km and $v_\xc\approx5$~m/s. The speed
+$v_\xc$ must be measured on the data, for example as the daily median of the speed of advance
+over 30-minute windows.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[light, line width=7pt] plot[smooth] coordinates {(-2.6,-0.35) (-1.2,0.05) (0,0) (1.3,0.2) (2.4,0.05) (3.6,0.25)};
+  \draw[track i] plot[smooth] coordinates {(-2.6,-0.35) (-1.2,0.05) (0,0) (1.3,0.2) (2.4,0.05)};
+  \draw[tol] (0,0) circle (2.4);
+  \node[pt j] (j) at (0,0) {};
+  \node[pt i] (i) at (2.4,0.05) {};
+  \node[lbl, orangeJ, below=3pt] at (j) {$\x_j(t)=\x_i(t-\ell)$};
+  \node[lbl, blueI, below right=1pt] at (i) {$\x_i(t)$};
+  \draw[<->, ink2] (0,0.55) -- node[above, lbl] {$\approx v_\xc\,\ell$} (2.4,0.6);
+  \draw[ink2] (0,0) -- (-1.55,1.83) node[pos=0.6, above right=-1pt, lbl] {$\varepsilon_\vis$};
+  \node[note, align=left, anchor=west] at (3.0,1.4) {with $\ell=\delta$, $i$ sits on the edge of the\\visual range of $j$: $v_\xc\,\delta=\varepsilon_\vis$};
+\end{tikzpicture}
+\caption{Choice of the maximum delay. A pilot that retraces the route of $i$ with delay $\ell$ is
+about $v_\xc\ell$ behind; the dashed circle is the visual range around $j$. The largest delay that
+keeps $i$ in sight is $\delta=\varepsilon_\vis/v_\xc$.}
+\label{fig:delta}
+\end{figure}
+
+\begin{remark}[two notions of ``together'']\label{rem:notions}
+Flying together may mean \emph{seeing each other}, and so being able to use social information,
+or \emph{exploiting the same air masses}. The two notions can be written as indicators:
+\begin{align*}
+  \text{visual co-presence:}\quad & V_{ij}(t) = \ind\Bigl[\bigl\|\bigl(\x_i(t),z_i(t)\bigr)-\bigl(\x_j(t),z_j(t)\bigr)\bigr\|<\varepsilon_\vis\Bigr],\\
+  \text{shared air:}\quad & m_{ij}(t) = \ind\bigl[\exists\, |l|\le\delta:\ \|\x_i(t)-\x_j(t+l)\|<\varepsilon_h,\\
+  & \hphantom{m_{ij}(t) = \ind\bigl[\exists\, |l|\le\delta:\ }|z_i(t)-z_j(t+l)|<\varepsilon_z,\ D_{ij}(t,t+l)=1\bigr].
+\end{align*}
+Visual contact depends on the 3D distance and is simultaneous; exploiting the same thermals needs
+tight tolerances, vertical ones included, and admits a delay. Definition~\ref{def:contact} with $\varepsilon_z$
+of a few hundred metres is the second notion, restricted to the visual range
+by~\eqref{eq:delta}. Widening $\varepsilon_z$ brings the criterion closer to visual contact alone.
+The value of $\varepsilon_z$ is therefore a choice of definition, to be declared
+(Figure~\ref{fig:notions}).
+\end{remark}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,
+    verdict/.style={font=\footnotesize, anchor=north west, align=left}]
+  \begin{scope}
+    \node[panel] at (0,2.3) {(a) same thermal, same instant};
+    \fill[light] (1.2,0) rectangle (2.0,2.0);
+    \node[pt i] at (1.6,1.55) {}; \node[pt j] at (1.55,0.95) {};
+    \draw[<->, ink2] (2.2,0.95) -- node[right, lbl] {150 m} (2.2,1.55);
+    \node[verdict] at (3.6,1.6) {$V_{ij}=1$\\$a_{ij}=1$};
+  \end{scope}
+  \begin{scope}[shift={(7.9,0)}]
+    \node[panel] at (0,2.3) {(b) two thermals, same instant};
+    \fill[light] (0.6,0) rectangle (1.4,2.0);
+    \fill[light] (2.8,0) rectangle (3.6,2.0);
+    \node[pt i] at (1.0,1.3) {}; \node[pt j] at (3.2,1.2) {};
+    \draw[<->, ink2] (1.0,0.35) -- node[below, lbl] {1 km} (3.2,0.35);
+    \node[verdict] at (4.4,1.6) {$V_{ij}=1$\\$a_{ij}=0$: 1 km $>\varepsilon_h$};
+  \end{scope}
+  \begin{scope}[shift={(0,-3.1)}]
+    \node[panel] at (0,2.3) {(c) same route, $j$ 3 min behind};
+    \draw[light, line width=6pt] (0.2,1.0) -- (3.4,1.0);
+    \node[pt j] at (0.8,1.0) {}; \node[pt i] at (2.6,1.0) {};
+    \draw[<->, ink2] (0.8,1.45) -- node[above, lbl] {900 m} (2.6,1.45);
+    \node[verdict] at (3.6,1.6) {$V_{ij}=1$\\$a_{ij}=1$: 3 min $\le\delta$};
+  \end{scope}
+  \begin{scope}[shift={(7.9,-3.1)}]
+    \node[panel] at (0,2.3) {(d) same route, $j$ 15 min behind};
+    \draw[light, line width=6pt] (0.2,1.0) -- (4.2,1.0);
+    \node[pt j] at (0.4,1.0) {}; \node[pt i] at (4.0,1.0) {};
+    \draw[<->, ink2] (0.4,1.45) -- node[above, lbl] {4.5 km} (4.0,1.45);
+    \node[verdict] at (4.4,1.6) {$V_{ij}=0$\\$a_{ij}=0$: 15 min $>\delta$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Visual co-presence $V_{ij}$ and contact $a_{ij}$ in four situations, with
+$\varepsilon_\vis=1.5$~km, $\delta=5$~min and $v_\xc=5$~m/s. In (d), a delay of 15~minutes would
+put the two pilots in contact although they cannot see each other: this is what the
+bound~\eqref{eq:delta} prevents.}
+\label{fig:notions}
+\end{figure}

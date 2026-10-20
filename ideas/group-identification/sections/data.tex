@@ -1,0 +1,58 @@
+\section{Data and notation}\label{sec:data}
+
+The flights are those of the xc-dynamics pre-processing. Each flight $i\in V$ is one or more
+segments of fixes, from its takeoff $k^0_i$ to its landing $k^\fin_i$ (step~8 of the
+pre-processing, take-off and landing); between two segments the track has a gap. A fix has a
+time, a latitude $\varphi$, a longitude $\lambda$ and the GNSS altitude $z$, at the interval of
+its logger: one second for 70\% of the paraglider flights, two to ten seconds for most of the
+others. Time $k$ is in UTC seconds from the start of the day, on the same clock for all flights;
+IGC times are whole seconds.
+
+Positions follow the frame of the thesis (chapter Trajectory pre-processing, section Local
+coordinates and vertical datum): each fix is moved to the point of the WGS84 ellipsoid below it,
+$h=0$, and converted to Earth-centred Cartesian coordinates, $\x_i(k)\in\R^3$. The thesis then
+rotates them into the east and north of the first fix of each flight; here they stay
+Earth-centred, so the coordinates of all flights are the same frame. The distance between two
+positions is the chord of the ellipsoid, shorter than the distance along it by about $d^3/24R^2$:
+about a millimetre at $d=10$~km. The altitude is $z$ as recorded.
+
+The phase labelling of xc-lab (note \emph{Flight phases with a hidden Markov model}) gives every
+fix of a flight logged every 5~s or less one of three states,
+$s_i(k)\in\{\st{climb}, \st{search}, \st{transition}\}$: climbing in a thermal, searching for the
+next one, gliding between two thermals. In the text \emph{glide} means the state
+\st{transition}. The fixes of coarser loggers and of pieces too short to be labelled stay
+unclassified.
+
+\begin{table}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X l@{}}
+\toprule
+Symbol & Meaning & Start \\
+\midrule
+$\x_i(k)\in\R^3$ & position: the point of the ellipsoid below the fix, Earth-centred & \\
+$z_i(k)$ & GNSS altitude & \\
+$s_i(k)$ & state: \st{climb}, \st{search}, \st{transition} (glide), or unclassified & \\
+$\vh_i(k)$ & horizontal heading, used only in glide & \\
+$k^0_i,\ k^\fin_i,\ k^\dep_i$ & takeoff, landing, departure (Section~\ref{sec:local}) & \\
+$T^\dep_i$ & the grid instants from departure to landing at which flight $i$ has a position & \\
+$R_\dep$ & radius of the local phase around the takeoff & 3 km \\
+$\Delta$ & step of the common time grid $\Delta\Z$ & 5 s \\
+$h_{\max}$ & longest time between two fixes across which a grid position is interpolated & 10 s \\
+$\delta$ & maximum delay between two pilots, always a time & 5 min \\
+$\varepsilon_h,\ \varepsilon_z$ & horizontal and vertical tolerances & 500 m, 300 m \\
+$\theta_{\max}$ & maximum angle between the headings in glide & 45\textdegree \\
+$g$ & longest gap filled in a contact & 120 s \\
+$\tau^*$ & minimum duration of a contact & from the null model \\
+$v_\xc$ & mean cross-country speed, measured on the data & $\approx5$ m/s \\
+$v_{\max}$ & top speed between two fixes, set by the pre-processing (\texttt{speed.max\_kmh}) & 100 km/h \\
+$\varepsilon_\vis$ & visual range & 1.5 km \\
+$r_{\min},\ R_s$ & smallest time shift and radius of the takeoffs in the null model & $>2\delta$, 10 km \\
+$q$ & false discovery rate accepted for the contacts & 0.05 \\
+\bottomrule
+\end{tabularx}
+\caption{Symbols and parameters, with their starting values. Beware: in~\cite{vlachos2002}
+$\delta$ is a tolerance on indices, in~\cite{joo2018} a distance threshold, in~\cite{buchin2015}
+a minimum duration; here it is always a delay.}
+\label{tab:notation}
+\end{table}

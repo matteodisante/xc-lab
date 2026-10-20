@@ -1,0 +1,157 @@
+\section{Calibration and validation}\label{sec:calibration}
+
+\subsection{Null model and minimum duration}\label{sec:null}
+
+Two independent pilots on the same route can be in contact by chance, for short stretches. The
+null model estimates how often this happens under the same terrain and weather, without
+interaction. Interaction indices based on standard tests overestimate the interactions with
+finely sampled telemetry~\cite{long2014}, so the threshold is calibrated empirically. The idea of
+shifting tracks in time, which keeps the spatial constraints and destroys the synchronisation,
+comes from Spiegel et al.~\cite{spiegel2016}, who shuffle whole days of each individual; here a
+flight is shifted within its day, against one other flight.
+
+\begin{enumerate}
+  \item \textbf{Surrogate pairs.} Choose pairs $(i,j)$ of the same day with takeoffs within a
+    radius $R_s$ (for example 10~km) and replace $j$ with its copy shifted in time:
+    \begin{equation}\label{eq:shift}
+      \x^s_j(t)=\x_j(t+r_{ij}),\quad z^s_j(t)=z_j(t+r_{ij}),\qquad
+      r_{ij}=(k^0_j-k^0_i)-\vartheta,\quad \vartheta\sim\hat P\bigl(k^0_j-k^0_i\bigr).
+    \end{equation}
+    The copy of $j$ takes off at $k^0_i+\vartheta$. The variable $\vartheta$ is drawn from the
+    empirical distribution of the shifts between the takeoffs of the real candidate pairs of
+    Phase~1, so that the shift of the surrogate pair is realistic. Only shifts with
+    $|r_{ij}|\ge r_{\min}$ are accepted, with $r_{\min}>2\delta$.
+  \item \textbf{Destruction of the real interactions.} If $(t,t')$ was a real correspondence, in
+    the surrogate pair the position of $j$ at instant $t'$ appears at instant $t'-r_{ij}$, which is
+    at least $|r_{ij}|-\delta>\delta$ away from $t$: no real correspondence survives
+    (Figure~\ref{fig:null}). The correspondences that remain are chance encounters on the same
+    route.
+  \item \textbf{Null durations.} Phases 2--3 run on the surrogate pairs without the threshold
+    $\tau^*$, giving the durations of the chance intervals and the exposure $h_{ij}$, the duration
+    of the overlap between $T^\dep_i$ and the shifted $T^\dep_j$.
+  \item \textbf{False-positive rate.} With $\rho_0(\tau)$ the number of surrogate intervals
+    lasting at least $\tau$ per unit of exposure, $H$ the total exposure of the real pairs (same
+    day, takeoffs within $R_s$) and $N(\tau)$ the number of real intervals lasting at least $\tau$:
+    \begin{equation}\label{eq:fdr}
+      \widehat{\mathrm{FDR}}(\tau)=\frac{\rho_0(\tau)\,H}{N(\tau)},\qquad
+      \tau^*=\min\bigl\{\tau:\ \widehat{\mathrm{FDR}}(\tau)\le q\bigr\},\qquad q=0.05 .
+    \end{equation}
+\end{enumerate}
+
+\begin{inwords}
+$\rho_0(\tau)H$ is the number of intervals of duration at least $\tau$ that chance alone would
+produce among the real pairs. Dividing it by the number actually observed gives the share of
+chance intervals among them; $\tau^*$ is the shortest duration at which that share falls to 5\%
+(Figure~\ref{fig:fdr}).
+\end{inwords}
+
+This is the estimate of the false discovery rate of SAM~\cite{tusher2001}, the number of
+discoveries expected by chance over the number observed, with time shifts in place of the
+permutations.
+
+The procedure is repeated with several draws of the shifts to estimate the variability of
+$\tau^*$. With shifts of an hour or more the conditions of the day change (the cloud base rises,
+the thermals move): the smallest shift compatible with $r_{\min}$ is the one to use.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=0.95cm,y=1cm]
+  \foreach \y/\name in {2.2/real pair, 0.0/surrogate pair} \node[lbl, anchor=east] at (-0.2,\y+0.35) {\name};
+  \begin{scope}[shift={(0,2.2)}]
+    \draw[->, ink2] (0,0) -- (13.4,0) node[right, lbl, ink] {$t$};
+    \fill[light] (5.0,-0.05) rectangle (7.0,0.95);
+    \fill[blueI] (2.1,0.55) rectangle (10.1,0.75); \node[lbl, blueI, anchor=east] at (2.05,0.65) {$i$};
+    \fill[orangeJ] (3.6,0.15) rectangle (12.1,0.35); \node[lbl, orangeJ, anchor=west] at (12.15,0.25) {$j$};
+    \draw[ink, line width=0.8pt] (6.0,0.65) -- (6.7,0.25);
+    \fill[ink] (6.0,0.65) circle (1.6pt) node[above, lbl] {$t$};
+    \fill[ink] (6.7,0.25) circle (1.6pt) node[below right, lbl] {$t'$};
+    \node[note] at (6.0,1.25) {$[t-\delta,t+\delta]$};
+  \end{scope}
+  \begin{scope}
+    \draw[->, ink2] (0,0) -- (13.4,0) node[right, lbl, ink] {$t$};
+    \fill[light] (5.0,-0.05) rectangle (7.0,0.95);
+    \fill[blueI] (2.1,0.55) rectangle (10.1,0.75);
+    \fill[orangeJ!55] (0.2,0.15) rectangle (8.7,0.35); \node[lbl, orangeJ, anchor=west] at (8.75,0.25) {$j$ shifted by $r_{ij}$};
+    \fill[ink] (6.0,0.65) circle (1.6pt);
+    \fill[ink] (3.3,0.25) circle (1.6pt) node[left=2pt, lbl, fill=white, inner sep=1pt] {$t'-r_{ij}$};
+    \draw[->, ink2] (6.7,0.05) to[bend left=25] node[below, lbl] {$-r_{ij}$} (3.4,0.05);
+  \end{scope}
+\end{tikzpicture}
+\caption{Null model. Top: a real correspondence $(t,t')$, with $t'$ inside the window
+$[t-\delta,t+\delta]$ (grey). Bottom: the track of $j$ shifted by $r_{ij}$ with $|r_{ij}|>2\delta$;
+the same point of $j$ now comes at $t'-r_{ij}$, outside the window, so the real correspondence is
+gone and only chance encounters remain.}
+\label{fig:null}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \begin{axis}[name=left, width=7.4cm, height=5.2cm, ymode=log, xmin=0, xmax=20, ymin=0.5, ymax=600,
+      xlabel={$\tau$ (min)}, ylabel={intervals lasting at least $\tau$}, axis lines=left,
+      tick label style={font=\footnotesize}, label style={font=\footnotesize}, every axis plot/.append style={line width=1pt},
+      legend style={font=\footnotesize, draw=none, fill=none, at={(0.03,0.03)}, anchor=south west}]
+    \addplot[blueI, domain=0:20, samples=101] {300*exp(-x/2.5)+120*exp(-x/25)};
+    \addlegendentry{observed, $N(\tau)$}
+    \addplot[orangeJ, densely dashed, domain=0:20, samples=101] {300*exp(-x/2.5)};
+    \addlegendentry{by chance, $\rho_0(\tau)H$}
+  \end{axis}
+  \begin{axis}[at={(left.east)}, anchor=west, xshift=1.6cm, width=6.4cm, height=5.2cm, xmin=0, xmax=20, ymin=0, ymax=0.8,
+      xlabel={$\tau$ (min)}, ylabel={$\widehat{\mathrm{FDR}}(\tau)$}, axis lines=left,
+      tick label style={font=\footnotesize}, label style={font=\footnotesize}, every axis plot/.append style={line width=1pt}]
+    \addplot[ink, domain=0:20, samples=201] {300*exp(-x/2.5)/(300*exp(-x/2.5)+120*exp(-x/25))};
+    \addplot[ink2, densely dotted, domain=0:20] {0.05};
+    \draw[ink2, densely dashed] (axis cs:10.73,0) -- (axis cs:10.73,0.05);
+    \node[font=\footnotesize, anchor=south west] at (axis cs:10.9,0.12) {$\tau^*\approx10.7$ min};
+    \node[font=\footnotesize, anchor=south west] at (axis cs:0.3,0.055) {$q=0.05$};
+  \end{axis}
+\end{tikzpicture}
+\caption{Choice of $\tau^*$, on schematic curves: $N(\tau)=300\,e^{-\tau/2.5}+120\,e^{-\tau/25}$ and
+$\rho_0(\tau)H=300\,e^{-\tau/2.5}$, with $\tau$ in minutes. Chance contacts are many and short,
+real ones fewer and longer; $\tau^*$ is where the share of chance intervals falls to $q$.}
+\label{fig:fdr}
+\end{figure}
+
+\subsection{Plateau of the parameters}\label{sec:plateau}
+
+Let $f_G$ be the fraction of the flight time after the departure spent in a group:
+\begin{equation}\label{eq:fg}
+  f_G=\frac{\sum_i\bigl|\{t\in T^\dep_i:\ \gamma_i(t)\notin\{\st{L},\st{S}\}\}\bigr|}{\sum_i|T^\dep_i|}.
+\end{equation}
+The parameters $(\varepsilon_h,\varepsilon_z,\theta_{\max},\delta,g)$ are varied around their
+starting values, and the values are chosen in a zone where $f_G$ and the number of episodes are
+stable (Figure~\ref{fig:plateau}). If there is no plateau, the thresholds decide the result, and
+this must be said.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \begin{axis}[width=10cm, height=5cm, xmin=0, xmax=2000, ymin=0, ymax=0.62,
+      xlabel={$\varepsilon_h$ (m)}, ylabel={$f_G$}, axis lines=left, clip=false,
+      tick label style={font=\footnotesize}, label style={font=\footnotesize}]
+    \fill[aqua!15] (axis cs:420,0) rectangle (axis cs:950,0.62);
+    \addplot[ink, line width=1pt, domain=0:2000, samples=201] {0.32/(1+exp(-(x-250)/60))+0.25/(1+exp(-(x-1300)/150))};
+    \draw[ink2, densely dashed] (axis cs:500,0) -- (axis cs:500,0.33);
+    \node[font=\footnotesize, anchor=south] at (axis cs:685,0.17) {plateau};
+    \node[font=\footnotesize, anchor=north east, align=left] at (axis cs:2000,0.3) {too wide: unrelated\\pilots join groups};
+    \node[font=\footnotesize, anchor=north west, align=left] at (axis cs:20,0.6) {too narrow:\\groups break up};
+    \node[font=\footnotesize, anchor=north west] at (axis cs:505,0.08) {start, 500 m};
+  \end{axis}
+\end{tikzpicture}
+\caption{A plateau of the fraction in a group, on a schematic curve
+$f_G=0.32/(1+e^{-(\varepsilon_h-250)/60})+0.25/(1+e^{-(\varepsilon_h-1300)/150})$, with
+$\varepsilon_h$ in metres. A starting value inside the flat zone makes the result insensitive to
+the exact threshold.}
+\label{fig:plateau}
+\end{figure}
+
+\subsection{Other checks}\label{sec:checks}
+
+\begin{itemize}
+  \item Visual inspection: about ten episodes on a map, with the entries and exits checked by hand.
+  \item Sensitivity to the step: on a subset of pairs, the computation with $\Delta=1$~s must give
+        the same intervals.
+  \item Competition days: if the dataset contains competition tracks, on those days everybody flies
+        the same course and is in a group by construction; they are flagged and treated apart.
+  \item Grid: the share of grid instants without a position, per flight and by logging interval.
+\end{itemize}
