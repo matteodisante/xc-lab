@@ -15,6 +15,7 @@ import pandas as pd
 from soaring.analysis import igc
 from soaring.analysis.config import load_preproc_config
 from soaring.analysis.derived import stream_flights
+from soaring.analysis.preproc.enu import LocalFrame, geodetic_to_ecef
 from soaring.analysis.preproc.pipeline import FlightResult, run_flight
 from soaring.analysis.segmentation.vilpellet import (
     UNCLASSIFIED,
@@ -24,13 +25,17 @@ from soaring.analysis.segmentation.vilpellet import (
     segment_flight,
 )
 from soaring.reporting.disciplines import DISCIPLINES
+from soaring.viewer.geodesy import enu_to_geodetic
 
 __all__ = [
     "UNCLASSIFIED",
     "VILPELLET_STATES",
     "FlightResult",
+    "LocalFrame",  # the origin of a cleaned flight's E, N: lat0, lon0, alt0 of flights_meta
     "VilpelletTrack",
     "clean_flight",
+    "enu_to_geodetic",  # E, N, z of a cleaned flight back to latitude and longitude
+    "geodetic_to_ecef",
     "segment",
     "stream_flights",  # one whole flight at a time from soaring's fixes.parquet on SSD_DISANTE
 ]
