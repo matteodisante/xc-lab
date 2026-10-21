@@ -26,32 +26,33 @@ unclassified.
 \begin{table}
 \centering
 \small
-\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X l@{}}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X l l@{}}
 \toprule
-Symbol & Meaning & Start \\
+Symbol & Meaning & Start & Chosen \\
 \midrule
-$\x_i(k)\in\R^3$ & position: the point of the ellipsoid below the fix, Earth-centred & \\
-$z_i(k)$ & GNSS altitude & \\
-$s_i(k)$ & state: \st{climb}, \st{search}, \st{transition} (glide), or unclassified & \\
-$\vh_i(k)$ & horizontal heading, used only in glide & \\
-$k^0_i,\ k^\fin_i,\ k^\dep_i$ & takeoff, landing, departure (Section~\ref{sec:local}) & \\
-$T^\dep_i$ & the grid instants from departure to landing at which flight $i$ has a position & \\
-$R_\dep$ & radius of the local phase around the takeoff & 3 km \\
-$\Delta$ & step of the common time grid $\Delta\Z$ & 5 s \\
-$h_{\max}$ & longest time between two fixes across which a grid position is interpolated & 10 s \\
-$\delta$ & maximum delay between two pilots, always a time & 5 min \\
-$\varepsilon_h,\ \varepsilon_z$ & horizontal and vertical tolerances & 500 m, 300 m \\
-$\theta_{\max}$ & maximum angle between the headings in glide & 45\textdegree \\
-$g$ & longest gap filled in a contact & 120 s \\
-$\tau^*$ & minimum duration of a contact & from the null model \\
-$v_\xc$ & mean cross-country speed, measured on the data & $\approx5$ m/s \\
-$v_{\max}$ & top speed between two fixes, set by the pre-processing (\texttt{speed.max\_kmh}) & 100 km/h \\
-$\varepsilon_\vis$ & visual range & 1.5 km \\
-$r_{\min},\ R_s$ & smallest time shift and radius of the takeoffs in the null model & $>2\delta$, 10 km \\
-$q$ & false discovery rate accepted for the contacts & 0.05 \\
+$\x_i(k)\in\R^3$ & position: the point of the ellipsoid below the fix, Earth-centred & & \\
+$z_i(k)$ & GNSS altitude & & \\
+$s_i(k)$ & state: \st{climb}, \st{search}, \st{transition} (glide), or unclassified & & \\
+$\vh_i(k)$ & horizontal heading, used only in glide & & \\
+$k^0_i,\ k^\fin_i,\ k^\dep_i$ & takeoff, landing, departure (Section~\ref{sec:local}) & & \\
+$T^\dep_i$ & the grid instants from departure to landing at which flight $i$ has a position & & \\
+$R_\dep$ & radius of the local phase around the takeoff & 3 km & 3 km \\
+$\Delta$ & step of the common time grid $\Delta\Z$ & 5 s & 5 s \\
+$h_{\max}$ & longest time between two fixes across which a grid position is interpolated & 10 s & 10 s \\
+$\delta$ & maximum delay between two pilots, always a time & 5 min & 2 min \\
+$\varepsilon_h,\ \varepsilon_z$ & horizontal and vertical tolerances & 500 m, 300 m & 500 m, 300 m \\
+$\theta_{\max}$ & maximum angle between the headings in glide & 45\textdegree & 45\textdegree \\
+$g$ & longest gap filled in a contact & 120 s & 120 s \\
+$\tau^*$ & minimum duration of a contact & from the null model & 38.1 min \\
+$v_\xc$ & mean cross-country speed, measured on the data & $\approx5$ m/s & \\
+$v_{\max}$ & top speed between two fixes, set by the pre-processing (\texttt{speed.max\_kmh}) & 100 km/h & 100 km/h \\
+$\varepsilon_\vis$ & visual range & 1.5 km & \\
+$r_{\min},\ R_s$ & smallest time shift and radius of the takeoffs in the null model & $>2\delta$, 10 km & $2\delta+\Delta$, 10 km \\
+$q$ & false discovery rate accepted for the contacts & 0.05 & 0.1 \\
 \bottomrule
 \end{tabularx}
-\caption{Symbols and parameters, with their starting values. Beware: in~\cite{vlachos2002}
+\caption{Symbols and parameters, with their starting values and the values chosen on the data
+(Section~\ref{sec:tuning}). Beware: in~\cite{vlachos2002}
 $\delta$ is a tolerance on indices, in~\cite{joo2018} a distance threshold, in~\cite{buchin2015}
 a minimum duration; here it is always a delay.}
 \label{tab:notation}

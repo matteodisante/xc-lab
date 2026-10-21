@@ -5,12 +5,14 @@ pilot flies in a group or alone and, in the first case, with which other pilots.
 in contact when one of them is where the other was, or will be, a few minutes earlier or later.
 This is the proximity with a local delay of Li, Wu and Crofoot~\cite{li2013}, adapted to thermal
 flight in three ways: altitude acts as a clock in a thermal and keeps the delay defined where
-the path turns on itself; headings are compared only in glide; the maximum delay is tied to the
-visual range. At each instant the groups are the connected components of the contact graph. As
+the path turns on itself; headings are compared only in glide; the maximum delay is bounded by
+the visual range and measured on the data. At each instant the groups are the connected components of the contact graph. As
 in the grouping structure of Buchin et al.~\cite{buchin2015}, a configuration is a fixed set of
 flights over a maximal interval, and an episode is a chain of configurations that share members.
 Contacts are found in two stages, a coarse filter that provably loses none and an exact scan;
-their minimum duration is calibrated on a null model that shifts tracks in time. The output is a
+their minimum duration is calibrated on a null model that shifts tracks in time. On the FFVL
+archive most short contacts are chance: the delay is measured at 2~min, and a contact must last
+38~min for at most one in ten to be chance. The output is a
 few tables that label every instant of every flight, so that group flight can be compared with
 solo flight.
 \end{abstract}

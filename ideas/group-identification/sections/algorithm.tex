@@ -175,8 +175,9 @@ is bounded by the time it takes at most $v_{\max}$, or by $\varepsilon_h$.}
 \label{fig:lemma}
 \end{figure}
 
-With $v_{\max}=100$~km/h, $\delta=300$~s and $\varepsilon_h=500$~m, $D_c\approx10.5$~km. The
-filter runs as follows, for each date.
+With $v_{\max}=100$~km/h, $\delta=300$~s and $\varepsilon_h=500$~m, $D_c\approx10.5$~km; with the
+delay chosen on the data, $\delta=120$~s, $D_c\approx5.5$~km. The filter runs as follows, for
+each date.
 \begin{enumerate}
   \item For each segment keep one point per minute of its extended track, for $t_c$ from
         $\delta+60$~s before its first instant after the departure to $\delta+60$~s after its
@@ -256,7 +257,8 @@ $W_{ij}$.
 Each pass of the loop takes one delay $l$: in the $(t,t')$ plane it is the diagonal $t'=t+l$,
 evaluated over the whole window at once (Figure~\ref{fig:scan}). The cost is
 $\sum_{\rm pairs}|W_{ij}|\,(2L+1)$ distance evaluations, with $2L+1=121$ for $\delta=5$~min and
-$\Delta=5$~s. The memory is $O(|W_{ij}|)$ per pair: boolean arrays are accumulated, without
+$\Delta=5$~s, 49 for $\delta=2$~min. On the whole archive (6\,209 dates) the run takes about an
+hour with five processes. The memory is $O(|W_{ij}|)$ per pair: boolean arrays are accumulated, without
 generating the list of pairs of points. Each step of the loop is a vector operation on arrays.
 
 \begin{figure}
