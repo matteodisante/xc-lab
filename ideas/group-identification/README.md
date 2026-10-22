@@ -11,7 +11,8 @@ group, and with whom?
 least τ* = 38.1 min, the duration at which the time-shift null model explains at most 10% of
 the contacts; the groups of an instant are the connected components of the contact graph.
 Then 21.7% of the paraglider and 6.9% of the hang-glider flights fly in a group at some point,
-in 17 169 episodes. Why these values: `parameter_tuning.pdf`.
+in 17 169 episodes. Why these values: `parameter_tuning.pdf`. Why `m_ij(t) = 1` does not give
+`m_ji(t) = 1`, with a worked example: `contact_asymmetry.pdf`.
 
 **Data and code version.** The cleaned tracks and the Vilpellet phases that soaring (tag
 `legacy-final`) wrote on SSD_DISANTE, not the pre-processing of xc-dynamics that the note

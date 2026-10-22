@@ -29,6 +29,25 @@ def test_pair_has_a_delayed_contact_and_no_simultaneous_one():
     assert models.runs(M.any(axis=0), t, p["step"]) == [(220.0, 885.0)]
 
 
+def test_m_ij_and_m_ji_differ_by_at_most_delta_in_time():
+    p = models.WAIT
+    t, xi, xj = models.wait_tracks()
+    M, _ = models.correspondences(t, xi, xj, p["delta"], p["eps_h"])
+    m_ij, m_ji = M.any(axis=1), M.any(axis=0)
+    assert models.runs(m_ij, t, p["step"]) == [(331.0, 601.0)]
+    assert models.runs(m_ji, t, p["step"]) == [(451.0, 550.0)]
+    assert {s: (m_ij[s], m_ji[s]) for s in (300, 380, 500, 560)} == {
+        300: (False, False), 380: (True, False), 500: (True, True), 560: (True, False)}
+    # the farthest instant of one from the other: m_ij reaches delta, m_ji lies inside m_ij
+    far = [max(np.abs(t[v] - s).min() for s in t[u]) for u, v in ((m_ij, m_ji), (m_ji, m_ij))]
+    assert far == [p["delta"], 0.0]
+    q = models.FOLLOW
+    t, xi, xj = models.follow_tracks()
+    M, _ = models.correspondences(t, xi, xj, q["delta"], q["eps_h"])
+    assert models.runs(M.any(axis=1), t, q["step"]) == [(0.0, 601.0)]
+    assert models.runs(M.any(axis=0), t, q["step"]) == [(q["delay"], 601.0 + q["delay"])]  # the same run, delayed
+
+
 # Altitude as a clock (figure "altitude_clock").
 
 def test_altitude_selects_one_window_of_delays():

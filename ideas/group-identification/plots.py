@@ -10,6 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.colors import ListedColormap
 from matplotlib.patches import Circle, Rectangle
 from PIL import Image
 
@@ -403,6 +404,101 @@ def day(static):
         save_gif(draw, frames, "example-day", size=(9.0, 5.4))
 
 
+# m_ij and m_ji: a pilot who waits and a pilot who passes, and a follower.
+
+def asymmetry():
+    p, q = models.WAIT, models.FOLLOW
+    t, xi, xj = models.wait_tracks()
+    M, _ = models.correspondences(t, xi, xj, p["delta"], p["eps_h"])
+    m_ij, m_ji = M.any(axis=1), M.any(axis=0)
+    tk = 380.0
+    k = int(np.searchsorted(t, tk))
+    km, ring = 1e-3, np.linspace(0, 2 * np.pi, 100)
+    x_j = xj[0] * km
+
+    def plan(ax, title):
+        ax.plot(x_j, 0 * x_j, color=ORANGE, lw=1, alpha=0.3)
+        ax.plot(0.08 * np.cos(ring), 0.08 * np.sin(ring), color=BLUE, lw=1.4)
+        ax.set_aspect("equal")
+        ax.set(xlim=(-2.9, 1.1), ylim=(-0.78, 0.78), yticks=[])
+        ax.spines["left"].set_visible(False)
+        ax.set_title(title, loc="left", pad=3)
+
+    def at(ax, s, label, dy, big=False):
+        ax.scatter([x_j[int(s)]], [0], marker="D", s=30 if big else 16, color=ORANGE, edgecolor="white", lw=0.6, zorder=5)
+        ax.text(x_j[int(s)], dy, label, fontsize=7.5, color=INK2, ha="center", va="bottom" if dy > 0 else "top")
+
+    fig, (a, b) = plt.subplots(2, 1, figsize=(6.3, 4.3), gridspec_kw=dict(hspace=0.3))
+    plan(a, r"(a) $i$ at 380 s: is $j$ on its path within $\pm\delta$?\quad $m_{ij}(380)=1$")
+    a.plot([], [], "o", color=BLUE, ms=5, label=r"$i$: circles in $P$ until 600 s")
+    a.plot([], [], "D", color=ORANGE, ms=4, label=r"$j$: straight line, in $P$ at 500 s")
+    a.legend(loc="upper left", frameon=False, fontsize=7.5, handletextpad=0.3, borderaxespad=0.1)
+    win = np.abs(t - tk) <= p["delta"]
+    a.plot(x_j[win], 0 * x_j[win], color=ORANGE, lw=4, solid_capstyle="butt", zorder=3)
+    a.add_patch(Circle((0, 0), p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=BLUE))
+    a.text(0.56, 0.3, r"$\varepsilon_h=500$ m" "\naround $i$", fontsize=7.5, color=INK2, va="center")
+    for s, label, dy in ((260, r"$j$ at 260 s", 0.1), (380, r"$j$ at 380 s", 0.1), (450, r"$j$ at 450 s", -0.1)):
+        at(a, s, label, dy)
+    at(a, 500, r"$j$ at 500 s", -0.12, big=True)
+    a.scatter([0], [0.08], s=26, color=BLUE, edgecolor="white", lw=0.6, zorder=6)
+    a.text(-2.85, -0.3, r"thick: $j$ in the window $[260, 500]$ s", fontsize=7.5, color=INK2, va="top")
+    a.set_xticklabels([])
+
+    plan(b, r"(b) $j$ at 380 s: is $i$ on its path within $\pm\delta$?\quad $m_{ji}(380)=0$")
+    b.plot(0.08 * np.cos(ring), 0.08 * np.sin(ring), color=BLUE, lw=4, zorder=3)
+    b.text(0, 0.14, r"$i$ in $[260, 500]$ s:" "\nonly here", fontsize=7.5, color=INK2, ha="center", va="bottom")
+    b.add_patch(Circle((x_j[k], 0), p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=ORANGE))
+    b.text(x_j[k] - 0.56, 0.3, r"$\varepsilon_h=500$ m" "\naround $j$", fontsize=7.5, color=INK2, ha="right", va="center")
+    at(b, tk, r"$j$ at 380 s", 0.1, big=True)
+    b.annotate("", xy=(0, -0.55), xytext=(x_j[k], -0.55), arrowprops=dict(arrowstyle="<->", color=INK, lw=0.8))
+    b.text(x_j[k] / 2, -0.59, r"1.2 km $>\varepsilon_h$", fontsize=7.5, ha="center", va="top")
+    b.set_xlabel("position along the route of $j$ (km)", labelpad=1)
+    fig.savefig(FIGURES / "asymmetry_paths.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+    fig = plt.figure(figsize=(6.3, 3.2))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 1.2], wspace=0.42, hspace=0.95, left=0.0, right=1.0)
+    ax = fig.add_subplot(gs[:, 0])
+    end = t[-1]
+    ax.fill_between([0, end], [-p["delta"], end - p["delta"]], [p["delta"], end + p["delta"]], color=LIGHT, lw=0)
+    ax.plot([0, end], [0, end], color=MUTED, lw=0.7, ls="--")
+    ax.imshow(np.where(M.T, 1.0, np.nan), origin="lower", extent=(-0.5, end + 0.5, -0.5, end + 0.5), vmin=0, vmax=1,
+              cmap=ListedColormap([AQUA]), interpolation="nearest", zorder=1.5)
+    for lo, hi in models.runs(m_ij, t, p["step"]):
+        ax.plot([lo, hi], [0, 0], color=BLUE, lw=4.5, solid_capstyle="butt", clip_on=False, zorder=6)
+    for lo, hi in models.runs(m_ji, t, p["step"]):
+        ax.plot([0, 0], [lo, hi], color=ORANGE, lw=4.5, solid_capstyle="butt", clip_on=False, zorder=6)
+    hits = np.flatnonzero(M[k])
+    ax.plot([tk, tk], [0, end], color=BLUE, lw=0.8, ls="--")
+    ax.plot([tk, tk], [t[hits].min(), t[hits].max()], color=BLUE, lw=2.2, solid_capstyle="butt")
+    ax.plot([0, end], [tk, tk], color=ORANGE, lw=0.8, ls="--")
+    ax.plot([0, tk], [500, 500], color=INK2, lw=0.6, ls=":")
+    ax.scatter([tk], [500], s=20, color=INK, zorder=7)
+    ax.text(tk - 12, 515, r"pair $(380, 500)$", fontsize=7.5, ha="right", va="bottom")
+    ax.text(612, 500, r"$\mathcal{M}_{ij}$", fontsize=9, ha="left", va="center", color=INK)
+    ax.text(end - 15, 80, r"$|t'-t|\le\delta$", ha="right", fontsize=7.5, color=INK2)
+    ax.set(xlim=(0, end), ylim=(0, end), xticks=[0, 300, 600], yticks=[0, 300, 600])
+    ax.set_aspect("equal")
+    ax.set_xlabel(r"$t$ (s), clock of $i$", labelpad=1)
+    ax.set_ylabel(r"$t'$ (s), clock of $j$", labelpad=1)
+    ax.set_title(r"(a) plane $(t,t')$ and the two shadows of $\mathcal{M}_{ij}$", loc="left", pad=4)
+
+    tf, xif, xjf = models.follow_tracks()
+    Mf, _ = models.correspondences(tf, xif, xjf, q["delta"], q["eps_h"])
+    for axb, (tt, mij, mji), title in ((fig.add_subplot(gs[0, 1]), (t, m_ij, m_ji), r"(b) the waiting pilot"),
+                                       (fig.add_subplot(gs[1, 1]), (tf, Mf.any(axis=1), Mf.any(axis=0)),
+                                        r"(c) a follower, 90 s behind on the same route")):
+        bars(axb, [(r"$m_{ij}(t)$", mij, tt, BLUE), (r"$m_{ji}(t)$", mji, tt, ORANGE),
+                   (r"$a_{ij}(t)$", mij | mji, tt, AQUA)], 0, end, p["step"])
+        axb.set_xticks([0, 200, 400, 600])
+        axb.set_title(title, loc="left", pad=3)
+    ax_b = fig.axes[1]
+    ax_b.axvline(tk, color=INK, lw=1.0)
+    fig.axes[2].set_xlabel("time (s)", labelpad=1)
+    fig.savefig(FIGURES / "asymmetry_plane.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
 # Decimation, to scale.
 
 def decimation():
@@ -446,3 +542,4 @@ if __name__ == "__main__":
     clock(static)
     day(static)
     decimation()
+    asymmetry()

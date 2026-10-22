@@ -41,6 +41,29 @@ def correspondences(t, xi, xj, delta, eps_h):
     return (np.abs(t[None, :] - t[:, None]) <= delta) & (dist < eps_h), dist
 
 
+# m_ij and m_ji differ: i waits in one place and j flies through it; j follows the route of i.
+
+WAIT = dict(t_leave=600.0, t_pass=500.0, speed=10.0, delta=120.0, eps_h=500.0, step=1.0, t_end=700.0)
+FOLLOW = dict(t_leave=600.0, delay=90.0, speed=10.0, delta=120.0, eps_h=500.0, step=1.0, t_end=700.0)
+
+
+def wait_tracks(p=WAIT):
+    """Time grid and horizontal tracks (2, n) of i, who circles at the origin until t_leave (NaN after), and
+    of j, who flies east through the origin at t_pass."""
+    t = np.arange(0.0, p["t_end"] + p["step"], p["step"])
+    xi = np.where(t <= p["t_leave"], 0.0, np.nan) * np.ones((2, 1))
+    xj = np.stack([p["speed"] * (t - p["t_pass"]), np.zeros_like(t)])
+    return t, xi, xj
+
+
+def follow_tracks(p=FOLLOW):
+    """Time grid and tracks (2, n) of i, who flies east until t_leave, and of j, on the same route `delay` later
+    (NaN while a pilot is not flying)."""
+    t = np.arange(0.0, p["t_end"] + p["step"], p["step"])
+    x = lambda s, on: np.where(on, p["speed"] * s, np.nan) * np.array([[1.0], [0.0]])
+    return t, x(t, t <= p["t_leave"]), x(t - p["delay"], (t >= p["delay"]) & (t <= p["t_leave"] + p["delay"]))
+
+
 # Altitude as a clock: i and j share a thermal, j lower by dz; scan the delay l.
 
 THERMAL = dict(radius=25.0, period=20.0, climb=2.0, eps_h=500.0, eps_z=300.0, delta=300.0, dz=200.0,
