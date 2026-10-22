@@ -88,39 +88,18 @@ and hour (\DClimbSizeMin{} to \DClimbSizeMax{} points; \DSinkSizeMin{} to \DSink
 \end{reading}
 
 %--------------------------------------------------------------------------------------
-\subsection{How groups form and break, who leads, when they fly}\label{sec:mechanisms}
+\subsection{Leader and follower}\label{sec:mechanisms}
 
-\begin{itemize}
-  \item \textbf{Entering and leaving.} The phase at the instant a flight enters (\Entries{}) or leaves (\Exits{}) a group,
-        against the time shares; entries and exits at the departure or the landing apart (\AtDeparture{}, \AtLanding{}).
-  \item \textbf{Leader and follower.} In configurations of two pilots the signed median delay of the pair
-        interval says who passes first (leader: the other passes at least 15~s later; \Abreast\% abreast, median
-        delay \DelayMedian~s). The two are compared within the configuration.
-  \item \textbf{Habitual leaders.} For the \HabitualPilots{} pilots with at least 10 roles in pairs: dispersion of the
-        lead fractions against roles swapped at random.
-  \item \textbf{Hours.} Time of S, A and G over the local hour.
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.49\textwidth]{mechanisms_phases.pdf}\hfill
-\includegraphics[width=0.49\textwidth]{mechanisms_habitual.pdf}\\[3pt]
-\includegraphics[width=0.9\textwidth]{mechanisms_hours.pdf}
-\caption{Top left: phase at entry and exit against the time shares (bands: blocks). Top right: lead fraction of each
-pilot, against roles at random. Bottom: time over the local hour (left) and share spent in a group (right).}
-\label{fig:mechanisms}
-\end{figure}
+In configurations of two pilots the signed median delay of the pair interval says who passes first (leader: the other
+passes at least 15~s later; \Abreast\% abreast, median delay \DelayMedian~s). The two are compared within the
+configuration (Appendix~\ref{app:leaders}). How groups form and break, whether the same pilots lead, and when groups
+fly are in the report \emph{Group structure}.
 
 \begin{reading}
 \textbf{Reading.}
-Entries fall in climbs \PhaseEntryClimb\%, searches \PhaseEntrySearch\% and glides \PhaseEntryTransition\% of the cases, exits
-\PhaseExitClimb, \PhaseExitSearch, \PhaseExitTransition\%, against \PhaseAloneClimb, \PhaseAloneSearch, \PhaseAloneTransition\% of the time alone:
-\textbf{no phase where groups preferentially form or break}. \EntriesEarly\% of entries are within 10~min of the departure.
 The pilot ahead flies a little faster (glide speed \LeadSpeed{} km/h, climb rate \LeadRate{} m/s) but does not find thermals more
 often (searches ending in a climb \LeadFound{} points, height lost per km \LeadSink{} m/km): within a pair the follower
-shows no sign of using the leader to find the next thermal. Dispersion of lead fractions \HabitualDispersion{} against
-\HabitualNull{} at random (95\% below \HabitualNullHigh): \textbf{some pilots lead or follow persistently} (\HabitualExtreme\% lead in at
-most 20\% or at least 80\% of their roles, \HabitualExtremeNull\% expected). Group time is concentrated around midday
-(\GroupShareNoon\% of a group flight's time at \GroupShareNoonHour~h, \GroupShareMorning\% at 9~h, \GroupShareEvening\% at 18~h), and its time alone
-falls earlier and later: this is why $\G-\A$ within the flight must be read with the same-site-day-hour estimate.
+shows no sign of using the leader to find the next thermal. Group time is concentrated around midday and its time alone
+falls earlier and later (\emph{Group structure}): this is why $\G-\A$ within the flight must be read with the
+same-site-day-hour estimate.
 \end{reading}

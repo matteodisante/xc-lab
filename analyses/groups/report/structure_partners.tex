@@ -1,0 +1,32 @@
+%======================================================================================
+\section{Repeated partners}\label{sec:partners}
+
+Paraglider pilots by their name in the catalog (anonymised ones left out). Two pilots are partners
+on a day when their flights share a pair interval: a \emph{pair-day}. Chance keeps who flies in a
+group where and when: within each site-day (takeoffs within 3~km, joined when a pair interval links
+two sites), the partners are redrawn at random, each pilot keeping its number of partners that day
+(a configuration model, Appendix~\ref{app:graphs}; 100 draws).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{partners.pdf}
+\caption{Left: pairs of pilots by the number of days they flew together, observed and with partners
+at random. Right: share of the pair-days on pairs that meet on more than one day, and of two pilots
+of the same club (each pilot's main club); bars at random: 5--95\% of the draws.}
+\label{fig:partners}
+\end{figure}
+
+\begin{reading}
+\textbf{Reading.} \StPairDays{} pair-days among \StPilots{} pilots and \StPairs{} pairs; one pair flew
+together on \StMaxDays{} days.
+\begin{itemize}
+  \item \textbf{Pilots return to the same partners:} \StRepeatObs\% of the pair-days are on pairs that meet on
+        more than one day, against \StRepeatNull\% \StRepeatNullBand{} at random (\StRepeatPairsObs{} such pairs
+        against \StRepeatPairsNull).
+  \item \textbf{and to their club:} \StSameClubObs\% of the pair-days join two pilots of the same club, against
+        \StSameClubNull\% \StSameClubNullBand.
+\end{itemize}
+Chance already fixes who flies in a group at each site and day, so the excess is the choice of partner
+among the pilots there. Choosing where and when to fly with friends is not removed: it is part of
+chance here.
+\end{reading}

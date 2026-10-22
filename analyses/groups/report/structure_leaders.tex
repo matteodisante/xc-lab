@@ -1,0 +1,56 @@
+%======================================================================================
+\section{Who leads}\label{sec:leaders}
+
+The signed median delay of a pair interval says who passes first: the pilot ahead, when the other
+passes at least 15~s later; otherwise the two fly abreast (\Abreast\% of the pairs of two; median delay
+\DelayMedian~s). How leading changes the flight is in \emph{Group and solo flights}. Here:
+\begin{itemize}
+  \item \textbf{Order} in configurations of 3 pilots or more: each edge points from the pilot ahead to the one
+        behind, a directed graph (Appendix~\ref{app:graphs}), against the same graphs with each direction
+        drawn at random (50 draws);
+  \item \textbf{switches} of the pilot ahead along $\ell^*(t)$ in the pair intervals of Section~\ref{sec:cohesion}
+        (stretches shorter than 60~s dropped), against chance contacts lasting at least $\tau^*$;
+  \item \textbf{who leads} in configurations of two named pilots: earlier flights in the catalog and wing class
+        (A~=~1 to competition~=~5);
+  \item \textbf{habitual leaders:} for the \HabitualPilots{} pilots with at least 10 roles in pairs, the dispersion of
+        their lead fractions, against roles swapped at random.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{hierarchy.pdf}
+\caption{Left: in groups of 3 or more, share of the time with cyclic directed triangles, acyclic graphs
+(every edge directed) and one leader (acyclic graphs), observed and with directions at random. Middle:
+share of the directed time of the pilot most often ahead in each contact, with the switches per hour.
+Right: share of the pairs of two in which the leader has more earlier flights, or the higher wing class.
+Bars: 5--95\% (blocks of the note).}
+\label{fig:hierarchy}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{mechanisms_habitual.pdf}
+\caption{Lead fraction of each pilot, against roles at random.}
+\label{fig:habitual}
+\end{figure}
+
+\begin{reading}
+\textbf{Reading.}
+\begin{itemize}
+  \item \textbf{Pilots are in a line.} Directed triangles are cyclic \StCyclic\% \StCyclicBand{} of the time, against
+        \StCyclicNull\% at random; graphs with every edge directed (\StFullShare\% of the time) are acyclic \StAcyclic\%,
+        against \StAcyclicNull\%. Positions along one route cannot form cycles: this is geometry, not rank.
+  \item \textbf{One leader, in small groups:} \StOneLeader\% \StOneLeaderBand{} of the acyclic time, against \StOneLeaderNull\%
+        \StOneLeaderNullBand{} at random; \StOneLeaderThree\% at 3 pilots, \StOneLeaderFour\% at 4, \StOneLeaderFive\% at 5 or more.
+        A single file (depth $n-1$): \StLineThree, \StLineFour{} and \StLineFive\%.
+  \item \textbf{The lead changes often.} The pilot ahead changes \StSwitches{} times per hour of contact \StSwitchesBand{},
+        against \StSwitchesChance{} \StSwitchesChanceBand{} by chance; the pilot most often ahead holds \StDominant\% of the
+        directed time (median), against \StDominantChance\%.
+  \item \textbf{The experienced pilot on the faster wing leads.} The leader has more earlier flights in \StExp\%
+        \StExpBand{} of \StExpPairs{} pairs (\StExpRatio{} times as many, median), the higher wing class in \StWing\%
+        \StWingBand{} of \StWingPairs.
+  \item \textbf{Some pilots lead or follow persistently:} dispersion of the lead fractions \HabitualDispersion{} against
+        \HabitualNull{} at random (95\% below \HabitualNullHigh); \HabitualExtreme\% lead in at most 20\% or at least
+        80\% of their roles, against \HabitualExtremeNull\% expected.
+\end{itemize}
+\end{reading}

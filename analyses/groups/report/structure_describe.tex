@@ -1,0 +1,78 @@
+%======================================================================================
+\section{What groups are}\label{sec:describe}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{describe.pdf}
+\caption{Left: share of configurations, of the time in configurations and of episodes (by their
+largest configuration), by number of pilots. Middle: share of configurations and of episodes lasting
+at least $d$; dashed: $\tau^*$. Right: configurations ending per hour, by outcome and size
+(\StSizeMax+ pooled; a split needs 4 pilots), with 5--95\% bands.}
+\label{fig:describe}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize
+\input{generated/structure_rates_table}
+\caption{By size: hours spent, median duration of a configuration, and configurations ending per
+hour by outcome, with 5--95\% bands (Figure~\ref{fig:describe}, right).}
+\label{tab:rates}
+\end{table}
+
+\begin{reading}
+\textbf{Reading.}
+\begin{itemize}
+  \item \textbf{Most groups are pairs:} \StPairsCount\% of the \StConfigurations{} configurations and
+        \StPairsTime\% of their time. The share falls steadily with size, up to \StLargest{} pilots
+        (\StWithHang\% of the configurations hold a hang glider).
+  \item \textbf{Most episodes never change:} \StEpisodeSingle\% of the \StEpisodes{} episodes are one
+        configuration; \StEpisodeSplit\% hold a split, \StEpisodeMerge\% a merge.
+  \item \textbf{The episode lasts, the configuration does not.} An episode lasts \StMedianEpisode~min
+        (median), \StEpisodeTwoHours\% of them 2~h or more; none is shorter than $\tau^*$, by
+        construction. A configuration lasts \StMedianConfTwo~min with 2 pilots and \StMedianConfMax~min
+        with \StSizeMax{} or more: joins, leaves, splits and merges all grow with size
+        (Table~\ref{tab:rates}), so a large configuration changes members every few minutes.
+  \item \textbf{Groups break in flight:} \StEndFlight\% of the \StEnds{} configurations that end a group
+        do so in flight, \StEndLanding\% at a landing. \StFormDeparture\% of the \StFormations{}
+        configurations with no predecessor form when a member departs: pilots who took off together.
+  \item \textbf{A pair} ends \StRateLeaveTwo{} times per hour because the two separate, \StRateJoinTwo{}
+        because a third pilot joins, \StRateMergeTwo{} by a merge and \StRateLandingTwo{} by a landing.
+\end{itemize}
+\end{reading}
+
+\subsection{Where in the flight groups form and break}\label{sec:phases}
+
+On 1~Hz flights, where the phases are labelled: the phase at the instant a flight enters
+(\Entries{}) or leaves (\Exits{}) a group, against the shares of time in each phase; entries at the
+departure (\AtDeparture{}) and exits at the landing (\AtLanding{}) are counted apart
+(Table~\ref{tab:phases}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{mechanisms_phases.pdf}
+\caption{Phase at entry and exit, against the time shares (bands: blocks).}
+\label{fig:phases}
+\end{figure}
+
+\begin{reading}
+\textbf{Reading.} Entries fall in climbs \PhaseEntryClimb\%, searches \PhaseEntrySearch\% and glides
+\PhaseEntryTransition\% of the cases, exits \PhaseExitClimb, \PhaseExitSearch, \PhaseExitTransition\%,
+against \PhaseAloneClimb, \PhaseAloneSearch, \PhaseAloneTransition\% of the time alone: \textbf{no phase
+where groups preferentially form or break}. \EntriesEarly\% of the entries are within 10~min of the
+departure.
+\end{reading}
+
+\subsection{When in the day}\label{sec:hours}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{mechanisms_hours.pdf}
+\caption{Time of solo flights (S), of group flights alone (A) and in a group (G) over the local hour
+(left), and the share of a group flight's time spent in a group (right).}
+\label{fig:hours}
+\end{figure}
+
+\begin{reading}
+\textbf{Reading.} Group time is concentrated around midday: \GroupShareNoon\% of a group flight's time
+at \GroupShareNoonHour~h, \GroupShareMorning\% at 9~h, \GroupShareEvening\% at 18~h.
+\end{reading}
