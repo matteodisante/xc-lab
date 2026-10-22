@@ -1,0 +1,17 @@
+\begin{summary}
+\textbf{Question.} Do paragliders move differently when they fly in a group, and is it the group or the ground, day and pilots?
+\textbf{Data.} FFVL archive, 154\,598 paraglider flights, \tauStar-min contacts grouped by a null model (21.7\% fly in a group).
+\textbf{Method.} Group time (G), solo flights (S) and the same flights alone (A) compared over \emph{every lag} of the TA-MSD and on phase statistics,
+inside strata (zone, month, hour, site-day, flight) with 5--95\% block-bootstrap bands.
+
+\textbf{Findings.}
+\begin{itemize}
+  \item \textbf{Straighter progress over 1000~s in a group:} $\Delta H_\mathrm{loc}(1000)$ = \DHlocThousandRaw{} raw, \DHlocThousandFlight{} within the flight, \DHlocThousandGroupSdh{} at the same site-day and hour
+        (selection only \DHlocThousandSel). The gap opens above 150~s; nothing within one glide or climb.
+  \item \textbf{It is not the zone:} reweighting solo flights to the cells, months and hours where groups fly removes at most \ZoneRedLocZoneHour\% of the gap; $H$: G \ZoneHNoneG{}, S \ZoneHNoneS{} $\to$ \ZoneHSdhS{} at the same site-day and hour.
+  \item \textbf{More time climbing, more successful searches, faster and flatter glides, higher climb rate and cross-country speed} once stratified (the pooled readings of climb rate and speed reversed: composition).
+  \item \textbf{Size:} most of the effect is there with 2 pilots; at the same place and hour only 7+ stands apart.
+  \item \textbf{Mechanisms:} groups form and break in every phase; some pilots lead persistently; groups fly around midday.
+\end{itemize}
+\textbf{Limits.} Strata fix pilot, day, site, hour and zone, not the decision to fly together; contact = shared air within sight; phases on 1~Hz flights only.
+\end{summary}

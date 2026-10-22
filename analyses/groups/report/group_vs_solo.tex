@@ -1,0 +1,174 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.1cm,top=1.9cm,bottom=1.9cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,makecell}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon,skip=3pt]{caption}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+\usepackage{url}
+
+\definecolor{blueI}{HTML}{2A78D6}
+\newtcolorbox{summary}{enhanced, breakable, colback=blueI!5!white, colframe=blueI, boxrule=0pt,
+  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt}
+\newtcolorbox{reading}{enhanced, breakable, colback=black!3!white, colframe=black!45, boxrule=0pt,
+  leftrule=1.6pt, arc=0pt, outer arc=0pt, left=5pt, right=5pt, top=2pt, bottom=2pt, fontupper=\small}
+
+\graphicspath{{../out/d120_eh500_ez300_th45_g120_q0.1/}{../../../ideas/group-identification/figures/}}
+\newcommand{\G}{\mathrm{G}}
+\newcommand{\A}{\mathrm{A}}
+\newcommand{\Sl}{\mathrm{S}}
+\setlist{itemsep=1pt, topsep=2pt, parsep=0pt, leftmargin=1.3em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\captionsetup{font=footnotesize}
+\input{generated/macros}
+
+\title{\textbf{Group and solo flights}\\[2pt]
+  \large Technical report on the FFVL cross-country archive}
+\author{Matteo Di Sante}
+\date{22 October 2026 \;\textbullet\; analyses: \texttt{xc-lab/analyses/groups} \;\textbullet\;
+  grouping run \texttt{d120\_eh500\_ez300\_th45\_g120\_q0.1}}
+
+\begin{document}
+\maketitle
+\vspace{-14pt}
+
+\input{summary}
+
+%======================================================================================
+\section{Setup}\label{sec:setup}
+
+\subsection{Data and grouping}
+
+\begin{itemize}
+  \item \textbf{Flights.} \input{generated/n_flights} on 6\,209 days, cleaned tracks of the old repository
+        (soaring, tag \texttt{legacy-final}). Each flight is analysed after its \emph{departure}
+        (first fix 3~km from the takeoff); before it, the pilot is in the \emph{local phase} and
+        counts as neither solo nor group. Analyses use loggers of at most 10~s; phases
+        (climb, search, transition=glide) are Vilpellet's runs and exist on 1~Hz flights only
+        (70\% of the paragliders).
+  \item \textbf{Contact.} $i$ is in contact with $j$ at $t$ if $j$, at some $t'$ with
+        $|t'-t|\le\delta=2$~min, was within $\varepsilon_h=500$~m horizontally and
+        $\varepsilon_z=300$~m vertically of $i$; when both glide, their headings differ by less
+        than $45^\circ$. The delay accounts for pilots who follow the same route.
+  \item \textbf{Pair interval.} A contact lasting at least $\tau^*=\tauStar$~min, after joining gaps
+        shorter than 2~min.
+  \item \textbf{Configuration.} A fixed set of at least two flights that is one connected component
+        of the pair intervals over a maximal interval; anyone joining or leaving starts a new one.
+        \textbf{``$n$ pilots'' always means the size of the configuration at that instant.}
+  \item \textbf{Episode.} A chain of configurations without break, each starting when the previous
+        ends and sharing a member. \textbf{Block.} The flights tied by sharing episodes: the unit
+        resampled for the error bars.
+\end{itemize}
+
+\begin{table}[H]
+\centering\footnotesize
+\begin{tabular}{@{}l l p{9.4cm}@{}}
+\toprule
+Parameter & Value & How it was set \\
+\midrule
+$\delta$, largest delay & 2 min & \emph{measured}: ratio of real to chance correspondences is 3.7 at 2~min (Fig.~\ref{fig:tuning}, top) \\
+$q$, false discovery rate & 0.1 & choice: at most one contact in ten is chance \\
+$\tau^*$, shortest contact & \tauStar{} min & \emph{computed} from $q$ and a null model (Fig.~\ref{fig:tuning}, bottom) \\
+$\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 2 min & definitions (shared thermals within sight); no plateau on the data \\
+$R_\mathrm{dep}$ & 3 km & contacts at the takeoff say nothing \\
+\bottomrule
+\end{tabular}
+\caption{Parameters of the grouping.}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{tuning_delays.pdf}\\[2pt]
+\includegraphics[width=0.78\textwidth]{tuning_fdr.pdf}
+\caption{How the thresholds were set (tuning note). Top: correspondences per second at each delay,
+real pairs against chance (left), their ratio (middle), distance at the same instant (right).
+Bottom: real pair intervals lasting at least $\tau$ and those given by chance (left); estimated false
+discovery rate (right), with $\tau^*$ for $q=0.05,0.1,0.2$.}
+\label{fig:tuning}
+\end{figure}
+
+\textbf{Null model.} Pairs of flights of one day with takeoffs within 10~km (at most 200 per day)
+are taken, and one flight of each pair is replaced by its own track shifted in time (at least
+$2\delta+5$~s, so it cannot reproduce the real contact). Route, thermals and style are kept, the
+interaction is not. The contacts of the copies are chance: scaled to the flying time of the real
+pairs, day by day, they give $\widehat{\mathrm{FDR}}(\tau)$; $\tau^*$ is where it falls to $q$.
+A contact is \emph{shared air within sight}, not proof of interaction: pilots who use the same
+thermals at the same time without following each other survive the null model.
+
+\subsection{Populations, strata and statistics}
+
+\begin{itemize}
+  \item \textbf{S} solo flights; \textbf{G} group time (stretches in a configuration);
+        \textbf{A} the \emph{same flights alone} (stretches of group flights outside any
+        configuration), the control with the same pilots, gliders, loggers and days; $\G_n$ the
+        group time in configurations of $n$ pilots.
+  \item \textbf{TA-MSD.} Positions on a 10~s grid of the flight clock; per flight
+        $\overline{\delta^2}(\tau)=\sum\|\mathbf r(t+\tau)-\mathbf r(t)\|^2/\#\text{origins}$ pooled over
+        its stretches, ensemble MSD = mean over flights (equal weight); stretches of at least
+        1250~s, 21 lags from 10 to 1000~s. $H$: half the slope of $\log\mathrm{MSD}$ against $\log\tau$ over all lags
+        ($H=1$ straight line). $H_\mathrm{loc}(\tau)$: the same slope on the lags within
+        $\pm0.25$ decades of $\tau$ (Appendix~\ref{app:hloc}).
+  \item \textbf{Phase statistics.} Ratios of sums over runs (time in climb, searches that end in a
+        climb, climb rate, glide speed, glide ratio; cross-country speed over 30~min). Five of
+        twelve are drawn: the others are explained by them (Appendix~\ref{app:redundancy}).
+  \item \textbf{Strata.} \emph{Zone}: cell of 25~km of the middle of a piece of track;
+        \emph{site-day}: flights of one day with takeoffs within 3~km; \emph{hour}: local hour.
+  \item \textbf{Error bars} are 5--95\% bootstrap bands resampling whole \emph{blocks} (never
+        flights) and recomputing the statistic: blocks of the note for pooled statistics (1000 draws);
+        blocks joining episodes and site-days for stratified ones (200 draws, same draws for all).
+        They measure block sampling only, not the choice of $q$ or the tolerances, and two bands that
+        do not overlap are not a test; differences are computed draw by draw.
+\end{itemize}
+
+\textbf{What the grouping gives.} \input{generated/grouping_facts}
+
+%======================================================================================
+\input{section_zones}
+
+%======================================================================================
+\input{section_other}
+
+%======================================================================================
+\section{Conclusions and limits}\label{sec:conclusions}
+
+\begin{minipage}[t]{0.49\textwidth}
+\textbf{Supported}
+\begin{itemize}
+  \item the progress over a quarter of an hour is straighter in a group, with the pilot, the day,
+        the site and the hour fixed;
+  \item no effect within one glide or climb (100~s) at the same hour;
+  \item more time climbing, more searches that end in a climb, faster and flatter glides;
+  \item climb rate and cross-country speed are \emph{higher} in a group once the composition is
+        controlled (the pooled readings reversed);
+  \item selection of pilots is small for the motion;
+  \item groups form and break in every phase; some pilots lead persistently.
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\textbf{Not supported}
+\begin{itemize}
+  \item that the group \emph{causes} the effect: the strata fix pilot, day, site, hour and zone, not
+        the decision to fly together;
+  \item that larger groups straighten the progress, up to six pilots;
+  \item that a contact means interaction (shared air within sight);
+  \item the glide statistics are partly by definition (aligned headings in glide);
+  \item phases exist on 1~Hz flights only; the same analyses on the xc-dynamics tracks are open.
+\end{itemize}
+\end{minipage}
+
+\clearpage
+\appendix
+\input{appendices}
+
+\end{document}

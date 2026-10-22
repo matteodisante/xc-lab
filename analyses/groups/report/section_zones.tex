@@ -1,0 +1,56 @@
+\section{Group or zone? Where the difference comes from}\label{sec:zones}
+
+\textbf{Question.} Group time is more ballistic than solo flights at long lags. Is this the group, or the ground where groups fly
+(and where solo pilots would also progress in a straight line)? \textbf{Method.} Each piece of track is assigned to a \emph{stratum} (zone = cell
+of 25~km of its middle; zone$\times$month; zone$\times$hour; site-day$\times$hour). In every stratum with both populations the ensemble MSD
+of the solo flights S (and of the same flights alone A) is \emph{reweighted to the mix of the group G over the strata}: S then flies, in
+the statistic, where and when G flies. We compare $H_\mathrm{loc}(\tau)$ over \textbf{every lag} and the fitted $H$. The share of G with a counterpart
+in its stratum is reported; ``as is'' is the same comparison without the reweighting, on the same strata and units (a flight counts once per
+cell it crosses).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{zones_curves.pdf}
+\caption{$H_\mathrm{loc}(\tau)$ of G (orange), of S reweighted to the strata of G (blue) and of A reweighted to them (green), 5--95\% bands.
+First panel: all flights pooled (the raw comparison). ``Share of G kept'': flights of G with a solo counterpart in their stratum.}
+\label{fig:zones}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{zones_differences.pdf}
+\caption{$\Delta H_\mathrm{loc}(\tau)$ over every lag: G minus S (left) and G minus A (right), the other population reweighted to the strata of G; one line per
+stratification, finer strata in darker orange.}
+\label{fig:zones-diff}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{2.6pt}
+\input{generated/zones_table}
+\caption{Fitted $H$ and differences by stratification. ``Reweighted'': the other population reweighted to the strata of G (value, 5--95\% band);
+``as is'': the same strata without reweighting. $H_{\Sl\mid\G}$: $H$ of S reweighted to G.}
+\label{tab:zones}
+\end{table}
+
+\begin{reading}
+\textbf{Reading.}
+\begin{itemize}
+  \item \textbf{The gap opens above $\tau\approx150$~s.} $\Delta H_\mathrm{loc}(\tau)$ between G and S is small below it ($\ZoneShortMin$ to $\ZoneShortMax$ from 20 to 140~s)
+        and rises to \ZoneDHlocSNone{} at 1000~s, above one climb--glide cycle: the group acts on how cycles are chained, not on a single glide or climb.
+  \item \textbf{The zone does not explain it.} Reweighting S to the cells where G flies lowers $\Delta H_\mathrm{loc}(1000)$ by only \ZoneRedLocZone\%
+        (\ZoneDHlocSupportZone{} $\to$ \ZoneDHlocSZone) and the fitted $\Delta H$ by \ZoneRedHZone\%; with the month, \ZoneRedLocZoneMonth\% and \ZoneRedHZoneMonth\%; with the
+        hour, \ZoneRedLocZoneHour\% and \ZoneRedHZoneHour\%. At least 80\% of the long-lag gap remains. Solo pilots fly where groups fly: \ZoneKeptZone\% of G has a solo
+        counterpart in its cell.
+  \item \textbf{Same day, site and hour} (the finest strata, \ZoneKeptSdh\% of G kept): $\Delta H_\mathrm{loc}(1000)=\ZoneDHlocSSdh$ \ZoneDHlocSSdhBand, \ZoneRedLocSdh\% below its as-is value;
+        fitted $\Delta H=\ZoneDHSSdh$ \ZoneDHSSdhBand. Solo flights on the same day, site and hour as a group still progress less straight over 1000~s.
+  \item \textbf{Fitted $H$:} G \ZoneHNoneG{}, S \ZoneHNoneS{} raw. S reweighted to the zones of G: \ZoneHZoneS{}; to zone$\times$hour: \ZoneHZoneHourS{}; to site-day$\times$hour: \ZoneHSdhS{} (G \ZoneHSdhG).
+        Reweighting raises the fitted $H$ of S by a few thousandths and never brings it to that of G.
+  \item \textbf{Against the same flights alone} (A): $\Delta H_\mathrm{loc}(1000)$ is \ZoneDHlocANone{} pooled and \ZoneDHlocAZone, \ZoneDHlocAZoneHour, \ZoneDHlocASdh{} in zone, zone$\times$hour,
+        site-day$\times$hour strata: the same pilots in the same zones and hours progress straighter in a group. Below 150~s the sign depends on the hour: A is above G pooled and equal at the same site-day and hour,
+        which is why the within-flight estimate of Section~\ref{sec:other} must be read with the same-site-day-hour one.
+  \item \textbf{Answer:} the difference between group and solo flights does not come from the zones where groups fly, nor from the month or hour at that place;
+        it is reduced by about a fifth by the day, site and hour together, and the rest stays with the pilot and the day fixed. It is not a zone effect.
+\end{itemize}
+\textbf{Limits.} Cells are 25~km, from the middle of a piece; the terrain inside a cell (ridge, plain) is not controlled, and a group may choose better air within it:
+this is part of what we call the group effect. Paragliders only.
+\end{reading}
