@@ -1,7 +1,8 @@
 # Groups
 
 The motion of paragliders and hang gliders alone and in a group: TA-MSD with its exponent H
-and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase.
+and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
+the same by the number of pilots of the configuration, pooled and on chosen site-days.
 
 **Data.** The group labels of [`ideas/group-identification`](../../ideas/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
@@ -9,8 +10,9 @@ contact of at least τ* = 38.1 min; see its `parameter_tuning.pdf`), and the cle
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
 
 **Results.** Figures and numbers are in `out/<run>/` of this folder (not in git), with the
-`PARAMETERS.md` of the run: `tamsd.pdf`, `episodes.pdf`, `phase_msd.pdf` and their JSON. The
-measured pieces (`pieces.npz`, `phase_pieces.npz`), too heavy for the repository, stay on the
+`PARAMETERS.md` of the run: `tamsd.pdf`, `episodes.pdf`, `phase_msd.pdf` and their JSON, and the
+`size_*` and `siteday_*` figures of `size.py`. The measured pieces (`pieces.npz`,
+`phase_pieces.npz`, the `size_*` ones), too heavy for the repository, stay on the
 disk in `/Volumes/SSD_DISANTE/xc-lab/group-identification/runs/<run>/analyses/`, so the figures
 are redrawn without reading the fixes again. `--run NAME` picks another run; the run with the
 starting values of the note (δ = 5 min, τ* = 89.5 min) has its own, with the same picture as
@@ -40,7 +42,10 @@ the flights and days that have groups, not from flying in one. Flying in a group
 long lags: H_loc at 1000 s is 0.893 in group time against 0.860 for the same flights alone and
 0.837 for solo flights. Below about 300 s the group time is slightly less ballistic than the
 solo time of the same flights (H_loc(100 s) 0.927 against 0.932). Hang gliders show the same
-pattern, with wide bands at long lags (418 group flights).
+pattern, with wide bands at long lags (418 group flights). `decompose.py` separates these
+differences by stratification: the long-lag effect survives with the flight fixed and with the
+site-day and hour fixed; the short-lag one vanishes at the same hour, since the solo time of group
+flights falls at other hours.
 
 | | flights | H, 10–1000 s | H_loc(100 s) | H_loc(1000 s) |
 |---|---|---|---|---|
@@ -141,7 +146,10 @@ which a long glide together meets easily) is not checked.
 How paragliders share their time among the phases (`budget.pdf`): the same runs and
 populations as `survival.py`, ratios summed over the runs of each population, bands 5–95% of
 1000 draws of the dependency blocks. A search in vain is one that the next run of the flight
-does not turn into a climb.
+does not turn into a climb. The figure draws two of the seven rows, time in climb and searches
+that end in a climb; the others are explained by these and by the statistics of
+`performance.py` ([which are drawn](#which-statistics-are-drawn-redundancypy)), and stay in the
+table and in `budget.json`.
 
 **Result.** In group time pilots climb more and search in vain less: 33.0% of the time in climb
 against 30.8% for solo flights and 29.1% for the same flights alone, 4.7% in a search in vain
@@ -164,7 +172,10 @@ flights alone glide more and climb less than solo flights, a flight and day effe
 
 ## Climbs, glides and cross-country speed: `performance.py`
 
-One pass over the cleaned fixes (`performance.pdf`). Climbs and transitions are the runs of
+One pass over the cleaned fixes (`performance.pdf`, which draws climb rate, glide speed and
+glide ratio; the height gained per climb and the cross-country speed are explained by the others,
+[see below](#which-statistics-are-drawn-redundancypy), and stay in the table and in
+`performance.json`). Climbs and transitions are the runs of
 `survival.py`, read at their first and last fix: a climb gains the difference of altitude in its
 duration, a transition covers the straight line between its ends and loses the difference of
 altitude. Ratios summed over each population, so long phases weigh more: climb rate = total
@@ -182,6 +193,11 @@ cross-country speed is 20.0 km/h in group time and 20.0 km/h for the same flight
 Part of the better glides may come from the definition: two pilots in glide must keep within
 45° of heading to stay in contact, so glides in a group are glides along the same line.
 
+These pooled ratios weight each flight by its time in the population. Compared flight by flight,
+or at the same site-day and hour (`decompose.py`), two readings change: the climb rate is
+slightly higher in a group, not lower, and the cross-country speed is higher in a group than for
+the same flights alone. The pooled comparison is a composition effect (see the report).
+
 | | solo | group time | group flights, solo time |
 |---|---|---|---|
 | climb rate (m/s) | 1.22 [1.22, 1.22] | 1.26 [1.25, 1.27] | 1.33 [1.32, 1.34] |
@@ -190,6 +206,169 @@ Part of the better glides may come from the definition: two pilots in glide must
 | glide ratio | 10.4 [10.4, 10.4] | 12.9 [12.8, 13.0] | 11.3 [11.2, 11.4] |
 | cross-country speed over 30 min (km/h) | 17.2 [17.2, 17.3] | 20.0 [19.8, 20.3] | 20.0 [19.8, 20.1] |
 
+## Which statistics are drawn: `redundancy.py`
+
+`budget.pdf` and `performance.pdf` draw only the statistics that carry information the others
+do not; the rest stay in the tables above and in their JSON. Unit: one population (solo, group
+time, solo time of the group flights) on one site-day, with at least 25 flights in both tables:
+119 units (11 solo, 55 group time, 53 solo time), each statistic a ratio of sums as in the
+figures. A statistic is redundant when the others explain most of it across the units: the R² of
+its linear regression on them, all standardised. Backward elimination drops the statistic most
+explained by the others until every R² is at most 0.5. The four shares of time sum to 100%
+exactly, so one of them always goes first (the first of the table on a tie).
+
+**Result.** Five statistics remain, two of the budget (time in climb, searches that end in a
+climb) and three of the performance (climb rate, glide speed, glide ratio); each is explained by
+the other four at most to 0.41. The others, in the order they go:
+
+| dropped | R² when dropped | R² on the five kept |
+|---|---|---|
+| time in transition (%) | 1.00 | 0.83 |
+| height gained per climb (m) | 0.98 | 0.91 |
+| climbs that start after a search (%) | 0.93 | 0.77 |
+| cross-country speed over 30 min (km/h) | 0.93 | 0.90 |
+| time in a search in vain (%) | 0.88 | 0.71 |
+| climbs per hour | 0.72 | 0.71 |
+| time in a search that ends in a climb (%) | 0.65 | 0.65 |
+
+The cross-country speed and the height per climb are almost functions of the five (0.90, 0.91);
+the share in a search in vain keeps 29% of its variance of its own, and is a different
+reading of the same conversion of searches into climbs. The units vary mostly with the weather,
+so "explained" means across site-days. The choice is not unique: on the 55 units of group time
+alone the elimination keeps the share in a search in vain in place of the climb rate, and on the
+53 of solo time it keeps climbs per hour and neither the climb rate nor the glide ratio; time in
+climb, searches that end in a climb and glide speed are in every set.
+
+## By the number of pilots: `size.py`
+
+The group time of `tamsd.py` is cut where the configuration changes, so that every stretch has
+one number of pilots, and each goes to a population: 2, 3, 4, 5–6 and 7+ pilots. A flight with
+stretches of several sizes is in several populations, one weight each. The solo and solo-time
+stretches are those of the scripts above; only the group stretches were measured again, in three
+passes over the fixes (`size_*` in the cache folder, about 8 min). Every figure draws the solo
+flights, the sizes and, in the pooled ones, a control for each size: the solo time of the flights
+that have it (dashed). A population enters only with 15 flights in at least 5 blocks of the note;
+the stretches of a configuration must still last 1250 s for the TA-MSD, so the larger
+configurations, which are shorter, lose more of their time.
+
+**TA-MSD** (`size_tamsd.pdf`, paragliders; hang gliders have only 2 and 3 pilots). H and
+H_loc(1000 s) rise with the number of pilots, while the same flights alone stay at 0.86–0.87
+whatever the size: the dependence on size belongs to the group time, not to the flights. A
+configuration of n pilots must keep all of them within contact for at least τ*, so the larger
+ones are those that fly one line together; how much of the rise this selection explains is not
+checked.
+
+| pilots | flights | H | H_loc(1000 s) | H_loc(1000 s), same flights alone |
+|---|---|---|---|---|
+| solo | 119 129 | 0.899 | 0.837 | |
+| 2 | 26 411 | 0.917 | 0.889 | 0.861 |
+| 3 | 9 480 | 0.923 | 0.906 | 0.867 |
+| 4 | 4 073 | 0.924 | 0.910 | 0.865 |
+| 5–6 | 2 686 | 0.925 | 0.915 | 0.870 |
+| 7+ | 1 142 | 0.933 [0.926, 0.940] | 0.944 [0.933, 0.953] | 0.871 [0.860, 0.882] |
+
+Hang gliders, H_loc(1000 s): 0.857 [0.842, 0.872] with 2 pilots (385 flights) and 0.856
+[0.807, 0.895] with 3 (60), against 0.817 solo.
+
+**Time budget and performance** (`size_budget.pdf`, `size_performance.pdf`, the statistics of
+`redundancy.py`). In group time the share of time in climb and of searches that end in a climb
+are higher than for the same flights alone from 2 pilots on, and grow little with the size. The
+climb rate falls a little with the size and stays under that of the same flights alone at every
+size. The glide ratio rises steadily with the size, at a glide speed that stays near 33–35 km/h.
+Part of this may come from the definition: two pilots in glide must keep within 45° of heading.
+
+| pilots | time in climb (%) | searches that end in a climb (%) | climb rate (m/s) | glide speed (km/h) | glide ratio |
+|---|---|---|---|---|---|
+| solo | 30.8 | 43.3 | 1.22 | 30.1 | 10.4 |
+| 2 | 32.7 | 49.0 | 1.27 | 33.2 | 12.5 |
+| 3 | 33.6 | 49.9 | 1.26 | 33.5 | 13.1 |
+| 4 | 33.6 | 51.0 | 1.25 | 33.5 | 13.7 |
+| 5–6 | 33.1 | 50.1 | 1.23 | 33.1 | 14.1 |
+| 7+ | 34.6 | 51.7 | 1.20 | 34.6 | 15.9 |
+| same flights alone, over the sizes | 27.8–29.1 | 45.8–46.1 | 1.33–1.35 | 32.5–33.1 | 11.3–11.6 |
+
+**Phases** (`size_phase_msd.pdf`, `size_survival.pdf`, paragliders). The MSD per phase does not
+separate by size: the local exponent of transitions at the last drawn lag, 357 s, is 1.85 for
+solo flights and 1.90 to 1.95 for every size, the curves of searches and climbs overlap (more
+noisily for the large sizes, which have few searches). The tail of the transitions is heavier
+than for solo flights from 2 to 4 pilots, with no order in the size: μ above 1857 s is 4.54
+[4.43, 4.65] for solo flights, 3.64 [3.44, 3.88] for 2 pilots (795 runs), 3.20 [2.85, 3.67] for 3
+(206), 3.38 [2.91, 3.92] for 4 (90) and 3.81 [3.31, 4.61] for 5–6 (84). A μ is shown only with 50
+runs above the threshold: for transitions up to 5–6 pilots, for searches up to 3 (4.15 [3.77,
+4.59] and 4.04 [3.40, 4.90], against 4.02 solo) and for climbs only with 2 (9.23 [8.03, 10.72]
+against 8.85).
+
+**Site-days** (`siteday_tamsd.pdf`, `siteday_budget.pdf`, `siteday_performance.pdf`). Flights
+whose takeoffs lie within 3 km on one day share the weather and the site, so the size is the
+only thing that varies. Six are drawn, by a fixed rule: most sizes with 15 flights or more,
+then most flights, at most two per takeoff site (`--sitedays "Name:YYYY-MM-DD,..."` picks
+others). The archive is dominated by Saint Hilaire sud: Méruz is the only other site that
+reaches three sizes, and Chalvet Ouest and La Sambuy two. Bands resample the flights, since a large episode is a single block of the note on one
+day, so flights of one group are not independent and the bands are too narrow. Searches are
+almost absent from a site-day (0 to 16 pieces per size), so there is no phase figure.
+
+H_loc(1000 s) by size on each site-day:
+
+| site-day (flights) | solo | 2 | 3 | 4 | 5–6 | 7+ |
+|---|---|---|---|---|---|---|
+| Saint Hilaire sud, 2022-03-26 (108) | 0.750 | 0.853 | 0.894 | 0.818 | | 0.994 |
+| Saint Hilaire sud, 2017-03-28 (64) | 0.854 | 0.931 | 0.901 | 0.956 | | 0.873 |
+| Méruz, 2019-05-01 (73) | | 0.926 | 0.939 | | 0.938 | |
+| Méruz, 2016-04-28 (44) | | 0.894 | 0.958 | | 0.957 | |
+| Chalvet Ouest, 2016-07-19 (61) | | 0.951 | | | 0.892 | |
+| La Sambuy, 2020-07-25 (54) | | 0.941 | 0.901 | | | |
+
+**Result.** Where a site-day has solo flights (the two Saint Hilaire days) they have the lowest
+H_loc(1000 s). The sizes differ among themselves by up to 0.18 on one day, with no common
+order: the 7+ pilots that give 0.994 on one day give 0.873 on the other. The rise with the size
+seen pooled does not show within a site-day, so it may come from the days and sites where the
+large groups form. The budget and performance lines are scattered the same way, and the
+differences between the six days (climb rate from 0.79 to 2.11 m/s) are far larger than those
+between sizes.
+
+## Group effect, selection, day, site and hour: `decompose.py`
+
+Takes the difference between group time (G) and solo flights (S) apart, with the same flights
+alone (A) as control. Each contrast is computed inside strata and averaged over the strata with
+both populations, weights n_P n_Q / (n_P + n_Q): G − S pooled; G − S and A − S (selection) within
+site-day and local hour; G − A within the flight and within site-day and hour (two estimates of
+the group effect that fail in opposite ways: the first mixes the hour, the second the pilots).
+For the TA-MSD the difference is that of log MSD at every lag, so ΔH and ΔH_loc are differences
+of slopes. Bands: 200 draws of blocks that join the episodes and the site-days, the same draws
+for every statistic. The same contrasts by the size of the configuration: each size minus A
+within the flight, each size minus 2 pilots within site-day and hour (`decompose_size.*`). The
+TA-MSD pieces and the performance terms carry their start or middle instant for the hour.
+
+## Entries, exits, leaders and hours: `mechanisms.py`
+
+The phase (Vilpellet run, read on all the runs of the flight) at the instant a flight enters or
+leaves a group, against the time shares; in configurations of two pilots, leader minus follower
+within the configuration, the leader being the pilot the other passes after (signed median delay
+of the pair interval, |delay| ≥ 15 s, else abreast); whether some pilots lead more than chance
+(dispersion of the lead fractions of pilots with at least 10 roles against 1000 random swaps of
+the roles); and the time of each population over the local hour.
+
+## Group or zone: `zones.py`
+
+Do the zones where groups fly explain the difference between group time (G) and solo flights (S)?
+Each piece of track goes to a stratum (cell of 25 km of its middle, with the month, with the hour,
+or the site-day and hour); in every stratum with both populations the ensemble MSD of S (and of A,
+the same flights alone) is reweighted to the mix of G over the strata (direct standardisation), and
+H_loc over every lag and the fitted H of the three are compared, with 5-95% bands from blocks that
+join episodes and site-days. "As is" is the same comparison without the reweighting. Result: the
+long-lag gap (ΔH_loc(1000 s) = 0.055) falls by only 6, 15 and 19% when S is reweighted to the
+cells, the cells and months, or the cells and hours where groups fly, and by 14% at the same
+site-day and hour (53% of G kept); the gap opens above 150 s. It is not a zone effect.
+
+## Report: `report/`
+
+`report/group_vs_solo.pdf` is a technical report (7 pages and appendices, figures and tables
+first): the grouping method and its thresholds, the definitions and error bars, and the results
+above, for reading and as the base of a presentation. `report/facts.py` writes the
+facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
+`report/generated/`) from the JSON of `out/<run>/`; `latexmk -pdf group_vs_solo.tex` in `report/`
+builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
+
 ## Tests and rebuild
 
 `test_groups.py` checks the FFT against the direct average, the populations on a synthetic
@@ -197,7 +376,8 @@ membership, the 1250-s rule and the segments, MSD = v²τ² on a straight glide,
 power laws, the block bootstrap, the cut of the phase runs, the slopes on power laws, the sites
 and blocks of `blocks.py`, the runs that count and their population in `survival.py`, the
 terms of `budget.py`, the climbs, glides and 30-min distances of `performance.py` on a synthetic
-flight, and every number quoted here.
+flight, the elimination of `redundancy.py`, the groups by size and the choice of the site-days
+of `size.py`, and every number quoted here.
 
 ```
 uv run python tamsd.py [--run NAME]      # from this folder, needs SSD_DISANTE; --recompute: about 5 min
@@ -207,5 +387,13 @@ uv run python blocks.py [--run NAME]     # after tamsd.py, about 30 s
 uv run python survival.py [--run NAME]   # about 30 s
 uv run python budget.py [--run NAME]     # about 20 s
 uv run python performance.py [--run NAME]  # --recompute: about 12 min (one pass over the fixes)
+uv run python redundancy.py [--run NAME] # after budget.py and performance.py, about 1 min
+uv run python size.py [--run NAME]       # after the scripts above; first run: three passes over the fixes, about 8 min, then about 4 min
+uv run python size.py --only slopes      # the slopes of the phase MSD by size, about an hour
+uv run python decompose.py [--run NAME] # after size.py; about 40 min (by size included)
+uv run python mechanisms.py [--run NAME] # after size.py, about 5 min
+uv run python zones.py [--run NAME]      # after tamsd.py, about 3 min
+uv run python size.py --recompute-pieces # TA-MSD pieces by size only, about 3 min
+uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analyses/groups            # from the root of xc-lab
 ```

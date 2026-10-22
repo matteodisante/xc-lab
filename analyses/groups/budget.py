@@ -30,6 +30,10 @@ STATS = {
     "climbs that start after a search (%)": ("after_search", "climbs", 100, 1),
     "searches that end in a climb (%)": ("found", "searches", 100, 1),
 }
+# The statistics drawn: the others are explained by them and stay in the JSON and the tables
+# (redundancy.py). The four shares of time sum to 100%, and "climbs that start after a search"
+# counts the same search-then-climb events as "searches that end in a climb".
+PLOTTED = ("time in climb (%)", "searches that end in a climb (%)")
 
 
 def columns(runs):
@@ -46,17 +50,24 @@ def columns(runs):
                        after_search=(climb & before) * 1.0, found=(search & after) * 1.0, searches=search * 1.0)
 
 
+def phase_runs(flights, spans):
+    """Vilpellet's runs of the paragliders with the terms of STATS, each in the population of the
+    stretch of `spans` that holds its middle."""
+    numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
+    return assign(columns(pd.read_parquet(RUNS["para"]).merge(numbers, on="flight_id")), spans)
+
+
 def ratios(sums, stats=STATS):
     """`stats` from summed columns (a Series, or a frame of draws)."""
     return {name: scale * sums[num] / sums[den] for name, (num, den, scale, _) in stats.items()}
 
 
-def budget(runs, block, rng, stats=STATS):
-    """Per population of `runs` (rows with flight, population and the terms of `stats`):
-    flights, `stats` and their bands."""
+def budget(runs, block, rng, stats=STATS, populations=POPULATIONS):
+    """Per population of `populations` (default the three of tamsd.py) in `runs` (rows with
+    flight, population and the terms of `stats`): flights, `stats` and their bands."""
     terms = sorted({c for num, den, *_ in stats.values() for c in (num, den)})
     out = {}
-    for pop in POPULATIONS:
+    for pop in populations:
         r = runs[runs["population"] == pop]
         by_block = r.groupby(block.reindex(r["flight"]).to_numpy())[terms].sum()
         draws = []
@@ -71,16 +82,21 @@ def budget(runs, block, rng, stats=STATS):
     return out
 
 
-def plot(result, path, stats=STATS, title="Paragliders: how the time is spent, solo and in a group"):
-    columns = -(-len(stats) // 2)
-    fig, axes = plt.subplots(2, columns, figsize=(3 * columns, 4.6), squeeze=False)
-    pops = list(POPULATIONS)
+def plot(result, path, stats=STATS, title="Paragliders: how the time is spent, solo and in a group",
+         populations=POPULATIONS, colors=COLORS):
+    """One panel per statistic of `stats` (a row of up to three, else two rows), one line per
+    population of `populations` (key: label), coloured by `colors`."""
+    rows = 1 if len(stats) <= 3 else 2
+    columns = -(-len(stats) // rows)
+    pops = list(populations)
+    fig, axes = plt.subplots(rows, columns, figsize=(3 * columns + 1.6, rows * (0.9 + 0.32 * len(pops)) + 0.6),
+                             squeeze=False)
     for ax, name in zip(axes.flat, stats):
         for y, pop in enumerate(pops):
             v = result[pop][name]
             lo, hi = v["band"]
             ax.errorbar(v["value"], y, xerr=[[v["value"] - lo], [hi - v["value"]]], fmt="o", ms=7,
-                        color=COLORS[pop], elinewidth=1.5, capsize=3)
+                        color=colors[pop], elinewidth=1.5, capsize=3)
             ax.annotate(f"{v['value']:.{stats[name][3]}f}", (hi, y), xytext=(6, 0), textcoords="offset points",
                         va="center", fontsize=8, color="#333333")
         lows = [result[p][name]["band"][0] for p in pops]
@@ -89,7 +105,7 @@ def plot(result, path, stats=STATS, title="Paragliders: how the time is spent, s
         ax.set_xlim(min(lows) - pad, max(highs) + 2 * pad)
         ax.set_ylim(-0.7, len(pops) - 0.3)
         ax.invert_yaxis()
-        ax.set_yticks(range(len(pops)), [POPULATIONS[p] for p in pops] if ax in axes[:, 0] else [])
+        ax.set_yticks(range(len(pops)), [populations[p] for p in pops] if ax in axes[:, 0] else [])
         ax.set_title(name, fontsize=9)
         ax.grid(axis="x", color="#e6e6e6", lw=0.6)
         ax.tick_params(labelsize=8)
@@ -105,11 +121,10 @@ if __name__ == "__main__":
     flights = pd.read_parquet(LABELS / "flights.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
-    numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
-    runs = assign(columns(pd.read_parquet(RUNS["para"]).merge(numbers, on="flight_id")), spans)
+    runs = phase_runs(flights, spans)
     result = budget(runs, summary.set_index("flight")["block"], np.random.default_rng(SEED))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "budget.json").write_text(json.dumps(result, indent=1))
-    plot(result, OUT / "budget.pdf")
+    plot(result, OUT / "budget.pdf", {name: STATS[name] for name in PLOTTED})
     for pop, r in result.items():
         print(pop, r["flights"], " | ".join(f"{n}: {r[n]['value']:.2f} {np.round(r[n]['band'], 2).tolist()}" for n in STATS))

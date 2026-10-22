@@ -52,6 +52,16 @@ def sites(lat, lon, date):
     return components(len(xy), cKDTree(xy).query_pairs(SITE_M, output_type="ndarray"))
 
 
+def with_takeoffs(flights):
+    """The flight table with the takeoff latitude and longitude, lat0 and lon0, of every flight."""
+    takeoff = pd.concat([pd.read_parquet(FIXES[d].parent / "flights_meta.parquet", columns=["flight_id", "lat0", "lon0"])
+                         .assign(discipline=d) for d in FIXES])
+    flights = flights.astype({"flight_id": str}).merge(takeoff.astype({"flight_id": str}), how="left",
+                                                       on=["discipline", "flight_id"], validate="one_to_one")
+    assert flights[["lat0", "lon0"]].notna().all().all()
+    return flights
+
+
 def quoted(r):
     """H with its band, H_loc at AT with their bands."""
     k = [int(np.searchsorted(LAGS, x)) for x in AT]
@@ -61,13 +71,8 @@ def quoted(r):
 
 
 if __name__ == "__main__":
-    flights = pd.read_parquet(LABELS / "flights.parquet")
+    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
     block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]
-    takeoff = pd.concat([pd.read_parquet(FIXES[d].parent / "flights_meta.parquet", columns=["flight_id", "lat0", "lon0"])
-                         .assign(discipline=d) for d in FIXES])
-    flights = flights.astype({"flight_id": str}).merge(takeoff.astype({"flight_id": str}), how="left",
-                                                       on=["discipline", "flight_id"], validate="one_to_one")
-    assert flights[["lat0", "lon0"]].notna().all().all()
     episode = block.reindex(flights["flight"]).to_numpy()
     variants = {"episodes": episode,
                 "day and site": merged(episode, sites(flights["lat0"], flights["lon0"], flights["date"])),

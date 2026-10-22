@@ -52,34 +52,13 @@ def mu_band(x, blocks, xmin, rng):
     return np.percentile((w @ counts) / (w @ logs), [5, 95]).tolist()
 
 
-def plot(data, fits, path):
-    fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
-    for ax, p in zip(axes, PHASES):
-        for pop, label in POPULATIONS.items():
-            f, x = fits[pop][p], data[pop][p]
-            mu, (lo, hi), xmin = f["mu_common"], f["mu_common_band"], f["xmin_common"]
-            ax.scatter(*log_resample(*ccdf(x)), s=14, color=COLORS[pop],
-                       label=rf"{label}: $\mu = {mu:.2f}$ [{lo:.2f}, {hi:.2f}]")
-            t = np.geomspace(xmin, x.max(), 50)
-            ax.plot(t, (x >= xmin).mean() * (t / xmin) ** -mu, color=COLORS[pop], lw=1, ls="--")
-        ax.axvline(xmin, color="#999999", lw=0.8, ls=":")
-        ax.set(xscale="log", yscale="log", title=f"{p}, paragliders", xlabel=r"$\tau$ (s)",
-               ylabel=rf"$P(\tau_{{\mathrm{{{p}}}}} > \tau)$")
-        ax.legend(loc="lower left", framealpha=1, edgecolor="none", fontsize=6.5)
-    save(fig, path)
-
-
-if __name__ == "__main__":
-    flights = pd.read_parquet(LABELS / "flights.parquet")
-    spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"),
-                      pd.read_parquet(LABELS / "flight_summary.parquet"))
-    numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
-    runs = assign(counted(pd.read_parquet(RUNS["para"])).merge(numbers, on="flight_id"), spans)
-    block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]
-    rng = np.random.default_rng(SEED)
-    data, fits = {pop: {} for pop in POPULATIONS}, {pop: {} for pop in POPULATIONS}
+def survival(runs, block, rng, populations=POPULATIONS):
+    """Per population of `populations` (the solo flights first: their xmin is the common
+    threshold) and phase: the trimmed durations of `runs`, and their fit with mu above that
+    threshold and its band."""
+    data, fits = {pop: {} for pop in populations}, {pop: {} for pop in populations}
     for p in PHASES:
-        for pop in POPULATIONS:  # solo first: its xmin is the common threshold
+        for pop in populations:
             mine = runs[(runs["population"] == pop) & (runs["phase"] == p)]
             durations = mine["n_fixes"].to_numpy(float)
             x = trim(durations)
@@ -95,6 +74,39 @@ if __name__ == "__main__":
             print(f"{pop:10s} {p:10s} {f['n']:8d} runs of {f['flights']:6d} flights, median {f['median']:5.0f} s, "
                   f"mu = {f['mu']:.2f} above its xmin {f['xmin']:.0f} s; above {xmin:.0f} s: "
                   f"mu = {f['mu_common']:.2f} [{lo:.2f}, {hi:.2f}] ({f['n_common']} runs)")
+    return data, fits
+
+
+def plot(data, fits, path, populations=POPULATIONS, colors=COLORS, min_tail=0):
+    """The survival of every population, with its mu above the common threshold, shown and drawn
+    only when at least `min_tail` runs lie above it."""
+    fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
+    for ax, p in zip(axes, PHASES):
+        for pop, label in populations.items():
+            f, x = fits[pop][p], data[pop][p]
+            mu, (lo, hi), xmin = f["mu_common"], f["mu_common_band"], f["xmin_common"]
+            fitted = f["n_common"] >= min_tail
+            ax.scatter(*log_resample(*ccdf(x)), s=14, color=colors[pop],
+                       label=rf"{label}: $\mu = {mu:.2f}$ [{lo:.2f}, {hi:.2f}]" if fitted
+                       else f"{label}: {f['n_common']} runs above the threshold, no fit")
+            if fitted:
+                t = np.geomspace(xmin, x.max(), 50)
+                ax.plot(t, (x >= xmin).mean() * (t / xmin) ** -mu, color=colors[pop], lw=1, ls="--")
+        ax.axvline(xmin, color="#999999", lw=0.8, ls=":")
+        ax.set(xscale="log", yscale="log", title=f"{p}, paragliders", xlabel=r"$\tau$ (s)",
+               ylabel=rf"$P(\tau_{{\mathrm{{{p}}}}} > \tau)$")
+        ax.legend(loc="lower left", framealpha=1, edgecolor="none", fontsize=6.5)
+    save(fig, path)
+
+
+if __name__ == "__main__":
+    flights = pd.read_parquet(LABELS / "flights.parquet")
+    spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"),
+                      pd.read_parquet(LABELS / "flight_summary.parquet"))
+    numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
+    runs = assign(counted(pd.read_parquet(RUNS["para"])).merge(numbers, on="flight_id"), spans)
+    block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]
+    data, fits = survival(runs, block, np.random.default_rng(SEED))
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "survival.json").write_text(json.dumps(fits, indent=1))
     plot(data, fits, OUT / "survival.pdf")

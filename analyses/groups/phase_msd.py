@@ -121,6 +121,25 @@ def measure(discipline, flights, spans):
     return pieces, values
 
 
+def save_pieces(path, flights, spans):
+    """Measure the pieces of every discipline for `spans` and save them in `path`."""
+    arrays = {}
+    for d in FIXES:
+        pieces, values = measure(d, flights, spans)
+        arrays.update({f"{d}/{c}": pieces[c].to_numpy(None if pd.api.types.is_numeric_dtype(pieces[c]) else str)
+                       for c in pieces.columns})
+        arrays[f"{d}/values"] = values
+    np.savez_compressed(path, **arrays)
+
+
+def read_pieces(path, discipline):
+    """The pieces of one discipline saved by save_pieces, and their MSDs at DELTAS."""
+    data = np.load(path, allow_pickle=True)  # older copies hold object arrays
+    columns = {k.split("/")[1]: data[k] for k in data.files if k.startswith(discipline + "/")}
+    values = columns.pop("values")
+    return pd.DataFrame(columns), values
+
+
 def weighted_median(values, weights):
     """His estimator: the first value, in increasing order, whose cumulative weight reaches half."""
     order = np.argsort(values)
@@ -128,12 +147,12 @@ def weighted_median(values, weights):
     return values[order][np.searchsorted(cdf, 0.5)]
 
 
-def medians(pieces, values, phases=PHASES):
-    """Per population and phase: the weighted median over pieces at each lag, how many pieces
-    and flights reach it."""
+def medians(pieces, values, phases=PHASES, populations=POPULATIONS):
+    """Per population of `populations` and phase: the weighted median over pieces at each lag,
+    how many pieces and flights reach it."""
     out = {}
     n = (pieces["t_end"] - pieces["t_start"] + 1).to_numpy(float)
-    for pop in POPULATIONS:
+    for pop in populations:
         out[pop] = {}
         for phase in phases:
             mask = ((pieces["population"] == pop) & (pieces["phase"] == phase)).to_numpy()
@@ -181,7 +200,7 @@ def fitted(results, lags):
     return out
 
 
-def bands(pieces, values, blocks, lags, rng):
+def bands(pieces, values, blocks, lags, rng, populations=POPULATIONS):
     """5-95% of the slopes over N_BOOT draws of whole blocks of pieces."""
     order = np.argsort(blocks, kind="stable")
     starts = np.flatnonzero(np.r_[True, blocks[order][1:] != blocks[order][:-1]])
@@ -189,7 +208,8 @@ def bands(pieces, values, blocks, lags, rng):
     draws = []
     for _ in range(N_BOOT):
         idx = np.concatenate([members[c] for c in rng.integers(0, len(members), len(members))])
-        draws.append(fitted(medians(pieces.iloc[idx].reset_index(drop=True), values[idx], tuple(FITS)), lags))
+        draws.append(fitted(medians(pieces.iloc[idx].reset_index(drop=True), values[idx], tuple(FITS), populations),
+                            lags))
     out = {}
     for pop in draws[0]:
         out[pop] = {}
@@ -229,22 +249,12 @@ if __name__ == "__main__":
     # Two passes over the fixes take about 6 min: reuse the pieces unless asked.
     if "--recompute" in sys.argv or not saved.exists():
         flights = pd.read_parquet(LABELS / "flights.parquet")
-        spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
-        arrays = {}
-        for d in FIXES:
-            pieces, values = measure(d, flights, spans)
-            arrays.update({f"{d}/{c}": pieces[c].to_numpy(None if pd.api.types.is_numeric_dtype(pieces[c]) else str)
-                           for c in pieces.columns})
-            arrays[f"{d}/values"] = values
-        np.savez_compressed(saved, **arrays)
-    data = np.load(saved, allow_pickle=True)  # written above; older copies hold object arrays
+        save_pieces(saved, flights, stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary))
     block = summary.set_index("flight")["block"]
     rng = np.random.default_rng(SEED)
     results, slopes = {}, {}
     for d in FIXES:
-        columns = {k.split("/")[1]: data[k] for k in data.files if k.startswith(d + "/")}
-        values = columns.pop("values")
-        pieces = pd.DataFrame(columns)
+        pieces, values = read_pieces(saved, d)
         results[d] = medians(pieces, values)
         lags = {pop: {phase: drawn(results[d][pop][phase])[0] for phase in FITS} for pop in POPULATIONS}
         slopes[d] = {"slope": fitted(results[d], lags),

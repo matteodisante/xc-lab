@@ -35,11 +35,15 @@ STATS = {
     "glide ratio": ("chord_m", "loss_m", 1, 1),
     "cross-country speed over 30 min (km/h)": ("xc_m", "xc_origins", 3.6 / XC_S, 1),
 }
+# The statistics drawn: the height gained per climb and the cross-country speed are explained by
+# the others and by those of budget.py, and stay in the JSON and the tables (redundancy.py).
+PLOTTED = ("climb rate (m/s)", "glide speed (km/h)", "glide ratio")
 
 
 def flight_terms(fixes, runs, spans):
     """For one flight: z at both ends and the straight line of each run (rows of `runs`, with
-    segment_id, t_start, t_end at fixes), and the distance sums of its cross-country pieces."""
+    segment_id, t_start, t_end at fixes), and the distance sums of its cross-country pieces with
+    their middle instant on the flight clock."""
     fixes = fixes.sort_values(["segment_id", "t"], kind="stable")
     key = fixes["segment_id"].to_numpy() * 1e6 + fixes["t"].to_numpy(float)
     ends = [np.searchsorted(key, runs["segment_id"].to_numpy() * 1e6 + runs[c].to_numpy(float)) for c in ("t_start", "t_end")]
@@ -48,9 +52,9 @@ def flight_terms(fixes, runs, spans):
     dz, chord = z[b] - z[a], np.hypot(e[b] - e[a], n[b] - n[a])
     k = XC_S // GRID_S
     xc = []
-    for span, pos in grids(fixes, spans, XC_S / SUPPORT):
+    for span, start, pos in grids(fixes, spans, XC_S / SUPPORT):
         d = np.hypot(*(pos[k:] - pos[:-k]).T)
-        xc.append((span.population, d.sum(), len(d)))
+        xc.append((span.population, d.sum(), len(d), start + (len(pos) - 1) * GRID_S / 2))
     return dz, chord, xc
 
 
@@ -84,12 +88,12 @@ def measure(flights, runs, spans):
                     store(future)
         for future in pending:
             store(future)
-    return dz, chord, pd.DataFrame(xc, columns=["flight", "population", "xc_m", "xc_origins"])
+    return dz, chord, pd.DataFrame(xc, columns=["flight", "population", "xc_m", "xc_origins", "t_mid"])
 
 
 def table(runs, dz, chord, xc):
-    """One row per run and per cross-country piece, with the terms of STATS; runs the pass did
-    not reach are left out."""
+    """One row per run and per cross-country piece, with the terms of STATS and the middle
+    instant t_mid on the flight clock; runs the pass did not reach are left out."""
     reached = ~np.isnan(dz)
     runs, dz, chord = runs[reached], dz[reached], chord[reached]
     climb, glide = (runs["phase"] == "climb").to_numpy(), (runs["phase"] == "transition").to_numpy()
@@ -97,8 +101,18 @@ def table(runs, dz, chord, xc):
     rows = pd.DataFrame({"flight": runs["flight"].to_numpy(), "population": runs["population"].to_numpy(),
                          "gain_m": np.where(climb, dz, 0), "climb_s": np.where(climb, s, 0), "climbs": climb * 1.0,
                          "chord_m": np.where(glide, chord, 0), "transition_s": np.where(glide, s, 0),
-                         "loss_m": np.where(glide, -dz, 0)})
+                         "loss_m": np.where(glide, -dz, 0),
+                         "t_mid": ((runs["t_start"] + runs["t_end"]) / 2).to_numpy(float)})
     return pd.concat([rows, xc], ignore_index=True).fillna(0)
+
+
+def save_terms(path, flights, spans):
+    """Measure the terms of STATS for `spans` and save them in `path`."""
+    numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
+    runs = pd.read_parquet(RUNS["para"], columns=["flight_id", "segment_id", "phase", "t_start", "t_end"])
+    runs = assign(runs[runs["phase"].isin(["climb", "transition"])].merge(numbers, on="flight_id"), spans)
+    dz, chord, xc = measure(flights, runs, spans)
+    table(runs, dz.to_numpy(), chord.to_numpy(), xc).to_parquet(path)
 
 
 if __name__ == "__main__":
@@ -108,15 +122,11 @@ if __name__ == "__main__":
     saved = CACHE / "performance_terms.parquet"
     # One pass over 40 GB of fixes: reuse its terms unless asked.
     if "--recompute" in sys.argv or not saved.exists():
-        spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
-        numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]
-        runs = pd.read_parquet(RUNS["para"], columns=["flight_id", "segment_id", "phase", "t_start", "t_end"])
-        runs = assign(runs[runs["phase"].isin(["climb", "transition"])].merge(numbers, on="flight_id"), spans)
-        dz, chord, xc = measure(flights, runs, spans)
-        table(runs, dz.to_numpy(), chord.to_numpy(), xc).to_parquet(saved)
+        save_terms(saved, flights, stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary))
     terms = pd.read_parquet(saved)
     result = budget(terms, summary.set_index("flight")["block"], np.random.default_rng(SEED), STATS)
     (OUT / "performance.json").write_text(json.dumps(result, indent=1))
-    plot(result, OUT / "performance.pdf", STATS, "Paragliders: climbs, glides and cross-country speed")
+    plot(result, OUT / "performance.pdf", {name: STATS[name] for name in PLOTTED},
+         "Paragliders: climb rate, glide speed and glide ratio")
     for pop, r in result.items():
         print(pop, r["flights"], " | ".join(f"{n}: {r[n]['value']:.2f} {np.round(r[n]['band'], 2).tolist()}" for n in STATS))

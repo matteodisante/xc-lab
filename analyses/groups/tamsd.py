@@ -50,22 +50,34 @@ H_MAX = 10  # loggers up to this interval are on the grid of the labels at every
 POPULATIONS = {"solo": "solo flights", "group": "group flights, group time",
                "group_solo": "group flights, solo time"}
 COLORS = {"solo": "#2a78d6", "group": "#eb6834", "group_solo": "#1baf7a"}
+# Group time by the number of pilots of the configuration (stretches(by_size=True)).
+SIZES = {"n2": "2 pilots", "n3": "3 pilots", "n4": "4 pilots", "n5-6": "5-6 pilots", "n7+": "7+ pilots"}
 NAMES = {"para": "paragliders", "hang": "hang gliders"}
 N_BOOT, SEED = 1000, 20261020
 
 
-def stretches(flights, membership, summary):
+def size_of(n):
+    """The key of SIZES of a configuration of n pilots."""
+    return np.select([n == 2, n == 3, n == 4, n <= 6], ["n2", "n3", "n4", "n5-6"], "n7+")
+
+
+def stretches(flights, membership, summary, by_size=False):
     """Stretches of every eligible flight on its own clock (seconds from the trimmed start):
-    flight, population, episode (-1 when solo), a, b."""
+    flight, population, episode (-1 when solo), a, b. With by_size, a group stretch ends where
+    the configuration changes and its population is the key of SIZES of the configuration."""
     ok = flights[(flights["dt_native"] <= H_MAX + 1e-6) & (flights["n_grid"] > 0)]
     mb = membership[membership["flight"].isin(ok["flight"]) & (membership["state"] != "L")]
     mb = mb.sort_values(["flight", "t_start"], kind="stable")
     # Consecutive rows of one state are one stretch; G rows in a row change only configuration.
-    run = (mb["state"] != mb.groupby("flight")["state"].shift()).cumsum()
-    s = mb.groupby(run).agg(flight=("flight", "first"), state=("state", "first"), a=("t_start", "min"),
-                            b=("t_end", "max"), episode=("episode_id", "first"))
+    change = mb["state"] != mb.groupby("flight")["state"].shift()
+    if by_size:
+        change |= (mb["state"] == "G") & (mb["conf_id"] != mb.groupby("flight")["conf_id"].shift())
+    columns = dict(flight=("flight", "first"), state=("state", "first"), a=("t_start", "min"), b=("t_end", "max"),
+                   episode=("episode_id", "first"), **({"n": ("n", "first")} if by_size else {}))
+    s = mb.groupby(change.cumsum()).agg(**columns)
     grouped = summary.set_index("flight")["n_entries"].reindex(s["flight"]).to_numpy() > 0
-    s["population"] = np.where(s["state"] == "G", "group", np.where(grouped, "group_solo", "solo"))
+    in_group = size_of(s["n"].to_numpy()) if by_size else "group"
+    s["population"] = np.where(s["state"] == "G", in_group, np.where(grouped, "group_solo", "solo"))
     s["episode"] = np.where(s["state"] == "G", s["episode"], -1)
     utc0 = flights.set_index("flight")["utc0"].reindex(s["flight"]).to_numpy()
     s["a"], s["b"] = s["a"] - utc0, s["b"] - utc0
@@ -73,9 +85,9 @@ def stretches(flights, membership, summary):
 
 
 def grids(fixes, spans, shortest):
-    """For one flight: the positions E, N on the 10-s grid of the flight clock of every piece
-    of a stretch inside one segment that lasts at least `shortest` s, with its stretch.
-    `spans` holds the stretches of the flight (rows of stretches())."""
+    """For one flight: every piece of a stretch inside one segment that lasts at least
+    `shortest` s, as its stretch, its first instant on the flight clock and its positions E, N
+    on the 10-s grid. `spans` holds the stretches of the flight (rows of stretches())."""
     fixes = fixes.sort_values("t", kind="stable")
     t = fixes["t"].to_numpy(float)
     seg = fixes["segment_id"].to_numpy()
@@ -86,16 +98,18 @@ def grids(fixes, spans, shortest):
             g = np.arange(np.ceil(max(ts[0], span.a) / GRID_S) * GRID_S, min(ts[-1], span.b - 1e-6) + 1e-6, GRID_S)
             if len(g) < 2 or (len(g) - 1) * GRID_S < shortest:
                 continue
-            yield span, np.column_stack([np.interp(g, ts, fixes[c].to_numpy(float)[q]) for c in ("E", "N")])
+            yield span, g[0], np.column_stack([np.interp(g, ts, fixes[c].to_numpy(float)[q]) for c in ("E", "N")])
 
 
 def pieces(fixes, spans):
-    """The pieces of grids() that last at least TAU_MAX / SUPPORT, with their sums and
-    origins at LAGS."""
+    """The pieces of grids() that last at least TAU_MAX / SUPPORT: population, episode, first
+    instant (flight clock), duration, the east and north of the middle of the piece (frame of the
+    flight), and their sums and origins at LAGS."""
     out = []
-    for span, pos in grids(fixes, spans, TAU_MAX / SUPPORT):
+    for span, start, pos in grids(fixes, spans, TAU_MAX / SUPPORT):
         sums, origins = tamsd_sums(pos, LAGS // GRID_S)
-        out.append((span.population, span.episode, (len(pos) - 1) * GRID_S, sums, origins))
+        mid = pos[len(pos) // 2]
+        out.append((span.population, span.episode, start, (len(pos) - 1) * GRID_S, mid[0], mid[1], sums, origins))
     return out
 
 
@@ -126,9 +140,22 @@ def measure(discipline, flights, spans):
                     store(future)
         for future in pending:
             store(future)
-    flight, population, episode, duration, sums, origins = zip(*rows) if rows else ([],) * 6
+    flight, population, episode, start, duration, mid_e, mid_n, sums, origins = zip(*rows) if rows else ([],) * 9
     return {"flight": np.array(flight, np.int64), "population": np.array(population), "episode": np.array(episode),
-            "duration": np.array(duration), "sums": np.array(sums), "origins": np.array(origins)}
+            "start": np.array(start), "duration": np.array(duration), "mid_e": np.array(mid_e),
+            "mid_n": np.array(mid_n), "sums": np.array(sums), "origins": np.array(origins)}
+
+
+def save_pieces(path, flights, spans):
+    """Measure the pieces of every discipline for `spans` and save them in `path`."""
+    measured = {d: measure(d, flights, spans) for d in FIXES}
+    np.savez(path, **{f"{d}/{k}": v for d, m in measured.items() for k, v in m.items()})
+
+
+def read_pieces(path):
+    """The pieces saved by save_pieces: per discipline, a dict of arrays."""
+    data = np.load(path)
+    return {d: {k.split("/")[1]: data[k] for k in data.files if k.startswith(d + "/")} for d in FIXES}
 
 
 def per_flight(p, mask):
@@ -169,11 +196,11 @@ def ensemble(values, blocks, rng):
     return values.mean(axis=0), np.concatenate(draws)
 
 
-def summarize(p, summary, rng):
-    """Per population: flights, pieces, MSD with its 5-95% bootstrap band, H and H_loc."""
+def summarize(p, summary, rng, populations=POPULATIONS):
+    """Per population of `populations`: flights, pieces, MSD with its 5-95% bootstrap band, H and H_loc."""
     block = summary.set_index("flight")["block"]
     out = {}
-    for pop in POPULATIONS:
+    for pop in populations:
         mask = p["population"] == pop
         if not mask.any():
             continue
@@ -234,11 +261,8 @@ if __name__ == "__main__":
     saved = CACHE / "pieces.npz"
     # The paraglider pass reads 40 GB of fixes: reuse it unless asked.
     if "--recompute" in sys.argv or not saved.exists():
-        spans = stretches(flights, membership, summary)
-        measured = {d: measure(d, flights, spans) for d in FIXES}
-        np.savez(saved, **{f"{d}/{k}": v for d, m in measured.items() for k, v in m.items()})
-    data = np.load(saved)
-    measured = {d: {k.split("/")[1]: data[k] for k in data.files if k.startswith(d + "/")} for d in FIXES}
+        save_pieces(saved, flights, stretches(flights, membership, summary))
+    measured = read_pieces(saved)
     rng = np.random.default_rng(SEED)
     results = {d: summarize(measured[d], summary, rng) for d in FIXES}
     (OUT / "tamsd.json").write_text(json.dumps(results, indent=1))
