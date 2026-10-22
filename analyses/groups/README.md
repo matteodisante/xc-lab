@@ -360,9 +360,26 @@ long-lag gap (ΔH_loc(1000 s) = 0.055) falls by only 6, 15 and 19% when S is rew
 cells, the cells and months, or the cells and hours where groups fly, and by 14% at the same
 site-day and hour (53% of G kept); the gap opens above 150 s. It is not a zone effect.
 
+## Group or moment: `prepost.py`
+
+The same flight before, during and after a group. Each stretch of group time of at least W
+seconds (default 3000, `--window SECONDS`) is an event with windows of W s of the flight clock:
+before and after (the W s next to it, in a solo stretch of the same flight at least that long),
+start and end of the group (its first and last W s). Controls: two consecutive windows with no
+change of state, one pair per stretch, drawn in the solo time of the group flights (A) and in
+solo flights (S). On the events that have both windows the ensemble MSD of each is compared over
+every lag (H_loc and fitted H) and on the phase statistics (runs and glides placed by their
+middle), with 5-95% bands from blocks that join episodes and site-days. Result (W = 3000 s,
+6 524 entries, 13 643 exits): ΔH_loc(1000 s) = +0.027 [+0.023, +0.031] entering and +0.031 [+0.028,
++0.033] leaving, against −0.002 for the controls and −0.003 [−0.007, +0.001] for after minus
+before; nothing at 100 s; the fitted H does not leave the drift; glides faster and flatter in both
+directions. The straighter progress follows the group in time; what brings pilots together is not
+controlled. With W = 1260 s, H_loc(1000 s) rests on 26 origins and drifts by −0.007 to −0.011
+between consecutive windows.
+
 ## Report: `report/`
 
-`report/group_vs_solo.pdf` is a technical report (7 pages and appendices, figures and tables
+`report/group_vs_solo.pdf` is a technical report (9 pages and appendices, figures and tables
 first): the grouping method and its thresholds, the definitions and error bars, and the results
 above, for reading and as the base of a presentation. `report/facts.py` writes the
 facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
@@ -393,6 +410,7 @@ uv run python size.py --only slopes      # the slopes of the phase MSD by size, 
 uv run python decompose.py [--run NAME] # after size.py; about 40 min (by size included)
 uv run python mechanisms.py [--run NAME] # after size.py, about 5 min
 uv run python zones.py [--run NAME]      # after tamsd.py, about 3 min
+uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python size.py --recompute-pieces # TA-MSD pieces by size only, about 3 min
 uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analyses/groups            # from the root of xc-lab

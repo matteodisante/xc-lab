@@ -114,6 +114,31 @@ With $q=0.2$ contacts need to last only 26.4~min: more and shorter groups, up to
 \end{table}
 
 %======================================================================================
+\section{Before, during and after with short windows}\label{app:prepost}
+
+Same test as Section~\ref{sec:prepost} with windows of \PPShortWindowMin{} min, the shortest a piece of the TA-MSD allows. Groups of at least \PPShortWindowMin{} min enter: more events, but
+at 1000~s a window holds about 26 origins, so $H_\mathrm{loc}$ over the longest lags is noisy and its drift between consecutive windows is large (controls below). The fitted $H$, dominated by short lags, shows no
+change beyond the drift; the phase statistics at entry depend on the window (time in climb \PPShortEntryClimb{} points, glide speed \PPShortEntrySpeed{} km/h here, against \PPEntryClimb{} and \PPEntrySpeed{} with \PPWindowMin{} min).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{prepost_1260_curves.pdf}
+\caption{As Fig.~\ref{fig:prepost}, windows of \PPShortWindowMin{} min.}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\input{generated/prepost_table_short}
+\caption{As Table~\ref{tab:prepost}, windows of \PPShortWindowMin{} min.}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\input{generated/prepost_phase_table_short}
+\caption{As Table~\ref{tab:prepost-phase}, windows of \PPShortWindowMin{} min.}
+\end{table}
+
+%======================================================================================
 \section{Leader minus follower}\label{app:leaders}
 
 \begin{figure}[H]
@@ -142,7 +167,8 @@ From \texttt{xc-lab/analyses/groups}, SSD\_DISANTE mounted:
 uv run python tamsd.py; uv run python phase_msd.py; uv run python survival.py
 uv run python budget.py; uv run python performance.py; uv run python blocks.py
 uv run python redundancy.py; uv run python size.py; uv run python decompose.py
-uv run python zones.py; uv run python mechanisms.py; uv run python report/facts.py
+uv run python zones.py; uv run python prepost.py; uv run python prepost.py --window 1260
+uv run python mechanisms.py; uv run python report/facts.py
 uv run python report/tables.py; cd report; latexmk -pdf group_vs_solo.tex
 \end{verbatim}
 Heavy pieces stay on SSD\_DISANTE, in the \texttt{analyses/} folder of each run; figures and JSON in \texttt{out/<run>/}.

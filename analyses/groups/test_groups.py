@@ -12,6 +12,7 @@ import blocks  # noqa: E402
 import budget  # noqa: E402
 import decompose  # noqa: E402
 import mechanisms  # noqa: E402
+import prepost  # noqa: E402
 import performance  # noqa: E402
 import phase_msd  # noqa: E402
 import redundancy  # noqa: E402
@@ -184,6 +185,52 @@ def test_zone_cells_and_the_standardisation_of_solo_flights_to_the_zones_of_the_
     assert mg[0, 0] == pytest.approx(4.6) and ms[0, 0] == pytest.approx(1.4)  # pooled, they differ: the zones
     lost = decompose.Units(pop, np.where(pop == "group", stratum + 2, stratum), np.arange(20), value)
     assert zonelib.standardized(lost, "group", "solo", np.zeros((0, 20), np.int32))[3][0] == 0.0  # no common zone
+
+
+def test_windows_around_the_group_and_the_control_pairs():
+    W = prepost.WINDOW_S
+    spans = pd.DataFrame({
+        "flight": [1, 1, 1, 2, 2, 3, 4],
+        "population": ["group_solo", "group", "group_solo", "group", "group_solo", "solo", "group_solo"],
+        "episode": [-1, 5, -1, 6, -1, -1, -1],
+        "a": [0.0, 3000.0, 3000.0 + 2 * W, 0.0, 600.0, 0.0, 0.0],
+        "b": [3000.0, 3000.0 + 2 * W, 5000.0 + 2 * W, 600.0, 600.0 + W, 6000.0, 900.0]})
+    w = prepost.windows(spans, np.random.default_rng(0))
+    ev = w[~w["population"].str.startswith("ctrl")].sort_values(["flight", "a"])
+    assert list(ev[["flight", "population", "a", "b"]].itertuples(index=False, name=None)) == [
+        (1, "pre", 3000.0 - W, 3000.0), (1, "start", 3000.0, 3000.0 + W), (1, "end", 3000.0 + W, 3000.0 + 2 * W),
+        (1, "post", 3000.0 + 2 * W, 3000.0 + 3 * W),
+        (2, "post", 600.0, 600.0 + W)]  # a group of 600 s is too short for start and end, its solo stretch after is long enough
+    ctrl = w[w["population"].str.startswith("ctrl")]
+    assert sorted(ctrl["population"]) == ["ctrlA1", "ctrlA2", "ctrlS1", "ctrlS2"]  # the solo time of flight 1 before the group; flight 3
+    one = ctrl[ctrl["population"] == "ctrlS1"].iloc[0]
+    two = ctrl[ctrl["population"] == "ctrlS2"].iloc[0]
+    assert two["a"] == one["b"] and two["episode"] == one["episode"] and one["b"] - one["a"] == W
+    terms = pd.DataFrame({"flight": [1, 1, 1], "population": "solo", "t_mid": [2000.0, 3100.0, 99999.0], "gain_m": 1.0})
+    placed = prepost.place(terms, w)
+    assert sorted(placed["population"]) == ["ctrlA2", "pre", "start"]  # a run can lie in a window and in a control window
+
+
+def test_prepost_comparison_and_profile_on_a_synthetic_group_effect():
+    # 40 events; the group windows have twice the MSD of the windows alone, at every lag.
+    rows = []
+    for e in range(40):
+        for label, factor in (("pre", 1.0), ("start", 2.0), ("end", 2.0), ("post", 1.0)):
+            rows.append((label, e, factor))
+    pop, stratum, factor = (np.array(c) for c in zip(*rows))
+    values = factor[:, None] * tamsd.LAGS[None, :].astype(float) ** 1.8
+    units = decompose.Units(pop, stratum, np.arange(len(pop)), values)
+    draws = np.ones((3, len(pop)), np.int32)
+    out, _ = prepost.compare(units, draws, {"entry": ("start", "pre")})
+    assert out["entry"]["events"] == 40
+    assert out["entry"]["dH"] == pytest.approx(0.0, abs=1e-9)  # a constant factor does not change H
+    prof = prepost.profile(units, draws)
+    assert prof["events"] == 40 and prof["pre"]["H"] == pytest.approx(0.9, abs=1e-9)
+    # a stretch of straighter motion in the group windows: H rises from pre to start
+    values = values * np.where(np.isin(pop, ("start", "end"))[:, None], tamsd.LAGS[None, :].astype(float) ** 0.1, 1.0)
+    out, _ = prepost.compare(decompose.Units(pop, stratum, np.arange(len(pop)), values), draws,
+                             {"entry": ("start", "pre"), "exit": ("end", "post")})
+    assert out["entry"]["dH"] == pytest.approx(0.05, abs=1e-9) and out["exit"]["dH"] == pytest.approx(0.05, abs=1e-9)
 
 
 def straight(t_end, segments=((0, None),)):
@@ -540,6 +587,20 @@ def test_zone_numbers_of_the_report():
         assert (round(r["S"]["dH_loc"][k], 4), round(r["S"]["dH_loc_support"][k], 4)) == (loc, loc_as_is), name
         assert round(r["A"]["dH"], 4) == dh_a, name
     assert [round(z["none"]["S"][c]["H"], 3) for c in ("G", "other")] == [0.916, 0.899]
+
+
+def test_prepost_numbers_of_the_report():
+    r = json.loads((tamsd.OUT / "prepost_3000.json").read_text())
+    k = int(np.searchsorted(np.array(r["entry"]["lags"]), 1000))
+    expected = {  # events, fitted dH, dH_loc(1000)
+        "entry": (6524, 0.0101, 0.0269), "exit": (13643, 0.0052, 0.0307), "after minus before": (6320, 0.0037, -0.0033),
+        "control, group flights alone": (16998, 0.0046, -0.0017), "control, solo flights": (69648, 0.0088, -0.0017)}
+    for name, (events, dh, loc) in expected.items():
+        assert r[name]["events"] == events, name
+        assert (round(r[name]["dH"], 4), round(r[name]["dH_loc"][k], 4)) == (dh, loc), name
+    p = r["profile"]
+    assert p["events"] == 3334
+    assert [round(p[s]["H_loc(1000)"], 4) for s in prepost.STAGES] == [0.8795, 0.9098, 0.9108, 0.8765]
 
 
 def test_performance_reads_runs_at_their_ends_and_flies_30_min_straight():

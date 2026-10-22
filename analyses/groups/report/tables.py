@@ -381,6 +381,65 @@ def zones_tex():
     macro("ZoneShortMin", signed(min(min(z[n]["S"]["dH_loc"][i] for i in np.flatnonzero(low & (lags >= 20))) for n in z), 3))
 
 
+def prepost_tex(width, tag=""):
+    """The same flight before, during and after a group, windows of `width` seconds (prepost.py); the macros
+    carry `tag` after PP and the tables the suffix _short when there is one."""
+    r = load(MAIN, f"prepost_{width}")
+    if r is None:
+        return
+    file = "_short" if tag else ""
+    macro(f"PP{tag}WindowMin", str(width // 60))
+    names = {"entry": "entering: start $-$ before", "exit": "leaving: end $-$ after", "after minus before": "after $-$ before",
+             "control, group flights alone": "control A: later $-$ earlier", "control, solo flights": "control S: later $-$ earlier"}
+    rows = []
+    for name, label in names.items():
+        e = r[name]
+        k = int(np.searchsorted(np.array(e["lags"]), 1000))
+        j = int(np.searchsorted(np.array(e["lags"]), 100))
+        cell = lambda v, b, d=3: r"\makecell{" + signed(v, d) + r"\\{\scriptsize[" + signed(b[0], d) + ", " + signed(b[1], d) + "]}}"
+        rows.append(" & ".join([label, num(e["events"], 0), cell(e["dH"], e["dH_band"]),
+                                cell(e["dH_loc"][j], [e["dH_loc_band"][0][j], e["dH_loc_band"][1][j]]),
+                                cell(e["dH_loc"][k], [e["dH_loc_band"][0][k], e["dH_loc_band"][1][k]])]) + r" \\[2pt]")
+    write(f"prepost_table{file}", "\n".join([
+        r"\begin{tabular}{@{}l r c c c@{}}", r"\toprule",
+        r"comparison & events & $\Delta H$ & $\Delta H_\mathrm{loc}(100)$ & $\Delta H_\mathrm{loc}(1000)$ \\", r"\midrule",
+        *rows, r"\bottomrule", r"\end{tabular}"]))
+    stats = ("time in climb (%)", "searches that end in a climb (%)", "climb rate (m/s)", "glide speed (km/h)", SINK)
+    digits = {"time in climb (%)": 1, "searches that end in a climb (%)": 1, "climb rate (m/s)": 3, "glide speed (km/h)": 2, SINK: 1}
+    ps = r["phase statistics"]
+    rows = []
+    for name, label in names.items():
+        e = ps[name]
+        cells = [r"\makecell{" + signed(e[s_]["value"], digits[s_]) + r"\\{\scriptsize[" + signed(e[s_]["band"][0], digits[s_]) + ", "
+                 + signed(e[s_]["band"][1], digits[s_]) + "]}}" for s_ in stats]
+        rows.append(" & ".join([label, num(e["events (runs)"], 0), *cells]) + r" \\[2pt]")
+    write(f"prepost_phase_table{file}", "\n".join([
+        r"\begin{tabular}{@{}l r c c c c c@{}}", r"\toprule",
+        r"comparison & events & \makecell{time in\\climb (points)} & \makecell{searches to\\climb (points)} & "
+        r"\makecell{climb rate\\(m/s)} & \makecell{glide speed\\(km/h)} & \makecell{height lost\\per km (m/km)} \\",
+        r"\midrule", *rows, r"\bottomrule", r"\end{tabular}"]))
+    keys = {"entry": "Entry", "exit": "Exit", "after minus before": "AfterBefore", "control, group flights alone": "CtrlA",
+            "control, solo flights": "CtrlS"}
+    for name, key in keys.items():
+        e = r[name]
+        k = int(np.searchsorted(np.array(e["lags"]), 1000))
+        j = int(np.searchsorted(np.array(e["lags"]), 100))
+        macro(f"PP{tag}{key}Events", num(e["events"], 0))
+        macro(f"PP{tag}{key}DH", signed(e["dH"], 3))
+        macro(f"PP{tag}{key}DHBand", f"[{signed(e['dH_band'][0], 3)}, {signed(e['dH_band'][1], 3)}]")
+        macro(f"PP{tag}{key}DHloc", signed(e["dH_loc"][k], 3))
+        macro(f"PP{tag}{key}DHlocBand", f"[{signed(e['dH_loc_band'][0][k], 3)}, {signed(e['dH_loc_band'][1][k], 3)}]")
+        macro(f"PP{tag}{key}DHlocHundred", signed(e["dH_loc"][j], 3))
+        for s_, sn in zip(stats, ("Climb", "Found", "Rate", "Speed", "Sink")):
+            macro(f"PP{tag}{key}{sn}", signed(ps[name][s_]["value"], digits[s_]))
+    p = r["profile"]
+    macro(f"PP{tag}ProfileEvents", num(p["events"], 0))
+    for st, sn in (("pre", "Pre"), ("start", "Start"), ("end", "End"), ("post", "Post")):
+        macro(f"PP{tag}ProfileH{sn}", f"{p[st]['H']:.3f}")
+        macro(f"PP{tag}ProfileHloc{sn}", f"{p[st]['H_loc(1000)']:.3f}")
+        macro(f"PP{tag}ProfileHlocHundred{sn}", f"{p[st]['H_loc(100)']:.3f}")
+
+
 def redundancy_tex():
     """Which statistics are drawn and why (redundancy.py)."""
     r = load(MAIN, "redundancy")
@@ -408,6 +467,8 @@ def main():
     mechanisms_tex()
     robustness_tex()
     zones_tex()
+    prepost_tex(3000)
+    prepost_tex(1260, "Short")
     redundancy_tex()
     d = decompose_tex()
     if d is not None:
