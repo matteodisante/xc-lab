@@ -16,12 +16,15 @@ Earth-centred, so the coordinates of all flights are the same frame. The distanc
 positions is the chord of the ellipsoid, shorter than the distance along it by about $d^3/24R^2$:
 about a millimetre at $d=10$~km. The altitude is $z$ as recorded.
 
-The phase labelling of xc-lab (note \emph{Flight phases with a hidden Markov model}) gives every
-fix of a flight logged every 5~s or less one of three states,
+\fix{The phases of the run reported here are Vilpellet's runs, computed by the old repository
+(soaring, tag \texttt{legacy-final}) on the flights logged every second only, 70\% of the
+paraglider flights. The phase labelling of xc-lab (note \emph{Flight phases with a hidden Markov
+model}), meant for loggers of 5~s or less, was not used for this run.} Every labelled fix of a
+flight has one of three states,
 $s_i(k)\in\{\st{climb}, \st{search}, \st{transition}\}$: climbing in a thermal, searching for the
 next one, gliding between two thermals. In the text \emph{glide} means the state
-\st{transition}. The fixes of coarser loggers and of pieces too short to be labelled stay
-unclassified.
+\st{transition}. \fix{The fixes of all the other flights} and of pieces too short to be labelled
+stay unclassified.
 
 \begin{table}
 \centering

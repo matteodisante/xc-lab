@@ -38,9 +38,12 @@ two flights compare directly.
 \item \textbf{Departure.} $k^\dep_i$ from~\eqref{eq:departure}.
 
 \item \textbf{States and heading.} $s_i(k)$ from the phase labelling. In glide, $\vh_i(k)$ is the
-direction of the horizontal velocity, filtered with Savitzky--Golay, in the east and north
-directions of the fix itself. Two pilots compared by~\eqref{eq:heading} are less than
-$\varepsilon_h$ apart, so their east and north directions differ by less than 0.01\textdegree.
+direction of the horizontal velocity, filtered with Savitzky--Golay, \fix{in the east and north
+directions of the first fix of the flight (the frame of the cleaned tracks), not of the fix
+itself. Two flights are then compared in frames whose axes differ by the rotation of the local
+north between their first fixes and the points compared: for a displacement $d$ to the east it is
+$(d/R)\tan\varphi$, about $3^\circ$ for 300~km at latitude $45^\circ$, small against
+$\theta_{\max}=45^\circ$.}
 
 \item \textbf{Grid.} The instants of $\Delta\Z$, with $\Delta=5$~s, the same for all flights. A
 grid instant takes the position and the altitude of the fix at that instant or, between two fixes
@@ -291,7 +294,11 @@ diagonal $t'=t+l$ at a time; by Lemma~\ref{lem:scan} this covers all of $\M_{ij}
 \subsection{Phase 3: pair intervals}\label{sec:phase3}
 
 From the contact $a$ one extracts the runs of 1, joins those separated by gaps shorter than $g$
-and keeps those lasting at least $\tau^*$ (Definition~\ref{def:pair-interval}). For each interval one also records:
+and keeps those lasting at least $\tau^*$ (Definition~\ref{def:pair-interval}).
+\fix{The contact is first restricted to the time from the later of the two departures to the
+earlier of the two landings, so that every edge of the graph~\eqref{eq:graph} joins two nodes of
+$V(t)$. This cuts at most $\delta$ at each end of a contact, where $m_{ji}$ could hold at an
+instant at which $i$ has not yet departed or has already landed.} For each interval one also records:
 \begin{itemize}
   \item the signed median delay $\ell_{\rm med}=\mathrm{median}\{l^*(t):\ t\in[t_{\rm on},t_{\rm
         off}),\ m_{ij}(t)=1\}$: if $\ell_{\rm med}>0$, $j$ follows $i$, as in~\cite{li2013}. In a

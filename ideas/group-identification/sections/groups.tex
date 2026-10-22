@@ -194,7 +194,10 @@ The membership of flight $i$ at instant $t$ is therefore well defined:
     \st{S} & \text{if } t\in T^\dep_i \text{ otherwise (solo flight).}
   \end{cases}
 \end{equation}
-The grid instants in a gap of the track, where the flight has no position, get no label.
+\fix{In the tables, every instant between the departure and the landing that is not in a
+configuration is labelled \st{S}, including the instants in a gap of the track, where the flight
+has no position. The analyses that read the fixes see nothing there, so only the time fractions
+computed from the membership include them.}
 
 \subsection{Episodes}\label{sec:episodes}
 
