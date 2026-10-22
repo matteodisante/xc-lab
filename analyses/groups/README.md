@@ -377,6 +377,114 @@ directions. The straighter progress follows the group in time; what brings pilot
 controlled. With W = 1260 s, H_loc(1000 s) rests on 26 origins and drifts by −0.007 to −0.011
 between consecutive windows.
 
+## Size, duration and events: `describe.py`
+
+The configurations by number of pilots, the durations of configurations and episodes, and how
+each configuration ends: join, leave (in flight), landing (a member removed lands within 5 s,
+the grid step), split, merge. Rates are configurations ending per hour spent at each size, with
+the bands of the blocks. All disciplines (0.9% of the configurations hold a hang glider).
+
+- 40 051 configurations in 17 169 episodes. Configurations of 2 pilots are 63% of them and 77%
+  of the time; the largest has 27. 74% of the episodes are one configuration; 5.0% hold a split,
+  4.4% a merge.
+- Median duration: configuration 30 min, episode 58 min; 12% of the episodes last 2 h or more.
+  Episodes cannot be shorter than τ* = 38 min; configurations can, cut by changes of members.
+- Of the 18 218 configurations with no predecessor, 34% form at a member's departure. Of the
+  18 376 that end the group, 91% end in flight, 9% at a landing.
+- At 2 pilots a configuration ends 0.96 times per hour by leave, 0.31 by join, 0.098 by landing,
+  0.085 by merge. Join, leave, split and merge grow with size (split from 0.48/h at 4 pilots to
+  2.7/h at 8+), so the median configuration lasts 41 min at 2 pilots and 4 min at 8+.
+
+Large configurations are snapshots: someone joins, leaves or splits off every few minutes. The
+episode is the unit that lasts.
+
+## Cohesion: `cohesion.py`
+
+Per date, with the grid and the surrogate pairs of the note (the same seed; the surrogate
+intervals match the run on 30 dates): the delay ℓ*(t) inside the 34 082 pair intervals of near
+pairs (takeoffs within 10 km) and inside the 134 202 surrogate contacts, 980 of them lasting at
+least τ*; and the distance at the same instant after the first contact of each near pair. The
+per-date cache is in `analyses/cohesion/all/days/` of the run on SSD_DISANTE.
+
+- D(s) = ⟨(ℓ(t+s) − ℓ(t))²⟩ fitted by an Ornstein-Uhlenbeck process: groups 1/k = 3.9 min
+  [3.8, 4.0], σ = 54 s [53, 54]; chance contacts of at least τ*, 4.4 min [4.2, 4.7] and 78 s
+  [77, 79]. The diffusivity 2kσ² is 24.5 [23.9, 25.1] s²/s in groups, 46 [44, 48] for chance
+  contacts of at least τ*, 69 [68, 70] for all of them; 24.2, 24.5 and 25.0 at 2, 3 and 4+ pilots.
+- The drift of ℓ, made symmetric, pulls back to 0 with 1/k = 4.7 min [4.6, 4.7] in groups and
+  6.4 min [5.9, 6.9] for chance contacts of at least τ*.
+- After a first contact of at least τ*, the median distance is 1.0 km at 60 min against 2.4 km by
+  chance, 2.9 against 5.8 km at 2 h. After any first contact, 3.7 against 5.1 km at 30 min.
+
+Groups do not pull back much harder than two pilots kept in contact by chance: most of the pull
+is the selection of staying in contact. They stay together because their delay wanders half as
+fast: they keep the same pace. The baseline 2 MSD₁ of the plan was dropped: it ignores the drift
+two pilots share along the route; the surrogate pairs are the baseline.
+
+## Hierarchy: `hierarchy.py`
+
+Order in configurations of 3 pilots or more: each edge points from the pilot ahead (|ℓ_med| ≥ 15 s),
+against the same graphs with directions at random (50 draws). Switches of the pilot ahead along
+ℓ*(t) (cache of `cohesion.py`, runs shorter than 60 s dropped). Who leads in configurations of two
+named pilots: earlier flights in the catalog and wing class (A = 1 to competition = 5).
+
+- Directed triangles are cyclic 2.5% [2.1, 3.0] of the time, against 25% at random; graphs with
+  every edge directed (33% of the time) are acyclic 98.5%, against 88%; with one leader 80.6%
+  [79.6, 81.7], against 77.0% [76.5, 77.6]. One leader: 86% at 3 pilots, 68% at 4, 50% at 5+.
+- The pilot ahead changes 3.4 times per hour of contact [3.3, 3.4] in groups, 4.4 [4.2, 4.5] in
+  chance contacts of at least τ*; the pilot most often ahead holds 73% of the directed time
+  (median), 69% by chance.
+- The leader has more earlier flights in 58.2% [57.5, 58.8] of 15 937 pairs, the higher wing class
+  in 63.9% [62.8, 64.9] of 8 304.
+
+Pilots in a group are in a line along the route, as positions on a route must be: the low share of
+cycles is geometry, not rank. Leadership is fluid, a little steadier than chance, and goes more
+often to the experienced pilot on the faster wing.
+
+## Chains or compact groups: `chains.py`
+
+The graph inside each configuration of 3 pilots or more, between two changes of its edges:
+density, diameter, and shape (complete, tree, between). Then H and H_loc of the TA-MSD pieces of
+`size.py` by the shape of the graph at their middle (paragliders, bands of the blocks).
+
+- At 3 pilots the graph is a triangle 53% of the time and a chain 47%. The share of complete
+  graphs falls from 27% at 4 pilots to 2.5% at 8+; the mean density from 0.84 to 0.45; at 8+ the
+  diameter is 4 or more 61% of the time. Every stretch is connected.
+- H_loc(1000 s): triangles 0.906 [0.901, 0.910] (5 322 flights), chains 0.907 [0.902, 0.911]
+  (4 882); 4+ complete 0.915 [0.905, 0.923] (1 638), trees 0.907 [0.894, 0.920] (1 171).
+
+Large groups are strings along the route, not clouds. The straighter progress does not need
+every pilot in contact with every other.
+
+## Repeated partners: `partners.py`
+
+Named paraglider pilots (catalog); partners on a day when their flights share a pair interval.
+Chance redraws the partners within each site-day (joined when a pair interval links two), each
+pilot keeping its number of partners that day (configuration model, 100 draws).
+
+- 30 550 pair-days, 4 525 pilots, 22 513 pairs; one pair flew together on 69 days.
+- Pair-days on pairs that meet on more than one day: 37.6%, against 25.7% [25.3, 26.0] at random;
+  such pairs: 3 437 against 2 501 [2 453, 2 544].
+- Pair-days of two pilots of the same club (each pilot's main club): 32.1%, against 24.0%
+  [23.8, 24.2].
+
+With who flies where and when fixed, pilots still choose the same partners and their club mates.
+
+## Fission-fusion: `fission.py`
+
+T(n), the share of the time in configurations of n pilots, against a birth-death chain,
+T(n+1)/T(n) = g(n)/l(n+1), with g the joins and l the leaves and landings per hour at size n.
+
+- With the measured rates the chain reproduces T(n) within 4% from 2 to 8 pilots, inside its
+  bands except at 3 pilots (0.145 against 0.148), although splits and merges are 6% of the changes
+  at 2 pilots and 46% at 8+.
+- Per member, joins are constant, a = 0.162/h [0.158, 0.167]; leaves fall with size, from 0.53/h
+  at 2 pilots to 0.25/h at 8+: μ n^-γ with γ = 0.30 [0.28, 0.33]. With γ = 0 (log-series, x = 0.25)
+  T(10) is 290 times too small; with γ = 0.30 it is 4 times too small.
+- Fitted to T: n^-α exp(-n/n_c) with α = 3.4, n_c = 5 (Bonabeau et al. 1999).
+
+The size distribution follows from one pilot joining or leaving at a time; its tail is heavy
+because members of larger groups leave less often.
+
 ## Report: `report/`
 
 `report/group_vs_solo.pdf` is a technical report (9 pages and appendices, figures and tables
@@ -386,6 +494,17 @@ facts of the grouping, `report/tables.py` the tables and the numbers of the text
 `report/generated/`) from the JSON of `out/<run>/`; `latexmk -pdf group_vs_solo.tex` in `report/`
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
+`report/group_structure.pdf` is its companion: what groups are, what keeps two pilots together,
+the shape of groups, who leads, repeated partners and where the sizes come from, with the graph
+theory and the two models it needs in appendices. `report/structure_tables.py` writes its macros (`generated/structure_*.tex`); it also reads
+the macros of `tables.py`.
+
+## To do
+
+- Game theory, postponed: who pays for the search of thermals (producer-scrounger) and whether
+  pilots take turns ahead (Voelkl et al. 2015), from the switches of `hierarchy.py`.
+- Communities of the pilot network, against clubs (needs a graph library).
+
 ## Tests and rebuild
 
 `test_groups.py` checks the FFT against the direct average, the populations on a synthetic
@@ -394,7 +513,9 @@ power laws, the block bootstrap, the cut of the phase runs, the slopes on power 
 and blocks of `blocks.py`, the runs that count and their population in `survival.py`, the
 terms of `budget.py`, the climbs, glides and 30-min distances of `performance.py` on a synthetic
 flight, the elimination of `redundancy.py`, the groups by size and the choice of the site-days
-of `size.py`, and every number quoted here.
+of `size.py`, the events of `describe.py` on the episode figure of the note, the delay statistics
+of `cohesion.py` (an Ornstein-Uhlenbeck fit recovers its parameters), the shapes and diameters of
+`chains.py`, the order, triangles and switches of `hierarchy.py`, and every number quoted here.
 
 ```
 uv run python tamsd.py [--run NAME]      # from this folder, needs SSD_DISANTE; --recompute: about 5 min
@@ -412,6 +533,13 @@ uv run python mechanisms.py [--run NAME] # after size.py, about 5 min
 uv run python zones.py [--run NAME]      # after tamsd.py, about 3 min
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python size.py --recompute-pieces # TA-MSD pieces by size only, about 3 min
+uv run python describe.py [--run NAME]   # about 15 s
+uv run python cohesion.py [--jobs J]     # one pass over the grid of every date, about 25 min with 6 jobs
+uv run python chains.py [--run NAME]     # after size.py, about 40 s
+uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
+uv run python partners.py [--run NAME]   # about 4 min
+uv run python fission.py [--run NAME]    # about 10 s
+uv run python report/structure_tables.py; cd report && latexmk -pdf group_structure.tex
 uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analyses/groups            # from the root of xc-lab
 ```

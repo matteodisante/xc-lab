@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import blocks  # noqa: E402
 import budget  # noqa: E402
 import decompose  # noqa: E402
+import describe  # noqa: E402
 import mechanisms  # noqa: E402
 import prepost  # noqa: E402
 import performance  # noqa: E402
@@ -643,3 +644,178 @@ def test_performance_numbers_of_the_readme():
     solo = terms[terms["population"] == "solo"]
     assert solo.loc[solo["xc_origins"] > 0, "flight"].nunique() == 112292
     assert solo.loc[solo["climbs"] + solo["transition_s"] > 0, "flight"].nunique() == 80242
+
+
+def test_events_of_the_episode_figure_of_the_note():
+    # c1 {1,2} + c2 {3,4} merge into c3, which splits into c4 {1,2} and c5 {3,4}; c4 dissolves in
+    # flight, c5 when 4 lands; c6 {2,5} opens a new episode when 5 departs. Episode 1: c7 {6,7}
+    # gains 8 (c8), which leaves in flight (c9), then c9 dissolves when 7 lands.
+    rows = [(1, 0, 0, 100, [1, 2]), (2, 0, 0, 100, [3, 4]), (3, 0, 100, 200, [1, 2, 3, 4]),
+            (4, 0, 200, 300, [1, 2]), (5, 0, 200, 280, [3, 4]), (6, 2, 400, 500, [2, 5]),
+            (7, 1, 0, 60, [6, 7]), (8, 1, 60, 120, [6, 7, 8]), (9, 1, 120, 180, [6, 7])]
+    confs = pd.DataFrame(rows, columns=["conf_id", "episode_id", "t_start", "t_end", "members"])
+    confs["members"] = confs["members"].map(np.array)
+    flights = pd.DataFrame({"flight": range(1, 9), "departure": [-50, -50, -50, -50, 398, -50, -50, -50],
+                            "landing": [900, 900, 900, 282, 900, 900, 178, 900]})
+    ev = describe.events(confs, flights)
+    assert ev["outcome"].tolist() == ["merge", "merge", "split", "leave", "landing", "leave", "join", "leave",
+                                      "landing"]
+    assert ev["dissolves"].tolist() == [False, False, False, True, True, True, False, False, True]
+    assert ev["form"].tolist() == ["flight", "flight", "", "", "", "departure", "flight", "", ""]
+
+
+def test_rates_are_counts_per_hour_and_pool_the_largest_sizes():
+    table = pd.DataFrame({"n": [2, 2, 3, 9, 12], "hours": [1.0, 3.0, 2.0, 0.5, 0.5],
+                          "outcome": ["leave", "join", "split", "merge", "merge"], "block": [0, 1, 2, 3, 3]})
+    r = describe.rates(table, np.random.default_rng(0))
+    assert r["hours"][:2] == [4.0, 2.0] and r["hours"][-1] == 1.0
+    assert r["rate"]["leave"][0] == 0.25 and r["rate"]["join"][0] == 0.25 and r["rate"]["split"][1] == 0.5
+    assert r["rate"]["merge"][-1] == 2.0
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "describe.json").exists(), reason="run describe.py first")
+def test_describe_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "describe.json").read_text())
+    count, hours = r["size_count"], r["size_hours"]
+    assert (r["configurations"], r["episodes"], round(100 * r["with_hang"], 1)) == (40051, 17169, 0.9)
+    assert round(100 * count["2"] / sum(count.values())) == 63 and round(100 * hours["2"] / sum(hours.values())) == 77
+    assert max(map(int, count)) == 27
+    assert [round(100 * r[k], 1) for k in ("episode_single", "episode_with_split", "episode_with_merge")] == [74.3, 5.0, 4.4]
+    assert (round(r["median_conf_min"]), round(r["median_episode_min"]), round(100 * r["episode_2h"])) == (30, 58, 12)
+    form, end = r["formations"], r["dissolutions"]
+    assert sum(form.values()) == 18218 and round(100 * form["departure"] / 18218) == 34
+    assert sum(end.values()) == 18376 and round(100 * end["leave"] / 18376) == 91 and round(100 * end["landing"] / 18376) == 9
+    rate = r["rates"]["rate"]
+    assert [round(rate[x][0], 2) for x in ("leave", "join")] == [0.96, 0.31]
+    assert [round(rate[x][0], 3) for x in ("landing", "merge")] == [0.098, 0.085]
+    assert (round(rate["split"][2], 2), round(rate["split"][-1], 1)) == (0.48, 2.7)
+    assert (round(r["median_conf_min_by_size"]["2"]), round(r["median_conf_min_by_size"]["8"])) == (41, 4)
+
+
+def test_chain_shapes_and_diameters():
+    import chains
+    assert chains.diameter(3, [(0, 1), (1, 2)]) == 2 and chains.diameter(3, [(0, 1), (1, 2), (0, 2)]) == 1
+    assert chains.diameter(4, [(0, 1), (2, 3)]) == np.inf
+    assert [chains.shape(3, 3), chains.shape(3, 2), chains.shape(4, 3), chains.shape(4, 4)] == \
+        ["complete", "tree", "tree", "between"]
+    conf = pd.Series({"members": np.array([10, 11, 12]), "t_start": 0, "t_end": 100})
+    edges = pd.DataFrame({"a": [10, 11, 10], "b": [11, 12, 12], "t_on": [-50, 0, 40], "t_off": [200, 100, 70]})
+    assert chains.pieces_of(conf, edges) == [(0, 40, 2, 2), (40, 70, 3, 1), (70, 100, 2, 2)]
+
+
+def test_hierarchy_order_triangles_and_switches():
+    import hierarchy
+    assert hierarchy.order(3, [(0, 1), (1, 2)]) == (True, 1, 2)
+    assert hierarchy.order(3, [(0, 1), (0, 2)]) == (True, 1, 1)
+    assert hierarchy.order(3, [(0, 1), (1, 2), (2, 0)])[0] is False
+    edges = [(0, 1, 30.0), (1, 2, 30.0), (0, 2, 30.0)]
+    tris = hierarchy.triangle_list(edges)
+    assert tris == [(0, 1, 2)]
+    assert hierarchy.triangles(tris, hierarchy.directed(edges)) == (1, 0)
+    assert hierarchy.triangles(tris, [(0, 1), (1, 2), (2, 0)]) == (0, 1)
+    assert hierarchy.directed([(0, 1, 10.0), (0, 1, -20.0)]) == [(1, 0)]
+    # 2 min ahead, 30 s behind (dropped), 2 min ahead, 2 min behind: one switch
+    s = np.r_[np.ones(24), -np.ones(6), np.ones(24), -np.ones(24)].astype(int)
+    assert hierarchy.runs(s, 5) == [(1, 48), (-1, 24)]
+
+
+def test_cohesion_delay_statistics():
+    import cohesion
+    x = cohesion.dense(np.array([0, 5, 10, 20]), np.array([1, 2, 3, -1], np.int8),
+                       np.array([False, False, True, False]), 0, 25, 5)
+    assert np.allclose(x, [5, 10, np.nan, np.nan, -5], equal_nan=True)
+    sums, counts, drift, dcount = cohesion.accumulate(np.array([0.0, 10.0, 20.0, 30.0]), np.zeros(4, int), 1, 5)
+    assert sums[0, 0] == 300 and counts[0, 0] == 3 and sums[0, 1] == 800 and counts[0, 1] == 2
+    s = np.array([5, 10, 30, 60, 120, 300, 600, 1200, 1800], float)
+    sigma2, k, c = cohesion.fit(s, cohesion.ou(s, 900.0, 1 / 240, 50.0))
+    assert np.allclose([sigma2, k, c], [900, 1 / 240, 50], rtol=1e-3)
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "chains.json").exists(), reason="run chains.py first")
+def test_chain_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "chains.json").read_text())
+    s, e = r["shares"], r["effect"]
+    assert [round(100 * s["shape"][k][0]) for k in ("complete", "tree")] == [53, 47]
+    assert (round(100 * s["shape"]["complete"][1]), round(100 * s["shape"]["complete"][-1], 1)) == (27, 2.5)
+    assert (round(s["density"][0], 2), round(s["density"][-1], 2), round(100 * s["diameter"]["4"][-1])) == (0.84, 0.45, 61)
+    assert s["not_connected"] == 0
+    got = {k: (v["flights"], round(v["H_loc_1000"], 3), np.round(v["H_loc_1000_band"], 3).tolist()) for k, v in e.items()}
+    assert got == {"n3 triangle": (5322, 0.906, [0.901, 0.910]), "n3 chain": (4882, 0.907, [0.902, 0.911]),
+                   "n4+ complete": (1638, 0.915, [0.905, 0.923]), "n4+ tree": (1171, 0.907, [0.894, 0.920])}
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "partners.json").exists(), reason="run partners.py first")
+def test_partner_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "partners.json").read_text())
+    o, n = r["observed"], r["null"]
+    assert (r["pair_days"], r["pilots"], r["pairs"], r["max_days"]) == (30550, 4525, 22513, 69)
+    assert round(100 * o["repeat_share"], 1) == 37.6 and round(100 * n["repeat_share"]["mean"], 1) == 25.7
+    assert np.round(100 * np.array(n["repeat_share"]["band"]), 1).tolist() == [25.3, 26.0]
+    assert o["repeat_pairs"] == 3437 and round(n["repeat_pairs"]["mean"]) == 2501
+    assert np.round(n["repeat_pairs"]["band"]).tolist() == [2453, 2544]
+    assert round(100 * o["same_club_main"], 1) == 32.1 and round(100 * n["same_club"]["mean"], 1) == 24.0
+    assert np.round(100 * np.array(n["same_club"]["band"]), 1).tolist() == [23.8, 24.2]
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "fission.json").exists(), reason="run fission.py first")
+def test_fission_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "fission.json").read_text())
+    band, pred = np.array(r["measured_band"]), np.array(r["measured"])
+    t = np.array(r["T"][:len(pred)])
+    assert (np.abs(pred / t - 1) < 0.04).all()
+    inside = (band[0] <= t) & (t <= band[1])
+    assert inside.tolist() == [True, False, True, True, True, True, True]
+    assert (round(pred[1], 3), round(t[1], 3)) == (0.145, 0.148)
+    assert (round(100 * r["multi_share"][0]), round(100 * r["multi_share"][-1])) == (6, 46)
+    c = r["capita"]
+    assert (round(c["a"], 3), np.round(c["a_band"], 3).tolist()) == (0.162, [0.158, 0.167])
+    assert (round(c["gamma"], 2), np.round(c["gamma_band"], 2).tolist()) == (0.30, [0.28, 0.33])
+    loss = np.array(r["rates"]["loss"]) / np.array(r["rates"]["n"])
+    assert (round(loss[0], 2), round(loss[-1], 2), round(r["x"], 2)) == (0.53, 0.25, 0.25)
+    assert (round(r["T"][-1] / r["log_series"][-1], -1), round(r["T"][-1] / r["per_capita"][-1])) == (290, 4)
+    assert (round(r["bonabeau"]["alpha"], 1), round(r["bonabeau"]["n_c"])) == (3.4, 5)
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "cohesion.json").exists(), reason="run cohesion.py first")
+def test_cohesion_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "cohesion.json").read_text())
+    assert r["intervals"] == {"real": 34082, "chance": 134202, "chance_long": 980}
+    f, d = r["fit"], r["drift"]
+
+    def minutes(k, b):
+        return round(1 / k / 60, 1), np.round(1 / np.array(b[::-1]) / 60, 1).tolist()
+
+    assert minutes(f["real/all"]["k"], f["real/all"]["k_band"]) == (3.9, [3.8, 4.0])
+    assert minutes(f["chance_long/all"]["k"], f["chance_long/all"]["k_band"]) == (4.4, [4.2, 4.7])
+    assert (round(f["real/all"]["sigma"]), np.round(f["real/all"]["sigma_band"]).tolist()) == (54, [53, 54])
+    assert (round(f["chance_long/all"]["sigma"]), np.round(f["chance_long/all"]["sigma_band"]).tolist()) == (78, [77, 79])
+    assert (round(f["real/all"]["q"], 1), np.round(f["real/all"]["q_band"], 1).tolist()) == (24.5, [23.9, 25.1])
+    assert (round(f["chance_long/all"]["q"]), np.round(f["chance_long/all"]["q_band"]).tolist()) == (46, [44, 48])
+    assert (round(f["chance/all"]["q"]), np.round(f["chance/all"]["q_band"]).tolist()) == (69, [68, 70])
+    assert [round(f[f"real/{n}"]["q"], 1) for n in ("2", "3", "4+")] == [24.2, 24.5, 25.0]
+    assert minutes(d["real/all"]["k"], d["real/all"]["k_band"]) == (4.7, [4.6, 4.7])
+    assert minutes(d["chance_long/all"]["k"], d["chance_long/all"]["k_band"]) == (6.4, [5.9, 6.9])
+    s = r["sep"]
+    km = {k: [round(v["median"][m // 5] / 1000, 1) for m in (30, 60, 120)] for k, v in s.items()}
+    assert km["real_long"][1:] == [1.0, 2.9] and km["chance_long"][1:] == [2.4, 5.8]
+    assert km["real"][0] == 3.7 and km["chance"][0] == 5.1
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "hierarchy.json").exists(), reason="run hierarchy.py first")
+def test_hierarchy_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "hierarchy.json").read_text())
+    o, s, w = r["order"], r["switches"], r["who_leads"]
+
+    def pct(v, d=1):
+        return round(100 * v["value"], d), np.round(100 * np.array(v["band"]), d).tolist()
+
+    assert pct(o["cyclic"]) == (2.5, [2.1, 3.0]) and round(100 * o["cyclic_null"]["value"]) == 25
+    assert round(100 * o["full_share"]) == 33 and round(100 * o["acyclic"]["value"], 1) == 98.5
+    assert round(100 * o["acyclic_null"]["value"]) == 88
+    assert pct(o["one_leader"]) == (80.6, [79.6, 81.7]) and pct(o["one_leader_null"]) == (77.0, [76.5, 77.6])
+    assert [round(100 * o["by_size"][k]["one_leader"]) for k in ("3", "4", "5")] == [86, 68, 50]
+    assert (round(s["real"]["per_hour"], 1), np.round(s["real"]["per_hour_band"], 1).tolist()) == (3.4, [3.3, 3.4])
+    assert (round(s["chance"]["per_hour"], 1), np.round(s["chance"]["per_hour_band"], 1).tolist()) == (4.4, [4.2, 4.5])
+    assert (round(100 * s["real"]["dominant_median"]), round(100 * s["chance"]["dominant_median"])) == (73, 69)
+    assert (w["experience"]["pairs"], pct(w["experience"])) == (15937, (58.2, [57.5, 58.8]))
+    assert (w["wing"]["pairs"], pct(w["wing"])) == (8304, (63.9, [62.8, 64.9]))
