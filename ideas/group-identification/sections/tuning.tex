@@ -2,8 +2,8 @@
 
 The method was run on all the cleaned flights of the FFVL archive (162\,485 flights of
 6\,209 dates), first with the starting values of Table~\ref{tab:notation} and then with the
-values chosen below. The companion note \emph{Tuning the group identification}
-(\texttt{parameter\_tuning.pdf}, same folder) gives every step and figure; this section keeps
+values chosen below. The companion note \emph{Assessing the group identification}
+(\texttt{method\_assessment.pdf}, same folder) gives every step and figure; this section keeps
 what the method needs. The run read the cleaned tracks of the old repository (soaring, tag
 \texttt{legacy-final}), so the phases needed by the heading condition exist on 1~Hz flights
 only.
@@ -21,7 +21,7 @@ same house thermals. Short contacts therefore say little.
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{figures/tuning_fdr.pdf}
+\includegraphics[width=\textwidth]{figures/assessment_fdr.pdf}
 \caption{Left: real pair intervals lasting at least $\tau$ and those chance gives, for
 $\delta=5$~min (grey) and $\delta=2$~min (blue), on the whole archive. Right: the false
 discovery rate~\eqref{eq:fdr}; dots mark $\tau^*$ for $q=0.05$, 0.1 and 0.2 with
@@ -44,7 +44,7 @@ other. The contacts that last longest agree: those of at least 90~min have a med
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{figures/tuning_delays.pdf}
+\includegraphics[width=\textwidth]{figures/assessment_delays.pdf}
 \caption{The delay profile on 300 dates. Left: correspondences per second of exposure at
 each delay, real and by chance. Middle: their ratio. Right: the distance between the two
 pilots at the same instant when one is on the path of the other.}
@@ -86,12 +86,16 @@ Changing one tolerance at a time on 300 dates, with $\tau^*$ recalibrated each t
 fraction of flight time in a group $f_G$ by up to a factor three, mostly through $\tau^*$;
 $\theta_{\max}$ changes nothing, since contacts in glide are few. There is no plateau
 (Section~\ref{sec:plateau}): $\varepsilon_h$, $\varepsilon_z$ and $g$ are definitions to declare.
-They keep their starting values; a distance profile, the analogue of
-Figure~\ref{fig:tuning-delays} for the horizontal and vertical gaps, would measure them.
+They keep their starting values. Their profiles against chance, the analogues of
+Figure~\ref{fig:tuning-delays} in the companion note, decay smoothly with no edge: at 500~m and
+300~m real pairs are about 1.5 times chance, and the gaps of real and chance contacts have the
+same lengths.
 
 \begin{remark}[what the null model calls real]
-The shift of the surrogates, more than $2\delta$, also removes the synchronisation of the
-pilots with the weather of the day. What survives $\tau^*$ therefore includes pilots who share
+The shift of a surrogate is at least $2\delta+\Delta$, but it follows the takeoff delays of the
+day: over the whole archive its median is 58~min, and 90\% of the shifts lie between 8~min
+and 4.4~h. Shifts of this size also remove the synchronisation of the pilots with the weather of
+the hour, such as which thermals work and the cloud base. What survives $\tau^*$ therefore includes pilots who share
 the same thermals at the same time without following each other: the shared air of
 Remark~\ref{rem:notions}, which is the notion of contact we adopt, rather than a proof of
 interaction.

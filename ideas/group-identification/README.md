@@ -1,7 +1,7 @@
 # Group identification
 
 **Status:** method note, run on all the cleaned flights of the old repository with tuned
-parameters (δ = 2 min, q = 0.1). Started 2026-10-14, updated 2026-10-21.
+parameters (δ = 2 min, q = 0.1). Started 2026-10-14, updated 2026-10-23.
 
 **Question.** How do we tell, at every instant of every flight, whether a pilot flies in a
 group, and with whom?
@@ -11,7 +11,8 @@ group, and with whom?
 least τ* = 38.1 min, the duration at which the time-shift null model explains at most 10% of
 the contacts; the groups of an instant are the connected components of the contact graph.
 Then 21.7% of the paraglider and 6.9% of the hang-glider flights fly in a group at some point,
-in 17 169 episodes. Why these values: `parameter_tuning.pdf`. Why `m_ij(t) = 1` does not give
+in 17 169 episodes. Why these values, what chance means and how real pairs differ from it:
+`method_assessment.pdf`. Why `m_ij(t) = 1` does not give
 `m_ji(t) = 1`, with a worked example: `contact_asymmetry.pdf`.
 
 **Data and code version.** The cleaned tracks and the Vilpellet phases that soaring (tag
@@ -27,6 +28,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | `runs/d120_eh500_ez300_th45_g120_q0.1/` | the chosen run; `_q0.05` and `_q0.2` beside it share its contacts |
 | `runs/d300_eh500_ez300_th45_g120_q0.05/` | the starting values of the note (δ = 5 min) |
 | `delays/sample300_d900_.../` | the delay profile that chose δ |
+| `separation/sample300_d120_.../`, `tolerances/sample300_d120_.../` | the distance at the same instant and the profiles of ε_h, ε_z and the gaps, real against chance |
 | `trials/sample300/<name>/`, `plateau/sample300.json` | the plateau check |
 
 ## Run on the flight data
@@ -57,9 +59,11 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | f_G | 0.123 |
 | configurations, episodes | 40 051, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
 
-The tuning, with its figures, is in `parameter_tuning.pdf`: the false discovery rate of the
-contacts, the delay profile (`delays.py`), the choice of q, and the plateau check
-(`plateau.py`) with its table.
+The assessment of the method, with its figures, is in `method_assessment.pdf`: what chance
+means (the shifts of the null model), the false discovery rate of the contacts, the delay
+profile (`delays.py`), the distance at the same instant (`separation.py`), the profiles of the
+tolerances (`tolerances.py`), the plateau check (`plateau.py`) with its table, and the choice
+of δ and q.
 
 ## Files
 
@@ -67,25 +71,29 @@ contacts, the delay profile (`delays.py`), the choice of q, and the plateau chec
   English version with figures of the Italian note of 14 October 2026. Figures 7, 9 and 18 are
   animated inside the PDF (LaTeX package `animate`): they play in Acrobat Reader and other
   viewers that run PDF JavaScript; elsewhere they show the static figure.
-  Its section *Tuning on the data* summarises `parameter_tuning.pdf`; the chosen values sit
+  Its section *Tuning on the data* summarises `method_assessment.pdf`; the chosen values sit
   beside the starting ones in its table of symbols.
 - `models.py`: the synthetic scenarios of the figures and the sweep that builds configurations,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
   animations in the PDF) and `animations/`.
 - `test_note.py`: checks every number the note quotes.
-- `parameter_tuning.pdf`, built from `parameter_tuning.tex` and `figures/tuning_*.pdf`
-  (written by `tuning.py`): why δ, q and τ* have their values.
+- `method_assessment.pdf`, built from `method_assessment.tex` and `figures/assessment_*.pdf`
+  (written by `assessment.py`): what chance means, real pairs against chance, and why δ, q
+  and τ* have their values.
 - `grid.py` (Phase 0), `contacts.py` (Phases 1-3 and the null model), `sweep.py` (Phase 4),
   `run.py` (the loop over dates, τ*, the tables of section Outputs, PARAMETERS.md),
   `calibration.py` (the figure and the band of τ*), `delays.py` (the delay profile),
+  `separation.py` (the distance at the same instant), `tolerances.py` (the profiles of ε_h,
+  ε_z and the gaps),
   `plateau.py` (the plateau check), `distances.py` (the distance of each episode: the
   longest straight line a member flew in one of its group stretches; the viewer ranks by it),
   `export_viewer.py` (copies one run, with its PARAMETERS.md, to the `groups/` folder of the
   xc-viewer data folder, where the Group flights tab reads it).
 - `test_pipeline.py`: Phases 1-3 against every pair of instants on random synthetic days, the
   conditions on synthetic pairs, the sweep against `models.py`, τ*, Phase 0 on one real date.
-- `test_results.py`: the numbers of this README; `test_tuning.py`: those of the tuning note.
+- `test_results.py`: the numbers of this README; `test_assessment.py`: those of the assessment
+  note.
 
 ## Animations
 
@@ -116,7 +124,9 @@ uv run python distances.py <run folder>      # about 3 min
 uv run python export_viewer.py <run name>    # to /Volumes/SSD_DATA/xc-viewer-data/groups
 uv run python delays.py --sample 300 --delta 900     # about 30 min
 uv run python plateau.py --sample 300        # about 1 h
-uv run python tuning.py && latexmk -pdf parameter_tuning.tex
+uv run python separation.py --sample 300
+uv run python tolerances.py --sample 300
+uv run python assessment.py && latexmk -pdf method_assessment.tex
 uv run pytest ideas/group-identification     # from the root of xc-lab
 ```
 
