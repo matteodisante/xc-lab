@@ -45,7 +45,8 @@ the contacts observed.
 
 \textbf{Quality.} Real pairs differ from chance in every view: in duration (most short
 contacts are chance, few long ones), in delay (5.6 times chance at a few seconds) and in
-distance (10 times chance within 100~m at the same instant) (Section~\ref{sec:views}).
+distance (10 times chance within 100~m at the same instant). The contacts of at least 90~min
+have a median delay of 25~s (Section~\ref{sec:views}).
 
 \textbf{Parameters.} $\delta$ is measured on the delay profile and $\tau^*$ follows from $q$.
 The profiles of $\varepsilon_h$, $\varepsilon_z$ and $g$ have no edge, so these three are
@@ -61,7 +62,9 @@ through $\tau^*$ (Section~\ref{sec:tolerances}).
 
 \section{The parameters}
 
-The method of the companion note has three kinds of parameters (Table~\ref{tab:parameters}).
+The method of the companion note ran on all the cleaned flights of the FFVL archive,
+162\,485 flights of 6\,209 dates; the profiles use a sample of 300 dates. It has three kinds of
+parameters (Table~\ref{tab:parameters}).
 The \emph{tolerances} say when two positions match: $\delta$, $\varepsilon_h$,
 $\varepsilon_z$, $\theta_{\max}$, $g$. The \emph{duration} $\tau^*$ says how long a match must
 last to be a contact; it is computed from the share $q$ of chance contacts we accept. The other
@@ -203,20 +206,49 @@ same thermals at about the same time without following each other, a synchrony t
 shifts of the surrogates remove. A rule such as ``the delay that holds 95\% of the excess''
 would pick 13~min, because it counts the slow tail; that is why we read the ratio instead.
 
-The contacts that survive $\tau^*$ tell the same. Figure~\ref{fig:ell} shows, for the pair
-intervals of the run with $\delta=5$~min, the median delay between the two pilots inside each
-interval. Short intervals pile up at the edge of the window, 300~s: 29\% of those under
-10~min, the signature of chance matches, which are spread over all delays and are found at
-the largest ones. Long intervals do not: those of at least 90~min have a median delay of
-25~s, 90\% of them within 2~min, and only 6 of 10\,734 at the edge.
+\subsection{The delay inside the contacts}\label{sec:ell}
+
+The delay profile counts correspondences; this view looks at the contacts themselves. Every
+pair interval has a delay. At each instant $t$ of $i$ in the interval with $m_{ij}(t)=1$ and
+neither pilot in search, $l^*(t)$ is the delay of the closest correspondence that passes
+(smallest horizontal distance); the delay of the interval is the median of $l^*(t)$, positive
+when $j$ follows $i$. Its absolute value was computed for every pair interval of the run with
+$\delta=5$~min, whose window is wide enough to show where the delays fall: 965\,770
+intervals, of which 169\,517 have all their instants in search and no delay.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}l r c c c@{}}
+\toprule
+Duration of the interval & intervals & median $|$delay$|$ & within 2 min & at the edge \\
+\midrule
+under 10 min & 436\,575 & 210 s & 32\% & 29\% \\
+10--30 min & 246\,587 & 160 s & 39\% & 12\% \\
+30--90 min & 102\,357 & 80 s & 64\% & 2.1\% \\
+90 min or more & 10\,734 & 25 s & 90\% & 6 intervals \\
+\bottomrule
+\end{tabular}
+\caption{The delay of the pair intervals by their duration ($\delta=5$~min, whole archive). At
+the edge: $|$delay$|\ge285$~s, the last 15~s of the window.}
+\label{tab:ell}
+\end{table}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.62\textwidth]{figures/assessment_ell.pdf}
-\caption{Median delay between the two pilots inside each pair interval, by the duration of
-the interval ($\delta=5$~min, whole archive).}
+\caption{Distribution of the $|$delay$|$ of the pair intervals, by their duration
+($\delta=5$~min, whole archive).}
 \label{fig:ell}
 \end{figure}
+
+The longer the contact, the shorter the delay (Table~\ref{tab:ell}, Figure~\ref{fig:ell}). A
+pair that only shares route and weather matches at any delay of the window, and its closest
+correspondence is often at the largest ones: short intervals pile up at the edge, 29\% of
+those under 10~min. The contacts of at least 90~min, all above $\tau^*$ of this run
+(89.5~min), have a median delay of 25~s; 90\% of them lie within 2~min and only 6 of 10\,734
+at the edge. Long contacts are pilots a few tens of seconds apart on the same path, which is
+what $\delta=2$~min keeps (Section~\ref{sec:delta-choice}).
 
 \subsection{Distance at the same instant}\label{sec:separation}
 
@@ -320,10 +352,11 @@ $g=300$ s & 126.1 & 0.055 & 141 & 318 \\
 
 \section{The parameters set by the data}
 
-\subsection{The delay $\delta$}
+\subsection{The delay $\delta$}\label{sec:delta-choice}
 
-We take $\delta=2$~min: within it the real correspondences are at least 3.7 times chance, and
-it contains nine in ten of the long contacts (Section~\ref{sec:delay}). Shortening the delay also
+We take $\delta=2$~min: within it the real correspondences are at least 3.7 times chance
+(Section~\ref{sec:delay}), and it contains nine in ten of the long contacts
+(Section~\ref{sec:ell}). Shortening the delay also
 shortens $\tau^*$, since fewer chance matches enter: from 89.5 to 51.9~min at $q=0.05$
 (Table~\ref{tab:q}).
 

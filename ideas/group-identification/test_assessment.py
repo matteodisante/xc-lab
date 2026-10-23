@@ -1,5 +1,4 @@
-"""Every number of method_assessment.tex and of the section Tuning on the data of
-group_identification.tex, from the runs on SSD_DISANTE."""
+"""Every number of method_assessment.tex, from the runs on SSD_DISANTE."""
 
 import importlib.util
 import json
@@ -74,11 +73,19 @@ def test_delay_profile():
 
 
 def test_delays_inside_the_intervals():
-    classes = assessment.ell_classes(pd.read_parquet(assessment.RUNS / assessment.WIDE / "intervals_raw.parquet"))
-    short, long = classes[0, 10], classes[90, np.inf]
-    assert round((short >= 285).mean(), 2) == 0.29
-    assert np.median(long) == 25 and round((long <= 120).mean(), 1) == 0.9
+    intervals = pd.read_parquet(assessment.RUNS / assessment.WIDE / "intervals_raw.parquet")
+    assert (len(intervals), int(intervals["ell_med"].isna().sum())) == (965770, 169517)
+    classes = assessment.ell_classes(intervals)
+    # Table "delay by duration": intervals, median |delay| (s), % within 2 min, % at the edge.
+    rows = {(0, 10): (436575, 210, 32, 29), (10, 30): (246587, 160, 39, 12), (30, 90): (102357, 80, 64, 2.1)}
+    for key, (n, median, within, edge) in rows.items():
+        x = classes[key]
+        assert (len(x), np.median(x), round(100 * (x <= 120).mean())) == (n, median, within)
+        assert round(100 * (x >= 285).mean(), 1 if edge < 10 else None) == edge
+    long = classes[90, np.inf]
+    assert np.median(long) == 25 and round(100 * (long <= 120).mean()) == 90
     assert ((long >= 285).sum(), len(long)) == (6, 10734)
+    assert assessment.calibration(assessment.WIDE)["tau_star"] / 60 == 89.5
 
 
 def test_separation_bound_grid_and_costs():

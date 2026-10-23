@@ -71,8 +71,8 @@ of δ and q.
   English version with figures of the Italian note of 14 October 2026. Figures 7, 9 and 18 are
   animated inside the PDF (LaTeX package `animate`): they play in Acrobat Reader and other
   viewers that run PDF JavaScript; elsewhere they show the static figure.
-  Its section *Tuning on the data* summarises `method_assessment.pdf`; the chosen values sit
-  beside the starting ones in its table of symbols.
+  The tuning on the data is in `method_assessment.pdf`; the chosen values sit beside the
+  starting ones in the note's table of symbols.
 - `models.py`: the synthetic scenarios of the figures and the sweep that builds configurations,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
