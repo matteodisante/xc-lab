@@ -64,7 +64,7 @@ grid instants, compared with the tolerances:
   \item vertically, $w\Delta/2=5$~m at 2~m/s and at most 12.5~m at 5~m/s, against
         $\varepsilon_z=300$~m;
   \item on the delay, a grid of 5~s against $\delta=120$~s; in a thermal $l^*$ is undetermined
-        over the whole window of accepted delays anyway (Section~\ref{sec:phase3});
+        over the whole window of accepted delays anyway (Section~\ref{sec:lag});
   \item on the ends of the intervals, $\pm\Delta$ against $g=120$~s.
 \end{itemize}
 States and headings are computed on the fixes, before the grid, and lose nothing. The check of
@@ -300,30 +300,11 @@ earlier of the two landings, so that every edge of the graph~\eqref{eq:graph} jo
 $V(t)$. This cuts at most $\delta$ at each end of a contact, where $m_{ji}$ could hold at an
 instant at which $i$ has not yet departed or has already landed.} For each interval one also records:
 \begin{itemize}
-  \item the signed median delay $\ell_{\rm med}$, which tells who follows whom (below);
+  \item the signed median delay $\ell_{\rm med}$, which tells who follows whom and does not enter
+        Phase~4 (Section~\ref{sec:lag});
   \item the distance between the takeoffs $d_{\rm dec}=\|\x_i(k^0_i)-\x_j(k^0_j)\|$, which allows
         requirement (R1) to be imposed afterwards, if wanted.
 \end{itemize}
-
-\paragraph{Who follows whom.} The delay $l^*(t)$ of Algorithm~\ref{alg:scan} is that of the
-closest accepted correspondence: among the delays $l$ with $(t,t+l)\in\M_{ij}$, the one that
-minimises $\|\x_i(t)-\x_j(t+l)\|$, as in~\cite{li2013}. Over a pair interval,
-\[
-  \ell_{\rm med}=\mathrm{median}\{l^*(t):\ t\in[t_{\rm on},t_{\rm off}),\ m_{ij}(t)=1\},
-\]
-and $\ell_{\rm med}>0$ means that $j$ follows $i$. It only labels the interval, for the comparison
-between followers and leaders (Section~\ref{sec:comparison}): the contact needs only that some
-delay exists, and Phase~4 reads only the pairs and the ends of their intervals.
-
-In glide the minimiser is sharp. In a thermal it is not: the horizontal distance has nearly
-equal minima at every turn (Figure~\ref{fig:clock}), and $l^*(t)$ falls anywhere among the
-accepted delays. Without altitude these would be the whole of $[-\delta,\delta]$; the vertical
-condition cuts them to the interval~\eqref{eq:window}, of width $2\varepsilon_z/w=300$~s at
-$w=2$~m/s, centred on $\Delta z/w$. With the starting $\delta=5$~min this at least halves the
-range of $l^*$. With the chosen $\delta=2$~min the interval is wider than $[-\delta,\delta]$ and
-altitude gains little: at $\Delta z=200$~m, from $[-120,120]$ to $(-50,120]$~s. In a search
-$w\simeq0$ and altitude constrains no delay, so the instants at which either pilot is in
-\st{search} are left out of the median; $\ell_{\rm med}$ is undefined when none remains.
 
 \subsection{Phase 4: configurations and episodes}\label{sec:phase4}
 
