@@ -1,58 +1,66 @@
-\subsection{The place: zones, months and hours}\label{sec:zones}
+\section{Group or place? Solo flights where groups fly}\label{sec:zones}
 
-\textbf{Question.} Do groups fly where, and when, any pilot would progress in a straight line? \textbf{Method.} Each
-piece of track is assigned to a \emph{stratum}: zone (cell of 25~km of its middle), zone$\times$month, zone$\times$hour,
-site-day$\times$hour. In every stratum with both populations the ensemble MSD of S (and of A) is \emph{reweighted to
-the mix of G over the strata}: S then flies, in the statistic, where and when G flies. We compare $H_\mathrm{loc}(\tau)$
-over every lag and the fitted $H$; ``as is'' is the same comparison without the reweighting, on the same strata (a
-flight counts once per cell it crosses).
+Do groups fly where, and when, any pilot would progress straighter? If so, solo flights compared on
+the same ground and at the same hours would match group time.
 
-\begin{figure}[H]
+\paragraph{Reweighting.} Each piece of track gets a stratum from its middle, from coarse to fine:
+zone, zone$\times$month, zone$\times$hour, site-day$\times$hour. The solo flights are then given the
+mix of the group over the strata (direct standardisation):
+\begin{equation}\label{eq:reweight}
+  \MSD_{\Sl\mid\G}(\tau)=\frac{\sum_s n_{\G,s}\,\MSD_{\Sl,s}(\tau)}{\sum_s n_{\G,s}},
+\end{equation}
+with $n_{\G,s}$ the units of $\G$ in stratum $s$ (a flight counts once per stratum it crosses) and
+$\MSD_{\Sl,s}$ the ensemble MSD of the solo units of $s$. In the statistic, $\Sl$ then flies where
+and when $\G$ flies. $\G$ is taken on the same strata, so the two curves share their support; the
+same is done for $\A$. ``As is'' is the comparison on the same strata without the reweighting.
+
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{zones_curves.pdf}
-\caption{$H_\mathrm{loc}(\tau)$ of G (orange), of S reweighted to the strata of G (blue) and of A reweighted to them (green), 5--95\% bands.
-First panel: all flights pooled (the raw comparison). ``Share of G kept'': flights of G with a solo counterpart in their stratum.}
+\caption{$\Hloc(\tau)$ of $\G$ (orange), of $\Sl$ reweighted to the strata of $\G$ (blue) and of $\A$
+reweighted to them (green), 5--95\% bands. First panel: all flights pooled. ``Share of G kept'':
+flights of $\G$ with a solo counterpart in their stratum.}
 \label{fig:zones}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=0.92\textwidth]{zones_differences.pdf}
-\caption{$\Delta H_\mathrm{loc}(\tau)$ over every lag: G minus S (left) and G minus A (right), the other population reweighted to the strata of G; one line per
-stratification, finer strata in darker orange.}
+\caption{$\Delta\Hloc(\tau)$ over every lag: $\G$ minus $\Sl$ (left) and $\G$ minus $\A$ (right), the
+other population reweighted to the strata of $\G$; one line per stratification, finer strata in
+darker orange.}
 \label{fig:zones-diff}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}
 \centering\footnotesize\setlength{\tabcolsep}{2.6pt}
 \input{generated/zones_table}
-\caption{Fitted $H$ and differences by stratification. ``Reweighted'': the other population reweighted to the strata of G (value, 5--95\% band);
-``as is'': the same strata without reweighting. $H_{\Sl\mid\G}$: $H$ of S reweighted to G.}
+\caption{Fitted $H$ and differences by stratification. ``Reweighted'': the other population
+reweighted to the strata of $\G$ (value, 5--95\% band); ``as is'': the same strata without
+reweighting. $H_{\Sl\mid\G}$: $H$ of $\Sl$ reweighted to $\G$.}
 \label{tab:zones}
 \end{table}
 
-\begin{reading}
-\textbf{Reading.}
-\begin{itemize}
-  \item \textbf{The gap opens above $\tau\approx150$~s.} $\Delta H_\mathrm{loc}$ between G and S is $\ZoneShortMin$ to
-        $\ZoneShortMax$ from 20 to 140~s and \ZoneDHlocSNone{} at 1000~s, above one climb--glide cycle: the group acts on
-        how cycles are chained, not on a single glide or climb.
-  \item \textbf{The zone removes little.} Reweighting S to the cells of G lowers $\Delta H_\mathrm{loc}(1000)$ by
-        \ZoneRedLocZone\% (\ZoneDHlocSupportZone{} $\to$ \ZoneDHlocSZone) and the fitted $\Delta H$ by \ZoneRedHZone\%; with
-        the month, \ZoneRedLocZoneMonth\% and \ZoneRedHZoneMonth\%; with the hour, \ZoneRedLocZoneHour\% and
-        \ZoneRedHZoneHour\%. Solo pilots fly where groups fly: \ZoneKeptZone\% of G has a solo counterpart in its cell.
-  \item \textbf{Same site-day and hour} (\ZoneKeptSdh\% of G kept): $\Delta H_\mathrm{loc}(1000)=\ZoneDHlocSSdh$
-        \ZoneDHlocSSdhBand, \ZoneRedLocSdh\% below its as-is value; fitted $\Delta H=\ZoneDHSSdh$ \ZoneDHSSdhBand. The
-        fitted $H$ of S rises by a few thousandths when reweighted (\ZoneHNoneS{} $\to$ \ZoneHSdhS) and never reaches that
-        of G (\ZoneHSdhG).
-  \item \textbf{Against the same flights alone:} $\Delta H_\mathrm{loc}(1000)$ is \ZoneDHlocANone{} pooled and
-        \ZoneDHlocAZone, \ZoneDHlocAZoneHour, \ZoneDHlocASdh{} in zone, zone$\times$hour and site-day$\times$hour strata.
-        Below 150~s the sign of $\G-\A$ depends on the hour, which is why the two estimates of
-        Section~\ref{sec:other} are read together.
-\end{itemize}
-\textbf{Limits.} Cells are 25~km, from the middle of a piece; the terrain inside a cell is not controlled, and a group
-may choose better air within it: this is part of what we call the group effect. Paragliders only.
-\end{reading}
+\paragraph{Results.} The gap opens above $\tau\approx150$~s (Figure~\ref{fig:zones-diff}):
+$\Delta\Hloc$ between $\G$ and $\Sl$ is $\ZoneShortMin$ to $\ZoneShortMax$ from 20 to 140~s and
+\ZoneDHlocSNone{} at 1000~s, above one climb--glide cycle. The group therefore acts on how the cycles
+are chained, while a single glide or climb is unchanged. Reweighting to the zones of $\G$ lowers
+$\Delta\Hloc(1000~\mathrm{s})$ by \ZoneRedLocZone\% (\ZoneDHlocSupportZone{} $\to$ \ZoneDHlocSZone) and
+the fitted $\Delta H$ by \ZoneRedHZone\%; adding the month, by \ZoneRedLocZoneMonth\% and
+\ZoneRedHZoneMonth\%; adding the hour, by \ZoneRedLocZoneHour\% and \ZoneRedHZoneHour\%. Solo pilots
+do fly where groups fly: \ZoneKeptZone\% of $\G$ has a solo counterpart in its cell. At the same
+site-day and hour (\ZoneKeptSdh\% of $\G$ kept), $\Delta\Hloc(1000~\mathrm{s})=\ZoneDHlocSSdh$
+\ZoneDHlocSSdhBand, \ZoneRedLocSdh\% below its value as is, and the fitted $\Delta H=\ZoneDHSSdh$
+\ZoneDHSSdhBand: reweighting raises the fitted $H$ of $\Sl$ by a few thousandths (\ZoneHNoneS{} $\to$
+\ZoneHSdhS) and never brings it to that of $\G$ (\ZoneHSdhG). Against the same flights alone,
+$\Delta\Hloc(1000~\mathrm{s})$ is \ZoneDHlocANone{} pooled and \ZoneDHlocAZone, \ZoneDHlocAZoneHour{}
+and \ZoneDHlocASdh{} in zone, zone$\times$hour and site-day$\times$hour strata. Below 150~s the sign
+of $\G-\A$ depends on the hour, which is why the two estimates of Section~\ref{sec:other} are read
+together.
 
-\textbf{What we keep.} The place and the hour where groups fly explain at most a fifth of the gap; the rest stays at the
-same site, day and hour.
+\paragraph{Limits.} Cells are 25~km, placed by the middle of a piece; the terrain inside a cell is
+not controlled, and a group may choose better air within it, which is then part of what we call the
+group effect. Paragliders only.
+
+\paragraph{What we keep.} The place and the hour where groups fly explain at most a fifth of the
+gap; the rest stays at the same site, day and hour.

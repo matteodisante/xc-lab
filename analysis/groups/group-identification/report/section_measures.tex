@@ -1,0 +1,65 @@
+\section{Data and measures}\label{sec:setup}
+
+Which flights, which populations, and which measures of the motion?
+
+\paragraph{Flights and groups.} \input{generated/n_flights} on 6\,209 days, the cleaned tracks of
+the old repository (soaring, tag \texttt{legacy-final}). A flight is analysed after its
+\emph{departure}, the first fix 3~km from the takeoff; before it the pilot counts as neither solo
+nor in a group. The measures of the motion use loggers of at most 10~s; the phases (climb, search,
+glide) are Vilpellet's runs and exist on the flights logged every second, 70\% of the paragliders.
+The groups are those of the note, with $\delta=2$~min, $\varepsilon_h=500$~m, $\varepsilon_z=300$~m,
+$\theta_{\max}=45^\circ$, $g=2$~min and $q=0.1$, hence contacts of at least $\tau^*=\tauStar$~min
+(its sections 3--6). A contact means shared air within sight; it does not prove interaction.
+
+\paragraph{Populations.} Three populations of stretches of flight.
+\begin{itemize}
+  \item $\Sl$, \emph{solo flights}: flights never in a group.
+  \item $\G$, \emph{group time}: the stretches of a flight inside a configuration, a fixed set of
+        flights that stays one group over a maximal interval. $\G_n$ is the group time in
+        configurations of $n$ pilots; ``$n$ pilots'' always means the size of the configuration at
+        that instant.
+  \item $\A$, \emph{the same flights alone}: the stretches of the group flights outside any
+        configuration. It has the pilots, gliders, loggers and days of $\G$, and serves as its
+        control.
+\end{itemize}
+
+\paragraph{The motion over every lag.} The horizontal position $\mathbf r(t)$ of a flight is read on
+a 10-s grid of its clock. For a flight $f$ and a population, the time-averaged mean squared
+displacement pools the origins of all its stretches in that population,
+\begin{equation}\label{eq:tamsd}
+  \overline{\delta^2_f}(\tau)=\frac{1}{N_f(\tau)}\sum_{t}\bigl\|\mathbf r(t+\tau)-\mathbf r(t)\bigr\|^2 ,
+\end{equation}
+where $t$ runs over the $N_f(\tau)$ origins with $t$ and $t+\tau$ in the same stretch, and the
+ensemble $\MSD(\tau)$ is the mean of $\overline{\delta^2_f}(\tau)$ over the flights, one weight per
+flight. A stretch enters only if it lasts at least 1250~s, so that every population keeps the same
+flights at all 21 lags from 10 to 1000~s. With $\MSD(\tau)\propto\tau^{2H}$, $H$ is half the slope
+of $\log\MSD$ against $\log\tau$ over all lags: $H=1$ for a straight line, $H=1/2$ for a random walk.
+$\Hloc(\tau)$ is the same slope over the lags within $\pm0.25$ decades of $\tau$
+(Appendix~\ref{app:hloc}). We read it at two scales: $\tau=100$~s, within one climb or one glide,
+and $\tau=1000$~s, over several climb--glide cycles.
+
+\paragraph{Climbs and glides.} Each phase run goes whole to the population of the stretch that holds
+its middle, and each statistic is a ratio of sums over the runs of a population, so long phases weigh
+more. Of the twelve statistics measured, five are not explained by the others and are the ones drawn
+(Appendix~\ref{app:redundancy}): the share of time in climb, the share of searches that end in a
+climb, the climb rate (total height gained over total climb time), the glide speed and the glide
+ratio, replaced in stratified contrasts by its inverse, the height lost per kilometre of glide
+(Appendix~\ref{app:hloc}). The tables also give the cross-country speed, the straight-line distance
+covered in 30~min averaged over every origin, which the five explain.
+
+\paragraph{Strata.} A \emph{zone} is a cell of 25~km containing the middle of a piece of track; a
+\emph{site-day} holds the flights of one day whose takeoffs lie within 3~km; the \emph{hour} is the
+local hour of the middle of a piece or a run.
+
+\paragraph{Uncertainty.} Bands are 5--95\% of bootstrap draws that resample whole dependency
+blocks, the flights tied by sharing episodes, and recompute the statistic: the blocks of the note
+for pooled statistics (1000 draws), blocks that also join the flights of a site-day for stratified
+ones (200 draws, the same for every statistic). They measure the sampling of blocks, not the choice
+of $q$ or of the tolerances. Two bands that do not overlap are not a test; differences are computed
+draw by draw.
+
+\paragraph{What the grouping gives.} \input{generated/grouping_facts}
+
+\paragraph{What we keep.} Three populations, $\Sl$, $\G$ and $\A$; two scales of the motion,
+$\Hloc(100~\mathrm{s})$ and $\Hloc(1000~\mathrm{s})$; the statistics of climbs and glides; bands
+from blocks of flights that are not independent.

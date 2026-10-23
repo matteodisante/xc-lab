@@ -1,60 +1,60 @@
 \section{Inside the group: size and leader}\label{sec:inside}
 
-Does the effect grow with the number of pilots, and does the pilot ahead fly differently from the one behind?
+Does the effect grow with the number of pilots, and does the pilot ahead fly differently from the one
+behind?
 
 \subsection{Size of the configuration}\label{sec:size}
 
-\textbf{Method.} The group time is cut where the configuration changes, so every stretch has a fixed number of pilots
-$n$ (2, 3, 4, 5--6, 7+); a flight can contribute to several sizes. Two contrasts by size: each size minus the same
-flights alone (within the flight), and each size minus configurations of 2 pilots at the same site-day and hour.
+The group time is cut where the configuration changes, so every stretch has a fixed number of pilots
+$n$ (2, 3, 4, 5--6, 7+), and a flight can contribute to several sizes. Two contrasts of
+Eq.~\eqref{eq:contrast} follow the size: $\G_n-\A$ within the flight, and $\G_n-\G_2$ at the same
+site-day and hour, which asks whether a group does more than a pair.
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=0.56\textwidth]{size_hloc.pdf}
-\caption{$H_\mathrm{loc}(\tau)$ over every lag by the size of the configuration (orange, darker with more pilots), S (blue) and, dashed, the same
-flights alone for each size.}
+\caption{$\Hloc(\tau)$ over every lag by the size of the configuration (orange, darker with more
+pilots), $\Sl$ (blue) and, dashed, the same flights alone for each size.}
 \label{fig:size-hloc}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}
 \centering\footnotesize\setlength{\tabcolsep}{3pt}
 \input{generated/size_table}
 \caption{Paragliders, pooled by the size of the configuration (``alone'': the same flights alone).}
 \label{tab:size}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{decompose_size.pdf}
 \caption{Orange: $\G_n-\A$ within the flight. Blue: $\G_n-\G_2$ at the same site-day and hour.}
 \label{fig:size}
 \end{figure}
 
-\begin{reading}
-\textbf{Reading.} Pooled, $H$ and $H_\mathrm{loc}$ rise with $n$ while the same flights alone stay flat
-(Fig.~\ref{fig:size-hloc}, Table~\ref{tab:size}), and within the flight the effect grows with $n$
-(\DHlocThousandFlightTwo{} with 2 pilots, \DHlocThousandFlightSeven{} with 7+). At the same site-day and hour,
-configurations of 3 to 6 pilots do not differ from pairs ($\Delta H_\mathrm{loc}(1000)$ between \DHlocThousandMiddleMin{}
-and \DHlocThousandMiddleMax, bands across zero): the rise of the pooled curves belongs to the days and sites where large
-groups form. Only 7+ stands apart (\DHlocThousandSevenTwoSdh{} \DHlocThousandSevenTwoSdhBand, cross-country speed
-\DXcSevenTwoSdh{} km/h), a rare configuration (3\% of group time). Time in climb and the flatter glide do grow with $n$ at
-the same place and hour (\DClimbSizeMin{} to \DClimbSizeMax{} points; \DSinkSizeMin{} to \DSinkSizeMax{} m/km).
-\end{reading}
+Pooled, $H$ and $\Hloc$ rise with $n$ while the same flights alone stay flat
+(Figure~\ref{fig:size-hloc}, Table~\ref{tab:size}), and within the flight the effect grows with $n$,
+from \DHlocThousandFlightTwo{} with 2 pilots to \DHlocThousandFlightSeven{} with 7+. At the same
+site-day and hour, however, configurations of 3 to 6 pilots do not differ from pairs:
+$\Delta\Hloc(1000~\mathrm{s})$ lies between \DHlocThousandMiddleMin{} and \DHlocThousandMiddleMax, with
+bands across zero (Figure~\ref{fig:size}). The rise of the pooled curves belongs to the days and
+sites where large groups form. Only 7+ stands apart (\DHlocThousandSevenTwoSdh{}
+\DHlocThousandSevenTwoSdhBand, cross-country speed \DXcSevenTwoSdh{} km/h), a rare configuration, 3\% of
+the group time. Time in climb and the flatter glide do grow with $n$ at the same place and hour, from
+\DClimbSizeMin{} to \DClimbSizeMax{} points and from \DSinkSizeMin{} to \DSinkSizeMax{} m/km.
 
 \subsection{Leader and follower}\label{sec:mechanisms}
 
-\textbf{Method.} In configurations of two pilots, the signed median delay $\ell_{\rm med}$ of the pair interval (Appendix B
-of the note) says who passes first: the leader, when the other passes at least 15~s later; otherwise the two fly
-abreast (\Abreast\% of the pairs; median delay \DelayMedian~s). Leader and follower are compared within the same
-configuration (Appendix~\ref{app:leaders}). How groups form and break and whether the same pilots lead are in section 7
-of the note.
+In configurations of two pilots, the signed median delay $\ell_{\rm med}$ of the pair interval
+(Appendix~B of the note) says who passes first: the leader, when the other passes at least 15~s later;
+otherwise the two fly abreast (\Abreast\% of the pairs; median delay \DelayMedian~s). Leader and
+follower are compared within the same configuration, the configuration being the stratum of
+Eq.~\eqref{eq:contrast} (Appendix~\ref{app:leaders}). The pilot ahead flies a little faster (glide
+speed \LeadSpeed{} km/h, climb rate \LeadRate{} m/s) but does not find thermals more often (searches
+ending in a climb \LeadFound{} points, height lost per km \LeadSink{} m/km): the follower shows no sign
+of using the leader to find the next thermal. How groups form and break and whether the same pilots
+lead are in section 7 of the note.
 
-\begin{reading}
-\textbf{Reading.} The pilot ahead flies a little faster (glide speed \LeadSpeed{} km/h, climb rate \LeadRate{} m/s) but
-does not find thermals more often (searches ending in a climb \LeadFound{} points, height lost per km \LeadSink{} m/km):
-the follower shows no sign of using the leader to find the next thermal.
-\end{reading}
-
-\textbf{What we keep.} Most of the effect is there with two pilots; beyond a pair, size adds climbing and flatter glides
-but not straighter progress, except in the rare configurations of 7 or more. Leading changes speed, not the finding of
-thermals.
+\paragraph{What we keep.} Most of the effect is there with two pilots. Beyond a pair, size adds
+climbing and flatter glides but no straighter progress, except in the rare configurations of 7 or
+more. Leading changes the speed and leaves the finding of thermals unchanged.

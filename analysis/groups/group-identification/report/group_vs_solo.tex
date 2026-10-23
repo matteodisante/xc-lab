@@ -12,152 +12,49 @@
 \usepackage{enumitem}
 \usepackage[font=small,labelfont=bf,labelsep=colon,skip=3pt]{caption}
 \usepackage{xcolor}
-\usepackage[most]{tcolorbox}
 \usepackage[hidelinks]{hyperref}
 \usepackage{float}
 \usepackage{url}
-
-\definecolor{blueI}{HTML}{2A78D6}
-\newtcolorbox{summary}{enhanced, breakable, colback=blueI!5!white, colframe=blueI, boxrule=0pt,
-  leftrule=2.4pt, arc=0pt, outer arc=0pt, left=6pt, right=6pt, top=3pt, bottom=3pt}
-\newtcolorbox{reading}{enhanced, breakable, colback=black!3!white, colframe=black!45, boxrule=0pt,
-  leftrule=1.6pt, arc=0pt, outer arc=0pt, left=5pt, right=5pt, top=2pt, bottom=2pt, fontupper=\small}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
 
 \graphicspath{{../out/d120_eh500_ez300_th45_g120_q0.1/}{../../../../ideas/group-identification/figures/}}
 \newcommand{\G}{\mathrm{G}}
 \newcommand{\A}{\mathrm{A}}
 \newcommand{\Sl}{\mathrm{S}}
+\newcommand{\MSD}{\mathrm{MSD}}
+\newcommand{\Hloc}{H_\mathrm{loc}}
 \setlist{itemsep=1pt, topsep=2pt, parsep=0pt, leftmargin=1.3em}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{3pt}
+\setlength{\parskip}{2pt}
 \captionsetup{font=footnotesize}
 \input{generated/macros}
 
 \title{\textbf{Group and solo flights}\\[2pt]
-  \large Technical report on the FFVL cross-country archive}
+  \large Does flying in a group change how a paraglider moves?}
 \author{Matteo Di Sante}
-\date{22 October 2026 \;\textbullet\; analysis: \texttt{xc-lab/analysis/groups/group-identification} \;\textbullet\;
+\date{23 October 2026 \;\textbullet\; analysis: \texttt{xc-lab/analysis/groups/group-identification} \;\textbullet\;
   grouping run \texttt{d120\_eh500\_ez300\_th45\_g120\_q0.1}}
 
 \begin{document}
 \maketitle
-\vspace{-14pt}
 
-\input{summary}
+\input{abstract}
 
-%======================================================================================
-\section{What we compare}\label{sec:setup}
-
-Which flights, which populations, which statistics? The groups are those of the note \emph{Group
-flights in free flight}; this section fixes what the report measures on them.
-
-\begin{itemize}
-  \item \textbf{Flights.} \input{generated/n_flights} on 6\,209 days, cleaned tracks of the old repository
-        (soaring, tag \texttt{legacy-final}). Each flight is analysed after its \emph{departure}
-        (first fix 3~km from the takeoff); before it, the pilot is in the \emph{local phase} and
-        counts as neither solo nor group. Analyses use loggers of at most 10~s; phases
-        (climb, search, transition=glide) are Vilpellet's runs and exist on 1~Hz flights only
-        (70\% of the paragliders).
-  \item \textbf{Grouping.} The method, its null model and its parameters are in the note
-        \emph{Group flights in free flight} (\texttt{ideas/group-identification}): definitions in
-        its sections 3--4, calibration and tuning in sections 5--6. This report uses its run with
-        $\delta=2$~min, $\varepsilon_h=500$~m, $\varepsilon_z=300$~m, $\theta_{\max}=45^\circ$,
-        $g=2$~min and $q=0.1$, hence $\tau^*=\tauStar$~min. A contact is \emph{shared air within
-        sight}, not proof of interaction.
-  \item \textbf{Populations.} \textbf{S} solo flights; \textbf{G} group time, the stretches in a
-        configuration (a fixed set of flights in one group over a maximal interval); \textbf{A} the
-        \emph{same flights alone}, the stretches of group flights outside any configuration: the
-        control with the same pilots, gliders, loggers and days. $\G_n$ is the group time in
-        configurations of $n$ pilots: \textbf{``$n$ pilots'' always means the size of the
-        configuration at that instant.}
-  \item \textbf{TA-MSD.} Positions on a 10~s grid of the flight clock; per flight
-        $\overline{\delta^2}(\tau)=\sum\|\mathbf r(t+\tau)-\mathbf r(t)\|^2/\#\text{origins}$ pooled over
-        its stretches, ensemble MSD = mean over flights (equal weight); stretches of at least
-        1250~s, 21 lags from 10 to 1000~s. $H$: half the slope of $\log\mathrm{MSD}$ against $\log\tau$ over all lags
-        ($H=1$ straight line). $H_\mathrm{loc}(\tau)$: the same slope on the lags within
-        $\pm0.25$ decades of $\tau$ (Appendix~\ref{app:hloc}).
-  \item \textbf{Phase statistics.} Ratios of sums over runs (time in climb, searches that end in a
-        climb, climb rate, glide speed, glide ratio; cross-country speed over 30~min). Five of
-        twelve are drawn: the others are explained by them (Appendix~\ref{app:redundancy}).
-  \item \textbf{Strata.} \emph{Zone}: cell of 25~km of the middle of a piece of track;
-        \emph{site-day}: flights of one day with takeoffs within 3~km; \emph{hour}: local hour.
-  \item \textbf{Error bars} are 5--95\% bootstrap bands resampling whole dependency \emph{blocks}, the
-        flights tied by sharing episodes (never single flights), and recomputing the statistic: blocks of the note for pooled statistics (1000 draws);
-        blocks joining episodes and site-days for stratified ones (200 draws, same draws for all).
-        They measure block sampling only, not the choice of $q$ or the tolerances, and two bands that
-        do not overlap are not a test; differences are computed draw by draw.
-\end{itemize}
-
-\textbf{What the grouping gives.} \input{generated/grouping_facts}
-
-%======================================================================================
-\section{The raw difference}\label{sec:raw}
-
-How do group time and solo flights differ before any control?
-
-\begin{table}[H]
-\centering\footnotesize
-\input{generated/raw_table}
-\caption{Pooled statistics of S, G and A (paragliders), with 5--95\% bands (blocks of the note). TA-MSD on loggers of at most 10~s, phases on 1~Hz flights.}
-\label{tab:raw}
-\end{table}
-
-Group time progresses straighter over long lags than solo flights, $\Delta H_\mathrm{loc}(1000)=\DHlocThousandRaw$; it
-also spends more time climbing, ends more searches in a climb and glides faster (Table~\ref{tab:raw}; the curves over
-every lag are in Appendix~\ref{app:curves}). The same flights alone sit between the two at long lags and have the
-highest climb rate, so part of the raw difference may belong to who flies in groups, and to where and when.
-
-\textbf{What we keep.} A difference to explain: how much of it is the group?
-
-%======================================================================================
-\section{Group, pilots, place or moment?}\label{sec:tests}
-
-Besides the group, four things differ between group time and solo flights: the pilots who fly in groups, the day and
-the site, the hour, and the moment pilots choose to fly together. Three tests take them away:
-\begin{itemize}
-  \item five contrasts inside strata separate the pilots (selection) from the group, at the same site-day and hour
-        and within the same flight (Section~\ref{sec:other});
-  \item reweighting the solo flights to the zones, months and hours of the groups tests the place
-        (Section~\ref{sec:zones});
-  \item the same flight before, during and after a group tests the moment (Section~\ref{sec:prepost}).
-\end{itemize}
-
+\input{section_intro}
+\input{section_measures}
+\input{section_raw}
 \input{section_contrasts}
 \input{section_zones}
 \input{section_prepost}
-
-%======================================================================================
 \input{section_inside}
-
-%======================================================================================
-\section{Conclusions and limits}\label{sec:conclusions}
-
-\begin{minipage}[t]{0.49\textwidth}
-\textbf{Supported}
-\begin{itemize}
-  \item the progress over a quarter of an hour is straighter in a group, with the pilot, the day,
-        the site and the hour fixed;
-  \item no effect within one glide or climb (100~s) at the same hour;
-  \item on the same flight the straighter progress over 1000~s starts with the group and stops with it (before $\approx$ after);
-  \item more time climbing, more searches that end in a climb, faster and flatter glides;
-  \item climb rate and cross-country speed are \emph{higher} in a group once the composition is
-        controlled (the pooled readings reversed);
-  \item selection of pilots is small for the motion;
-  \item the pilot ahead flies a little faster but finds no more thermals than the follower.
-\end{itemize}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\textbf{Not supported}
-\begin{itemize}
-  \item that the group \emph{causes} the effect: the strata and the same-flight windows fix pilot, day, site, hour,
-        zone and the drift of the flight, not what brings pilots together (a line, a ridge, a route) nor the
-        coordination needed to stay in contact;
-  \item that larger groups straighten the progress, up to six pilots;
-  \item that a contact means interaction (shared air within sight);
-  \item the glide statistics are partly by definition (aligned headings in glide);
-  \item phases exist on 1~Hz flights only; the same analyses on the xc-dynamics tracks are open.
-\end{itemize}
-\end{minipage}
+\input{section_conclusions}
 
 \clearpage
 \appendix
