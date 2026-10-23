@@ -1,0 +1,144 @@
+\section{Use and limits}\label{sec:use-limits}
+
+What are the labels for, and what must the thesis declare when it uses them? They exist to compare
+how pilots move in a group and alone; this section says how, which choices come with them, and
+what has been checked.
+
+\subsection{Comparing group and solo flight}\label{sec:comparison}
+
+\paragraph{Labels on the phases.} For a run $\sigma$ of one phase (climb, search or glide) of
+flight $i$, with interval $J_\sigma$, we define the fraction in a group and the mean size:
+\begin{equation}\label{eq:segment}
+  f_\sigma=\frac{\bigl|\{t\in J_\sigma\cap T^\dep_i:\ \gamma_i(t)\notin\{\st{L},\st{S}\}\}\bigr|}{|J_\sigma\cap T^\dep_i|},
+  \qquad
+  \bar n_\sigma=\text{mean of } n_i(t) \text{ over } J_\sigma\cap T^\dep_i ,
+\end{equation}
+with $n_i(t)$ the number of members of the configuration of $i$ at $t$, 1 if solo. The run is
+\emph{in a group} if $f_\sigma\ge1/2$ and \emph{solo} if $f_\sigma=0$; the intermediate cases are
+excluded, or $f_\sigma$ is used as a continuous covariate (Figure~\ref{fig:segments}). Runs in the
+local phase are excluded.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1.1cm,y=1cm,
+    seg/.style={draw=white, line width=1pt, minimum height=6mm, inner sep=0pt, font=\footnotesize}]
+  \node[lbl, anchor=east] at (-0.1,1.2) {$\gamma_i(t)$};
+  \fill[light] (0,1.05) rectangle (3.0,1.35);
+  \fill[blueI] (3.0,1.05) rectangle (9.3,1.35);
+  \fill[light] (9.3,1.05) rectangle (12,1.35);
+  \node[font=\footnotesize] at (1.5,1.2) {\st{S}};
+  \node[font=\footnotesize, text=white] at (6.15,1.2) {configuration};
+  \node[font=\footnotesize] at (10.65,1.2) {\st{S}};
+  \node[lbl, anchor=east] at (-0.1,0.3) {phases};
+  \foreach \a/\b/\name/\f/\cls in {0/2/climb/0/solo, 2/4.5/glide/0.6/group, 4.5/6.5/climb/1/group,
+                                   6.5/9/glide/1/group, 9/10/search/0.3/excluded, 10/12/climb/0/solo} {
+    \fill[ink2!25] (\a,0.0) rectangle (\b,0.6);
+    \draw[white, line width=1.5pt] (\a,0) -- (\a,0.6);
+    \node[font=\footnotesize] at ({(\a+\b)/2},0.3) {\name};
+    \node[font=\footnotesize, anchor=north] at ({(\a+\b)/2},-0.05) {$f_\sigma=\f$};
+    \node[font=\footnotesize, anchor=north, text=ink2] at ({(\a+\b)/2},-0.45) {\cls};
+  }
+  \draw[->, ink2] (0,-1.05) -- (12.3,-1.05) node[right, lbl, ink] {$t$};
+\end{tikzpicture}
+\caption{Labels on the phases of one flight: each run of one phase gets the fraction $f_\sigma$ of
+its duration spent in a configuration, and from it a class.}
+\label{fig:segments}
+\end{figure}
+
+\paragraph{Stratification.} Group flights concentrate on the good days, at the busy sites and
+around midday (Section~\ref{sec:hours}), so a global comparison would mix the effect of the group
+with that of the weather. We compare within strata $s$ (date and area):
+\begin{equation}\label{eq:strata}
+  \hat\Delta=\sum_s w_s\bigl(\hat\theta_{G,s}-\hat\theta_{S,s}\bigr),
+\end{equation}
+where $\hat\theta$ is the statistic of interest and the weights $w_s$ are proportional, for
+example, to the number of group runs of the stratum.
+
+\paragraph{Uncertainties.} Runs of the same flight are not independent, and neither are those of
+pilots of the same episode. The bootstrap resamples the dependency blocks (Section~\ref{sec:blocks})
+within the strata.
+
+\paragraph{Confounders.} Competition days; the level of the pilot (the same pilots often fly
+together, Section~\ref{sec:partners}); the glider class (EN A--D); the time of day.
+
+\paragraph{Questions to ask.} Distributions of the times spent in thermals and of the lengths of
+the glides, in a group and alone; mean squared displacement and effective exponent; differences
+between followers and leaders, by the sign of $\ell_{\rm med}$. In birds, followers leave the
+thermals earlier and lower~\cite{flack2018}, and individuals with social information glide
+faster~\cite{williams2018}: these are hypotheses to test on pilots before assuming them.
+
+\subsection{Choices to declare and limits}\label{sec:parameters}
+
+The starting values and those chosen on the data are in Table~\ref{tab:notation}. The thesis
+should state these choices, each argued in the section given:
+\begin{itemize}
+  \item $\varepsilon_z$ encodes the notion of ``together'': shared thermals if tight, visual
+        contact if wide (Section~\ref{sec:delta});
+  \item $\delta$ is bounded by the visual range through $v_\xc$ (Section~\ref{sec:delta}) and
+        measured on the data at 2~min; $q=0.1$ lets at most one contact in ten be chance;
+        $\varepsilon_h$, $\varepsilon_z$ and $g$ show no plateau and are definitions
+        (Section~\ref{sec:tuning});
+  \item headings are compared only when both pilots glide; climb, search and unclassified fixes
+        turn the condition off (Section~\ref{sec:roles}); \fix{in the run reported here the phases
+        are Vilpellet's, on 1~Hz flights only, so the condition acts only between two such
+        flights (Section~\ref{sec:data});}
+  \item contacts before the departure are ignored: a group formed on the takeoff is recognised
+        only after the exit from $R_\dep$ (Section~\ref{sec:local});
+  \item grid positions are interpolated across at most $h_{\max}$, so tracks logged more coarsely
+        enter with gaps (Section~\ref{sec:phase0});
+  \item the signed median delay leaves out the instants of search, where the delay is not
+        determined (Section~\ref{sec:lag});
+  \item chance is defined by the null model, whose shifts of about an hour also remove the
+        synchrony of pilots with the weather of the hour: what it calls real includes pilots in the
+        same thermals at the same time who do not follow each other, the ``same air'' notion of
+        Remark~\ref{rem:notions}, which is no proof of interaction; $\tau^*$ is 23~min with shifts
+        over an hour and 53~min with shifts under 30~min (Section~\ref{sec:shift-classes});
+  \item the errors of the phase labelling reach the heading condition: a climb labelled as glide
+        compares headings that turn, and joining the short gaps mitigates the problem.
+\end{itemize}
+The measurements have three further limits:
+\begin{itemize}
+  \item the profiles of Sections~\ref{sec:delta-choice} and~\ref{sec:tolerances} are on one sample
+        of 300 dates;
+  \item the plateau check of Section~\ref{sec:plateau} is on 300 dates and with the starting delay
+        of 5~min;
+  \item the data are the cleaned tracks of the old repository (soaring, tag
+        \texttt{legacy-final}), not the pre-processing of xc-dynamics that
+        Section~\ref{sec:data} describes.
+\end{itemize}
+
+\subsection{Checks done}\label{sec:checks-done}
+
+\begin{itemize}
+  \item \textbf{Code against this note.} Every phase was compared with its code (grid, departure,
+        candidate filter, scan of delays, contact, gaps, signed delay, null model, configurations,
+        episodes, membership, blocks): all implemented as written, with four differences of text,
+        now corrected in red: (1) the phases of the run are Vilpellet's, on 1~Hz flights, so the
+        heading condition acts only between two such flights; (2) headings are in the east and
+        north of the first fix of each flight, not of the fix itself; (3) a contact is kept only
+        from the later departure to the earlier landing; (4) instants in a gap of the track are
+        labelled solo in the tables.
+  \item \textbf{Properties of the tables} of the chosen run: every pair interval lasts at least
+        $\tau^*=2285$~s and lies where both flights fly after departure; every configuration has at
+        least two members; membership covers each flight from takeoff to landing without holes; on
+        3\,000 flights the group time equals the union of its pair intervals; on 3\,000
+        configurations the members are connected at the midpoint and no active interval leaves; on
+        2\,000 episodes every configuration but the first starts when another ends and shares a
+        member; every episode lies in one block. The counts of Table~\ref{tab:q} (154\,598 and
+        6\,039 flights; 21.7\% and 6.9\% in a group) are reproduced.
+\end{itemize}
+
+\subsection{Checks to do}\label{sec:checks}
+
+\begin{itemize}
+  \item Visual inspection: about ten episodes on a map, with the entries and exits checked by hand.
+  \item Sensitivity to the step: on a subset of pairs, the computation with $\Delta=1$~s must give
+        the same intervals.
+  \item Competition days: if the dataset contains competition tracks, on those days everybody flies
+        the same course and is in a group by construction; they are flagged and treated apart.
+  \item Grid: the share of grid instants without a position, per flight and by logging interval.
+\end{itemize}
+
+\paragraph{What we keep.} The labels enter the comparison phase by phase, within strata of date and
+area, with the dependency blocks as the units of the bootstrap, and with the choices of
+Section~\ref{sec:parameters} declared, first among them what chance means.

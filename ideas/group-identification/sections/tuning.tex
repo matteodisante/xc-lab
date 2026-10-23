@@ -1,12 +1,13 @@
 \section{The parameters on the data}\label{sec:tuning}
 
-The method has three kinds of parameters (Table~\ref{tab:parameters}). The \emph{tolerances} say
-when two positions match: $\delta$, $\varepsilon_h$, $\varepsilon_z$, $\theta_{\max}$, $g$. The
-\emph{duration} $\tau^*$ says how long a match must last to be a contact; it follows from the
-share $q$ of chance contacts we accept (Section~\ref{sec:fdr}). The other \emph{settings} make the
-computation exact or fast and are fixed by physical bounds. Each tolerance is compared with chance
-through the null model of Section~\ref{sec:null}: the profiles of this section use a sample of
-300 random dates, the choices of $\delta$ and $q$ the whole archive.
+Which values should the parameters take, and which of them can the data decide? For each one we
+ask a question, compare real pairs with chance (Section~\ref{sec:null}) and choose; the profiles
+use a sample of 300 random dates, the choices of $\delta$ and $q$ the whole archive.
+Table~\ref{tab:parameters} sorts the parameters in three kinds. The \emph{tolerances} $\delta$,
+$\varepsilon_h$, $\varepsilon_z$, $\theta_{\max}$ and $g$ say when two positions match. The
+\emph{duration} $\tau^*$ says how long a match must last, and follows from the share $q$ of chance
+contacts we accept (Section~\ref{sec:fdr}). The \emph{fixed settings}, in the lower part of the
+table, make the computation exact or fast and are not tuned.\label{sec:fixed}
 
 \begin{table}
 \centering
@@ -16,38 +17,52 @@ through the null model of Section~\ref{sec:null}: the profiles of this section u
 Parameter & Value & How it was set \\
 \midrule
 $\delta$, largest delay & 2 min & measured on the delay profile, Section~\ref{sec:delta-choice} \\
-$q$, accepted false discovery rate & 0.1 & trade-off, Section~\ref{sec:q} \\
-$\tau^*$, shortest contact & 38.1 min & computed from $q$ and the null model, Section~\ref{sec:fdr} \\
 $\varepsilon_h$, $\varepsilon_z$ & 500 m, 300 m & definitions: profiles without an edge, Section~\ref{sec:tolerances} \\
 $g$, longest gap joined & 120 s & definition: gaps of real and chance contacts alike, Section~\ref{sec:tolerances} \\
 $\theta_{\max}$ & 45$^\circ$ & no effect on the result, Section~\ref{sec:plateau} \\
-$\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & see Section~\ref{sec:fixed} & physical bounds and exactness \\
+$q$, accepted false discovery rate & 0.1 & trade-off, Section~\ref{sec:q} \\
+$\tau^*$, shortest contact & 38.1 min & computed from $q$ and the null model, Section~\ref{sec:fdr} \\
+\midrule
+$\Delta$, grid step & 5 s & a pilot at 100~km/h is at most 69~m from a grid position, against
+  $\varepsilon_h=500$~m (Section~\ref{sec:phase0}) \\
+$h_{\max}$ & 10 s & positions are interpolated only between fixes at most 10~s apart; the flights
+  of coarser loggers are left out of the statistics \\
+$R_\dep$ & 3 km & contacts around the takeoff, before the first exit from this disc, are not
+  counted (Section~\ref{sec:local}) \\
+$v_{\max}$ & 100 km/h & speed of the candidate filter: pieces of track end at every faster step, so
+  the filter never misses a correspondence (Lemma~\ref{lem:filter}, checked against every pair of
+  instants on synthetic days); the profiles of Section~\ref{sec:tolerances} widen it to 3~km, the
+  largest distance they count \\
+$R_s$, $r_{\min}$ & 10 km, $2\delta+\Delta$ & the null model, with at most 200 surrogate pairs per
+  date (Section~\ref{sec:null}) \\
 \bottomrule
 \end{tabularx}
-\caption{The parameters and how each was set.}
+\caption{The parameters and how each was set. Top: chosen on the data or declared as definitions.
+Bottom: fixed settings.}
 \label{tab:parameters}
 \end{table}
 
 \subsection{The maximum delay \texorpdfstring{$\delta$}{delta}}\label{sec:delta-choice}
 
-Section~\ref{sec:delta} bounds $\delta$ by the visual range, at about 5~min. Here the data say
-how long the delay between two pilots who fly together actually is.
+How far behind can a pilot be and still fly with the other? The visual range bounds $\delta$ at
+about 5~min (Section~\ref{sec:delta}); here the data say how long the delay between two pilots who
+fly together actually is.
 
-\paragraph{The delay profile.} For every delay $l$, the correspondences $(t,t+l)$ of the real
-pairs and of the surrogate pairs were counted, per second of exposure, with a window of 15~min on
-300 random dates (58\,910~h of real exposure):
+\paragraph{The delay profile.} For every delay $l$ we counted the correspondences $(t,t+l)$ of the
+real pairs and of the surrogate pairs, per second of exposure, with a window of 15~min on 300
+random dates (58\,910~h of real exposure), and took their ratio:
 \begin{equation}\label{eq:profile}
   R(l)=\frac{\text{real correspondences at delay } l \text{ per second of exposure}}
              {\text{chance correspondences at delay } l \text{ per second of exposure}} .
 \end{equation}
-Chance is flat in the delay, as it should: a shifted copy has no preferred delay. The real
-pairs peak at a few seconds, where they have 5.6 times the correspondences of chance, and
-decay: $R$ falls below 4 at 105~s, below 3 at 195~s and below 2 at 500~s, and is still 1.5 at
-15~min (Figure~\ref{fig:delays}). The excess has two parts. The fast one, within 2--3~min, is
-pilots flying together. The slow one, which has not ended at 15~min, is pilots who use the
-same thermals at about the same time without following each other, a synchrony that the
-shifts of the surrogates remove. A rule such as ``the delay that holds 95\% of the excess''
-would pick 13~min, because it counts the slow tail; that is why we read the ratio instead.
+Chance is flat in the delay, as expected: a shifted copy has no preferred delay. The real pairs
+peak at a few seconds, where they have 5.6 times the correspondences of chance, and decay: $R$
+falls below 4 at 105~s, below 3 at 195~s and below 2 at 500~s, and is still 1.5 at 15~min
+(Figure~\ref{fig:delays}). The excess has two parts. The fast one, within 2--3~min, is pilots
+flying together. The slow one, which has not ended at 15~min, is pilots who use the same thermals
+at about the same time without following each other, a synchrony that the shifts of the
+surrogates remove. A rule such as ``the delay that holds 95\% of the excess'' would pick 13~min,
+because it counts the slow tail; so we read the ratio instead.
 
 \begin{figure}
 \centering
@@ -59,11 +74,15 @@ pilots at the same instant when one is on the path of the other.}
 \label{fig:delays}
 \end{figure}
 
-\paragraph{The delay inside the contacts.} The profile counts correspondences; this view looks at
-the contacts themselves, through the delay $\ell_{\rm med}$ of each pair interval
-(Section~\ref{sec:lag}). Its absolute value was computed for every pair interval of the run with
-$\delta=5$~min, whose window is wide enough to show where the delays fall: 965\,770 intervals, of
-which 169\,517 have all their instants in search and no delay.
+\paragraph{The delay inside the contacts.} We computed $|\ell_{\rm med}|$ (Section~\ref{sec:lag})
+for every pair interval of the run with $\delta=5$~min, whose window is wide enough to show where
+the delays fall: 965\,770 intervals, of which 169\,517 have all their instants in search and no
+delay. The longer the contact, the shorter the delay (Table~\ref{tab:ell}; the whole distribution
+is in Appendix~\ref{app:evidence}). A pair that only shares route and weather matches at any delay
+of the window, and its closest correspondence is often at the largest ones: short intervals pile
+up at the edge. The contacts of at least 90~min, all above $\tau^*$ of this run (89.5~min), have a
+median delay of 25~s, and 90\% of them lie within 2~min. Long contacts are pilots a few tens of
+seconds apart on the same path.
 
 \begin{table}
 \centering
@@ -83,66 +102,26 @@ the edge: $|\ell_{\rm med}|\ge285$~s, the last 15~s of the window.}
 \label{tab:ell}
 \end{table}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.62\textwidth]{figures/assessment_ell.pdf}
-\caption{Distribution of the $|\ell_{\rm med}|$ of the pair intervals, by their duration
-($\delta=5$~min, whole archive).}
-\label{fig:ell}
-\end{figure}
-
-The longer the contact, the shorter the delay (Table~\ref{tab:ell}, Figure~\ref{fig:ell}). A
-pair that only shares route and weather matches at any delay of the window, and its closest
-correspondence is often at the largest ones: short intervals pile up at the edge, 29\% of
-those under 10~min. The contacts of at least 90~min, all above $\tau^*$ of this run
-(89.5~min), have a median delay of 25~s; 90\% of them lie within 2~min and only 6 of 10\,734
-at the edge. Long contacts are pilots a few tens of seconds apart on the same path.
-
 \paragraph{Choice.} We take $\delta=2$~min: within it the real correspondences are at least 3.7
-times chance, and it contains nine in ten of the long contacts. Shortening the delay also
-shortens $\tau^*$, since fewer chance matches enter: from 89.5 to 51.9~min at $q=0.05$
-(Table~\ref{tab:q}).
+times chance, and it contains nine in ten of the long contacts. A shorter delay also shortens
+$\tau^*$, since fewer chance matches enter: from 89.5 to 51.9~min at $q=0.05$ (Table~\ref{tab:q}).
 
-\paragraph{Distance at the same instant.} The delay also bounds how far apart two pilots in
-contact can be at the same instant: at most
-$\varepsilon_h+v_{\max}\delta\approx0.5+27.8\times120/1000\approx3.8$~km. A separation of 6~km,
-the largest we want to call a group, is never reached by one pair; a group, a chain of pairs, can
-be wider. Even with the 15~min window, 58\% of the instants in contact have the two pilots within
-2~km and 94\% within 6~km (Figure~\ref{fig:delays}, right).
-
-The same distance was also counted without requiring a correspondence: at every grid instant when
-both fly after departure, for all the real pairs and for the surrogates, on the dates of
-Figure~\ref{fig:delays} that have surrogates (210 of 300, 58\,901~h of real exposure). Real pairs
-are much closer than chance at short distance and have no edge (Figure~\ref{fig:separation}):
-the ratio $g(d)$ is 10.4 within 100~m, below 2 from 500~m, below 1.5 from 900~m, below 1.1 from
-2.7~km and below 1 from 5.7~km. Real pairs spend 6.6\% of their time together within 1~km of each
-other, against 2.8\% by chance. Beyond 6~km $g$ falls slightly below 1, because both distributions
-sum to one. The excess reaches several kilometres, beyond the visual range of 1.5~km of
-Section~\ref{sec:delta}. Since the surrogates also change the hour, this excess may hold the
-weather of the hour as well as sight, so it bounds neither the visual range nor the range of
-following.
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figures/assessment_separation.pdf}
-\caption{Distance between the two pilots at the same instant, over all the time both fly, on
-210 dates. Left: share of the exposure in each 100~m bin, real pairs and chance. Right: their
-ratio $g(d)$.}
-\label{fig:separation}
-\end{figure}
+The delay also bounds the distance between two pilots in contact at the same instant: at most
+$\varepsilon_h+v_{\max}\delta\approx0.5+27.8\times120/1000\approx3.8$~km, below the 6~km we would
+still call a group; a group, a chain of pairs, can be wider. Even with the 15~min window, 58\% of
+the instants in contact have the two pilots within 2~km and 94\% within 6~km
+(Figure~\ref{fig:delays}, right).
 
 \subsection{The tolerances against chance}\label{sec:tolerances}
 
-In analogy with the delay profile, with $\delta=2$~min and the null model of the chosen run, at
-every instant $t$ of pilot $i$ on the 210 dates of Figure~\ref{fig:separation}:
-\begin{itemize}
-\item the smallest horizontal distance between $i$ at $t$ and $j$ at $t+l$, $|l|\le\delta$,
-  over the delays with $|z_i(t)-z_j(t+l)|<\varepsilon_z$ and headings that pass (left of
-  Figure~\ref{fig:tolerances});
-\item the smallest height difference over the delays with horizontal distance
-  $<\varepsilon_h$ and headings that pass (middle);
-\item the gaps between consecutive instants of contact of a pair (right).
-\end{itemize}
+Is there a distance, a height difference or a gap beyond which real pairs look like chance? Such
+an edge would give the natural value of $\varepsilon_h$, $\varepsilon_z$ or $g$. In analogy with
+the delay profile, with $\delta=2$~min and the null model of the chosen run, on the 210 of the 300
+dates that have surrogates, we measured at every instant $t$ of pilot $i$ the smallest horizontal
+distance between $i$ at $t$ and $j$ at $t+l$, $|l|\le\delta$, over the delays that pass the
+vertical and heading conditions; the smallest height difference, over the delays that pass the
+horizontal and heading conditions; and the gaps between consecutive instants of contact of a
+pair.
 
 \begin{figure}
 \centering
@@ -156,32 +135,37 @@ gaps longer than 30~min are not drawn); dotted, $g$.}
 \end{figure}
 
 None of the three has an edge (Figure~\ref{fig:tolerances}). The horizontal ratio is 6.3 within
-25~m, below 2 from 250~m, below 1.5 from 500~m, and still 1.13 between 2.5 and 3~km. The
-vertical ratio is 4.0 within 25~m and below 2 from 150~m; from 275~m on it stays near 1.5
-(1.51 on average up to 1~km), the excess that the horizontal condition alone gives. Both values
-in use sit where real pairs are about 1.5 times chance.
+25~m, below 2 from 250~m, below 1.5 from 500~m, and still 1.13 between 2.5 and 3~km. The vertical
+ratio is 4.0 within 25~m and below 2 from 150~m; from 275~m on it stays near 1.5 (1.51 on average
+up to 1~km), the excess that the horizontal condition alone gives. Both values in use sit where
+real pairs are about 1.5 times chance.
 
 Real pairs have 1.46 times the gaps of chance per hour, because they have more contact, but the
-lengths of the gaps are the same: the shares of each class differ by at most 2 points. The
-gaps come from how pilots fly in and out of each other's path, the same in real and in chance
-contacts, so the data do not single out $g$.
+lengths of the gaps are the same: the shares of each class differ by at most 2 points. The gaps
+come from how pilots fly in and out of each other's path, the same in real and in chance contacts.
+The distance between the two pilots at the same instant, counted without requiring a
+correspondence, has no edge either (Appendix~\ref{app:evidence}).
+
+\paragraph{Choice.} The data single out none of $\varepsilon_h$, $\varepsilon_z$ and $g$: we keep
+500~m, 300~m and 120~s and declare them as definitions.
 
 \subsection{One parameter at a time}\label{sec:plateau}
 
-A plateau is a range of values of the tolerances around which the result does not change: a
-value inside it makes the result insensitive to the exact threshold. If there is none, the
-thresholds decide the result, and this must be said. The result is measured by $f_G$, the
-fraction of the flight time after the departure spent in a group:
+Does the result depend on the exact thresholds? A plateau is a range of values over which the
+result does not change; a value inside it makes the result insensitive to the exact threshold. We
+measure the result by $f_G$, the fraction of the flight time after departure spent in a group:
 \begin{equation}\label{eq:fg}
   f_G=\frac{\sum_i\bigl|\{t\in T^\dep_i:\ \gamma_i(t)\notin\{\st{L},\st{S}\}\}\bigr|}{\sum_i|T^\dep_i|}.
 \end{equation}
 We changed one parameter at a time on 300 random dates, recalibrating $\tau^*$ each time, with
 $\delta=5$~min (Table~\ref{tab:plateau}). $\theta_{\max}$ changes nothing: contacts in glide are
-few. The others move $f_G$ by up to a factor three, mostly through $\tau^*$: there is no plateau,
-in agreement with the profiles, and $\varepsilon_h$, $\varepsilon_z$ and $g$ are definitions. On
-300 dates $\tau^*$ is noisy (126~min with the starting values against 89.5 on the whole archive,
-and six settings stop at the same surrogate interval); a conclusive check needs the whole archive
-for each setting, about one hour each. It was not repeated with $\delta=2$~min.
+few. The others move $f_G$ by up to a factor three, mostly through $\tau^*$. There is no plateau,
+in agreement with the profiles: the thresholds decide the result, and the thesis must say so.
+
+The check is coarse. On 300 dates $\tau^*$ is noisy (126~min with the starting values against 89.5
+on the whole archive, and six settings stop at the same surrogate interval); a conclusive check
+needs the whole archive for each setting, about one hour each. It was not repeated with
+$\delta=2$~min.
 
 \begin{table}
 \centering
@@ -209,9 +193,9 @@ $g=300$ s & 126.1 & 0.055 & 141 & 318 \\
 
 \subsection{The false discovery rate \texorpdfstring{$q$}{q}}\label{sec:q}
 
-$q$ is the share of chance contacts we accept among those we keep. A smaller $q$ keeps only
-very long contacts and few groups, all of them real; a larger $q$ sees more groups, with more
-chance among them. Table~\ref{tab:q} and Figure~\ref{fig:q} give the trade-off.
+How much chance do we accept among the contacts we keep? A smaller $q$ keeps only very long
+contacts and few groups, almost all of them real; a larger $q$ sees more groups, with more chance
+among them. Table~\ref{tab:q} and Figure~\ref{fig:q} give the trade-off.
 
 \begin{table}
 \centering
@@ -239,22 +223,9 @@ group against $\tau^*$, for $q=0.05$, 0.1 and 0.2 with $\delta=2$~min.}
 \label{fig:q}
 \end{figure}
 
-We take $q=0.1$: at most one contact in ten is chance, and $\tau^*=38.1$~min. Going to 0.2 would
-lower $\tau^*$ to 26~min but would let chance make one group in five.
+\paragraph{Choice.} We take $q=0.1$: at most one contact in ten is chance, and $\tau^*=38.1$~min.
+Going to 0.2 would lower $\tau^*$ to 26~min but would let chance make one contact in five.
 
-\subsection{Fixed settings}\label{sec:fixed}
-
-\begin{itemize}
-\item $\Delta=5$~s, the common grid: a pilot is at most 69~m from a grid position at
-  100~km/h, against $\varepsilon_h=500$~m (Section~\ref{sec:phase0}).
-\item $h_{\max}=10$~s: positions are interpolated only between fixes at most 10~s apart; the
-  flights of coarser loggers are left out of the statistics.
-\item $R_\dep=3$~km: contacts around the takeoff, before the first exit from this disc, are not
-  counted (Section~\ref{sec:local}).
-\item $v_{\max}=100$~km/h, the speed of the candidate filter: pieces of track end at every
-  faster step, so the filter never misses a correspondence (Lemma~\ref{lem:filter}, checked
-  against every pair of instants on synthetic days). The profiles of
-  Section~\ref{sec:tolerances} widen the filter to 3~km, the largest distance they count.
-\item $R_s=10$~km, $r_{\min}=2\delta+\Delta$, at most 200 surrogate pairs per date: the null
-  model of Section~\ref{sec:null}.
-\end{itemize}
+\paragraph{What we keep.} $\delta=2$~min and $q=0.1$ are our choices on the data, and give
+$\tau^*=38.1$~min; $\varepsilon_h$, $\varepsilon_z$ and $g$ are definitions, and $\theta_{\max}$
+does not matter.
