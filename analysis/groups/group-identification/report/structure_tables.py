@@ -2,7 +2,7 @@
 report/generated/structure_*.tex. Every number in its text is a macro of
 generated/structure_macros.tex.
 
-    uv run python report/structure_tables.py    # from analyses/groups, after describe.py
+    uv run python report/structure_tables.py    # from analysis/groups/group-identification, after describe.py
 """
 
 import numpy as np

@@ -121,7 +121,7 @@ log-series: the tail falls exponentially. A leaving rate that falls with $n$ mak
 %======================================================================================
 \section{Reproducing the report}\label{app:reproduce}
 
-From \texttt{analyses/groups}, after the scripts of \emph{Group and solo flights}:
+From \texttt{analysis/groups/group-identification}, after the scripts of \emph{Group and solo flights}:
 \begin{verbatim}
 uv run python describe.py     # sizes, durations, events; about 15 s
 uv run python cohesion.py     # delays and separations, one pass over every date; about 25 min

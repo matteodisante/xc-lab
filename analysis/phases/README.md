@@ -103,5 +103,5 @@ uv run python durations.py           # from this folder, needs SSD_DISANTE; reus
 uv run python durations.py --refit   # refits too: about 10 min
 uv run python msd.py                 # reuses out/msd.json
 uv run python msd.py --recompute     # reads all fixes again: about 6 min
-uv run pytest analyses/phases        # from the root of xc-lab
+uv run pytest analysis/phases        # from the root of xc-lab
 ```

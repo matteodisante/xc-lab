@@ -24,7 +24,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 
 | folder | content |
 |---|---|
-| `runs/<name>/` | the tables of the note for all dates, `calibration.*`, `episode_distance.parquet`, `days/` (cache per date), `analyses/` (the measured pieces of `analyses/groups`, whose figures are in its `out/<run>/`) |
+| `runs/<name>/` | the tables of the note for all dates, `calibration.*`, `episode_distance.parquet`, `days/` (cache per date), `analyses/` (the measured pieces of `analysis/groups/group-identification`, whose figures are in its `out/<run>/`) |
 | `runs/d120_eh500_ez300_th45_g120_q0.1/` | the chosen run; `_q0.05` and `_q0.2` beside it share its contacts |
 | `runs/d300_eh500_ez300_th45_g120_q0.05/` | the starting values of the note (δ = 5 min) |
 | `delays/sample300_d900_.../` | the delay profile that chose δ |

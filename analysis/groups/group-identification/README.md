@@ -4,7 +4,7 @@ The motion of paragliders and hang gliders alone and in a group: TA-MSD with its
 and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
 the same by the number of pilots of the configuration, pooled and on chosen site-days.
 
-**Data.** The group labels of [`ideas/group-identification`](../../ideas/group-identification/),
+**Data.** The group labels of [`ideas/group-identification`](../../../ideas/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
 contact of at least τ* = 38.1 min; see its `method_assessment.pdf`), and the cleaned tracks of
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
@@ -87,7 +87,7 @@ the paragliders. The three hang gliders of 2013-04-24 give 0.861 [0.821, 0.890].
 ## MSD per phase: `phase_msd.py`
 
 The MSD of transitions, searches and climbs (`phase_msd.pdf`, with their local exponent),
-by the method of [`analyses/phases/msd.py`](../phases/): Vilpellet's pieces longer than 180
+by the method of [`analysis/phases/msd.py`](../../phases/): Vilpellet's pieces longer than 180
 fixes, his 6-fix smoothing and his median over pieces weighted by the T − Δ pairs; lags
 drawn up to 360 s where at least 100 pieces reach them. Here a phase run is first cut to the
 stretches of its population, so a group flight's runs count only in its group time. Phases
@@ -99,7 +99,7 @@ levels off near Vilpellet's Δ^0.6 guide. Bands: 5–95% of 200 bootstrap draws 
 for solo flights (paragliders), and equally so in their solo time, 1.977. Search slopes do not
 separate: 0.606 in group time, 0.715 in the solo time of the same flights, 0.619 for solo
 flights, with bands that overlap. Hang gliders have too few group searches for a slope, and
-their solo searches lose their pool beyond 180 s (as in `analyses/phases`), so their search
+their solo searches lose their pool beyond 180 s (as in `analysis/phases`), so their search
 slope means nothing.
 
 | | flights (transitions, searches) | transition slope | search slope, 100–360 s |
@@ -114,7 +114,7 @@ slope means nothing.
 ## Phase durations: `survival.py`
 
 Survival of the durations of transitions, searches and climbs (`survival.pdf`), paragliders only,
-by the method of [`analyses/phases/durations.py`](../phases/): a duration is the number of fixes
+by the method of [`analysis/phases/durations.py`](../../phases/): a duration is the number of fixes
 of a run (1 Hz), a search counts only when the next run is a climb, the 0.0001 and 99.9999
 percentiles are cut. A run keeps its whole duration and goes to the population of the stretch
 that holds its middle: cutting it where a flight enters or leaves a group would shorten the
@@ -541,5 +541,5 @@ uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
 uv run python report/structure_tables.py; cd report && latexmk -pdf group_structure.tex
 uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
-uv run pytest analyses/groups            # from the root of xc-lab
+uv run pytest analysis/groups/group-identification   # from the root of xc-lab
 ```

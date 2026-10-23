@@ -1,6 +1,6 @@
 """Survival of the phase durations of paragliders, solo and in a group, with the tail exponent mu.
 
-Method of analyses/phases/durations.py, which is Vilpellet's: a run's duration is its number
+Method of analysis/phases/durations.py, which is Vilpellet's: a run's duration is its number
 of fixes (1 Hz, so seconds), a search counts only when the next run of the flight is a climb,
 values outside the 0.0001 and 99.9999 percentiles are dropped, and powerlaw.Fit picks xmin
 and mu = alpha - 1. Since that xmin moves from one population to another, the populations are
@@ -26,7 +26,7 @@ import pandas as pd
 from phase_msd import PHASES, RUNS
 from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, save, stretches
 
-sys.path.insert(0, str(Path(__file__).parents[1] / "phases"))
+sys.path.insert(0, str(Path(__file__).parents[2] / "phases"))
 from durations import ccdf, fit, hill, log_resample, trim  # noqa: E402
 
 

@@ -34,7 +34,7 @@ from scipy.optimize import curve_fit
 
 from tamsd import LABELS, OUT, SEED, save
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "ideas" / "group-identification"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "ideas" / "group-identification"))
 import contacts  # noqa: E402
 import grid  # noqa: E402
 import run  # noqa: E402
