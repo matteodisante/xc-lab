@@ -1,0 +1,55 @@
+\section{The groups on the archive}\label{sec:structure}
+
+With the chosen values, $\delta=2$~min and $q=0.1$, 21.7\% of the paraglider flights and 6.9\% of
+the hang-glider flights fly in a group at some point, in 17\,169 episodes (Table~\ref{tab:q}).
+This section describes those groups. A configuration is a group with fixed members; it ends when a
+member joins or leaves. Its duration runs from its start to its end, and its participants are its
+members at once. An episode is a chain of configurations; its duration runs from the start of its
+first configuration to the end of its last, and its participants are the distinct flights it
+holds. The participants are counted in two ways: the share of the episodes (or configurations) of
+each size, and the share of their total duration.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/assessment_structure.pdf}
+\caption{Episodes (top) and configurations (bottom), $\delta=2$~min, whole archive, for three
+values of $q$. Left: share lasting longer than a duration. Middle: share of each size. Right:
+share of the total duration in each size.}
+\label{fig:structure}
+\end{figure}
+
+\begin{table}
+\centering
+\small
+\begin{tabular}{@{}l l r r c c c c r@{}}
+\toprule
+& $q$ & number & median & \multicolumn{2}{c}{2 participants} & \multicolumn{2}{c}{5 or more} & largest \\
+& & & duration & items & time & items & time & \\
+\midrule
+episodes & 0.05 & 10\,553 & 74.6 min & 77\% & 67\% & 3.9\% & 8.1\% & 21 \\
+ & 0.1 & 17\,169 & 58.2 min & 74\% & 61\% & 5.7\% & 12.6\% & 53 \\
+ & 0.2 & 26\,504 & 44.5 min & 73\% & 56\% & 7.0\% & 17.2\% & 91 \\
+\midrule
+configurations & 0.05 & 20\,275 & 52.7 min & 70\% & 81\% & 5.6\% & 2.3\% & 18 \\
+ & 0.1 & 40\,051 & 30.4 min & 63\% & 77\% & 9.4\% & 3.5\% & 27 \\
+ & 0.2 & 75\,953 & 17.1 min & 56\% & 74\% & 14.1\% & 5.0\% & 40 \\
+\bottomrule
+\end{tabular}
+\caption{Episodes and configurations for three values of $q$ ($\delta=2$~min). Items: share of
+the episodes or configurations of that size; time: share of their total duration.}
+\label{tab:structure}
+\end{table}
+
+With the chosen values the median episode lasts 58.2~min and three in four are pairs
+(Table~\ref{tab:structure}). Episodes last at least $\tau^*$, since a contact must. Weighted by
+duration the pairs weigh less, 61\% of the episode time, because larger episodes last longer:
+those of five flights or more are 5.7\% of the episodes and 12.6\% of their time.
+
+Configurations have no minimum duration: every arrival or departure of a member starts a new
+one, so 10\% last less than 2.1~min, and the median is 30.4~min. Weighted by duration the pairs
+weigh more, 77\% of the time against 63\% of the configurations, because large configurations
+change quickly.
+
+A larger $q$, hence a shorter $\tau^*$, gives more and shorter groups, and larger ones: the
+largest episode holds 21 flights with $q=0.05$, 53 with 0.1 and 91 with 0.2. The shares of the
+small sizes change little; the tail moves.

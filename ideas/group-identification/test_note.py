@@ -156,8 +156,23 @@ def test_dataset_size_estimates():
     assert flights * hours * 3600 == pytest.approx(1.0e9, rel=0.01)
 
 
-def test_threshold_of_the_schematic_fdr_figure():
-    tau = np.linspace(0, 20, 200001)
-    chance = 300 * np.exp(-tau / 2.5)
-    fdr = chance / (chance + 120 * np.exp(-tau / 25))
-    assert tau[np.argmax(fdr <= 0.05)] == pytest.approx(10.73, abs=0.01)
+def test_cost_of_the_literal_computation():
+    pairs, instants, delays = 200 * 199 // 2, 1.5 * 3600 / STEP, 2 * (120 // STEP) + 1
+    assert (pairs, instants, delays) == (19900, 1080, 49)
+    assert pairs * instants * delays == pytest.approx(1e9, rel=0.06)
+
+
+# The KD-tree figure (figure "kdcells"): eight cells of two points, two reached by the circle.
+
+def test_kd_tree_figure():
+    pts = np.array([(0.7, 0.6), (1.4, 1.5), (2.8, 0.4), (3.3, 1.3), (0.8, 2.9), (1.1, 3.5), (2.4, 2.6),
+                    (3.4, 3.4), (4.6, 0.7), (5.4, 1.4), (7.0, 0.5), (7.5, 1.2), (4.9, 3.2), (5.9, 2.3),
+                    (7.1, 2.9), (7.6, 3.6)])
+    cells = [(0, 2, 0, 2), (2, 4, 0, 2), (0, 1.6, 2, 4), (1.6, 4, 2, 4),
+             (4, 6, 0, 1.8), (6, 8, 0, 1.8), (4, 6.5, 1.8, 4), (6.5, 8, 1.8, 4)]
+    inside = [(pts[:, 0] >= x0) & (pts[:, 0] < x1) & (pts[:, 1] >= y0) & (pts[:, 1] < y1) for x0, x1, y0, y1 in cells]
+    assert [int(m.sum()) for m in inside] == [2] * 8
+    assert (pts[:, 0] < 4).sum() == 8
+    q, r = (5.2, 2.6), 1.0
+    reached = [c for c in cells if math.hypot(max(c[0] - q[0], 0, q[0] - c[1]), max(c[2] - q[1], 0, q[1] - c[3])) < r]
+    assert reached == [(4, 6, 0, 1.8), (4, 6.5, 1.8, 4)]

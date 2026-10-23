@@ -1,5 +1,5 @@
-"""The figures of the note assessing the group identification (method_assessment.tex), from the
-runs on SSD_DISANTE.
+"""The figures of the calibration, tuning and results sections of group_identification.tex, from
+the runs on SSD_DISANTE.
 
     uv run python assessment.py    # from this folder; writes figures/assessment_*.pdf
 

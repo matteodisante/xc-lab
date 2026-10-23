@@ -6,7 +6,7 @@ the same by the number of pilots of the configuration, pooled and on chosen site
 
 **Data.** The group labels of [`ideas/group-identification`](../../../ideas/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
-contact of at least τ* = 38.1 min; see its `method_assessment.pdf`), and the cleaned tracks of
+contact of at least τ* = 38.1 min; see sections 7–9 of its `group_identification.pdf`), and the cleaned tracks of
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
 
 **Results.** Figures and numbers are in `out/<run>/` of this folder (not in git), with the

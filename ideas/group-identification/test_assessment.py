@@ -1,4 +1,5 @@
-"""Every number of method_assessment.tex, from the runs on SSD_DISANTE."""
+"""Every number of the calibration, tuning and results sections of group_identification.tex,
+from the runs on SSD_DISANTE."""
 
 import importlib.util
 import json

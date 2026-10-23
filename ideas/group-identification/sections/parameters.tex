@@ -1,16 +1,15 @@
-\section{Choices to declare}\label{sec:parameters}
+\section{Choices to declare and limits}\label{sec:parameters}
 
 The starting values and those chosen on the data are in Table~\ref{tab:notation}. The thesis
-should state these choices, each argued in the section given or in the companion note
-\texttt{method\_assessment.pdf}:
+should state these choices, each argued in the section given:
 \begin{itemize}
   \item $\varepsilon_z$ encodes the notion of ``together'': shared thermals if tight, visual
         contact if wide (Section~\ref{sec:delta});
   \item $\delta$ is bounded by the visual range through $v_\xc$ (Section~\ref{sec:delta}) and
-        measured on the data at 2~min (\texttt{method\_assessment.pdf});
-  \item $q=0.1$: at most one contact in ten is chance (\texttt{method\_assessment.pdf});
+        measured on the data at 2~min (Section~\ref{sec:delta-choice});
+  \item $q=0.1$: at most one contact in ten is chance (Section~\ref{sec:q});
   \item $\varepsilon_h$, $\varepsilon_z$ and $g$ show no plateau on the data, so their values are
-        definitions (\texttt{method\_assessment.pdf});
+        definitions (Sections~\ref{sec:tolerances} and~\ref{sec:plateau});
   \item headings are compared only when both pilots glide; climb, search and unclassified fixes
         turn the condition off (Section~\ref{sec:roles}); \fix{in the run reported here the phases
         are Vilpellet's, on 1~Hz flights only, so the condition acts only between two such
@@ -21,9 +20,34 @@ should state these choices, each argued in the section given or in the companion
         enter with gaps (Section~\ref{sec:phase0});
   \item the signed median delay leaves out the instants of search, where the delay is not
         determined (Section~\ref{sec:lag});
-  \item the null model assumes that surrogate pairs meet by chance as often as real pairs; with
-        long shifts the weather changes (Section~\ref{sec:null}), so what it calls real includes
-        pilots who share the same thermals at the same time (\texttt{method\_assessment.pdf});
+  \item chance is defined by the null model, whose shifts of about an hour also remove the
+        synchrony of pilots with the weather of the hour: what it calls real includes pilots who
+        share the same thermals at the same time without following each other, the ``same air''
+        notion of Remark~\ref{rem:notions}, which is not proof of interaction. $\tau^*$ is 23~min
+        with shifts over an hour and 53~min with shifts under 30~min
+        (Section~\ref{sec:shift-classes});
   \item the errors of the phase labelling reach the heading condition: a climb labelled as glide
         compares headings that turn, and joining the short gaps mitigates the problem.
+\end{itemize}
+
+The measurements have three further limits:
+\begin{itemize}
+  \item the profiles of Sections~\ref{sec:delta-choice} and~\ref{sec:tolerances} are on one sample
+        of 300 dates;
+  \item the plateau check of Section~\ref{sec:plateau} is on 300 dates and with the starting delay
+        of 5~min;
+  \item the data are the cleaned tracks of the old repository (soaring, tag
+        \texttt{legacy-final}), not the pre-processing of xc-dynamics that
+        Section~\ref{sec:data} describes.
+\end{itemize}
+
+\subsection{Other checks}\label{sec:checks}
+
+\begin{itemize}
+  \item Visual inspection: about ten episodes on a map, with the entries and exits checked by hand.
+  \item Sensitivity to the step: on a subset of pairs, the computation with $\Delta=1$~s must give
+        the same intervals.
+  \item Competition days: if the dataset contains competition tracks, on those days everybody flies
+        the same course and is in a group by construction; they are flagged and treated apart.
+  \item Grid: the share of grid instants without a position, per flight and by logging interval.
 \end{itemize}

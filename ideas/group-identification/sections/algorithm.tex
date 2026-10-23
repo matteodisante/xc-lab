@@ -3,6 +3,18 @@
 \algrenewcommand\algorithmicrequire{\textbf{Input:}}
 \algrenewcommand\algorithmicensure{\textbf{Output:}}
 
+The definitions of Sections~\ref{sec:contact} and~\ref{sec:groups} can be computed literally:
+for every pair of flights of a day, for every instant of one and every delay up to $\delta$,
+test the four conditions of~\eqref{eq:correspondences}. On a day with 200 flights in the air
+this is $200\cdot199/2=19\,900$ pairs; with 1.5~h of flight on the 5-s grid, 1\,080 instants,
+and the 49 delays of $\delta=2$~min, it is about $10^9$ tests for that day alone. Almost all of
+them are wasted: most pairs of the day are never within several kilometres of each other. The
+algorithm therefore works in phases (Figure~\ref{fig:pipeline}). Phase~0 puts every flight on a
+common time grid; Phase~1 discards, with a cheap test that provably loses nothing, the pairs and
+the instants that cannot have a correspondence; Phase~2 applies the exact test to what remains;
+Phase~3 turns the contact into intervals; Phase~4 builds the groups from the intervals with a
+sweep over time.
+
 \begin{figure}
 \centering
 \begin{tikzpicture}[x=1cm,y=1cm,
@@ -17,14 +29,34 @@
   \node[stage, below=0.35cm of p3] (p4) {\textbf{Phase 4} (per date): sweep over the events $\to$ configurations, episodes, blocks};
   \node[io, below=0.35cm of p4] (out) {\textbf{Output}: tables T1--T5 and labels on the phases};
   \foreach \a/\b in {in/p0, p0/p1, p1/p2, p2/p3, p3/p4, p4/out} \draw[->, ink2] (\a) -- (\b);
-  \node[side, right=0.6cm of p2.east, anchor=west, yshift=-0.45cm] (cal) {\textbf{Calibration} (Section~\ref{sec:calibration}): null model, $\tau^*$, plateau of the parameters};
+  \node[side, right=0.6cm of p2.east, anchor=west, yshift=-0.45cm] (cal) {\textbf{Null model} (Section~\ref{sec:calibration}): surrogate pairs through Phases 1--3; $\tau^*$ over all dates};
   \draw[->, blueI] (cal.west |- p2.east) -- (p2.east);
   \draw[->, blueI] (cal.south) |- (p3.east);
 \end{tikzpicture}
-\caption{The method as a pipeline. Phases 1--4 work date by date: flights of different days do not
-interact, so the computation runs in parallel over the dates and needs the memory of one day.}
+\caption{The method as a pipeline. Phases 0--3 and the null model run date by date; $\tau^*$ is
+computed once, over all dates; Phase~4 then runs date by date with the intervals lasting at least
+$\tau^*$.}
 \label{fig:pipeline}
 \end{figure}
+
+\subsection{How a run is organised}\label{sec:run}
+
+Flights of different days never meet, so every phase but the calibration works on one date at a
+time: the dates run in parallel, and the memory needed is that of one day. A run has three
+stages.
+\begin{enumerate}
+  \item \textbf{Per date.} Phase~0 puts the flights of the date on the grid; Phases~1--3 find the
+        contact intervals of the real pairs, with their duration and $\ell_{\rm med}$, but
+        without the threshold $\tau^*$, which is not known yet. The null model of
+        Section~\ref{sec:null} draws the surrogate pairs of the date and sends each one through
+        the same Phases~1--3, with the copy of $j$ shifted in time and filtered against $i$
+        alone. The result of each date is saved, so an interrupted run resumes.
+  \item \textbf{Once.} $\tau^*$ follows from the real and the surrogate intervals of all the
+        dates, Eq.~\eqref{eq:fdr}.
+  \item \textbf{Per date.} Phase~4 keeps the intervals lasting at least $\tau^*$ and builds
+        configurations, episodes and blocks.
+\end{enumerate}
+On the whole archive, 6\,209 dates, a run takes about an hour with five processes.
 
 \subsection{Phase 0: preparation per flight}\label{sec:phase0}
 
@@ -102,18 +134,24 @@ because the null model and the calibration read it several times.
 
 \subsection{Phase 1: candidate pairs}\label{sec:phase1}
 
-The exact computation over all pairs of simultaneous flights is wasted effort: almost all of them
-never come close. A coarse filter reduces the pairs, with the guarantee of losing none.
+Phase~1 answers one question for each date: which pairs of flights, and at which instants, can
+have a correspondence at all? It does so with a necessary condition that is cheap to test. If
+$i$ at $t$ is within $\varepsilon_h$ of $j$ at $t'$, with $|t'-t|\le\delta$, then at the same
+instant the two pilots cannot be farther apart than $\varepsilon_h$ plus the distance $j$ can
+fly in $\delta$. Testing this distance at every instant would cost as much as the exact test, so
+it is tested only at whole minutes, with a radius widened to cover the rounding.
 
-The filter works on segments. Let $\tilde\x_i(s)$ be a segment of flight $i$ extended by holding
-its first position before it and its last position after it, and let $v_{\max}$ be the top speed
-of the pre-processing: within a segment no step between two fixes is faster, because the
-excursion rule (step~6) deletes or splits at any faster step, and the interpolation onto the grid
-keeps the bound. The filter compares positions at whole minutes, and a minute may fall just before
-or just after a segment: the extension gives the track a position there.
+\paragraph{Pieces of track.} The bound needs a top speed: between any two instants of a piece of
+track, the pilot moves at most $v_{\max}$ times the time between them, with $v_{\max}=100$~km/h,
+the top speed of the pre-processing. A \emph{piece} is a run of grid positions of one segment of
+one flight with no step faster than $v_{\max}$; a faster step, which the excursion rule of the
+pre-processing should already have removed, ends a piece. Let $\tilde\x_i(s)$ be a piece of
+flight $i$ extended by holding its first position before it and its last position after it. The
+filter reads positions at whole minutes, interpolated linearly between grid instants; a minute
+may fall just before or just after a piece, and the extension gives the track a position there.
 
 \begin{lemma}[no false negative]\label{lem:filter}
-If $(t,t')\in\M_{ij}$, $\tilde\x_i$ and $\tilde\x_j$ are the extended segments that contain $t$
+If $(t,t')\in\M_{ij}$, $\tilde\x_i$ and $\tilde\x_j$ are the extended pieces that contain $t$
 and $t'$, and $t_c=60\cdot\mathrm{round}(t/60)$, then
 \begin{equation}\label{eq:filter}
   \|\tilde\x_i(t_c)-\tilde\x_j(t_c)\| \le D_c := \varepsilon_h+v_{\max}\,(\delta+60~\mathrm{s}).
@@ -178,28 +216,89 @@ is bounded by the time it takes at most $v_{\max}$, or by $\varepsilon_h$.}
 \label{fig:lemma}
 \end{figure}
 
-With $v_{\max}=100$~km/h, $\delta=300$~s and $\varepsilon_h=500$~m, $D_c\approx10.5$~km; with the
-delay chosen on the data, $\delta=120$~s, $D_c\approx5.5$~km. The filter runs as follows, for
-each date.
-\begin{enumerate}
-  \item For each segment keep one point per minute of its extended track, for $t_c$ from
-        $\delta+60$~s before its first instant after the departure to $\delta+60$~s after its
-        last instant. This is the interval in which the lemma may ask for the position, whichever
-        of the two roles the flight has.
-  \item Build a single KD-tree~\cite{virtanen2020} on the coordinates $(X, Y, Z, K t_c/60)$ with
-        $K\gg D_c$, for example $K=10^8$~m: points of different minutes are more than $D_c$ apart
-        and are never paired (Figure~\ref{fig:kdtree}).
-  \item The search of all pairs within $D_c$ (\texttt{query\_pairs}) returns pairs of points of
-        the same minute, hence triples $(i,j,t_c)$; the pairs of two segments of the same flight
-        are dropped.
-  \item For each candidate pair, with $i<j$, the window is
-        $W_{ij}=\bigcup_{t_c}[t_c-30,t_c+30]\cap T^\dep_i$, the union over the minutes $t_c$ at which
-        the pair passed the filter: a set of instants of the flight of $i$.
-\end{enumerate}
-By the lemma, every correspondence $(t,t')\in\M_{ij}$ has $t\in W_{ij}$. The cost is
-$O(n_d\log n_d)$ per date, with $n_d$ the number of points per minute of the day. Phase~1 is worth
-running on the whole dataset before Phase~2: the number of pairs and the total duration of the
-windows give a precise estimate of the cost that follows.
+\paragraph{The radius.} With $v_{\max}=100$~km/h, $\delta=300$~s and $\varepsilon_h=500$~m,
+$D_c\approx10.5$~km; with the delay chosen on the data, $\delta=120$~s, $D_c\approx5.5$~km. The
+spacing of one minute is a compromise: with points every $s$ seconds the same proof gives
+$D_c=\varepsilon_h+v_{\max}(\delta+s)$, so a finer spacing narrows the radius a little but
+multiplies the points to compare.
+
+\paragraph{What a KD-tree is.} Phase~1 must find, among the points of one minute, all the pairs
+closer than $D_c$. Comparing every point with every other costs $n^2/2$ distances for $n$
+points. A KD-tree (a $k$-dimensional tree) avoids most of them. It splits the points in two at
+the median of one coordinate, then each half at the median of the next coordinate, and so on,
+until each cell holds a few points (Figure~\ref{fig:kdcells}). Every node of the tree is a box of
+space, and the leaves partition the points. To find the points within $D_c$ of a given point,
+the search starts at the root and descends only into the boxes that the ball of radius $D_c$
+reaches; a box farther than $D_c$ from the point is skipped with all its points, which are never
+compared. Building the tree takes $O(n\log n)$ operations, and when the points are spread out a
+search visits $O(\log n)$ boxes plus those that touch the ball. The search of all pairs within
+$D_c$ (\texttt{query\_pairs} of \texttt{cKDTree} in SciPy~\cite{virtanen2020}) runs this for every
+point and returns each pair once.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=0.85cm,y=0.85cm,
+    split/.style={draw=ink2, rounded corners=1pt, fill=white, font=\scriptsize, inner sep=2pt},
+    leafon/.style={draw=ink2, fill=blueI!25, minimum size=2.6mm, inner sep=0pt},
+    leafoff/.style={draw=muted, fill=light, minimum size=2.6mm, inner sep=0pt}]
+  \begin{scope}
+    \node[panel] at (0,4.55) {(a) the cells};
+    \fill[blueI!12] (4,1.8) rectangle (6.5,4);
+    \fill[blueI!12] (4,0) rectangle (6,1.8);
+    \draw[ink2] (0,0) rectangle (8,4);
+    \draw[ink, line width=1pt] (4,0) -- (4,4);
+    \draw[ink, line width=0.7pt] (0,2) -- (4,2);
+    \draw[ink, line width=0.7pt] (4,1.8) -- (8,1.8);
+    \draw[ink2, line width=0.5pt] (2,0) -- (2,2);
+    \draw[ink2, line width=0.5pt] (1.6,2) -- (1.6,4);
+    \draw[ink2, line width=0.5pt] (6,0) -- (6,1.8);
+    \draw[ink2, line width=0.5pt] (6.5,1.8) -- (6.5,4);
+    \foreach \p in {(0.7,0.6),(1.4,1.5),(2.8,0.4),(3.3,1.3),(0.8,2.9),(1.1,3.5),(2.4,2.6),(3.4,3.4),
+                    (4.6,0.7),(5.4,1.4),(7.0,0.5),(7.5,1.2),(4.9,3.2),(5.9,2.3),(7.1,2.9),(7.6,3.6)}
+      \fill[ink] \p circle (1.5pt);
+    \draw[blueI, line width=0.8pt] (5.2,2.6) circle (1.0);
+    \draw[blueI] (5.2,2.6) -- node[below, lbl, pos=0.55] {$D_c$} (4.5,1.9);
+    \node[pt i] at (5.2,2.6) {};
+    \node[lbl, below] at (4,-0.05) {$x=4$};
+  \end{scope}
+  \begin{scope}[shift={(9.6,0)}]
+    \node[panel] at (0,4.55) {(b) the tree};
+    \node[split] (r) at (3.0,3.9) {$x<4$};
+    \node[split] (a) at (1.3,2.9) {$y<2$};
+    \node[split] (b) at (4.7,2.9) {$y<1.8$};
+    \node[split] (a1) at (0.5,1.9) {$x<2$};
+    \node[split] (a2) at (2.1,1.9) {$x<1.6$};
+    \node[split] (b1) at (3.9,1.9) {$x<6$};
+    \node[split] (b2) at (5.5,1.9) {$x<6.5$};
+    \draw[muted] (r) -- (a); \draw[ink2] (r) -- (b);
+    \draw[muted] (a) -- (a1); \draw[muted] (a) -- (a2);
+    \draw[ink2] (b) -- (b1); \draw[ink2] (b) -- (b2);
+    \foreach \n/\x in {a1/0.5, a2/2.1} {
+      \node[leafoff] (\n l) at (\x-0.35,0.95) {}; \node[leafoff] (\n r) at (\x+0.35,0.95) {};
+      \draw[muted] (\n) -- (\n l); \draw[muted] (\n) -- (\n r);}
+    \node[leafon] (b1l) at (3.55,0.95) {}; \node[leafoff] (b1r) at (4.25,0.95) {};
+    \node[leafon] (b2l) at (5.15,0.95) {}; \node[leafoff] (b2r) at (5.85,0.95) {};
+    \draw[ink2] (b1) -- (b1l); \draw[muted] (b1) -- (b1r);
+    \draw[ink2] (b2) -- (b2l); \draw[muted] (b2) -- (b2r);
+    \node[note, anchor=north west, align=left] at (-0.2,0.45) {blue: leaves visited;\\grey: branches skipped};
+  \end{scope}
+\end{tikzpicture}
+\caption{A KD-tree in two dimensions. (a) The sixteen points are split by a vertical line at the
+median of $x$, each half by a horizontal line at the median of its $y$, each quarter by a vertical
+line again: eight cells of two points. A search of radius $D_c$ around the blue point visits only
+the two cells that the circle reaches (shaded) and compares their four points; the other twelve
+are never looked at. (b) The same splits as a tree: the search drops the left branch at the root,
+since the whole circle lies at $x>4$, and further down every cell that the circle does not reach.}
+\label{fig:kdcells}
+\end{figure}
+
+\paragraph{One tree for all the minutes.} Phase~1 needs the pairs of points of the \emph{same}
+minute only. Building one tree per minute would work; a single tree does the same job with a
+fourth coordinate. Every point gets the coordinates $(X,Y,Z,K\,t_c/60)$, its Earth-centred
+position and its minute multiplied by $K=10^8$~m. Two points of the same minute have the same
+fourth coordinate, so their distance in four dimensions is their distance in space; two points of
+different minutes are at least $K\gg D_c$ apart and are never returned
+(Figure~\ref{fig:kdtree}).
 
 \begin{figure}
 \centering
@@ -219,13 +318,37 @@ windows give a precise estimate of the cost that follows.
   \draw[blueI] (-0.1,2.7) -- (1.7,2.25);
   \draw[<->, ink2] (-0.4,0.45) -- node[left, lbl] {$K\gg D_c$} (-0.4,2.0);
 \end{tikzpicture}
-\caption{The KD-tree of Phase~1. Each minute is a layer of the space $(X,Y,Z,Kt_c/60)$, drawn
-here as a plane, and the layers are $K\gg D_c$ apart: a search of radius $D_c$ only finds points of the same minute, so one
-tree does the work of one search per minute.}
+\caption{The fourth coordinate. Each minute is a layer of the space $(X,Y,Z,Kt_c/60)$, drawn
+here as a plane, and the layers are $K\gg D_c$ apart: a search of radius $D_c$ only finds points
+of the same minute, so one tree does the work of one search per minute.}
 \label{fig:kdtree}
 \end{figure}
 
+\paragraph{The steps, for each date.}
+\begin{enumerate}
+  \item For each piece, one point per whole minute of its extended track, for $t_c$ from
+        $\delta+60$~s before its first instant to $\delta+60$~s after its last. This is the
+        interval in which the lemma may ask for the position, whichever of the two roles the
+        flight has.
+  \item One KD-tree on the four coordinates of all the points of the date.
+  \item \texttt{query\_pairs} with radius $D_c$: pairs of points of the same minute, hence
+        triples $(i,j,t_c)$; the pairs of two pieces of the same flight are dropped.
+  \item For each candidate pair, with $i<j$, the window is
+        $W_{ij}=\bigcup_{t_c}[t_c-30,t_c+30]\cap T^\dep_i$, the union over the minutes $t_c$ at which
+        the pair passed the filter: a set of grid instants of the flight of $i$.
+\end{enumerate}
+By the lemma, every correspondence $(t,t')\in\M_{ij}$ has $t\in W_{ij}$, and every pair with a
+correspondence is a candidate. The cost is $O(n_d\log n_d)$ per date, with $n_d$ the number of
+points of the day. Phase~1 is worth running on the whole dataset before Phase~2: the number of
+pairs and the total duration of the windows give a precise estimate of the cost that follows.
+
 \subsection{Phase 2: exact correspondences}\label{sec:phase2}
+
+For one candidate pair, Phase~2 tests Definition~\ref{def:correspondence} exactly, at every
+instant $t$ of the window $W_{ij}$ and every delay $l$ of the grid up to $\delta$, and keeps three
+results: $m_{ij}(t)$, whether $i$ at $t$ has a correspondence; $m_{ji}(t')$, whether $j$ at $t'$
+has one; and $l^*(t)$, the delay of the closest correspondence of $i$ at $t$
+(Section~\ref{sec:lag}).
 
 \begin{lemma}\label{lem:scan}
 Scanning the instants $t\in W_{ij}$ and the delays $l\in\Lambda=\{-L\Delta,\dots,L\Delta\}$, with
@@ -257,12 +380,19 @@ $W_{ij}$.
 \end{algorithmic}
 \end{algorithm}
 
-Each pass of the loop takes one delay $l$: in the $(t,t')$ plane it is the diagonal $t'=t+l$,
-evaluated over the whole window at once (Figure~\ref{fig:scan}). The cost is
+\begin{inwords}
+Each pass of the loop fixes one delay $l$ and compares $i$ at every instant of the window with
+$j$ at the instant $l$ later: one distance, one height difference and, if both glide, one angle per
+instant. Where the three conditions hold, $i$ at $t$ and $j$ at $t+l$ both get a correspondence. A
+running minimum of the distance over the delays that pass gives $l^*(t)$.
+\end{inwords}
+
+In the $(t,t')$ plane a pass is the diagonal $t'=t+l$, evaluated over the whole window at once
+(Figure~\ref{fig:scan}). The code evaluates all the delays of up to 2\,000 instants at once, as a
+matrix of instants by delays; the result is the same as the loop. The cost is
 $\sum_{\rm pairs}|W_{ij}|\,(2L+1)$ distance evaluations, with $2L+1=121$ for $\delta=5$~min and
-$\Delta=5$~s, 49 for $\delta=2$~min. On the whole archive (6\,209 dates) the run takes about an
-hour with five processes. The memory is $O(|W_{ij}|)$ per pair: boolean arrays are accumulated, without
-generating the list of pairs of points. Each step of the loop is a vector operation on arrays.
+$\Delta=5$~s, 49 for $\delta=2$~min. The memory is $O(|W_{ij}|)$ per pair: boolean arrays are
+accumulated, without generating the list of pairs of points.
 
 \begin{figure}
 \centering
@@ -293,12 +423,20 @@ diagonal $t'=t+l$ at a time; by Lemma~\ref{lem:scan} this covers all of $\M_{ij}
 
 \subsection{Phase 3: pair intervals}\label{sec:phase3}
 
-From the contact $a$ one extracts the runs of 1, joins those separated by gaps shorter than $g$
-and keeps those lasting at least $\tau^*$ (Definition~\ref{def:pair-interval}).
-\fix{The contact is first restricted to the time from the later of the two departures to the
-earlier of the two landings, so that every edge of the graph~\eqref{eq:graph} joins two nodes of
-$V(t)$. This cuts at most $\delta$ at each end of a contact, where $m_{ji}$ could hold at an
-instant at which $i$ has not yet departed or has already landed.} For each interval one also records:
+Phase~3 turns the contact of a pair into the intervals of Definition~\ref{def:pair-interval}.
+\begin{enumerate}
+  \item \fix{The contact is restricted to the time from the later of the two departures to the
+        earlier of the two landings, so that every edge of the graph~\eqref{eq:graph} joins two
+        nodes of $V(t)$. This cuts at most $\delta$ at each end of a contact, where $m_{ji}$
+        could hold at an instant at which $i$ has not yet departed or has already landed.}
+  \item The instants with $a_{ij}=1$, sorted, are cut wherever two consecutive ones are separated
+        by a gap of at least $g$; each run becomes a half-open interval $[t_{\rm on},t_{\rm off})$,
+        with $t_{\rm off}$ one grid step after its last instant.
+  \item The intervals are kept with their duration. The threshold $\tau^*$ is applied after the
+        calibration (Section~\ref{sec:run}), and only intervals lasting at least $\tau^*$ enter
+        Phase~4.
+\end{enumerate}
+For each interval one also records:
 \begin{itemize}
   \item the signed median delay $\ell_{\rm med}$, which tells who follows whom and does not enter
         Phase~4 (Section~\ref{sec:lag});
@@ -308,9 +446,18 @@ instant at which $i$ has not yet departed or has already landed.} For each inter
 
 \subsection{Phase 4: configurations and episodes}\label{sec:phase4}
 
-Between one event and the next the set of active edges does not change, so it is enough to update
-the components at the instants at which an interval starts or ends, and only around the nodes
-involved (Figure~\ref{fig:sweep}).
+Phase~4 needs the components of the active graph $G(t)$ at every instant, but $G(t)$ changes only
+when an interval starts or ends. Between one event and the next the set of active edges is
+fixed, so the components are recomputed only at the events, and only around the nodes involved
+(Figure~\ref{fig:sweep}).
+
+\begin{inwords}
+The events of the day, the starts and ends of the intervals, are sorted in time. At each event
+the touched flights and the open configurations they belong to form a set $R$; the components
+inside $R$ are recomputed. An open configuration whose members no longer form a component is
+closed; a new component opens a configuration, linked by a union--find to every configuration
+just closed that shares a member with it. The classes of the union--find are the episodes.
+\end{inwords}
 
 \begin{algorithm}[htbp]
 \caption{Phase 4: sweep over the events of one day}\label{alg:sweep}
@@ -378,9 +525,11 @@ day.}
 
 The cost per day is $O(|\I|\log|\I|)$ for the sorting, plus the sum of the sizes of the
 components involved at each event, at most a few hundred nodes. The classes of the
-union--find~\cite{tarjan1975} are the episodes. From the list of the configurations one obtains
-$\gamma_i(t)$ as in~\eqref{eq:membership}, filling with \st{S} the stretches after the departure
-not covered by a configuration and with \st{L} the local phase.
+union--find~\cite{tarjan1975} are the episodes. The dependency blocks follow from a second
+union--find, which joins the flights that share an episode; a flight never in a group is a block
+on its own. From the list of the configurations one obtains $\gamma_i(t)$ as
+in~\eqref{eq:membership}, filling with \st{S} the stretches after the departure not covered by a
+configuration and with \st{L} the local phase.
 
 \subsection{Costs and space}\label{sec:costs}
 
