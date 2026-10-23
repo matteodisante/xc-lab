@@ -1,30 +1,32 @@
 \section{Data and notation}\label{sec:data}
 
-The flights are those of the xc-dynamics pre-processing. Each flight $i\in V$ is one or more
-segments of fixes, from its takeoff $k^0_i$ to its landing $k^\fin_i$ (step~8 of the
-pre-processing, take-off and landing); between two segments the track has a gap. A fix has a
-time, a latitude $\varphi$, a longitude $\lambda$ and the GNSS altitude $z$, at the interval of
-its logger: one second for 70\% of the paraglider flights, two to ten seconds for most of the
-others. Time $k$ is in UTC seconds from the start of the day, on the same clock for all flights;
-IGC times are whole seconds.
+What does the method read, and in which frame?
 
-Positions follow the frame of the thesis (chapter Trajectory pre-processing, section Local
-coordinates and vertical datum): each fix is moved to the point of the WGS84 ellipsoid below it,
-$h=0$, and converted to Earth-centred Cartesian coordinates, $\x_i(k)\in\R^3$. The thesis then
-rotates them into the east and north of the first fix of each flight; here they stay
-Earth-centred, so the coordinates of all flights are the same frame. The distance between two
-positions is the chord of the ellipsoid, shorter than the distance along it by about $d^3/24R^2$:
-about a millimetre at $d=10$~km. The altitude is $z$ as recorded.
+\paragraph{Flights.} The flights are those of the xc-dynamics pre-processing. Each flight
+$i\in V$ is one or more segments of fixes, from its takeoff $k^0_i$ to its landing $k^\fin_i$
+(step~8 of the pre-processing); between two segments the track has a gap. A fix has a time, a latitude $\varphi$, a longitude $\lambda$ and the GNSS altitude
+$z$, at the interval of its logger: one second for 70\% of the paraglider flights, two to ten
+seconds for most of the others. Time $k$ is in UTC seconds from the start of the day, one clock
+for all flights; IGC times are whole seconds.
 
-\fix{The phases of the run reported here are Vilpellet's runs, computed by the old repository
+\paragraph{Frame.} As in the thesis (chapter Trajectory pre-processing, section Local coordinates
+and vertical datum), each fix is moved to the point of the WGS84 ellipsoid below it, $h=0$, and
+converted to Earth-centred Cartesian coordinates, $\x_i(k)\in\R^3$. Here they are not rotated into
+the east and north of each flight, so all flights share one frame. The distance between two
+positions is the chord of the ellipsoid, shorter than the distance along it by about
+$d^3/24R^2$: a millimetre at $d=10$~km. The altitude is $z$ as recorded.
+
+\paragraph{Phases.} \fix{The phases of this run are Vilpellet's, computed by the old repository
 (soaring, tag \texttt{legacy-final}) on the flights logged every second only, 70\% of the
-paraglider flights. The phase labelling of xc-lab (note \emph{Flight phases with a hidden Markov
-model}), meant for loggers of 5~s or less, was not used for this run.} Every labelled fix of a
-flight has one of three states,
+paraglider flights; the phase labelling of xc-lab (note \emph{Flight phases with a hidden Markov
+model}), meant for loggers of 5~s or less, was not used.} A labelled fix has one of three states,
 $s_i(k)\in\{\st{climb}, \st{search}, \st{transition}\}$: climbing in a thermal, searching for the
-next one, gliding between two thermals. In the text \emph{glide} means the state
-\st{transition}. \fix{The fixes of all the other flights} and of pieces too short to be labelled
-stay unclassified.
+next one, gliding between two thermals; \emph{glide} means \st{transition}. \fix{The fixes of the
+other flights} and of pieces too short to be labelled stay unclassified.
+
+Table~\ref{tab:notation} collects the symbols and the parameters. What we keep: the positions of
+all flights in one Earth-centred frame, the recorded altitude, and the phase of flight on the
+flights logged every second.
 
 \begin{table}
 \centering

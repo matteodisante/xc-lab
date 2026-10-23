@@ -1,7 +1,8 @@
 \section{Relation to the literature}\label{sec:literature}
 
-This section says where each ingredient of the method comes from and what, as far as a targeted
-but not exhaustive search shows, has not been done yet.
+Where does each ingredient of the method come from? This appendix reviews the precedents, as far
+as a targeted but not exhaustive search shows. The introduction summarises what we take and what is
+new (Section~\ref{sec:intro}), and Table~\ref{tab:origin} details it.
 
 \subsection{Trajectory similarity with a temporal tolerance}
 
@@ -11,8 +12,8 @@ by at most $\delta$. The similarity $S_1$ is the length of the common subsequenc
 length of the shorter track, and the variant $S_2$ maximises $S_1$ over all spatial translations,
 to recognise parallel movements. The EDR of Chen, Özsu and Oria~\cite{chen2005} and DTW with a
 Sakoe--Chiba band~\cite{sakoe1978} bound the shift in the same way. These measures return a
-single number per pair of tracks: they say how similar two tracks are, and not \emph{when} two
-pilots are together. A bound on indices counted from the first point of each track also mixes
+single number per pair of tracks, so they cannot say \emph{when} two pilots are together. A bound
+on indices counted from the first point of each track also mixes
 the shift between the takeoffs with the delay in flight, and $S_2$ matches precisely the parallel
 routes that we want to exclude.
 
@@ -94,7 +95,7 @@ events (start, end, merge, split), and each edge is a fixed set of entities that
 component over an interval of time (Figure~\ref{fig:reeb}). On it they define the maximal groups,
 sets of at least $m$ entities that stay inside one component for at least a duration $\delta$;
 maximal groups may overlap, and an entity can belong to several at once. Two more ideas of theirs
-reappear below: a robust structure ignores interruptions shorter than $\alpha$, by calling two
+reappear in the method: a robust structure ignores interruptions shorter than $\alpha$, by calling two
 entities connected at $t$ when they were directly connected at some instant within $\alpha/2$ of
 $t$ (§4); and the grouping structure can split the trajectories into independent data sets
 (§1). The proximity is always simultaneous.
@@ -150,23 +151,11 @@ synchronise their circling~\cite{nagy2018}. Vultures informed by other birds of 
 glide towards it faster~\cite{williams2018}. We found no work that identifies group flights
 systematically in large free-flight datasets.
 
-\subsection{What we take and what is new}
+\subsection{What we take from each precedent}
 
-The method is not a new general algorithm for grouping trajectories. The pair contact is the
-proximity with a local lag of Li et al.~\cite{li2013}, the group structure is that of Buchin et
-al.~\cite{buchin2015}, and groups built from delayed relations exist in
-mFLICA~\cite{amornbunchornvej2021}, with other definitions (Table~\ref{tab:origin}). What we did
-not find in the literature is:
-\begin{enumerate}[label=(\roman*)]
-  \item the Reeb structure built on contacts with a local delay instead of simultaneous proximity;
-  \item the adaptations to thermal flight: a vertical tolerance that separates pilots circling in
-        the same thermal at distant heights, and headings compared only in glide
-        (Section~\ref{sec:roles});
-  \item the application to a free-flight dataset of this size, with thresholds calibrated on a
-        null model.
-\end{enumerate}
-The contribution is therefore a physically motivated adaptation and a scalable implementation,
-more than a new method in itself, and the thesis should present it in these terms.
+Table~\ref{tab:origin} lists, component by component, the precedent, what we take from it and
+what we change; the three points we did not find in the literature are in
+Section~\ref{sec:intro}.
 
 \begin{table}
 \centering

@@ -3,17 +3,16 @@
 \algrenewcommand\algorithmicrequire{\textbf{Input:}}
 \algrenewcommand\algorithmicensure{\textbf{Output:}}
 
-The definitions of Sections~\ref{sec:contact} and~\ref{sec:groups} can be computed literally:
-for every pair of flights of a day, for every instant of one and every delay up to $\delta$,
-test the four conditions of~\eqref{eq:correspondences}. On a day with 200 flights in the air
-this is $200\cdot199/2=19\,900$ pairs; with 1.5~h of flight on the 5-s grid, 1\,080 instants,
-and the 49 delays of $\delta=2$~min, it is about $10^9$ tests for that day alone. Almost all of
-them are wasted: most pairs of the day are never within several kilometres of each other. The
-algorithm therefore works in phases (Figure~\ref{fig:pipeline}). Phase~0 puts every flight on a
-common time grid; Phase~1 discards, with a cheap test that provably loses nothing, the pairs and
-the instants that cannot have a correspondence; Phase~2 applies the exact test to what remains;
-Phase~3 turns the contact into intervals; Phase~4 builds the groups from the intervals with a
-sweep over time.
+How can the definitions of Sections~\ref{sec:contact} and~\ref{sec:groups} be computed on the
+whole archive? Literally, for every pair of flights of a day, for every instant of one and every
+delay up to $\delta$, one would test the four conditions of~\eqref{eq:correspondences}. On a day
+with 200 flights in the air this is $200\cdot199/2=19\,900$ pairs; with 1.5~h of flight on the
+5-s grid, 1\,080 instants, and the 49 delays of $\delta=2$~min, it is about $10^9$ tests for that
+day alone. Almost all of them are wasted: most pairs of the day are never within several
+kilometres of each other. The algorithm therefore works in phases (Figure~\ref{fig:pipeline}): a
+common time grid (Phase~0); a cheap test that discards, provably losing nothing, the pairs and
+instants without a correspondence (Phase~1); the exact test on what remains (Phase~2); the
+intervals (Phase~3); and a sweep over time that builds the groups (Phase~4).
 
 \begin{figure}
 \centering
@@ -71,10 +70,10 @@ two flights compare directly.
 
 \item \textbf{States and heading.} $s_i(k)$ from the phase labelling. In glide, $\vh_i(k)$ is the
 direction of the horizontal velocity, filtered with Savitzky--Golay, \fix{in the east and north
-directions of the first fix of the flight (the frame of the cleaned tracks), not of the fix
-itself. Two flights are then compared in frames whose axes differ by the rotation of the local
-north between their first fixes and the points compared: for a displacement $d$ to the east it is
-$(d/R)\tan\varphi$, about $3^\circ$ for 300~km at latitude $45^\circ$, small against
+of the first fix of the flight (the frame of the cleaned tracks) instead of those of the fix
+itself. So two flights are compared in frames whose axes differ by the rotation of the local
+north between their first fixes and the points compared: $(d/R)\tan\varphi$ for a displacement
+$d$ to the east, about $3^\circ$ for 300~km at latitude $45^\circ$, small against
 $\theta_{\max}=45^\circ$.}
 
 \item \textbf{Grid.} The instants of $\Delta\Z$, with $\Delta=5$~s, the same for all flights. A
@@ -135,11 +134,11 @@ because the null model and the calibration read it several times.
 \subsection{Phase 1: candidate pairs}\label{sec:phase1}
 
 Phase~1 answers one question for each date: which pairs of flights, and at which instants, can
-have a correspondence at all? It does so with a necessary condition that is cheap to test. If
-$i$ at $t$ is within $\varepsilon_h$ of $j$ at $t'$, with $|t'-t|\le\delta$, then at the same
-instant the two pilots cannot be farther apart than $\varepsilon_h$ plus the distance $j$ can
-fly in $\delta$. Testing this distance at every instant would cost as much as the exact test, so
-it is tested only at whole minutes, with a radius widened to cover the rounding.
+have a correspondence at all? If $i$ at $t$ is within $\varepsilon_h$ of $j$ at $t'$, with
+$|t'-t|\le\delta$, then at the same instant the two pilots cannot be farther apart than
+$\varepsilon_h$ plus the distance $j$ can fly in $\delta$. Testing this at every instant would
+cost as much as the exact test, so it is tested only at whole minutes, with a radius widened to
+cover the rounding.
 
 \paragraph{Pieces of track.} The bound needs a top speed: between any two instants of a piece of
 track, the pilot moves at most $v_{\max}$ times the time between them, with $v_{\max}=100$~km/h,
@@ -160,9 +159,8 @@ and $t'$, and $t_c=60\cdot\mathrm{round}(t/60)$, then
 
 \begin{inwords}
 $t_c$ is the whole minute nearest to $t$ (Figure~\ref{fig:lemma}a), and both positions
-in~\eqref{eq:filter} are read at that \emph{same} instant. If two pilots have a correspondence at
-all, then at the nearest whole minute they are less than $D_c$ apart; a pair farther than $D_c$ at
-every minute has no correspondence and can be discarded.
+in~\eqref{eq:filter} are read at that \emph{same} instant. A pair farther than $D_c$ at every
+minute has no correspondence and can be discarded.
 \end{inwords}
 
 \begin{proof}
@@ -339,8 +337,7 @@ of the same minute, so one tree does the work of one search per minute.}
 \end{enumerate}
 By the lemma, every correspondence $(t,t')\in\M_{ij}$ has $t\in W_{ij}$, and every pair with a
 correspondence is a candidate. The cost is $O(n_d\log n_d)$ per date, with $n_d$ the number of
-points of the day. Phase~1 is worth running on the whole dataset before Phase~2: the number of
-pairs and the total duration of the windows give a precise estimate of the cost that follows.
+points of the day.
 
 \subsection{Phase 2: exact correspondences}\label{sec:phase2}
 
@@ -456,7 +453,7 @@ The events of the day, the starts and ends of the intervals, are sorted in time.
 the touched flights and the open configurations they belong to form a set $R$; the components
 inside $R$ are recomputed. An open configuration whose members no longer form a component is
 closed; a new component opens a configuration, linked by a union--find to every configuration
-just closed that shares a member with it. The classes of the union--find are the episodes.
+just closed that shares a member with it.
 \end{inwords}
 
 \begin{algorithm}[htbp]
@@ -552,5 +549,6 @@ to be checked on the data.}
 \label{tab:costs}
 \end{table}
 
-Phases 1--4 are independent across dates and run in parallel without coordination. Phase~2
-dominates the cost; Phase~1 allows it to be estimated before running it.
+Phase~2 dominates the cost. Phase~1 is worth running on the whole archive first: the number of
+candidate pairs and the total duration of their windows estimate the cost of Phase~2 before it
+runs.

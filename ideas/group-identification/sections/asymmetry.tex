@@ -2,9 +2,10 @@
 
 $m_{ij}(t)$ of Definition~\ref{def:contact} asks whether $i$, at instant $t$, is at a place that
 $j$ visits within $\delta$; $m_{ji}(t)$ asks whether $j$, at the same instant, is at a place that
-$i$ visits within $\delta$. These are two questions about two different pairs of instants. Both
-are read from one set of correspondences $\M_{ij}$, one on each axis, and they agree only if
-that set is symmetric about the diagonal $t'=t$. What does hold:
+$i$ visits within $\delta$. The first fixes the instant of $i$ and lets that of $j$ vary within
+$\pm\delta$; the second does the opposite. Both are read from one set of correspondences
+$\M_{ij}$, one on each axis, and they agree only if that set is symmetric about the diagonal
+$t'=t$. What does hold:
 \begin{itemize}
   \item if $m_{ij}(t)=1$ through the pair $(t,t')$, then $m_{ji}(t')=1$: the same pair, read on
         the other axis, $l=t'-t$ later;
@@ -12,9 +13,7 @@ that set is symmetric about the diagonal $t'=t$. What does hold:
   \item the contact $a_{ij}=m_{ij}\vee m_{ji}$ is symmetric: $a_{ij}=a_{ji}$.
 \end{itemize}
 This appendix keeps only the horizontal condition of $\M_{ij}$: the vertical and heading
-conditions only remove pairs. $m_{ij}$ fixes the instant of $i$ and lets that of $j$ vary within
-$\pm\delta$; $m_{ji}$ fixes the instant of $j$ and lets that of $i$ vary. Nothing makes the two
-answers equal.
+conditions only remove pairs.
 
 \subsection{A worked example}
 
@@ -97,7 +96,7 @@ indicator by up to $\delta$.
 \toprule
 definition & symmetric & in the example & remark \\
 \midrule
-$m_{ij}\vee m_{ji}$ (used) & yes & 331--600 s & counts the approach and the departure within $\delta$ \\
+$m_{ij}\vee m_{ji}$ (used) & yes & 331--600 s & counts approach and departure within $\delta$ \\
 $m_{ij}\wedge m_{ji}$ & yes & 451--549 s & shorter: each on the path of the other at once \\
 $m_{ij}$ alone & no & 331--600 s, or 451--549 s for $(j,i)$ & depends on which pilot is called $i$ \\
 \bottomrule

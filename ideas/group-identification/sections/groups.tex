@@ -1,11 +1,16 @@
 \section{From pairs to groups}\label{sec:groups}
 
+Who flies with whom, as a group? The contact links two pilots at a time: it flickers, it is not
+transitive, and it changes during the afternoon. This section turns it into groups in four steps:
+pair intervals, groups at each instant (configurations), chains of groups (episodes), and the
+flights tied by them (dependency blocks).
+
 \subsection{Pair intervals}\label{sec:pair-intervals}
 
-The instantaneous contact flickers wherever one of the quantities sits close to its threshold: a
-horizontal distance near $\varepsilon_h$ in glide, a height difference near $\varepsilon_z$, an
-angle near $\theta_{\max}$. It also flickers at the changes of state, when the heading condition
-switches on and off, and wherever the phase labelling is wrong on a few fixes.
+The instantaneous contact flickers wherever a quantity sits close to its threshold (a distance
+near $\varepsilon_h$, a height difference near $\varepsilon_z$, an angle near $\theta_{\max}$), at
+the changes of state, where the heading condition switches on and off, and where the phase
+labelling is wrong on a few fixes.
 
 \begin{definition}[pair interval]\label{def:pair-interval}
 For each pair consider the maximal runs of consecutive grid instants with $a_{ij}=1$. Two runs
@@ -16,8 +21,8 @@ the intervals of the day is $\I$.
 
 Joining the short gaps plays the role of the robustness of Buchin et al.~\cite[§4]{buchin2015},
 which ignores interruptions shorter than $\alpha$; the maximal segments of Li et
-al.~\cite{li2013,ruzzo1999} are an alternative. The threshold $\tau^*$ is fixed by the null model
-(Section~\ref{sec:calibration}).
+al.~\cite{li2013,ruzzo1999} are an alternative. The minimum duration $\tau^*$ keeps chance
+contacts out, and the null model fixes it (Section~\ref{sec:calibration}).
 
 \begin{figure}
 \centering
@@ -45,25 +50,21 @@ shorter than $\tau^*$ are dropped; two intervals remain.}
 
 \subsection{The problem of non-transitivity}\label{sec:transitivity}
 
-\begin{remark}
-The relation ``$i$ and $j$ are in contact'' is symmetric but not transitive. If 1 flies with 8
-in the first part of the afternoon and 8 flies with 14 later, 1 and 14 may never have met.
-\end{remark}
-
-A partition into groups presupposes an \emph{equivalence relation}, a relation $\sim$ that is
-reflexive ($i\sim i$), symmetric ($i\sim j\Rightarrow j\sim i$) and transitive ($i\sim j$ and
-$j\sim k\Rightarrow i\sim k$). Contact lacks the third property, so any partition must give up
-something (Figure~\ref{fig:transitivity}):
+If 1 flies with 8 early in the afternoon and 8 with 14 later, 1 and 14 may never have met: contact
+is symmetric but not transitive. A partition into groups needs an \emph{equivalence relation}
+$\sim$, reflexive ($i\sim i$), symmetric ($i\sim j\Rightarrow j\sim i$) and transitive ($i\sim j$
+and $j\sim k\Rightarrow i\sim k$), so any definition of groups must give up something
+(Figure~\ref{fig:transitivity}):
 \begin{enumerate}[label=(\alph*)]
-  \item direct contact between all members: taking the transitive closure puts 1 and 14 in the
-        same group although they never met;
-  \item the partition: groups may overlap, here $\{1,8\}$ and $\{8,14\}$;
+  \item direct contact between all members: the transitive closure puts 1 and 14 in one group
+        although they never met;
+  \item the partition: groups may overlap, here $\{1,8\}$ and $\{8,14\}$, as the maximal groups
+        of Buchin et al.~\cite{buchin2015} do;
   \item the static picture: the groups are defined instant by instant.
 \end{enumerate}
-We adopt (c): at every instant the groups are the connected components of the graph of active
-contacts, as the components of Buchin et al.~\cite{buchin2015}, and the evolution in time is
-described without giving the groups a persistent identity. Their maximal groups, which may
-overlap, are a form of (b).
+We take (c): at every instant the groups are the connected components of the graph of active
+contacts, as the components of~\cite{buchin2015}, and their evolution is described without
+giving a group a lasting identity.
 
 \begin{figure}
 \centering
@@ -103,9 +104,9 @@ overlap, are a form of (b).
     \node[note, anchor=west, align=left] at (4.6,0.3) {groups are the connected\\components at each instant};
   \end{scope}
 \end{tikzpicture}
-\caption{Non-transitivity. Flights 1 and 8 are in contact early in the afternoon, 8 and 14 later;
-1 and 14 never meet. The three ways out: (a) one group containing all three, (b) two overlapping
-groups, (c) the groups of each instant, adopted here.}
+\caption{Non-transitivity: 1--8 early in the afternoon, 8--14 later, and 1 and 14 never meet.
+The three ways out: (a) one group of all three, (b) two overlapping groups, (c) the groups of
+each instant, our choice.}
 \label{fig:transitivity}
 \end{figure}
 
@@ -115,16 +116,13 @@ The active graph at instant $t$ is
 \begin{equation}\label{eq:graph}
   \begin{gathered}
   G(t)=\bigl(V(t),E(t)\bigr),\qquad V(t)=\{i:\ t\in T^\dep_i\},\\
-  E(t)=\bigl\{\{i,j\}:\ \exists\,(i,j,t_{\rm on},t_{\rm off})\in\I,\ t\in[t_{\rm on},t_{\rm off})\bigr\}.
+  E(t)=\bigl\{\{i,j\}:\ \exists\,(i,j,t_{\rm on},t_{\rm off})\in\I,\ t\in[t_{\rm on},t_{\rm off})\bigr\}:
   \end{gathered}
 \end{equation}
-
-\begin{inwords}
-$V(t)$ are the pilots that at instant $t$ have already departed, have not landed yet and have a
-position; $E(t)$
-are the pairs whose contact interval contains $t$. A connected component of $G(t)$ is a group at
-instant $t$: its pilots are joined to each other by chains of contacts.
-\end{inwords}
+its nodes are the pilots that at $t$ have departed, have not landed and have a position; its edges
+are the pairs whose interval contains $t$. A connected component of $G(t)$ with at least two nodes
+is a group at instant $t$: its pilots are joined by chains of contacts (Appendix~\ref{app:graphs}
+recalls the terms).
 
 \begin{definition}[configuration]
 A configuration $c$ is given by a set of flights $M_c$, its members, with $|M_c|\ge2$, and by an
@@ -133,15 +131,11 @@ $G(t)$ at every $t$ of the interval and the interval is maximal. We write
 $c=\bigl(M_c,[t^{\rm start}_c,t^{\rm end}_c)\bigr)$.
 \end{definition}
 
-\begin{doubt}{Inside a configuration the members are fixed.}
-Any change of members, one pilot joining or one leaving, ends the configuration and starts
-another. What can change inside a configuration is only the set of edges among its members.
-\end{doubt}
-
-The configurations are the edges of the Reeb graph of~\cite{buchin2015} with at least two
-entities, built on the graph of delayed contacts instead of simultaneous proximity. An edge that
-appears or disappears inside a component without changing its members, for example closing a
-triangle, does not create a new configuration (Figure~\ref{fig:configurations}).
+The members of a configuration are fixed: a pilot who joins or leaves ends it and starts another.
+Only the edges among the members may change: an edge that closes a triangle does not create a new
+configuration (Figure~\ref{fig:configurations}). The configurations are the edges of the Reeb
+graph of~\cite{buchin2015} with at least two entities (Figure~\ref{fig:reeb}), built on delayed
+contacts instead of simultaneous proximity.
 
 \begin{figure}
 \centering
@@ -194,12 +188,15 @@ The membership of flight $i$ at instant $t$ is therefore well defined:
     \st{S} & \text{if } t\in T^\dep_i \text{ otherwise (solo flight).}
   \end{cases}
 \end{equation}
-\fix{In the tables, every instant between the departure and the landing that is not in a
-configuration is labelled \st{S}, including the instants in a gap of the track, where the flight
-has no position. The analyses that read the fixes see nothing there, so only the time fractions
-computed from the membership include them.}
+\fix{In the tables, every instant between the departure and the landing outside a configuration
+is labelled \st{S}, the instants in a gap of the track included, where the flight has no position.
+The analyses that read the fixes see nothing there; only the time fractions computed from the
+membership include them.}
 
 \subsection{Episodes}\label{sec:episodes}
+
+A group that gains or loses a pilot becomes a new configuration, yet its pilots go on flying
+together. Episodes keep this continuity.
 
 \begin{definition}[episode]
 Two configurations are linked, $c\to c'$, if one starts exactly when the other ends and they have
@@ -210,21 +207,17 @@ at least one member in common:
 An episode is a connected component of the undirected graph associated with $\to$.
 \end{definition}
 
-\begin{inwords}
-An episode is a chain of configurations without interruption: each one starts at the instant the
-previous one ends and keeps at least one of its members. Two configurations of the same episode
-need not share anyone; the chain joins them.
-\end{inwords}
-
-In the language of~\cite{buchin2015}, an episode is a connected component of the Reeb graph after
-removing the edges of single pilots. Four properties matter (Figure~\ref{fig:episodes}).
+So an episode is a chain of configurations without interruption: each starts when the previous one
+ends and keeps at least one of its members, and two configurations of the same episode need not
+share anyone. In the language of~\cite{buchin2015}, it is a connected component of the Reeb graph
+without the edges of single pilots. Four properties matter (Figure~\ref{fig:episodes}):
 \begin{enumerate}[label=(\roman*)]
-  \item A split produces two configurations linked to the same previous one: they stay in the same
-        episode. The same holds for a merge.
-  \item If the group dissolves completely, the chain breaks and the episode ends; a group that
-        forms again later opens a new episode.
-  \item No threshold is needed: one member in common is enough.
-  \item The same flight can belong to several episodes of the same day, at different times.
+  \item a split produces two configurations linked to the same previous one, so they stay in the
+        same episode; the same holds for a merge;
+  \item if the group dissolves completely, the chain breaks and the episode ends; a group that
+        forms again later opens a new episode;
+  \item no threshold is needed: one member in common is enough;
+  \item the same flight can belong to several episodes of the same day, at different times.
 \end{enumerate}
 
 \begin{figure}
@@ -259,15 +252,18 @@ flight 2 belongs to both episodes.}
 \end{figure}
 
 \begin{remark}[why not a persistent group name]
-One could keep the same group name when the overlap of the members between two instants exceeds a
+One could keep the same group name while the overlap of the members between two instants exceeds a
 threshold, as methods that track communities in evolving networks do with the Jaccard
-index~\cite{greene2010}. The choice has three defects: the threshold is arbitrary; if the members are replaced one at a time the group keeps its name even when none
-of the initial members is left; in splits and merges there is no natural criterion to decide who
-inherits the name. The episode does not claim to be ``the same group'': it records only the
-continuity, while the configuration records the composition.
+index~\cite{greene2010}. The choice has three defects: the threshold is arbitrary; a group whose
+members are replaced one at a time keeps its name even when none of the first members is left;
+in splits and merges no natural criterion says who inherits the name. So we let the episode
+record only the continuity, and the configuration the composition.
 \end{remark}
 
 \subsection{Dependency blocks}\label{sec:blocks}
+
+Which flights can the statistics treat as independent? Those that never flew in the same episode,
+directly or through a chain of episodes.
 
 \begin{definition}[block]
 For each day consider the bipartite graph flights--episodes, with an edge between a flight and
@@ -306,29 +302,34 @@ turn, satisfy the property.
 \end{proof}
 
 The blocks are the units resampled in the bootstrap (Section~\ref{sec:comparison}): flights of
-different blocks never shared an episode, flights of the same block did. Buchin et al.\ already
-note that a grouping structure splits the trajectories into independent data
-sets~\cite[§1]{buchin2015}.
+different blocks never shared an episode. Buchin et al.\ already note that a grouping structure
+splits the trajectories into independent data sets~\cite[§1]{buchin2015}.
 
 \subsection{An example day}\label{sec:example-day}
 
-Figure~\ref{fig:day} follows a day with five flights. At 11:40 flights 1, 8 and 22 meet (edges 1--8 and 8--22): configuration
-$c_1=\{1,8,22\}$ starts. At 12:05 the edge 1--22 closes the triangle: the members do not change
-and $c_1$ goes on. At 12:55 the edge 1--8 closes and 1 changes route: $c_1$ ends and
-$c_2=\{8,22\}$ starts; they share 8 and 22, so $c_1\to c_2$. At 13:30 the edge 8--14 opens:
-$c_3=\{8,14,22\}$, and $c_2\to c_3$. At 14:10 the group dissolves and episode E1 ends. At 15:00
-flights 8 and 22 meet again: $c_4=\{8,22\}$ has no predecessor and opens episode E2.
+Figure~\ref{fig:day} follows a day with five flights. At 11:40 flights 1, 8 and 22 meet (edges
+1--8 and 8--22): configuration $c_1=\{1,8,22\}$ starts. At 12:05 the edge 1--22 closes the
+triangle: the members do not change and $c_1$ goes on. At 12:55 the interval 1--8 ends as 1
+changes route: $c_1$ ends and $c_2=\{8,22\}$ starts; they share 8 and 22, so $c_1\to c_2$. At
+13:30 the edge 8--14 opens: $c_3=\{8,14,22\}$, and $c_2\to c_3$. At 14:10 the group dissolves and
+episode E1 ends. At 15:00 flights 8 and 22 meet again: $c_4=\{8,22\}$ has no predecessor and
+opens episode E2.
 
-Flights 1 and 14 belong to the same episode without ever being in the same configuration; 8 and
-22 belong to two episodes; 1, 8, 14 and 22 form one dependency block, and flight 5, never in a
-group, a block of its own.
+So flights 1 and 14 share an episode without ever sharing a configuration; 8 and 22 belong to two
+episodes; 1, 8, 14 and 22 form one dependency block, and flight 5, never in a group, a block of
+its own.
+
+What we keep from this section: at every instant each flight has one label, \st{L}, \st{S} or its
+configuration; configurations chain into episodes, and episodes tie the flights into blocks.
+These labels are the output of the method (Appendix~\ref{sec:outputs}). They still depend on
+$\tau^*$, which Section~\ref{sec:calibration} fixes.
 
 \begin{figure}
 \centering
 \animated{example_day}
 \caption{\animmark An example day; the animation runs the day from 11:00 to 16:00 and stops at
-each event. Top: the active graph $G(t)$ at the five dotted instants; filled nodes are in a configuration, coloured by episode; dashed nodes are in the
-local phase, faint ones not in flight. Bottom: the membership $\gamma_i(t)$ of each flight:
+each event. Top: the active graph $G(t)$ at the five dotted instants; filled nodes are in a
+configuration, coloured by episode; dashed nodes are in the local phase, faint ones not in flight. Bottom: the membership $\gamma_i(t)$ of each flight:
 hatched is the local phase \st{L}, grey is solo \st{S}, coloured segments are the configurations
 $c_1$--$c_4$, and the last row spans the episodes.}
 \label{fig:day}
