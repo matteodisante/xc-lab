@@ -1,0 +1,36 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \draw[->, ink2] (0,0) -- (7.3,0) node[right, lbl, ink] {$t$};
+    \foreach \x/\h in {0/13:00, 2.4/14:00, 4.8/15:00, 7.0/16:00} {
+      \draw[ink2] (\x,-0.06) -- (\x,0.06); \node[lbl, below] at (\x,-0.06) {\h};
+    }
+    \fill[blueI] (0.2,0.85) rectangle (3.4,1.15);
+    \node[lbl, anchor=east] at (0.1,1.0) {1--8};
+    \fill[orangeJ] (4.0,0.35) rectangle (6.8,0.65);
+    \node[lbl, anchor=west] at (6.9,0.5) {8--14};
+    \node[panel] at (0,1.65) {pair intervals};
+  \end{scope}
+  \begin{scope}[shift={(8.6,0)}]
+    \node[panel] at (0,1.65) {(a) transitive closure};
+    \draw[ink2, rounded corners=8pt, fill=light!60] (0,-0.3) rectangle (2.7,1.25);
+    \node[flight] at (0.45,0.5) {1}; \node[flight] at (1.35,0.5) {8}; \node[flight] at (2.25,0.5) {14};
+    \node[note, anchor=north west, align=left] at (0,-0.45) {one group all afternoon:\\1 and 14 never met};
+  \end{scope}
+  \begin{scope}[shift={(0,-3.4)}]
+    \node[panel] at (0,1.65) {(b) overlapping groups};
+    \draw[blueI, line width=0.9pt] (0.95,0.5) ellipse (0.95 and 0.6);
+    \draw[orangeJ, line width=0.9pt] (1.85,0.5) ellipse (0.95 and 0.6);
+    \node[flight] at (0.45,0.5) {1}; \node[flight] at (1.4,0.5) {8}; \node[flight] at (2.35,0.5) {14};
+    \node[note, anchor=north west, align=left] at (0,-0.4) {8 belongs to two groups};
+  \end{scope}
+  \begin{scope}[shift={(4.6,-3.4)}]
+    \node[panel] at (0,1.65) {(c) instant by instant (our choice)};
+    \node[lbl] at (0.9,1.15) {13:30};
+    \draw[edge] (0.45,0.45) -- (1.35,0.45);
+    \node[inE1] at (0.45,0.45) {1}; \node[inE1] at (1.35,0.45) {8}; \node[flight] at (0.9,-0.35) {14};
+    \node[lbl] at (3.6,1.15) {15:30};
+    \draw[edge] (3.15,0.45) -- (4.05,0.45);
+    \node[flight] at (3.6,-0.35) {1}; \node[inE2] at (3.15,0.45) {8}; \node[inE2] at (4.05,0.45) {14};
+    \node[note, anchor=west, align=left] at (4.6,0.3) {groups are the connected\\components at each instant};
+  \end{scope}
+\end{tikzpicture}

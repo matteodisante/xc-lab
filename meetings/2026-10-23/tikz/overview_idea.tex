@@ -1,0 +1,71 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % 1: two tracks
+  \begin{scope}[shift={(0,0)}]
+    \node[panel] at (0,3.25) {1\enspace Two tracks};
+    \draw[track i] plot[smooth] coordinates {(0.2,1.3) (1.2,1.9) (2.4,1.8) (3.4,2.45) (4.4,2.8)};
+    \draw[track j] plot[smooth] coordinates {(0.2,0.85) (1.2,1.45) (2.4,1.35) (3.4,2.0) (4.4,2.35)};
+    \node[pt i] (xi) at (3.4,2.45) {};
+    \node[hollow j] (xj) at (1.2,1.45) {};
+    \node[lbl, blueI, above=1pt] at (xi) {$i$};
+    \node[lbl, orangeJ, below=2pt] at (xj) {$j$};
+    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies the route of $i$,\\a little later};
+  \end{scope}
+  % 2: same place, shifted times
+  \begin{scope}[shift={(5.45,0)}]
+    \node[panel] at (0,3.25) {2\enspace Same place, with a delay};
+    \fill[light] (0,0) -- (0.6,0) -- (2.6,2.0) -- (2.6,2.6) -- (2.0,2.6) -- (0,0.6) -- cycle;
+    \draw[muted, densely dashed] (0,0) -- (2.6,2.6);
+    \fill[aqua, rotate around={45:(1.15,1.5)}] (1.15,1.5) ellipse (0.78 and 0.12);
+    \draw[->, ink2] (0,0) -- (2.85,0) node[midway, below, lbl, ink] {when $i$ passes};
+    \draw[->, ink2] (0,0) -- (0,2.85) node[pos=0.6, anchor=north, rotate=90, lbl, ink] {when $j$ passes};
+    \node[note, align=left, anchor=west] at (2.75,1.55) {both pass\\the same\\place;\\above the\\diagonal:\\$j$ passes\\later};
+  \end{scope}
+  % 3: contact
+  \begin{scope}[shift={(10.9,0)}]
+    \node[panel] at (0,3.25) {3\enspace Contact};
+    \draw[->, ink2] (0,1.0) -- (4.5,1.0) node[right, lbl, ink] {time};
+    \fill[light] (0,1.3) rectangle (4.3,1.8);
+    \foreach \a/\b in {0.3/1.15, 1.3/2.2, 2.75/2.9, 3.55/3.66} \fill[aqua] (\a,1.3) rectangle (\b,1.8);
+    \node[note, align=left, anchor=north west] at (0,0.75) {when one of the two pilots\\is on the path of the other};
+  \end{scope}
+  % 4: long contacts
+  \begin{scope}[shift={(0,-4.2)}]
+    \node[panel] at (0,3.25) {4\enspace Long contacts};
+    \fill[light] (0,2.1) rectangle (4.3,2.5);
+    \foreach \a/\b in {0.3/1.15, 1.3/2.2, 2.75/2.9, 3.55/3.66} \fill[aqua!45] (\a,2.1) rectangle (\b,2.5);
+    \fill[light] (0,1.2) rectangle (4.3,1.6);
+    \fill[aqua] (0.3,1.2) rectangle (2.2,1.6);
+    \draw[->, ink2] (0,0.9) -- (4.5,0.9) node[right, lbl, ink] {time};
+    \node[note, align=left, anchor=north west] at (0,0.55) {short gaps filled,\\short pieces dropped};
+  \end{scope}
+  % 5: groups at each instant
+  \begin{scope}[shift={(5.45,-4.2)}]
+    \node[panel] at (0,3.25) {5\enspace Groups at each instant};
+    \coordinate (n1) at (0.45,1.9); \coordinate (n8) at (1.4,2.55); \coordinate (n22) at (1.4,1.25);
+    \coordinate (n14) at (2.45,1.9); \coordinate (n5) at (0.45,0.75);
+    \draw[edge] (n1) -- (n8) -- (n22);
+    \node[inE1] at (n1) {1}; \node[inE1] at (n8) {8}; \node[inE1] at (n22) {22};
+    \node[flight] at (n14) {14}; \node[flight] at (n5) {5};
+    \node[note, align=left, anchor=west] at (2.85,1.75) {pilots linked\\by contacts;\\same members\\over time:\\a configuration};
+  \end{scope}
+  % 6: episodes
+  \begin{scope}[shift={(10.9,-4.2)}]
+    \node[panel] at (0,3.25) {6\enspace Episodes};
+    \foreach \a/\b/\n in {0.1/1.15/1, 1.2/1.75/2, 1.8/2.6/3} {
+      \fill[blueI] (\a,1.9) rectangle (\b,2.4);
+      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$c_\n$};
+    }
+    \fill[orangeJ] (3.3,1.9) rectangle (4.1,2.4);
+    \node[font=\footnotesize, text=white] at (3.7,2.15) {$c_4$};
+    \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (0.1,1.8) -- (2.6,1.8)
+      node[midway, below=4pt, lbl, ink] {episode E1};
+    \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (3.3,1.8) -- (4.1,1.8)
+      node[midway, below=4pt, lbl, ink] {E2};
+    \node[note, align=left, anchor=north west] at (0,0.75) {configurations that follow\\each other without a break};
+  \end{scope}
+  % reading order
+  \foreach \y in {1.6, -2.6} {
+    \draw[->, muted, line width=0.8pt] (4.75,\y) -- (5.3,\y);
+    \draw[->, muted, line width=0.8pt] (10.2,\y) -- (10.75,\y);
+  }
+\end{tikzpicture}

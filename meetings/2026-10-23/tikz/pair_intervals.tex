@@ -1,0 +1,16 @@
+\begin{tikzpicture}[x=1.0cm,y=1cm,
+    row/.style={font=\footnotesize, anchor=east}]
+  \foreach \y in {2,1,0} \fill[light] (0,\y-0.17) rectangle (12,\y+0.17);
+  \node[row] at (-0.1,2) {$a_{ij}(t)$};
+  \node[row] at (-0.1,1) {gaps $<g$ filled};
+  \node[row] at (-0.1,0) {pieces $<\tau^*$ dropped};
+  \foreach \a/\b in {0.4/2.0, 2.3/4.4, 4.8/5.2, 7.0/7.5, 9.0/10.9, 11.2/11.4} \fill[aqua] (\a,1.83) rectangle (\b,2.17);
+  \foreach \a/\b in {0.4/5.2, 7.0/7.5, 9.0/11.4} \fill[aqua] (\a,0.83) rectangle (\b,1.17);
+  \foreach \a/\b in {2.0/2.3, 4.4/4.8, 10.9/11.2} \fill[pattern=north east lines, pattern color=white] (\a,0.83) rectangle (\b,1.17);
+  \foreach \a/\b in {0.4/5.2, 9.0/11.4} \fill[aqua] (\a,-0.17) rectangle (\b,0.17);
+  \draw[ink2, line width=0.7pt] (7.0,-0.17) -- (7.5,0.17) (7.0,0.17) -- (7.5,-0.17);
+  \foreach \x/\l in {0.4/t_{\rm on}, 5.2/t_{\rm off}, 9.0/t_{\rm on}, 11.4/t_{\rm off}} \node[lbl, below] at (\x,-0.2) {$\l$};
+  \draw[<->, ink2] (5.2,1.45) -- node[above, lbl] {gap $>g$} (7.0,1.45);
+  \draw[|-|, ink2] (0,-1.05) -- node[below, lbl] {$g$} (0.9,-1.05);
+  \draw[|-|, ink2] (1.6,-1.05) -- node[below, lbl] {$\tau^*$} (3.1,-1.05);
+\end{tikzpicture}

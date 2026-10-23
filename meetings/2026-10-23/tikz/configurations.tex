@@ -1,0 +1,27 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \foreach \sx/\t/\tri/\four in {0/t_1/0/0, 4.3/t_2/1/0, 8.6/t_3/1/1} {
+    \begin{scope}[shift={(\sx,0)}]
+      \node[lbl] at (1.3,2.55) {$G(\t)$};
+      \coordinate (a) at (0.3,1.0); \coordinate (b) at (1.0,2.0); \coordinate (c) at (1.7,1.0); \coordinate (d) at (2.8,1.0);
+      \draw[edge] (a) -- (b) -- (c);
+      \ifnum\tri=1 \draw[edge] (a) -- (c); \fi
+      \ifnum\four=1 \draw[edge] (c) -- (d); \fi
+      \ifnum\four=1
+        \node[inE2] at (a) {1}; \node[inE2] at (b) {2}; \node[inE2] at (c) {3}; \node[inE2] at (d) {4};
+      \else
+        \node[inE1] at (a) {1}; \node[inE1] at (b) {2}; \node[inE1] at (c) {3}; \node[flight] at (d) {4};
+      \fi
+    \end{scope}
+  }
+  \begin{scope}[shift={(0,-2.9)}]
+    \draw[->, ink2] (0,0) -- (12.4,0) node[right, lbl, ink] {$t$};
+    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,0) -- (\x,4.9); \node[lbl, below] at (\x,0) {$\l$};}
+    \foreach \a/\b/\y/\n in {0.3/11.8/2.1/1--2, 0.3/11.8/1.7/2--3, 4.6/11.8/1.3/1--3, 8.6/11.8/0.9/3--4} {
+      \fill[ink2] (\a,\y-0.09) rectangle (\b,\y+0.09);
+      \node[lbl, anchor=east] at (0.2,\y) {\n};
+    }
+    \fill[blueI] (0.3,0.25) rectangle (8.55,0.6); \node[font=\footnotesize, text=white] at (4.4,0.425) {$c$: $\{1,2,3\}$};
+    \fill[orangeJ] (8.65,0.25) rectangle (11.8,0.6); \node[font=\footnotesize, text=white] at (10.2,0.425) {$c'$: $\{1,2,3,4\}$};
+    \node[lbl, anchor=east] at (0.2,0.425) {config.};
+  \end{scope}
+\end{tikzpicture}

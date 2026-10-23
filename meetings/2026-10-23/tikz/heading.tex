@@ -1,0 +1,27 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \node[panel] at (0,2.75) {(a) both glide};
+    \draw[track i, ->] (0.2,0.9) -- (3.6,1.5);
+    \draw[track j, ->] (0.2,0.35) -- (3.6,1.15);
+    \draw[ink2] (2.2,1.25) arc (10:2:1.4);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {angle $<\theta_{\max}$: \checkmark};
+    \node[lbl, blueI, right] at (3.6,1.5) {$i$};
+    \node[lbl, orangeJ, right] at (3.6,1.15) {$j$};
+  \end{scope}
+  \begin{scope}[shift={(5.2,0)}]
+    \node[panel] at (0,2.75) {(b) crossing};
+    \draw[track i, ->] (0.2,1.2) -- (3.6,1.2);
+    \draw[track j, ->] (2.15,0.3) -- (1.9,2.15);
+    \draw[tol] (2.0,1.2) circle (0.75);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {close, heading elsewhere:\\$\times$, excluded};
+    \node[lbl, blueI, right] at (3.6,1.2) {$i$};
+    \node[lbl, orangeJ, right] at (1.9,2.1) {$j$};
+  \end{scope}
+  \begin{scope}[shift={(10.4,0)}]
+    \node[panel] at (0,2.75) {(c) climb or search};
+    \draw[track j] plot[smooth, tension=0.7] coordinates {(0.6,0.6) (1.3,0.3) (2.0,0.65) (1.7,1.3) (1.0,1.25) (0.8,0.85) (1.4,0.6) (2.15,0.95) (1.95,1.75) (1.15,1.85) (0.85,1.45)};
+    \foreach \p/\a in {(1.3,0.3)/0, (2.0,0.65)/80, (1.7,1.3)/150, (1.0,1.25)/210, (2.15,0.95)/70, (1.15,1.85)/180}
+      \draw[->, ink, line width=0.7pt] \p -- ++(\a:0.45);
+    \node[note, align=left, anchor=north west] at (0.1,0.05) {the heading turns:\\no condition};
+  \end{scope}
+\end{tikzpicture}
