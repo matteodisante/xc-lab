@@ -31,8 +31,9 @@
 }
 
 \newcommand{\x}{\mathbf{x}}
+\newcommand{\M}{\mathcal{M}}
 \newcommand{\dep}{\mathrm{dep}}
-\newcommand{\fin}{\mathrm{fin}}
+\newcommand{\FDR}{\widehat{\mathrm{FDR}}}
 
 % Theme: steel-blue title bar, white pages, as in the earlier decks.
 \setbeamercolor{structure}{fg=steel}
@@ -101,249 +102,252 @@
 
 \begin{frame}{The question}
 \begin{beamercolorbox}[wd=\linewidth,sep=6pt,center]{takeaway}
-\large Two pilots who never interact still meet.\\ How long must a contact last before it is not chance?
+\large Same site, same ridges, same house thermals: pilots meet without interacting.
 \end{beamercolorbox}
 \bigskip
-They take off from the same site, follow the same ridges and valleys, climb in the same house
-thermals. So:
-\begin{itemize}
-  \item build \textbf{chance} from the data: pairs that fly the same routes without synchrony;
-  \item keep the contacts that are long enough for chance to be \textbf{one in ten};
-  \item check how the result moves with each \textbf{threshold}.
-\end{itemize}
-\source{Run: 162\,485 cleaned flights of 6\,209 dates of the FFVL archive; profiles on 300 random
-dates.}
-\end{frame}
-
-\partframe{Part 1: what chance means}{The null model and the minimum duration $\tau^*$}
-
-\begin{frame}{The null model: shift one flight in time}
-\defn{Surrogate pair}{Two flights of the same date, takeoffs less than $R_s=10$~km apart; the
-copy of $j$ takes off $\vartheta$ after $i$, with $\vartheta$ drawn from the takeoff delays of the
-day:
 \[
-  \x^s_j(t)=\x_j(t+r_{ij}),\qquad r_{ij}=(k^0_j-k^0_i)-\vartheta,\qquad |r_{ij}|\ge2\delta+\Delta .
-\]}
-\tikzfig[0.27\textheight]{null}
-\begin{columns}[T,onlytextwidth]
-\column{.48\textwidth}
-\small\textbf{Keeps}: route, terrain, date, takeoff delays of the day.
-\column{.48\textwidth}
-\small\textbf{Destroys}: every correspondence within $\delta$, since $|r_{ij}|>2\delta$.
-\end{columns}
-\source{Up to 200 pairs per date. Idea from Spiegel et al.\ (2016).}
+  N(\tau)=\#\{\text{real contacts}\ge\tau\},\qquad
+  C(\tau)=\text{expected by chance}
+\]
+\[
+  \text{keep}\ \tau\ge\tau^*,\qquad \frac{C(\tau^*)}{N(\tau^*)}\le q
+\]
+\source{162\,485 flights, 6\,209 dates, FFVL archive; profiles on 300 dates.}
 \end{frame}
 
-\begin{frame}{The shifts are about an hour}
+\partframe{Part 1: chance}{Null model, false discovery rate, $\tau^*$}
+
+\begin{frame}{Null model: shift one flight in time}
+\defn{Surrogate pair}{$i,j$ same date, $\|\x_i(k^0_i)-\x_j(k^0_j)\|<R_s=10$~km:
+\[
+  \x^s_j(t)=\x_j(t+r),\qquad r=(k^0_j-k^0_i)-\vartheta,\qquad
+  \vartheta\sim\hat P\bigl(k^0_j-k^0_i\bigr),\qquad |r|\ge2\delta+\Delta
+\]}
+\tikzfig[0.3\textheight]{null}
+\[
+  (t,t')\in\M_{ij}\ \Rightarrow\ |t-(t'-r)|\ge|r|-\delta>\delta
+\]
+\source{Keeps route, terrain, date; destroys every real correspondence. Spiegel et al.\ (2016).}
+\end{frame}
+
+\begin{frame}{Shifts of about an hour}
 \begin{columns}[c,onlytextwidth]
 \column{.55\textwidth}
 \includegraphics[width=\linewidth]{assessment_shifts.pdf}
 \column{.42\textwidth}
-\small
-Median shift \textbf{58~min}; 90\% between 8~min and 4.4~h.
+\[
+  \mathrm{median}\,|r|=58~\text{min}
+\]
+\[
+  |r|\in[8~\text{min},\,4.4~\text{h}]\quad(90\%)
+\]
 \par\medskip
-The copy flies in the weather of another hour: other thermals, another cloud base.
-\par\medskip
-So ``real'' includes pilots who share a thermal at the same time without following each other.
+\centering\small $\Rightarrow$ the copy flies in the weather of another hour
 \end{columns}
-\source{248\,741 surrogate pairs of the chosen run, whole archive.}
+\source{248\,741 surrogate pairs, whole archive.}
 \end{frame}
 
-\begin{frame}{From the surrogates to $\tau^*$}
-\defn{False discovery rate}{On each date $d$: $H_d$ the exposure of the real pairs (time both fly
-after departure), $\rho_{0,d}(\tau)$ the surrogate intervals lasting at least $\tau$ per second
-of surrogate exposure. With $N(\tau)$ the real intervals lasting at least $\tau$:
+\begin{frame}{False discovery rate}
+\defn{Date $d$}{$M_d(\tau)$ surrogate intervals $\ge\tau$; $S_d$, $H_d$ surrogate and real
+exposure (time both fly).}
 \[
-  C(\tau)=\sum_d\rho_{0,d}(\tau)\,H_d,\qquad
-  \widehat{\mathrm{FDR}}(\tau)=\frac{C(\tau)}{N(\tau)},\qquad
-  \tau^*=\min\bigl\{\tau:\ \widehat{\mathrm{FDR}}(\tau)\le q\bigr\}.
-\]}
-\medskip
-\small
-$C(\tau)$: the intervals lasting at least $\tau$ that chance alone would give the real pairs.
-\par\smallskip
-$\tau^*$: the shortest duration at which chance is at most a share $q$ of what we observe.
-\source{The estimate of SAM (Tusher et al.\ 2001), with time shifts in place of permutations;
-rates taken date by date because the surrogates are a sample of each date.}
+  \rho_{0,d}(\tau)=\frac{M_d(\tau)}{S_d},\qquad
+  C(\tau)=\sum_d\rho_{0,d}(\tau)\,H_d
+\]
+\[
+  \FDR(\tau)=\frac{C(\tau)}{N(\tau)},\qquad
+  \tau^*=\min\bigl\{\tau:\ \FDR(\tau)\le q\bigr\}
+\]
+\source{SAM (Tusher et al.\ 2001), with time shifts in place of permutations.}
 \end{frame}
 
 \begin{frame}{Most short contacts are chance}
-\fig[0.5\textheight]{assessment_fdr.pdf}
-\source{Left: real intervals lasting at least $\tau$ (solid) and chance (dashed), $\delta=5$~min
-(grey) and 2~min (blue). Right: their ratio; dots: $\tau^*$ for $q=0.05$, 0.1, 0.2.}
-\takeaway{Chance is 74\% of all pair intervals, 47\% of those lasting 10~min, 16\% of those
-lasting 30~min. With $q=0.1$: $\tau^*=38.1$~min (37.0--41.1 over 200 resamplings of the dates).}
+\fig[0.48\textheight]{assessment_fdr.pdf}
+\[
+  \FDR(0)=0.74,\qquad \FDR(10~\text{min})=0.47,\qquad \FDR(30~\text{min})=0.16
+\]
+\[
+  q=0.1\ \Rightarrow\ \tau^*=38.1~\text{min}\quad[37.0,\,41.1]
+\]
+\source{$\delta=2$~min (blue), 5~min (grey). Bracket: 5--95\% over 200 resamplings of the dates.}
 \end{frame}
 
 \begin{frame}{How much the shift matters}
 \begin{center}
-\small
-\begin{tabular}{@{}l r c c c c@{}}
+\begin{tabular}{@{}l c c c@{}}
 \toprule
-Surrogates & pairs & $\widehat{\mathrm{FDR}}$(10 min) & $\widehat{\mathrm{FDR}}$(30 min) & $\tau^*$ (min) & 5--95\% \\
+surrogates & $\FDR(10~\text{min})$ & $\FDR(30~\text{min})$ & $\tau^*$ (min) \\
 \midrule
-all shifts & 241\,824 & 0.48 & 0.16 & 38.2 & 37.0--41.5 \\
-$|r|<30$ min & 69\,444 & 0.73 & 0.31 & 53.3 & 49.7--72.0 \\
-$|r|\ge60$ min & 119\,687 & 0.26 & 0.05 & 23.0 & 21.1--24.4 \\
+all $|r|$ & 0.48 & 0.16 & 38.2 \\
+$|r|<30$ min & 0.73 & 0.31 & 53.3 \\
+$|r|\ge60$ min & 0.26 & 0.05 & 23.0 \\
 \bottomrule
 \end{tabular}
 \end{center}
-\source{$q=0.1$, $\delta=2$~min, on the 2\,737 dates with surrogates in each class.}
-\medskip
-\small
-Short shifts keep the weather of the hour, but also bring within $\delta$ the pilots who follow
-each other a few minutes apart. The two effects cannot be separated.
-\takeaway{The length of the shift moves $\tau^*$ by more than a factor two. We keep the shifts that
-follow the takeoff delays of the day.}
+\[
+  \tau^*\in[23,\,53]~\text{min, set by}\ |r|
+\]
+\begin{center}
+\small short $|r|$: same weather, but also followers a few minutes apart
+\end{center}
+\source{$q=0.1$, $\delta=2$~min, 2\,737 dates with all classes. We keep $r$ from the takeoff
+delays.}
 \end{frame}
 
-\partframe{Part 2: the parameters on the data}{Measured, chosen, or declared as definitions}
+\partframe{Part 2: parameters}{Measured, chosen, or definitions}
 
 \begin{frame}{Three kinds of parameters}
 \begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\begin{tabular}{@{}l l l@{}}
 \toprule
-Parameter & Value & How it was set \\
+& value & set by \\
 \midrule
-$\delta$, largest delay & 2 min & measured on the delay profile \\
-$q$, accepted false discovery rate & 0.1 & trade-off between groups found and chance \\
-$\tau^*$, shortest contact & 38.1 min & computed from $q$ and the null model \\
-$\varepsilon_h$, $\varepsilon_z$ & 500 m, 300 m & definitions: profiles without an edge \\
-$g$, longest gap joined & 120 s & definition: gaps of real and chance contacts alike \\
-$\theta_{\max}$ & 45$^\circ$ & no effect on the result \\
-$\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & fixed & physical bounds and exactness \\
-\bottomrule
-\end{tabularx}
-\end{center}
-\takeaway{Tolerances say when two positions match; $\tau^*$ how long a match must last; the rest
-makes the computation exact or fast.}
-\end{frame}
-
-\begin{frame}{$\delta$: the delay profile}
-\fig[0.48\textheight]{assessment_delays.pdf}
-\source{300 dates, window of 15~min, 58\,910~h of real exposure. Middle: $R(l)$, real over chance
-correspondences per second of exposure at delay $l$.}
-\takeaway{Chance is flat. Real pairs peak at a few seconds, 5.6 times chance; $R$ falls below 4 at
-105~s, 3 at 195~s, 2 at 500~s. Fast part: flying together. Slow tail, still 1.5 at 15~min: same
-thermals at about the same time.}
-\end{frame}
-
-\begin{frame}{$\delta$: long contacts have short delays}
-\begin{center}
-\small
-\begin{tabular}{@{}l r c c c@{}}
-\toprule
-Duration of the interval & intervals & median $|\ell_{\rm med}|$ & within 2 min & at the edge \\
-\midrule
-under 10 min & 436\,575 & 210 s & 32\% & 29\% \\
-10--30 min & 246\,587 & 160 s & 39\% & 12\% \\
-30--90 min & 102\,357 & 80 s & 64\% & 2.1\% \\
-90 min or more & 10\,734 & 25 s & 90\% & 6 intervals \\
+$\delta$ & 2 min & measured: $R(l)$ \\
+$q$ & 0.1 & chosen \\
+$\tau^*$ & 38.1 min & $\FDR(\tau^*)\le q$ \\
+$\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 120 s & definitions: no edge \\
+$\theta_{\max}$ & 45$^\circ$ & no effect \\
+$\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & & fixed: bounds, exactness \\
 \bottomrule
 \end{tabular}
 \end{center}
-\source{$\ell_{\rm med}$: median delay of each pair interval, search instants left out. Run with
-$\delta=5$~min, whole archive; at the edge: $|\ell_{\rm med}|\ge285$~s.}
-\takeaway{We take $\delta=2$~min: within it real correspondences are at least 3.7 times chance, and
-it holds nine in ten of the contacts of 90~min or more.}
+\end{frame}
+
+\begin{frame}{$\delta$: delay profile}
+\[
+  R(l)=\frac{n_{\rm real}(l)/H_{\rm real}}{n_{\rm chance}(l)/H_{\rm chance}},\qquad
+  n(l)=\#\{(t,t+l)\in\M\}
+\]
+\fig[0.4\textheight]{assessment_delays.pdf}
+\[
+  R_{\max}=5.6,\quad R(105~\text{s})\approx4,\quad R(195~\text{s})\approx3,\quad
+  R(500~\text{s})\approx2,\quad R(15~\text{min})=1.5
+\]
+\source{300 dates, window 15~min. Fast part: flying together; slow tail: same thermals, same hour.}
+\end{frame}
+
+\begin{frame}{$\delta$: long contacts, short delays}
+\[
+  \ell_{\rm med}=\mathrm{median}\bigl\{l^*(t):\ t\in[t_{\rm on},t_{\rm off}),\ \text{no search}\bigr\}
+\]
+\begin{center}
+\small
+\begin{tabular}{@{}l c c c@{}}
+\toprule
+duration & median $|\ell_{\rm med}|$ & $|\ell_{\rm med}|\le2$ min & $|\ell_{\rm med}|\ge285$ s \\
+\midrule
+$<10$ min & 210 s & 32\% & 29\% \\
+10--30 min & 160 s & 39\% & 12\% \\
+30--90 min & 80 s & 64\% & 2.1\% \\
+$\ge90$ min & 25 s & 90\% & 6 of 10\,734 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\[
+  \delta=2~\text{min}:\qquad R(\delta)=3.7,\qquad
+  P\bigl(|\ell_{\rm med}|\le\delta\ \big|\ \text{duration}\ge90~\text{min}\bigr)=0.9
+\]
+\source{Run with $\delta=5$~min, 965\,770 intervals.}
 \end{frame}
 
 \begin{frame}{Distance at the same instant}
-\fig[0.45\textheight]{assessment_separation.pdf}
-\source{All the time both fly, 210 dates. Right: $g(d)$, real over chance.}
-\takeaway{Real pairs are 10.4 times chance within 100~m and below 1 only from 5.7~km: the excess
-goes beyond sight (1.5~km), so it may hold the weather of the hour too. In contact, $\delta$ bounds
-the distance of a pair at $\varepsilon_h+v_{\max}\delta\approx3.8$~km.}
+\[
+  g(d)=\frac{p_{\rm real}(d)}{p_{\rm chance}(d)},\qquad d=\|\x_i(t)-\x_j(t)\|
+\]
+\fig[0.4\textheight]{assessment_separation.pdf}
+\[
+  g(d<100~\text{m})=10.4,\quad g<1\ \text{for}\ d>5.7~\text{km},\quad
+  \text{in contact: } d\le\varepsilon_h+v_{\max}\delta\approx3.8~\text{km}
+\]
+\source{210 dates, every instant both fly. Excess beyond sight (1.5~km): weather of the hour too.}
 \end{frame}
 
 \begin{frame}{Tolerances: no edge}
-\fig[0.45\textheight]{assessment_tolerances.pdf}
-\source{210 dates, $\delta=2$~min. Left, middle: real over chance by the smallest horizontal
-distance and height difference to the other path; dotted: values in use. Right: gap lengths.}
-\takeaway{Horizontal ratio 6.3 within 25~m, below 1.5 from 500~m; vertical 4.0 within 25~m, near
-1.5 from 275~m. Gaps have the same lengths in real and chance contacts. So $\varepsilon_h$,
-$\varepsilon_z$ and $g$ are definitions.}
+\[
+  d_h(t)=\min_{|l|\le\delta,\ |\Delta z_l|<\varepsilon_z}\|\Delta\x_l\|,\qquad
+  d_z(t)=\min_{|l|\le\delta,\ \|\Delta\x_l\|<\varepsilon_h}|\Delta z_l|
+\]
+\fig[0.4\textheight]{assessment_tolerances.pdf}
+\[
+  \frac{\text{real}}{\text{chance}}\approx1.5\ \text{at}\ \varepsilon_h,\ \varepsilon_z;\qquad
+  \text{gaps: same lengths}\ \Rightarrow\ \varepsilon_h,\varepsilon_z,g\ \text{definitions}
+\]
+\source{$\Delta\x_l=\x_i(t)-\x_j(t+l)$, $\Delta z_l=z_i(t)-z_j(t+l)$; 210 dates, $\delta=2$~min.}
 \end{frame}
 
 \begin{frame}{One parameter at a time: no plateau}
+\[
+  f_G=\frac{\sum_i\bigl|\{t\in T^\dep_i:\ \gamma_i(t)\notin\{L,S\}\}\bigr|}{\sum_i|T^\dep_i|}
+\]
 \begin{columns}[c,onlytextwidth]
 \column{.55\textwidth}
-\footnotesize
-\renewcommand{\arraystretch}{0.95}
+\scriptsize
+\renewcommand{\arraystretch}{0.92}
 \begin{tabular}{@{}l c c c@{}}
 \toprule
-Setting & $\tau^*$ (min) & $f_G$ & episodes \\
+setting & $\tau^*$ (min) & $f_G$ & episodes \\
 \midrule
-starting values & 126.1 & 0.034 & 98 \\
-$\varepsilon_h=250$ m & 75.1 & 0.058 & 253 \\
-$\varepsilon_h=1000$ m & 126.8 & 0.065 & 162 \\
-$\varepsilon_z=150$ m & 126.1 & 0.020 & 61 \\
-$\varepsilon_z=600$ m & 126.1 & 0.044 & 122 \\
-$\delta=2$ min & 42.6 & 0.106 & 600 \\
-$\delta=10$ min & 128.4 & 0.062 & 153 \\
-$\theta_{\max}=30^\circ$ & 126.1 & 0.034 & 97 \\
-$\theta_{\max}=90^\circ$ & 126.1 & 0.034 & 98 \\
-$g=60$ s & 75.8 & 0.087 & 332 \\
-$g=300$ s & 126.1 & 0.055 & 141 \\
+start & 126.1 & 0.034 & 98 \\
+$\varepsilon_h=250$, 1000 m & 75.1, 126.8 & 0.058, 0.065 & 253, 162 \\
+$\varepsilon_z=150$, 600 m & 126.1, 126.1 & 0.020, 0.044 & 61, 122 \\
+$\delta=2$, 10 min & 42.6, 128.4 & 0.106, 0.062 & 600, 153 \\
+$\theta_{\max}=30^\circ$, $90^\circ$ & 126.1, 126.1 & 0.034, 0.034 & 97, 98 \\
+$g=60$, 300 s & 75.8, 126.1 & 0.087, 0.055 & 332, 141 \\
 \bottomrule
 \end{tabular}
 \column{.42\textwidth}
-\small
-$f_G$: fraction of the flight time after departure spent in a group.
-\par\medskip
-$\theta_{\max}$ changes nothing: few contacts in glide.
-\par\medskip
-The others move $f_G$ by up to a factor three, mostly through $\tau^*$.
+\[
+  \theta_{\max}:\ f_G\ \text{unchanged}
+\]
+\[
+  \text{others:}\ f_G\times\le3,\ \text{via}\ \tau^*
+\]
 \end{columns}
-\source{300 random dates (7\,051 flights), $\delta=5$~min unless stated, $q=0.05$, $\tau^*$
-recalibrated each time. Not repeated with $\delta=2$~min.}
+\source{300 dates, start $\delta=5$~min, $q=0.05$, $\tau^*$ recalibrated each time.}
 \end{frame}
 
 \begin{frame}{$q$: how much chance we accept}
-\fig[0.36\textheight]{assessment_q.pdf}
+\fig[0.38\textheight]{assessment_q.pdf}
 \begin{center}
-\scriptsize
-\begin{tabular}{@{}l l c c c c c@{}}
+\small
+\begin{tabular}{@{}c c c c c@{}}
 \toprule
-$\delta$ & $q$ & $\tau^*$ (min) & 5--95\% & para in a group & hang in a group & episodes \\
+$q$ & $\tau^*$ (min) & para in a group & hang in a group & episodes \\
 \midrule
-5 min & 0.05 & 89.5 & 79.5--91.5 & 8.9\% & 2.1\% & 6\,090 \\
-2 min & 0.05 & 51.9 & 49.1--53.3 & 13.7\% & 3.8\% & 10\,553 \\
-2 min & 0.1  & 38.1 & 37.0--41.1 & 21.7\% & 6.9\% & 17\,169 \\
-2 min & 0.2  & 26.4 & 25.2--27.2 & 31.7\% & 13.9\% & 26\,504 \\
+0.05 & 51.9 & 13.7\% & 3.8\% & 10\,553 \\
+0.1 & 38.1 & 21.7\% & 6.9\% & 17\,169 \\
+0.2 & 26.4 & 31.7\% & 13.9\% & 26\,504 \\
 \bottomrule
 \end{tabular}
 \end{center}
-\source{We take $q=0.1$: at most one contact in ten is chance. With 0.2, chance would make one group
-in five.}
+\source{$\delta=2$~min. We take $q=0.1$.}
 \end{frame}
 
 \begin{frame}{Limits}
 \begin{itemize}
-  \item Chance is what the null model says: its shifts of about an hour also remove the weather of
-        the hour, so ``real'' includes pilots in the same thermal at the same time, which is not
-        proof of interaction; $\tau^*$ is 23~min with shifts over an hour, 53~min under 30~min.
-  \item The profiles of $\delta$ and of the tolerances are on one sample of 300 dates.
-  \item The plateau check is on 300 dates, with the starting $\delta=5$~min.
-  \item The data are the cleaned tracks of the old repository; the phases that the heading
-        condition needs exist on 1~Hz flights only.
+  \item chance $=$ null model: $|r|\sim1$~h removes the weather of the hour $\Rightarrow$ ``real''
+        includes same thermal, same time
+  \item $\tau^*\in[23,\,53]$~min with the class of $|r|$
+  \item profiles: 300 dates; plateau: 300 dates, $\delta=5$~min
+  \item data: old repository; phases on 1~Hz flights only
 \end{itemize}
 \end{frame}
 
 \begin{frame}{In short}
-\begin{itemize}
-  \item \textbf{Chance}: a pair of the same day with one flight shifted by about an hour. It keeps
-        route, terrain and date, and destroys synchrony.
-  \item \textbf{Duration}: most short contacts are chance; at $q=0.1$ a contact must last
-        $\tau^*=38.1$~min.
-  \item \textbf{Delay}: real pairs match within a few tens of seconds; $\delta=2$~min holds nine in
-        ten of the long contacts.
-  \item \textbf{Tolerances}: no edge and no plateau: $\varepsilon_h$, $\varepsilon_z$ and $g$ are
-        definitions, and they move the result by up to a factor three, mostly through $\tau^*$.
-\end{itemize}
-\takeaway{21.7\% of the paraglider flights and 6.9\% of the hang-glider flights fly in a group at
-some point, in 17\,169 episodes.}
+\[
+  \text{chance:}\quad \x_j(t)\to\x_j(t+r),\quad |r|\sim1~\text{h}
+\]
+\[
+  \FDR(\tau^*)\le0.1\ \Rightarrow\ \tau^*=38.1~\text{min}
+\]
+\[
+  \delta=2~\text{min}:\quad R(\delta)=3.7,\quad 90\%\ \text{of long contacts}
+\]
+\[
+  \varepsilon_h,\ \varepsilon_z,\ g:\ \text{definitions},\quad f_G\times\le3
+\]
+\takeaway{In a group at some point: 21.7\% of the paraglider flights, 6.9\% of the hang-glider
+flights; 17\,169 episodes.}
 \end{frame}
 
 \end{document}
