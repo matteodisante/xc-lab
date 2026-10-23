@@ -25,7 +25,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | folder | content |
 |---|---|
 | `runs/<name>/` | the tables of the note for all dates, `calibration.*`, `episode_distance.parquet`, `days/` (cache per date), `analyses/` (the measured pieces of `analysis/groups/group-identification`, whose figures are in its `out/<run>/`) |
-| `runs/d120_eh500_ez300_th45_g120_q0.1/` | the chosen run; `_q0.05` and `_q0.2` beside it share its contacts |
+| `runs/d120_eh500_ez300_th45_g120_q0.1/` | the chosen run; `_q0.05` and `_q0.2` beside it share its contacts; `calibration_shifts.json`: τ* by class of surrogate shift |
 | `runs/d300_eh500_ez300_th45_g120_q0.05/` | the starting values of the note (δ = 5 min) |
 | `delays/sample300_d900_.../` | the delay profile that chose δ |
 | `separation/sample300_d120_.../`, `tolerances/sample300_d120_.../` | the distance at the same instant and the profiles of ε_h, ε_z and the gaps, real against chance |
@@ -60,7 +60,8 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | configurations, episodes | 40 051, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
 
 The assessment of the method, with its figures, is in `method_assessment.pdf`: what chance
-means (the shifts of the null model), the false discovery rate of the contacts, the delay
+means (the shifts of the null model, and τ* by class of shift with `shifts.py`: 23 min with
+shifts over an hour, 53 min under 30 min), the false discovery rate of the contacts, the delay
 profile (`delays.py`), the distance at the same instant (`separation.py`), the profiles of the
 tolerances (`tolerances.py`), the plateau check (`plateau.py`) with its table, and the choice
 of δ and q.
@@ -85,7 +86,7 @@ of δ and q.
   `run.py` (the loop over dates, τ*, the tables of section Outputs, PARAMETERS.md),
   `calibration.py` (the figure and the band of τ*), `delays.py` (the delay profile),
   `separation.py` (the distance at the same instant), `tolerances.py` (the profiles of ε_h,
-  ε_z and the gaps),
+  ε_z and the gaps), `shifts.py` (τ* with the surrogates of one class of shifts),
   `plateau.py` (the plateau check), `distances.py` (the distance of each episode: the
   longest straight line a member flew in one of its group stretches; the viewer ranks by it),
   `export_viewer.py` (copies one run, with its PARAMETERS.md, to the `groups/` folder of the
@@ -126,6 +127,7 @@ uv run python delays.py --sample 300 --delta 900     # about 30 min
 uv run python plateau.py --sample 300        # about 1 h
 uv run python separation.py --sample 300
 uv run python tolerances.py --sample 300
+uv run python shifts.py                      # after run.py on the chosen run; about 20 s
 uv run python assessment.py && latexmk -pdf method_assessment.tex
 uv run pytest ideas/group-identification     # from the root of xc-lab
 ```

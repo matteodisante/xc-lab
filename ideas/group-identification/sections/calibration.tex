@@ -49,9 +49,13 @@ This is the estimate of the false discovery rate of SAM~\cite{tusher2001}, the n
 discoveries expected by chance over the number observed, with time shifts in place of the
 permutations.
 
-The procedure is repeated with several draws of the shifts to estimate the variability of
-$\tau^*$. With shifts of an hour or more the conditions of the day change (the cloud base rises,
-the thermals move): the smallest shift compatible with $r_{\min}$ is the one to use.
+The variability of $\tau^*$ is estimated by resampling the dates. Since $\vartheta$ follows the
+takeoff delays of the day, the shifts are of the order of an hour, and the copy flies in the
+weather of another hour (the cloud base rises, the thermals move): what the null model calls
+real then includes pilots who share a thermal at the same time. Shorter shifts would keep the
+weather, but would also bring within $\delta$ the pilots who follow each other a few minutes
+apart, and count them as chance. We keep the shifts that follow the takeoff delays; $\tau^*$
+depends on this choice (\texttt{method\_assessment.pdf}).
 
 \begin{figure}
 \centering

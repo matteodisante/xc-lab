@@ -117,6 +117,21 @@ def test_plateau_table():
     assert sum(v["tau_star"] == 7565 for v in rows.values()) == 6
 
 
+def test_tau_star_by_class_of_shift():
+    s = json.loads((assessment.RUNS / assessment.CHOSEN / "calibration_shifts.json").read_text())
+    assert (s["q"], s["dates"], s["of_dates"]) == (0.1, 2737, 6209)
+    # Table "shift classes": pairs, FDR at 10 and 30 min, tau* and its 5-95% band, min.
+    rows = {"all": (241824, 0.48, 0.16, 38.2, [37.0, 41.5]), "short": (69444, 0.73, 0.31, 53.3, [49.7, 72.0]),
+            "long": (119687, 0.26, 0.05, 23.0, [21.1, 24.4])}
+    for c, (pairs, f10, f30, tau, interval) in rows.items():
+        x = s["classes"][c]
+        assert (x["pairs"], round(x["fdr_at"]["600"], 2), round(x["fdr_at"]["1800"], 2)) == (pairs, f10, f30)
+        assert round(x["tau_star"] / 60, 1) == tau
+        assert [round(v / 60, 1) for v in x["percentiles_5_50_95"][::2]] == interval
+    short, long = s["classes"]["short"]["fdr_at"], s["classes"]["long"]["fdr_at"]
+    assert (round(short["600"] / long["600"], 1), round(short["1800"] / long["1800"], 1)) == (2.8, 5.7)
+
+
 def test_shifts_of_the_surrogates():
     r = assessment.shifts(assessment.CHOSEN)
     assert len(r) == 248741 and r.min() >= 245

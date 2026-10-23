@@ -41,7 +41,8 @@ when it lasts at least $\tau^*=38.1$~min. With these values 21.7\% of the paragl
 \textbf{Chance.} A pair of the same day is made independent by shifting one flight in time,
 by 58~min in the median (Section~\ref{sec:chance}). Its contacts are what route, terrain and
 day give without synchrony; $\tau^*$ is the duration at which they are one in ten ($q=0.1$) of
-the contacts observed.
+the contacts observed. The length of the shift matters: with only shifts under 30~min
+$\tau^*$ would be 53~min, with only shifts over an hour 23~min.
 
 \textbf{Quality.} Real pairs differ from chance in every view: in duration (most short
 contacts are chance, few long ones), in delay (5.6 times chance at a few seconds) and in
@@ -152,6 +153,40 @@ $\mathcal{P}_d$ lasting at least $\tau$:
 $C(\tau)$ is the number of intervals lasting at least $\tau$ that chance alone would give the
 real pairs. It is summed date by date because the surrogates are a sample of the pairs of each
 date; dates without surrogates add to $N$ only. $\tau$ runs over the grid $\{0,5,\dots,14\,400\}$~s.
+
+\subsection{How much the shift matters}\label{sec:shift-classes}
+
+The false discovery rate was recomputed with only the surrogate pairs of each date whose shift
+falls in one class, each class with its own exposure $S_d$ and intervals. The classes are
+compared on the 2\,737 dates (of 6\,209) that have surrogates in each of them
+(Table~\ref{tab:shift-classes}).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}l r c c c c@{}}
+\toprule
+Surrogates & pairs & $\widehat{\mathrm{FDR}}$(10 min) & $\widehat{\mathrm{FDR}}$(30 min) & $\tau^*$ (min) & 5--95\% over dates \\
+\midrule
+all shifts & 241\,824 & 0.48 & 0.16 & 38.2 & 37.0--41.5 \\
+$|r|<30$ min & 69\,444 & 0.73 & 0.31 & 53.3 & 49.7--72.0 \\
+$|r|\ge60$ min & 119\,687 & 0.26 & 0.05 & 23.0 & 21.1--24.4 \\
+\bottomrule
+\end{tabular}
+\caption{The false discovery rate and $\tau^*$ ($q=0.1$, $\delta=2$~min) with the surrogates of
+one class of shifts, on the 2\,737 dates with surrogates in each class.}
+\label{tab:shift-classes}
+\end{table}
+
+Short shifts give 2.8 times the chance of long ones at 10~min and 5.7 times at 30~min, and
+$\tau^*$ goes from 23~min with
+shifts of an hour or more to 53~min with shifts under 30~min; with all the shifts it is 38~min,
+as on the whole archive. Short shifts keep the weather of the hour, but they also bring within
+$\delta$ the pilots who follow each other a few minutes apart, and the delay profile shows that
+these are many: real correspondences are still 2 to 3 times chance between 195 and 500~s
+(Section~\ref{sec:delay}). The two effects cannot be separated here. The length of the shift
+decides what counts as chance and moves $\tau^*$ by more than a factor two; we keep the shifts that
+follow the takeoff delays of the day.
 
 \section{Real pairs against chance}\label{sec:views}
 
@@ -425,7 +460,9 @@ lower $\tau^*$ to 26~min but would let chance make one group in five.
 \item Chance is defined by the null model of Section~\ref{sec:chance}. Its shifts, about an
   hour, also remove the synchrony of pilots with the weather of the hour, so what it calls real
   includes pilots who share the same thermal at the same time without following each other:
-  the ``same air'' notion of the companion note, which is not proof of interaction.
+  the ``same air'' notion of the companion note, which is not proof of interaction. $\tau^*$
+  is 23~min with shifts over an hour and 53~min with shifts under 30~min
+  (Section~\ref{sec:shift-classes}).
 \item The profiles of Sections~\ref{sec:delay}, \ref{sec:separation} and~\ref{sec:tolerances}
   are on one sample of 300 dates.
 \item The plateau of Section~\ref{sec:plateau} is on 300 dates and with the old delay.
