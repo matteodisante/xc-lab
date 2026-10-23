@@ -57,54 +57,17 @@
         counts as neither solo nor group. Analyses use loggers of at most 10~s; phases
         (climb, search, transition=glide) are Vilpellet's runs and exist on 1~Hz flights only
         (70\% of the paragliders).
-  \item \textbf{Contact.} $i$ is in contact with $j$ at $t$ if $j$, at some $t'$ with
-        $|t'-t|\le\delta=2$~min, was within $\varepsilon_h=500$~m horizontally and
-        $\varepsilon_z=300$~m vertically of $i$; when both glide, their headings differ by less
-        than $45^\circ$. The delay accounts for pilots who follow the same route.
-  \item \textbf{Pair interval.} A contact lasting at least $\tau^*=\tauStar$~min, after joining gaps
-        shorter than 2~min.
-  \item \textbf{Configuration.} A fixed set of at least two flights that is one connected component
-        of the pair intervals over a maximal interval; anyone joining or leaving starts a new one.
-        \textbf{``$n$ pilots'' always means the size of the configuration at that instant.}
-  \item \textbf{Episode.} A chain of configurations without break, each starting when the previous
-        ends and sharing a member. \textbf{Block.} The flights tied by sharing episodes: the unit
-        resampled for the error bars.
+  \item \textbf{Grouping.} The method, its null model and its parameters are in the note
+        \emph{Group flights in free flight} (\texttt{ideas/group-identification}): definitions in
+        its sections 4--5, calibration and tuning in sections 7--8. This report uses its run with
+        $\delta=2$~min, $\varepsilon_h=500$~m, $\varepsilon_z=300$~m, $\theta_{\max}=45^\circ$,
+        $g=2$~min and $q=0.1$, hence $\tau^*=\tauStar$~min. A contact is \emph{shared air within
+        sight}, not proof of interaction.
+  \item \textbf{Configuration, episode, block.} A configuration is a fixed set of flights in one
+        group over a maximal interval: \textbf{``$n$ pilots'' always means the size of the
+        configuration at that instant.} An episode is a chain of configurations; a block, the
+        flights tied by sharing episodes, is the unit resampled for the error bars.
 \end{itemize}
-
-\begin{table}[H]
-\centering\footnotesize
-\begin{tabular}{@{}l l p{9.4cm}@{}}
-\toprule
-Parameter & Value & How it was set \\
-\midrule
-$\delta$, largest delay & 2 min & \emph{measured}: ratio of real to chance correspondences is 3.7 at 2~min (Fig.~\ref{fig:tuning}, top) \\
-$q$, false discovery rate & 0.1 & choice: at most one contact in ten is chance \\
-$\tau^*$, shortest contact & \tauStar{} min & \emph{computed} from $q$ and a null model (Fig.~\ref{fig:tuning}, bottom) \\
-$\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 2 min & definitions (shared thermals within sight); no plateau on the data \\
-$R_\mathrm{dep}$ & 3 km & contacts at the takeoff say nothing \\
-\bottomrule
-\end{tabular}
-\caption{Parameters of the grouping.}
-\end{table}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.98\textwidth]{assessment_delays.pdf}\\[2pt]
-\includegraphics[width=0.78\textwidth]{assessment_fdr.pdf}
-\caption{How the thresholds were set (tuning note). Top: correspondences per second at each delay,
-real pairs against chance (left), their ratio (middle), distance at the same instant (right).
-Bottom: real pair intervals lasting at least $\tau$ and those given by chance (left); estimated false
-discovery rate (right), with $\tau^*$ for $q=0.05,0.1,0.2$.}
-\label{fig:tuning}
-\end{figure}
-
-\textbf{Null model.} Pairs of flights of one day with takeoffs within 10~km (at most 200 per day)
-are taken, and one flight of each pair is replaced by its own track shifted in time (at least
-$2\delta+5$~s, so it cannot reproduce the real contact). Route, thermals and style are kept, the
-interaction is not. The contacts of the copies are chance: scaled to the flying time of the real
-pairs, day by day, they give $\widehat{\mathrm{FDR}}(\tau)$; $\tau^*$ is where it falls to $q$.
-A contact is \emph{shared air within sight}, not proof of interaction: pilots who use the same
-thermals at the same time without following each other survive the null model.
 
 \subsection{Populations, strata and statistics}
 

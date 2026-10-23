@@ -41,6 +41,27 @@ The measurements have three further limits:
         Section~\ref{sec:data} describes.
 \end{itemize}
 
+\subsection{Checks done}\label{sec:checks-done}
+
+\begin{itemize}
+  \item \textbf{Code against this note.} Every phase was compared with its code (grid, departure,
+        candidate filter, scan of delays, contact, gaps, signed delay, null model, configurations,
+        episodes, membership, blocks): all implemented as written, with four differences of text,
+        now corrected in red: (1) the phases of the run are Vilpellet's, on 1~Hz flights, so the
+        heading condition acts only between two such flights; (2) headings are in the east and
+        north of the first fix of each flight, not of the fix itself; (3) a contact is kept only
+        from the later departure to the earlier landing; (4) instants in a gap of the track are
+        labelled solo in the tables.
+  \item \textbf{Properties of the tables} of the chosen run: every pair interval lasts at least
+        $\tau^*=2285$~s and lies where both flights fly after departure; every configuration has at
+        least two members; membership covers each flight from takeoff to landing without holes; on
+        3\,000 flights the group time equals the union of its pair intervals; on 3\,000
+        configurations the members are connected at the midpoint and no active interval leaves; on
+        2\,000 episodes every configuration but the first starts when another ends and shares a
+        member; every episode lies in one block. The counts of Table~\ref{tab:q} (154\,598 and
+        6\,039 flights; 21.7\% and 6.9\% in a group) are reproduced.
+\end{itemize}
+
 \subsection{Other checks}\label{sec:checks}
 
 \begin{itemize}
