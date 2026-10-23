@@ -1,0 +1,44 @@
+\subsection{Pilots or group: five contrasts}\label{sec:other}
+
+\textbf{Question.} How much of the difference belongs to who flies in groups, and how much to the group?
+\textbf{Method.} Five contrasts, each computed inside strata and averaged over those with both populations (weights
+$n_Pn_Q/(n_P+n_Q)$, $n$ the flights of each side): $\G-\Sl$ pooled; $\G-\Sl$ and $\A-\Sl$ (\emph{selection}) at the
+same site-day and hour; $\G-\A$ within the flight and at the same site-day and hour (the \emph{group effect}). The last
+two fail in opposite ways: the first compares a flight with itself at another time of day, and group time falls around
+midday while the time alone of the same flights falls earlier and later (section 7 of the note); the second compares
+different pilots at the same time. Where the two agree, the effect belongs to the group.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{decompose.pdf}
+\caption{Each statistic (panel) for the five contrasts (rows), with 5--95\% bands. Shares of time in
+points; lower height lost per km is a better glide.}
+\label{fig:decompose}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\input{generated/decompose_table}
+\caption{The contrasts of Figure~\ref{fig:decompose}: difference and 5--95\% band (s-d-h: same site-day and hour).}
+\label{tab:decompose}
+\end{table}
+
+\begin{reading}
+\textbf{Reading.}
+\begin{itemize}
+  \item \textbf{Straighter progress over 1000~s} survives every control: $\Delta H_\mathrm{loc}(1000)$ is
+        \DHlocThousandRaw{} pooled, \DHlocThousandFlight{} within the flight, \DHlocThousandGroupSdh{} at the same
+        site-day and hour; selection gives only \DHlocThousandSel.
+  \item \textbf{Nothing within one phase (100~s):} \DHlocHundredFlight{} within the flight,
+        \DHlocHundredGroupSdh{} at the same place and hour; the pooled \DHlocHundredRaw{} was selection and composition.
+  \item \textbf{Climbing:} more time climbing (\DClimbFlight{}, \DClimbGroupSdh{} points), more searches that end in a
+        climb (\DFoundFlight{}, \DFoundGroupSdh{} points), a higher climb rate (\DRateFlight, \DRateGroupSdh{} m/s). Pooled,
+        the climb rate of G is below that of A: the pooled ratios weight flights by their time in each population.
+  \item \textbf{Gliding:} faster and flatter glides, \DSpeedFlight, \DSpeedGroupSdh{} km/h and \DSinkFlight,
+        \DSinkGroupSdh{} m/km less height lost per km; selection adds \DSpeedSel{} km/h of glide speed (group pilots glide
+        faster even alone). Cross-country speed: \DXcFlight, \DXcGroupSdh{} km/h.
+\end{itemize}
+\end{reading}
+
+\textbf{What we keep.} With the pilot, the day, the site and the hour fixed, a group progresses straighter over a quarter
+of an hour, climbs more and glides faster and flatter; who flies in groups explains little of it.

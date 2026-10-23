@@ -46,9 +46,10 @@
 \input{summary}
 
 %======================================================================================
-\section{Setup}\label{sec:setup}
+\section{What we compare}\label{sec:setup}
 
-\subsection{Data and grouping}
+Which flights, which populations, which statistics? The groups are those of the note \emph{Group
+flights in free flight}; this section fixes what the report measures on them.
 
 \begin{itemize}
   \item \textbf{Flights.} \input{generated/n_flights} on 6\,209 days, cleaned tracks of the old repository
@@ -63,19 +64,12 @@
         $\delta=2$~min, $\varepsilon_h=500$~m, $\varepsilon_z=300$~m, $\theta_{\max}=45^\circ$,
         $g=2$~min and $q=0.1$, hence $\tau^*=\tauStar$~min. A contact is \emph{shared air within
         sight}, not proof of interaction.
-  \item \textbf{Configuration, episode, block.} A configuration is a fixed set of flights in one
-        group over a maximal interval: \textbf{``$n$ pilots'' always means the size of the
-        configuration at that instant.} An episode is a chain of configurations; a block, the
-        flights tied by sharing episodes, is the unit resampled for the error bars.
-\end{itemize}
-
-\subsection{Populations, strata and statistics}
-
-\begin{itemize}
-  \item \textbf{S} solo flights; \textbf{G} group time (stretches in a configuration);
-        \textbf{A} the \emph{same flights alone} (stretches of group flights outside any
-        configuration), the control with the same pilots, gliders, loggers and days; $\G_n$ the
-        group time in configurations of $n$ pilots.
+  \item \textbf{Populations.} \textbf{S} solo flights; \textbf{G} group time, the stretches in a
+        configuration (a fixed set of flights in one group over a maximal interval); \textbf{A} the
+        \emph{same flights alone}, the stretches of group flights outside any configuration: the
+        control with the same pilots, gliders, loggers and days. $\G_n$ is the group time in
+        configurations of $n$ pilots: \textbf{``$n$ pilots'' always means the size of the
+        configuration at that instant.}
   \item \textbf{TA-MSD.} Positions on a 10~s grid of the flight clock; per flight
         $\overline{\delta^2}(\tau)=\sum\|\mathbf r(t+\tau)-\mathbf r(t)\|^2/\#\text{origins}$ pooled over
         its stretches, ensemble MSD = mean over flights (equal weight); stretches of at least
@@ -87,8 +81,8 @@
         twelve are drawn: the others are explained by them (Appendix~\ref{app:redundancy}).
   \item \textbf{Strata.} \emph{Zone}: cell of 25~km of the middle of a piece of track;
         \emph{site-day}: flights of one day with takeoffs within 3~km; \emph{hour}: local hour.
-  \item \textbf{Error bars} are 5--95\% bootstrap bands resampling whole \emph{blocks} (never
-        flights) and recomputing the statistic: blocks of the note for pooled statistics (1000 draws);
+  \item \textbf{Error bars} are 5--95\% bootstrap bands resampling whole dependency \emph{blocks}, the
+        flights tied by sharing episodes (never single flights), and recomputing the statistic: blocks of the note for pooled statistics (1000 draws);
         blocks joining episodes and site-days for stratified ones (200 draws, same draws for all).
         They measure block sampling only, not the choice of $q$ or the tolerances, and two bands that
         do not overlap are not a test; differences are computed draw by draw.
@@ -97,13 +91,43 @@
 \textbf{What the grouping gives.} \input{generated/grouping_facts}
 
 %======================================================================================
-\input{section_zones}
+\section{The raw difference}\label{sec:raw}
+
+How do group time and solo flights differ before any control?
+
+\begin{table}[H]
+\centering\footnotesize
+\input{generated/raw_table}
+\caption{Pooled statistics of S, G and A (paragliders), with 5--95\% bands (blocks of the note). TA-MSD on loggers of at most 10~s, phases on 1~Hz flights.}
+\label{tab:raw}
+\end{table}
+
+Group time progresses straighter over long lags than solo flights, $\Delta H_\mathrm{loc}(1000)=\DHlocThousandRaw$; it
+also spends more time climbing, ends more searches in a climb and glides faster (Table~\ref{tab:raw}; the curves over
+every lag are in Appendix~\ref{app:curves}). The same flights alone sit between the two at long lags and have the
+highest climb rate, so part of the raw difference may belong to who flies in groups, and to where and when.
+
+\textbf{What we keep.} A difference to explain: how much of it is the group?
 
 %======================================================================================
+\section{Group, pilots, place or moment?}\label{sec:tests}
+
+Besides the group, four things differ between group time and solo flights: the pilots who fly in groups, the day and
+the site, the hour, and the moment pilots choose to fly together. Three tests take them away:
+\begin{itemize}
+  \item five contrasts inside strata separate the pilots (selection) from the group, at the same site-day and hour
+        and within the same flight (Section~\ref{sec:other});
+  \item reweighting the solo flights to the zones, months and hours of the groups tests the place
+        (Section~\ref{sec:zones});
+  \item the same flight before, during and after a group tests the moment (Section~\ref{sec:prepost}).
+\end{itemize}
+
+\input{section_contrasts}
+\input{section_zones}
 \input{section_prepost}
 
 %======================================================================================
-\input{section_other}
+\input{section_inside}
 
 %======================================================================================
 \section{Conclusions and limits}\label{sec:conclusions}
