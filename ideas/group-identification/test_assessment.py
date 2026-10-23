@@ -117,6 +117,31 @@ def test_plateau_table():
     assert sum(v["tau_star"] == 7565 for v in rows.values()) == 6
 
 
+def test_structure_of_the_groups():
+    # Table "structure": number, median duration (min), % of items and of time with 2 and with
+    # 5 or more participants, largest.
+    rows = {(0.05, "episodes"): (10553, 74.6, 77, 67, 3.9, 8.1, 21),
+            (0.1, "episodes"): (17169, 58.2, 74, 61, 5.7, 12.6, 53),
+            (0.2, "episodes"): (26504, 44.5, 73, 56, 7.0, 17.2, 91),
+            (0.05, "configurations"): (20275, 52.7, 70, 81, 5.6, 2.3, 18),
+            (0.1, "configurations"): (40051, 30.4, 63, 77, 9.4, 3.5, 27),
+            (0.2, "configurations"): (75953, 17.1, 56, 74, 14.1, 5.0, 40)}
+    for q in assessment.QS:
+        runs = assessment.structure(NARROW[q])
+        tau_star = assessment.calibration(NARROW[q])["tau_star"] / 60
+        assert runs["episodes"][0].min() == tau_star
+        for kind in ("episodes", "configurations"):
+            duration, n = runs[kind]
+            sizes, by_count, by_time = assessment.size_shares(duration, n)
+            got = (len(n), round(np.median(duration), 1), round(100 * by_count[sizes == 2][0]),
+                   round(100 * by_time[sizes == 2][0]), round(100 * by_count[sizes >= 5].sum(), 1),
+                   round(100 * by_time[sizes >= 5].sum(), 1), int(n.max()))
+            assert got == rows[q, kind]
+    duration = assessment.structure(NARROW[0.1])["configurations"][0]
+    assert round(np.percentile(duration, 10), 1) == 2.1
+    assert round(np.median(assessment.structure(NARROW[0.1])["episodes"][0]) / 60, 2) == 0.97
+
+
 def test_tau_star_by_class_of_shift():
     s = json.loads((assessment.RUNS / assessment.CHOSEN / "calibration_shifts.json").read_text())
     assert (s["q"], s["dates"], s["of_dates"]) == (0.1, 2737, 6209)

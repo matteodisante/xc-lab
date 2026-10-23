@@ -13,7 +13,7 @@ the contacts; the groups of an instant are the connected components of the conta
 Then 21.7% of the paraglider and 6.9% of the hang-glider flights fly in a group at some point,
 in 17 169 episodes. Why these values, what chance means and how real pairs differ from it:
 `method_assessment.pdf`. Why `m_ij(t) = 1` does not give
-`m_ji(t) = 1`, with a worked example: `contact_asymmetry.pdf`.
+`m_ji(t) = 1`, with a worked example: the appendix of `group_identification.pdf`.
 
 **Data and code version.** The cleaned tracks and the Vilpellet phases that soaring (tag
 `legacy-final`) wrote on SSD_DISANTE, not the pre-processing of xc-dynamics that the note
@@ -63,8 +63,9 @@ The assessment of the method, with its figures, is in `method_assessment.pdf`: w
 means (the shifts of the null model, and τ* by class of shift with `shifts.py`: 23 min with
 shifts over an hour, 53 min under 30 min), the false discovery rate of the contacts, the delay
 profile (`delays.py`), the distance at the same instant (`separation.py`), the profiles of the
-tolerances (`tolerances.py`), the plateau check (`plateau.py`) with its table, and the choice
-of δ and q.
+tolerances (`tolerances.py`), the plateau check (`plateau.py`) with its table, the choice
+of δ and q, and what the groups look like: durations and sizes of the episodes and of the
+configurations, by number and by time, for three q.
 
 ## Files
 

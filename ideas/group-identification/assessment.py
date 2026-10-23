@@ -12,7 +12,10 @@ runs on SSD_DISANTE.
 - assessment_separation: the distance at the same instant of separation.py, real and chance,
   and their ratio g(d);
 - assessment_tolerances: the profiles of tolerances.py (eps_h, eps_z, gap lengths);
-- assessment_q: tau* as a function of q, and the flights ever in a group for three q.
+- assessment_q: tau* as a function of q, and the flights ever in a group for three q;
+- assessment_structure: the durations and the participants of the episodes and of the
+  configurations, for the three q with delta = 2 min; assessment_structure_episodes and
+  _configurations: one row each, with larger text, for the slides.
 """
 
 import json
@@ -178,6 +181,46 @@ def q_figure(wide, narrow, counts):
     save(fig, "assessment_q")
 
 
+def structure(name):
+    """Durations (min) and participants of the episodes (distinct flights) and of the
+    configurations (members at once) of a run."""
+    e = pd.read_parquet(RUNS / name / "episodes.parquet")
+    c = pd.read_parquet(RUNS / name / "configurations.parquet")
+    return {"episodes": ((e["t_end"] - e["t_start"]).to_numpy() / 60, e["n_flights"].to_numpy()),
+            "configurations": ((c["t_end"] - c["t_start"]).to_numpy() / 60, c["n"].to_numpy())}
+
+
+def size_shares(duration, n):
+    """Sizes, the share of the items of each size and the share of their total duration."""
+    sizes, k = np.unique(n, return_inverse=True)
+    return sizes, np.bincount(k) / len(n), np.bincount(k, weights=duration) / duration.sum()
+
+
+def structure_figure(runs, kinds=("episodes", "configurations"), name="assessment_structure", size=(13, 3.2)):
+    fig, axes = plt.subplots(len(kinds), 3, figsize=(size[0], size[1] * len(kinds)), squeeze=False)
+    ticks = {"episodes": ((30, 60, 120, 300, 600), (2, 5, 10, 20, 50, 100)),
+             "configurations": ((0.1, 1, 10, 100), (2, 5, 10, 20, 40))}
+    for q, colour, style in zip(QS, (GREY, BLUE, ORANGE), (":", "-", "--"), strict=True):
+        for row, kind in zip(axes, kinds, strict=True):
+            duration, n = runs[q][kind]
+            x = np.sort(duration)
+            row[0].plot(x, 1 - np.arange(len(x)) / len(x), color=colour, ls=style, label=f"q = {q}")
+            sizes, by_count, by_time = size_shares(duration, n)
+            row[1].plot(sizes, by_count, "o", color=colour, ls=style, ms=3)
+            row[2].plot(sizes, by_time, "o", color=colour, ls=style, ms=3)
+            size = "flights in the episode" if kind == "episodes" else "pilots in the configuration"
+            row[0].set(xscale="log", yscale="log", xlabel=f"duration of the {kind[:-1]} (min)",
+                       ylabel="share lasting longer")
+            row[1].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the {kind}")
+            row[2].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the time in {kind}")
+    for row, kind in zip(axes, kinds, strict=True):
+        for ax, t in zip(row, (ticks[kind][0], ticks[kind][1], ticks[kind][1]), strict=True):
+            ax.set_xticks(t, [f"{x:g}" for x in t])
+            ax.xaxis.set_minor_formatter(plt.NullFormatter())
+    axes[0, 0].legend(frameon=False, fontsize="small")
+    save(fig, name)
+
+
 def group_flights(name):
     f = pd.read_parquet(RUNS / name / "flights.parquet").merge(
         pd.read_parquet(RUNS / name / "flight_summary.parquet"), on="flight")
@@ -195,4 +238,9 @@ if __name__ == "__main__":
     separation_figure(json.loads(SEPARATION.read_text()))
     tolerance_figure(json.loads(TOLERANCES.read_text()))
     q_figure(wide, narrow, {q: group_flights(NARROW.format(q)) for q in QS})
+    runs = {q: structure(NARROW.format(q)) for q in QS}
+    structure_figure(runs)
+    with plt.rc_context({"font.size": 13}):  # one row per slide of the meeting
+        for kind in ("episodes", "configurations"):
+            structure_figure(runs, (kind,), f"assessment_structure_{kind}", size=(12, 3.8))
     print("figures written")
