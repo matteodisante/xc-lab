@@ -2,12 +2,19 @@
 
 With the chosen values, $\delta=2$~min and $q=0.1$, 21.7\% of the paraglider flights and 6.9\% of
 the hang-glider flights fly in a group at some point, in 17\,169 episodes (Table~\ref{tab:q}).
-This section describes those groups. A configuration is a group with fixed members; it ends when a
-member joins or leaves. Its duration runs from its start to its end, and its participants are its
-members at once. An episode is a chain of configurations; its duration runs from the start of its
-first configuration to the end of its last, and its participants are the distinct flights it
-holds. The participants are counted in two ways: the share of the episodes (or configurations) of
-each size, and the share of their total duration.
+This section describes those groups: their sizes and durations, how they change, and where in the
+flight and when in the day they form. Section~\ref{sec:group-structure} asks what holds them
+together. Bands are 5--95\% of 200 draws of the dependency blocks, or of the dates where the
+captions say so.
+
+\subsection{Sizes and durations}\label{sec:sizes}
+
+A configuration is a group with fixed members; it ends when a member joins or leaves. Its
+duration runs from its start to its end, and its participants are its members at once. An episode
+is a chain of configurations; its duration runs from the start of its first configuration to the
+end of its last, and its participants are the distinct flights it holds. The participants are
+counted in two ways: the share of the episodes (or configurations) of each size, and the share of
+their total duration.
 
 \begin{figure}
 \centering
@@ -48,8 +55,84 @@ those of five flights or more are 5.7\% of the episodes and 12.6\% of their time
 Configurations have no minimum duration: every arrival or departure of a member starts a new
 one, so 10\% last less than 2.1~min, and the median is 30.4~min. Weighted by duration the pairs
 weigh more, 77\% of the time against 63\% of the configurations, because large configurations
-change quickly.
+change quickly. \StWithHang\% of the configurations hold a hang glider.
 
 A larger $q$, hence a shorter $\tau^*$, gives more and shorter groups, and larger ones: the
 largest episode holds 21 flights with $q=0.05$, 53 with 0.1 and 91 with 0.2. The shares of the
 small sizes change little; the tail moves.
+
+\subsection{How configurations change}\label{sec:describe}
+
+A configuration ends in one of five ways: a \emph{join} (members added), a \emph{leave} (members
+removed in flight), a \emph{landing} (a removed member lands within 5~s, the grid step), a
+\emph{split} (into several configurations) or a \emph{merge} (with others, into one); a
+configuration of two pilots that loses one ends the group. Each ending is one component of a
+bipartite graph between the configurations that end and those that start at one instant
+(Appendix~\ref{app:graphs}). The rates are configurations ending per hour spent at each size
+(Table~\ref{tab:rates}).
+
+\begin{table}
+\centering
+\footnotesize
+\input{../../analysis/groups/group-identification/report/generated/structure_rates_table}
+\caption{By size: hours spent, median duration of a configuration, and configurations ending per
+hour by outcome, with 5--95\% bands.}
+\label{tab:rates}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Most episodes never change:} \StEpisodeSingle\% of the \StEpisodes{} episodes are one
+        configuration; \StEpisodeSplit\% hold a split, \StEpisodeMerge\% a merge.
+  \item \textbf{The episode lasts, the configuration does not.} \StEpisodeTwoHours\% of the episodes
+        last 2~h or more. A configuration lasts \StMedianConfTwo~min with 2 pilots and
+        \StMedianConfMax~min with \StSizeMax{} or more: joins, leaves, splits and merges all grow with
+        size, so a large configuration changes members every few minutes.
+  \item \textbf{Groups break in flight:} \StEndFlight\% of the \StEnds{} configurations that end a group
+        do so in flight, \StEndLanding\% at a landing. \StFormDeparture\% of the \StFormations{}
+        configurations with no predecessor form when a member departs: pilots who took off together.
+  \item \textbf{A pair} ends \StRateLeaveTwo{} times per hour because the two separate, \StRateJoinTwo{}
+        because a third pilot joins, \StRateMergeTwo{} by a merge and \StRateLandingTwo{} by a landing.
+\end{itemize}
+
+\subsection{Where in the flight groups form and break}\label{sec:phases}
+
+On 1~Hz flights, where the phases are labelled: the phase at the instant a flight enters
+(\Entries{}) or leaves (\Exits{}) a group, against the shares of time in each phase; entries at the
+departure (\AtDeparture{}) and exits at the landing (\AtLanding{}) are counted apart
+(Figure~\ref{fig:phases}, Table~\ref{tab:phases}).
+
+\begin{figure}
+\centering
+\includegraphics[width=0.55\textwidth]{figures/structure/mechanisms_phases.pdf}
+\caption{Phase at entry and exit, against the time shares (bands: blocks).}
+\label{fig:phases}
+\end{figure}
+
+\begin{table}
+\centering
+\footnotesize
+\input{../../analysis/groups/group-identification/report/generated/phases_table}
+\caption{Phase at the instant of entering or leaving a group, and shares of time in each phase
+(percent, with 5--95\% bands; 1~Hz flights).}
+\label{tab:phases}
+\end{table}
+
+Entries fall in climbs \PhaseEntryClimb\%, searches \PhaseEntrySearch\% and glides
+\PhaseEntryTransition\% of the cases, exits \PhaseExitClimb, \PhaseExitSearch, \PhaseExitTransition\%,
+against \PhaseAloneClimb, \PhaseAloneSearch, \PhaseAloneTransition\% of the time alone: there is no
+phase where groups preferentially form or break. \EntriesEarly\% of the entries are within 10~min of
+the departure.
+
+\subsection{When in the day}\label{sec:hours}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{figures/structure/mechanisms_hours.pdf}
+\caption{Time of solo flights (S), of group flights alone (A) and in a group (G) over the local hour
+(left), and the share of a group flight's time spent in a group (right).}
+\label{fig:hours}
+\end{figure}
+
+Group time is concentrated around midday: \GroupShareNoon\% of a group flight's time at
+\GroupShareNoonHour~h, \GroupShareMorning\% at 9~h, \GroupShareEvening\% at 18~h
+(Figure~\ref{fig:hours}).

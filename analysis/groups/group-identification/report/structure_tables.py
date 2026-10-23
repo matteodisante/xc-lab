@@ -1,6 +1,7 @@
-"""The tables and the numbers of group_structure.tex, from the JSON of the analyses:
-report/generated/structure_*.tex. Every number in its text is a macro of
-generated/structure_macros.tex.
+"""The tables and the numbers of sections 9-10 of the group identification note
+(ideas/group-identification/group_identification.tex), from the JSON of the analyses:
+report/generated/structure_*.tex. Every number in those sections is a macro of
+generated/structure_macros.tex or of generated/macros.tex.
 
     uv run python report/structure_tables.py    # from analysis/groups/group-identification, after describe.py
 """

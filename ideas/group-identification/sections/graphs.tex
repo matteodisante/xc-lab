@@ -1,0 +1,91 @@
+\section{Graphs, from scratch}\label{app:graphs}
+
+\begin{itemize}
+  \item \textbf{Graph.} A set of \emph{nodes} and a set of \emph{edges}, each edge joining two
+        nodes. The active graph $G(t)$ of Section~\ref{sec:configurations} has a node for each flight
+        and an edge for each pair interval in progress.
+  \item \textbf{Path.} A sequence of nodes, each joined by an edge to the next. Two nodes are
+        \emph{connected} when a path joins them.
+  \item \textbf{Connected component.} A largest set of nodes connected to each other. Every node is
+        in exactly one component; a node with no edge is a component alone (a pilot flying solo).
+        A group is a component with at least two nodes.
+\end{itemize}
+
+Two members of a group need not share an edge: in the chain 1--2--3 of Figure~\ref{fig:graph},
+pilots 1 and 3 are in the same group through pilot 2.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm, node/.style={circle, draw=ink2, fill=white, minimum size=6mm, inner sep=0pt,
+    font=\footnotesize}, gedge/.style={ink2, line width=0.9pt}]
+  \fill[blueI!10] (-0.5,-0.5) rectangle (2.5,1.5);
+  \fill[blueI!10] (3.2,-0.5) rectangle (4.8,1.5);
+  \node[node] (a) at (0,0) {1}; \node[node] (b) at (1,1) {2}; \node[node] (c) at (2,0) {3};
+  \node[node] (d) at (3.5,0) {4}; \node[node] (e) at (4.5,1) {5}; \node[node] (f) at (6,0.5) {6};
+  \draw[gedge] (a) -- (b) -- (c); \draw[gedge] (d) -- (e);
+  \node[note] at (1,-0.85) {group $\{1,2,3\}$ (a chain)};
+  \node[note] at (4,-0.85) {$\{4,5\}$};
+  \node[note] at (6,-0.85) {solo};
+\end{tikzpicture}
+\caption{The graph at one instant: three components, two of them groups.}
+\label{fig:graph}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Directed graph.} The edges carry an arrow. For the episodes the nodes are
+        configurations, with an arrow $c\to c'$ when $c'$ starts as $c$ ends and they share a member
+        (Section~\ref{sec:episodes}). An episode is a connected component of this graph, arrows
+        ignored.
+  \item \textbf{Bipartite graph.} Nodes of two kinds, edges only between kinds. At one instant, the
+        configurations ending and those starting, with an edge when they share a member. Each
+        component is one event (Figure~\ref{fig:events}); its outcome follows from how many
+        configurations it has on each side: one to one is a join or a leave (members added or
+        removed), one to several a split, several to one a merge (Section~\ref{sec:describe}).
+\end{itemize}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm, conf/.style={rounded corners=2pt, fill=blueI, text=white, font=\footnotesize,
+    minimum height=5mm, inner xsep=4pt}, link/.style={->, ink2, line width=0.8pt}]
+  \node[conf] (c1) at (0,0.6) {$\{1,2\}$}; \node[conf] (c2) at (0,-0.6) {$\{3,4\}$};
+  \node[conf] (c3) at (2.6,0) {$\{1,2,3,4\}$};
+  \draw[link] (c1.east) -- (c3.west); \draw[link] (c2.east) -- (c3.west);
+  \node[note] at (1.3,-1.3) {merge: two to one};
+  \node[conf] (d1) at (6,0) {$\{1,2,3\}$};
+  \node[conf] (d2) at (8.4,0) {$\{1,2\}$};
+  \draw[link] (d1.east) -- (d2.west);
+  \node[note] at (7.2,-1.3) {one to one, 3 removed: leave};
+  \node[note] at (0,1.3) {ending}; \node[note] at (2.6,1.3) {starting};
+\end{tikzpicture}
+\caption{Two events: each is a connected component of the bipartite graph of the configurations
+ending and starting at one instant.}
+\label{fig:events}
+\end{figure}
+
+\paragraph{Shape} (Section~\ref{sec:chains}). For a connected graph of $n$ nodes and $m$ edges:
+\begin{itemize}
+  \item \textbf{Density} $m/\binom{n}{2}$: the share of the node pairs joined by an edge.
+  \item \textbf{Distance} between two nodes: the fewest edges of a path joining them.
+        \textbf{Diameter}: the largest distance. In the chain 1--2--3 the diameter is 2; in a
+        triangle, 1.
+  \item \textbf{Complete graph}: every pair joined, density 1, diameter 1. \textbf{Tree}: $m=n-1$,
+        the fewest edges that keep $n$ nodes connected, with no closed path; a \emph{chain} is a tree
+        with diameter $n-1$, a \emph{star} one with diameter 2.
+\end{itemize}
+
+\paragraph{Order} (Section~\ref{sec:leaders}). In a directed graph:
+\begin{itemize}
+  \item a \textbf{cycle} is a path that follows the arrows back to its start (A$\to$B$\to$C$\to$A);
+        a graph with none is \textbf{acyclic}, and its nodes can be put in a line with every arrow
+        pointing forward;
+  \item a \textbf{source} has no arrow coming in: here, a pilot with nobody ahead, a leader;
+  \item the \textbf{depth} of an acyclic graph is its longest chain of arrows: 1 for a star, $n-1$
+        for a line.
+\end{itemize}
+A directed triangle is \emph{transitive} (A$\to$B, B$\to$C, A$\to$C) or \emph{cyclic}; with arrows
+drawn at random, 2 of its 8 orientations are cyclic.
+
+\paragraph{Configuration model} (Section~\ref{sec:partners}). A random graph with the
+\emph{degrees} (the number of edges of each node) of a given one: each node gets as many half-edges
+as its degree, and the half-edges are paired at random~\cite{newman2010}. It keeps how many
+partners each pilot had and changes only who they were.

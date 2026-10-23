@@ -100,6 +100,10 @@
 \newcommand{\animmark}{\textcolor{blueI}{$\blacktriangleright$}\ }
 % Text corrected on 22 October 2026, after checking the code against the note.
 \newcommand{\fix}[1]{{\color{red}#1}}
+% Numbers of Sections 9-10, written by the analyses of analysis/groups/group-identification
+% (report/tables.py and report/structure_tables.py).
+\input{../../analysis/groups/group-identification/report/generated/macros}
+\input{../../analysis/groups/group-identification/report/generated/structure_macros}
 
 \title{\textbf{Group flights in free flight}\\[4pt]
   \large Delayed contacts, configurations and episodes:\\ a method to label every instant of every flight}
@@ -123,11 +127,14 @@
 \input{sections/calibration}
 \input{sections/tuning}
 \input{sections/results}
+\input{sections/group_structure}
 \input{sections/outputs}
 \input{sections/comparison}
 \input{sections/parameters}
 \appendix
 \input{sections/asymmetry}
+\input{sections/graphs}
+\input{sections/models}
 \input{sections/references}
 
 \end{document}

@@ -494,10 +494,12 @@ facts of the grouping, `report/tables.py` the tables and the numbers of the text
 `report/generated/`) from the JSON of `out/<run>/`; `latexmk -pdf group_vs_solo.tex` in `report/`
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
-`report/group_structure.pdf` is its companion: what groups are, what keeps two pilots together,
-the shape of groups, who leads, repeated partners and where the sizes come from, with the graph
-theory and the two models it needs in appendices. `report/structure_tables.py` writes its macros (`generated/structure_*.tex`); it also reads
-the macros of `tables.py`.
+What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
+partners and where the sizes come from are in sections 9–10 of the note
+`ideas/group-identification/group_identification.pdf`, with the graph theory and the two models
+in its appendices B–C. `report/structure_tables.py` writes the macros the note reads
+(`generated/structure_*.tex`); it also reads the macros of `tables.py`. The note reads copies of
+the figures, in `ideas/group-identification/figures/structure/`.
 
 ## To do
 
@@ -539,7 +541,7 @@ uv run python chains.py [--run NAME]     # after size.py, about 40 s
 uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
-uv run python report/structure_tables.py; cd report && latexmk -pdf group_structure.tex
+uv run python report/structure_tables.py   # then rebuild the note (README of ideas/group-identification)
 uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analysis/groups/group-identification   # from the root of xc-lab
 ```

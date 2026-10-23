@@ -73,8 +73,11 @@ configurations, by number and by time, for three q.
   English version with figures of the Italian note of 14 October 2026. Figures 7, 12 and 18 are
   animated inside the PDF (LaTeX package `animate`): they play in Acrobat Reader and other
   viewers that run PDF JavaScript; elsewhere they show the static figure.
-  Sections 7–9 hold the calibration, the tuning on the data and the groups on the archive; the
-  chosen values sit beside the starting ones in the note's table of symbols.
+  Sections 7–9 hold the calibration, the tuning on the data and the groups on the archive, section
+  10 their structure; the chosen values sit beside the starting ones in the note's table of
+  symbols. The numbers of sections 9–10 are macros that `analysis/groups/group-identification`
+  writes in its `report/generated/`, and their figures are copies of its `out/<run>/` in
+  `figures/structure/`.
 - `models.py`: the synthetic scenarios of the figures and the sweep that builds configurations,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
@@ -129,6 +132,7 @@ uv run python separation.py --sample 300
 uv run python tolerances.py --sample 300
 uv run python shifts.py                      # after run.py on the chosen run; about 20 s
 uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 7-9
+cp ../../analysis/groups/group-identification/out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission}.pdf figures/structure/   # sections 9-10, after the analyses
 uv run pytest ideas/group-identification     # from the root of xc-lab
 ```
 
