@@ -192,7 +192,8 @@ $\delta=2$~min\par
 $\varepsilon_h=500$~m\par
 $\varepsilon_z=300$~m
 \par\bigskip
-\small A flat box: keeps A, rejects B.
+\small A group is flat: $\sim$1~km wide, a few hundred m high. A box keeps A and rejects B; one
+3D radius rejects A or accepts B.
 \end{columns}
 \end{frame}
 
@@ -276,16 +277,16 @@ resamples whole blocks.}
 \anim{\linewidth}{altitude_clock}
 \column{.35\textwidth}
 \small
-At instant $t$, among the delays $l$ with $(t,t+l)\in\M_{ij}$, the one at which $j$ passes
-closest to where $i$ is (Li et al.):
+The contact needs only that some delay exists; to say who is ahead we need its value. At $t$,
+the delay at which $j$ passes closest to where $i$ is (Li et al.):
 \[
   l^*(t)=\arg\min_{l}\,\|\x_i(t)-\x_j(t+l)\|
 \]
 $\ell_{\rm med}=\mathrm{median}\,l^*$ over a pair interval; $\ell_{\rm med}>0$: $j$ follows $i$.
 \par\medskip
-Circling: the distance repeats at every turn, so $l^*$ is undetermined inside the window that
-altitude allows, $\Delta z/w\pm150$~s at $w=2$~m/s, against $\delta=120$~s. Search instants
-are left out of the median.
+\textbf{Glide}: one sharp minimum.\par
+\textbf{Thermal}: one per turn; altitude leaves $\Delta z/w\pm150$~s, against $\delta=120$~s.\par
+\textbf{Search}: left out.
 \end{columns}
 \end{frame}
 
