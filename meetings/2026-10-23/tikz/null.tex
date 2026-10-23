@@ -1,0 +1,22 @@
+\begin{tikzpicture}[x=0.95cm,y=1cm]
+  \foreach \y/\name in {2.2/real pair, 0.0/surrogate pair} \node[lbl, anchor=east] at (-0.2,\y+0.35) {\name};
+  \begin{scope}[shift={(0,2.2)}]
+    \draw[->, ink2] (0,0) -- (13.4,0) node[right, lbl, ink] {$t$};
+    \fill[light] (5.0,-0.05) rectangle (7.0,0.95);
+    \fill[blueI] (2.1,0.55) rectangle (10.1,0.75); \node[lbl, blueI, anchor=east] at (2.05,0.65) {$i$};
+    \fill[orangeJ] (3.6,0.15) rectangle (12.1,0.35); \node[lbl, orangeJ, anchor=west] at (12.15,0.25) {$j$};
+    \draw[ink, line width=0.8pt] (6.0,0.65) -- (6.7,0.25);
+    \fill[ink] (6.0,0.65) circle (1.6pt) node[above, lbl] {$t$};
+    \fill[ink] (6.7,0.25) circle (1.6pt) node[below right, lbl] {$t'$};
+    \node[note] at (6.0,1.25) {$[t-\delta,t+\delta]$};
+  \end{scope}
+  \begin{scope}
+    \draw[->, ink2] (0,0) -- (13.4,0) node[right, lbl, ink] {$t$};
+    \fill[light] (5.0,-0.05) rectangle (7.0,0.95);
+    \fill[blueI] (2.1,0.55) rectangle (10.1,0.75);
+    \fill[orangeJ!55] (0.2,0.15) rectangle (8.7,0.35); \node[lbl, orangeJ, anchor=west] at (8.75,0.25) {$j$ shifted by $r_{ij}$};
+    \fill[ink] (6.0,0.65) circle (1.6pt);
+    \fill[ink] (3.3,0.25) circle (1.6pt) node[left=2pt, lbl, fill=white, inner sep=1pt] {$t'-r_{ij}$};
+    \draw[->, ink2] (6.7,0.05) to[bend left=25] node[below, lbl] {$-r_{ij}$} (3.4,0.05);
+  \end{scope}
+\end{tikzpicture}
