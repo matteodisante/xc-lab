@@ -104,10 +104,11 @@ because j passes where i was two minutes later.
 
 ![contact](animations/contact.gif)
 
-Altitude as a clock: in a thermal every turn gives an equal minimum of the horizontal distance,
-while the altitude selects one window of delays.
+The vertical condition in a thermal: the horizontal distance is small at every delay, and only
+the altitude selects one window of delays, so pilots at distant heights are not in contact. Inside
+the window every turn gives an equal minimum, so the delay l* stays undetermined.
 
-![altitude clock](animations/altitude-clock.gif)
+![vertical condition](animations/altitude-clock.gif)
 
 An example day: the contact graph, the configurations c1–c4 and the episodes E1, E2, event by
 event.

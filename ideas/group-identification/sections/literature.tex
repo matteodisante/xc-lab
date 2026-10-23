@@ -159,9 +159,9 @@ mFLICA~\cite{amornbunchornvej2021}, with other definitions (Table~\ref{tab:origi
 not find in the literature is:
 \begin{enumerate}[label=(\roman*)]
   \item the Reeb structure built on contacts with a local delay instead of simultaneous proximity;
-  \item the adaptations to thermal flight, in particular altitude as the clock that keeps the
-        delay defined during the spiral, where the minimiser of the horizontal distance used
-        in~\cite{li2013} is degenerate (Section~\ref{sec:roles});
+  \item the adaptations to thermal flight: a vertical tolerance that separates pilots circling in
+        the same thermal at distant heights, and headings compared only in glide
+        (Section~\ref{sec:roles});
   \item the application to a free-flight dataset of this size, with thresholds calibrated on a
         null model.
 \end{enumerate}
@@ -177,7 +177,7 @@ Component & Precedent & What we take & What we change \\
 \midrule
 Pair contact with a delay & Li et al.~\cite{li2013}; tolerance in~\cite{vlachos2002,chen2005,sakoe1978} &
   window of lags and distance threshold; local lag, free to vary &
-  height tolerance (altitude as a clock in thermals); heading only in glide; local phase
+  height tolerance (separates heights within a thermal); heading only in glide; local phase
   excluded; no sign in the contact, $a_{ij}=a_{ji}$ (the sign returns in $\ell_{\rm med}$) \\ \addlinespace
 Contact intervals & robustness in~\cite{buchin2015}; maximal segments in~\cite{li2013} &
   tolerance to short interruptions &
