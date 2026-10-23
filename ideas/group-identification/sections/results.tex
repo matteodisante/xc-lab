@@ -86,35 +86,18 @@ hour by outcome, with 5--95\% bands.}
 \paragraph{Where in the flight.}\label{sec:phases} On 1~Hz flights, where the phases are labelled,
 we take the phase at the instant a flight enters (\Entries{}) or leaves (\Exits{}) a group; entries
 at the departure (\AtDeparture{}) and exits at the landing (\AtLanding{}) are counted apart. Both
-follow the shares of the time alone in each phase (Table~\ref{tab:phases}): there is no phase where
-groups preferentially form or break. \EntriesEarly\% of the entries are within 10~min of the
-departure.
-
-\begin{table}
-\centering
-\footnotesize
-\input{../../analysis/groups/group-identification/report/generated/phases_table}
-\caption{Phase at the instant of entering or leaving a group, and shares of time in each phase
-(percent, with 5--95\% bands; 1~Hz flights).}
-\label{tab:phases}
-\end{table}
+follow the shares of the time alone in each phase (Table~\ref{tab:phases} in
+Appendix~\ref{app:evidence}): there is no phase where groups preferentially form or break.
+\EntriesEarly\% of the entries are within 10~min of the departure.
 
 \paragraph{When in the day.}\label{sec:hours} Group time is concentrated around midday:
 \GroupShareNoon\% of a group flight's time at \GroupShareNoonHour~h, \GroupShareMorning\% at 9~h,
-\GroupShareEvening\% at 18~h (Figure~\ref{fig:hours}).
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{figures/structure/mechanisms_hours.pdf}
-\caption{Time of solo flights (S), of group flights alone (A) and in a group (G) over the local hour
-(left), and the share of a group flight's time spent in a group (right).}
-\label{fig:hours}
-\end{figure}
+\GroupShareEvening\% at 18~h (Figure~\ref{fig:hours} in Appendix~\ref{app:evidence}).
 
 \subsection{What keeps two pilots together}\label{sec:group-structure}\label{sec:cohesion}
 
 Do two pilots in a group keep the same pace, or are they pulled back to each other? We follow the
-delay $\ell^*(t)$ inside each contact (Section~\ref{sec:lag}), leaving out the instants with either
+delay $\ell^*(t)$ inside each contact (Appendix~\ref{sec:lag}), leaving out the instants with either
 pilot in a search. Groups are the \StCohReal{} pair intervals of pilots who took off within 10~km;
 chance is the \StCohChance{} contacts of the surrogate pairs, two pilots who never saw each other,
 and the \StCohChanceLong{} of these that last at least $\tau^*$, selected as the groups are. Three
@@ -192,10 +175,10 @@ complete and tree graphs of 4 or more (flights in brackets), with 5--95\% bands.
 \end{figure}
 
 \paragraph{Order.} The signed median delay $\ell_{\rm med}$ of a pair interval
-(Section~\ref{sec:lag}) says who passes first: the pilot ahead, when the other passes at least
+(Appendix~\ref{sec:lag}) says who passes first: the pilot ahead, when the other passes at least
 15~s later; otherwise the two fly abreast (\Abreast\% of the pairs of two; median delay
 \DelayMedian~s). How leading changes the flight is in \emph{Group and solo flights}; here we ask
-who leads (Figures~\ref{fig:hierarchy} and~\ref{fig:habitual}).
+who leads (Figure~\ref{fig:hierarchy}; Figure~\ref{fig:habitual} in Appendix~\ref{app:evidence}).
 \begin{itemize}
   \item \textbf{Pilots are in a line.} In configurations of 3 pilots or more, each edge points from
         the pilot ahead to the one behind; we compare with the same graphs with each direction drawn
@@ -232,13 +215,6 @@ random. Middle: share of the directed time of the pilot most often ahead in each
 switches per hour. Right: share of the pairs of two in which the leader has more earlier flights,
 or the higher wing class. Bars: 5--95\% (blocks).}
 \label{fig:hierarchy}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.48\textwidth]{figures/structure/mechanisms_habitual.pdf}
-\caption{Lead fraction of each pilot, against roles at random.}
-\label{fig:habitual}
 \end{figure}
 
 \subsection{With whom}\label{sec:partners}
@@ -341,5 +317,5 @@ dashed purple: the form of Bonabeau et al.\ fitted to $T$. Bands: 5--95\%.}
 
 \medskip
 One caveat: in a thermal $\ell^*(t)$ is undetermined within the window that altitude allows
-(Section~\ref{sec:lag}), for real and chance contacts alike, so the cohesion and the switches of
+(Appendix~\ref{sec:lag}), for real and chance contacts alike, so the cohesion and the switches of
 the lead carry this noise on both sides of the comparison with chance.

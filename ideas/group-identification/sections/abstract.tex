@@ -1,24 +1,19 @@
 \begin{abstract}
 \noindent
-We describe a method that decides, for every flight and every instant, whether a paraglider
-pilot flies in a group or alone and, in the first case, with which other pilots. Two pilots are
-in contact when one of them is where the other was, or will be, a few minutes earlier or later.
-This is the proximity with a local delay of Li, Wu and Crofoot~\cite{li2013}, adapted to thermal
-flight in three ways: a vertical tolerance separates pilots who circle in the same thermal at
-distant heights; headings are compared only in glide; the maximum delay is bounded by
-the visual range and measured on the data. At each instant the groups are the connected components of the contact graph. As
-in the grouping structure of Buchin et al.~\cite{buchin2015}, a configuration is a fixed set of
-flights over a maximal interval, and an episode is a chain of configurations that share members.
-Contacts are found in two stages, a coarse filter that provably loses none and an exact scan;
-their minimum duration is calibrated on a null model that shifts tracks in time. On the FFVL
-archive most short contacts are chance: the maximum delay is measured at 2~min, and a contact must last
-38~min for at most one in ten to be chance. With these values 21.7\% of the paraglider flights
-and 6.9\% of the hang-glider flights fly in a group at some point, in 17\,169 episodes. The
-horizontal and vertical tolerances show no plateau on the data and are declared as definitions.
-The groups are mostly pairs; their pilots keep the same pace rather than being pulled together,
-their sizes change one pilot at a time, and pilots return to the same partners more than chance
-explains.
-The output is a
-few tables that label every instant of every flight, so that group flight can be compared with
-solo flight.
+To compare how paraglider pilots move in a group and alone, we must know, at every instant of
+every flight, whether the pilot flies in a group and with whom. Three difficulties stand in the
+way, and the method answers each with one idea. Pilots who fly together follow the same route
+minutes apart: two pilots are in contact when one of them is where the other was, or will be, a
+few minutes earlier or later, within a flat box of tolerances and with headings compared only in
+glide, after the following with a local delay of Li, Wu and Crofoot~\cite{li2013}. Contact is not
+transitive and changes in time: at each instant the groups are the connected components of the
+contact graph, organised in configurations and episodes as in the grouping structure of Buchin et
+al.~\cite{buchin2015}. Pilots also meet by chance on the same ridges and in the same thermals:
+copies of the flights shifted in time measure chance on the data, and a contact counts only if it
+lasts long enough for at most one in ten to be chance. On the FFVL archive the delay is measured at
+2~min and a contact must last 38~min; 21.7\% of the paraglider flights and 6.9\% of the hang-glider
+flights then fly in a group at some point, in 17\,169 episodes. The groups are mostly pairs; their
+pilots keep the same pace with no extra pull between them, their sizes change one pilot at a time,
+and pilots return to the same partners more than chance explains. The output is a few tables that
+label every instant of every flight.
 \end{abstract}

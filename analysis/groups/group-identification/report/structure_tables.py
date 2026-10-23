@@ -1,4 +1,4 @@
-"""The tables and the numbers of sections 9-10 of the group identification note
+"""The tables and the numbers of section 7 of the group identification note
 (ideas/group-identification/group_identification.tex), from the JSON of the analyses:
 report/generated/structure_*.tex. Every number in those sections is a macro of
 generated/structure_macros.tex or of generated/macros.tex.

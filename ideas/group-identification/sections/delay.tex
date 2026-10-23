@@ -1,0 +1,59 @@
+\section{The delay of a contact: who follows whom}\label{sec:lag}
+
+The groups of Section~\ref{sec:groups} are built from the contact alone. To say who follows whom
+(Sections~\ref{sec:leaders} and~\ref{sec:comparison}) we also need how many seconds $j$ is behind
+$i$. As in~\cite{li2013}, at each instant $t$ with $m_{ij}(t)=1$ we take the delay at which $j$
+passes closest to where $i$ is,
+\begin{equation}\label{eq:lstar}
+  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\|\x_i(t)-\x_j(t+l)\| ,
+\end{equation}
+and over a pair interval $[t_{\rm on},t_{\rm off})$ (Definition~\ref{def:pair-interval}) the
+signed median delay
+\[
+  \ell_{\rm med}=\mathrm{median}\{l^*(t):\ t\in[t_{\rm on},t_{\rm off}),\ m_{ij}(t)=1\},
+\]
+with $\ell_{\rm med}>0$ when $j$ follows $i$. How well $l^*$ is defined depends on the phase of
+flight.
+
+\paragraph{Glide.} The path is nearly straight and the distance has a single sharp minimum: $l^*$
+is the delay at which $j$ crosses the point of $i$, $+120$~s in Figure~\ref{fig:contact}.
+
+\paragraph{Thermal.} $j$ circles over one spot, so the distance $\|\x_i(t)-\x_j(t+l)\|$, as a
+function of $l$, has a nearly equal minimum at every turn (Figure~\ref{fig:clock}, top right): the
+minimiser is degenerate, and $l^*(t)$ falls anywhere among the accepted delays. Altitude narrows
+them. In a climb at rate $w$, pilot $j$ gains $wl$ metres in $l$ seconds,
+\begin{equation}\label{eq:climb}
+  z_j(t+l)\simeq z_j(t)+w\,l ,
+\end{equation}
+so, with $\Delta z = z_i(t)-z_j(t)$ the height of $i$ above $j$, the vertical condition
+$|z_i(t)-z_j(t+l)|<\varepsilon_z$ becomes $|\Delta z-w\,l|<\varepsilon_z$, that is
+\begin{equation}\label{eq:window}
+  l\in\left(\frac{\Delta z-\varepsilon_z}{w},\ \frac{\Delta z+\varepsilon_z}{w}\right):
+\end{equation}
+an interval of width $2\varepsilon_z/w$ around $\Delta z/w$, the time $j$ needs to reach the
+altitude of $i$, which the scan cuts to $[-\delta,\delta]$. With the starting $\delta=5$~min this
+at least halves the range of $l^*$. With the chosen $\delta=2$~min the interval, 300~s wide at
+$w=2$~m/s, is wider than $[-\delta,\delta]$, and altitude gains little: at $\Delta z=200$~m, from
+$[-120,120]$ to $(-50,120]$~s.
+
+\paragraph{Search.} The pilot turns without climbing, $w\simeq0$, and altitude constrains no delay.
+The instants at which either pilot is in \st{search} are left out of the median; $\ell_{\rm med}$
+is undefined when none remains.
+
+\begin{figure}
+\centering
+\animated{altitude_clock}
+\caption{\animmark The delay in a thermal, for one instant $t$ and every delay $l$; the animation
+runs the delay $l$ from $-300$ to $300$~s. Left: $i$ and $j$ in the same thermal, $j$ lower by
+$\Delta z=200$~m; the band is $z_i(t)\pm\varepsilon_z$. Top right: the horizontal distance between
+$\x_i(t)$ and $\x_j(t+l)$; inside the thermal it never exceeds 50~m, far below
+$\varepsilon_h=500$~m, so the horizontal condition alone accepts every delay of the stay; it has
+an equal minimum at every turn, so it cannot fix $l^*$. Middle right: the altitude of $j$ at $t+l$
+crosses the band in a single window. Bottom: the delays that satisfy each condition and both; both
+hold for $-50<l<250$~s, the interval~\eqref{eq:window}, centred on $\Delta z/w=100$~s, and the scan
+keeps those with $|l|\le\delta$: $-50<l\le120$~s with $\delta=2$~min.
+Before $l=-120$~s, $j$ was gliding towards the thermal: at $l\approx-280$~s it had the right
+altitude but was 1.4~km away. Model: $j$ circles with radius 25~m, one turn every 20~s, climbing at
+$w=2$~m/s; it arrives at 9~m/s, sinking at 1~m/s; $i$ is on the same circle.}
+\label{fig:clock}
+\end{figure}

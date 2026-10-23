@@ -6,7 +6,7 @@ the same by the number of pilots of the configuration, pooled and on chosen site
 
 **Data.** The group labels of [`ideas/group-identification`](../../../ideas/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
-contact of at least τ* = 38.1 min; see sections 7–9 of its `group_identification.pdf`), and the cleaned tracks of
+contact of at least τ* = 38.1 min; see sections 5–6 of its `group_identification.pdf`), and the cleaned tracks of
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
 
 **Results.** Figures and numbers are in `out/<run>/` of this folder (not in git), with the
@@ -495,9 +495,9 @@ facts of the grouping, `report/tables.py` the tables and the numbers of the text
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
-partners and where the sizes come from are in sections 9–10 of the note
+partners and where the sizes come from are in section 7 of the note
 `ideas/group-identification/group_identification.pdf`, with the graph theory and the two models
-in its appendices B–C. `report/structure_tables.py` writes the macros the note reads
+in its appendices F–G. `report/structure_tables.py` writes the macros the note reads
 (`generated/structure_*.tex`); it also reads the macros of `tables.py`. The note reads copies of
 the figures, in `ideas/group-identification/figures/structure/`.
 
