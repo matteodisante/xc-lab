@@ -1,0 +1,58 @@
+\section{Group or route? The same route flown alone}\label{sec:route}
+
+A zone is 25~km wide. Inside it a convergence line, a ridge or a valley can let any pilot progress
+straight, and can bring pilots together on it: the route would then explain both the group and the
+straight progress. Does group time progress straighter than the same route flown alone?
+
+\paragraph{Matching.} The candidates are the \RouteAlone{} paraglider flights that never had a contact
+of any length. A site joins the takeoffs within 1~km across dates, and its flights are placed in one
+east--north frame. A piece of group time and a candidate from the same site on another day match when
+at least 80\% of the points of the piece, one every 30~s, lie within $\rho=500$~m of the candidate's
+track, and the candidate flew them the same way. The candidate's segment, between its points nearest
+to the first and to the last of them, is measured as the pieces of Section~\ref{sec:setup} if it lasts
+at least 1250~s; each piece keeps at most 20 matches, the most covered first.
+
+\paragraph{Comparison.} In analogy with Section~\ref{sec:zones}, the stratum is the piece: the
+ensemble MSD of the matched pieces is compared with that of their segments reweighted to one piece
+per stratum, Eq.~\eqref{eq:reweight}. Both sides are means of many MSDs before their logarithm. The
+baseline compares the same pieces with the solo flights of their site-day and hour, so that the two
+differences refer to the same group time. A second set keeps only the matches of the same season and
+hour (month within one, local hour within two).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{route_sample10000.pdf}
+\caption{Left: $\Hloc(\tau)$ of the matched pieces of group time and of the same routes flown alone on
+another day. Right: their difference over every lag, any date and same season and hour, with 5--95\%
+bands.}
+\label{fig:route}
+\end{figure}
+
+\begin{table}
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\input{generated/route_table}
+\caption{$\Delta\Hloc(1000~\mathrm{s})$ of the matched pieces against the same route flown alone and
+against the solo flights of their site-day and hour, by radius $\rho$ and cover. Pieces: drawn at
+random, and matched. First row: the sample of the text.}
+\label{tab:route}
+\end{table}
+
+\paragraph{Results.} Of a random sample of \RouteSample{} pieces, \RoutePieces{} have matches
+(\RouteMatches{} segments, \RouteMedianMatches{} per piece in the median). Against the same route
+flown alone $\Delta\Hloc(1000~\mathrm{s})$ is \RouteDHloc{} \RouteDHlocBand, and \RouteDHlocSeason{}
+\RouteDHlocSeasonBand{} with the same season and hour (\RoutePiecesSeason{} pieces). The same pieces
+against the solo flights of their site-day and hour give \RouteBaseDHloc{} \RouteBaseDHlocBand, more
+than the \DHlocThousandSdh{} of all the group time, because these pieces lie on frequented routes.
+The route therefore accounts for \RouteExplained\% of the long-lag gap (\RouteExplainedSeason\% with
+the same season and hour), and the rest goes with flying together. Every radius and cover of
+Table~\ref{tab:route} tells the same. At short lags group time is less straight than the same route
+flown alone, $\Delta\Hloc(100~\mathrm{s})=$ \RouteDHlocHundred{} \RouteDHlocHundredBand, so the fitted
+$H$ hardly differs (\RouteDH).
+
+\paragraph{Limits.} The days differ: season and hour are matched, the weather of the day is not. The
+pilots who never meet anyone may differ from those who fly in groups, and this test has no selection
+contrast to measure it. Only the pieces on routes flown alone on other days enter, about half of them,
+on a sample of the pieces.
+
+\paragraph{What we keep.} About \RouteExplained\% of the straighter progress of groups over a quarter
+of an hour comes from the routes they fly; flying together adds the rest.

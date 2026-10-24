@@ -440,6 +440,42 @@ def prepost_tex(width, tag=""):
         macro(f"PP{tag}ProfileHlocHundred{sn}", f"{p[st]['H_loc(100)']:.3f}")
 
 
+def route_tex(main="route_sample10000"):
+    """Macros of route.py (the sample of 10 000 pieces) and the table of its variants on 2000 pieces."""
+    r = load(MAIN, main)
+    if r is None:
+        return
+    macro("RouteSample", num(r["group pieces"], 0))
+    macro("RouteAlone", num(r["alone flights"], 0))
+    for key, tag in (("any date", ""), ("same season and hour", "Season")):
+        e = r[key]
+        macro(f"RoutePieces{tag}", num(e["pieces"], 0))
+        macro(f"RouteMatches{tag}", num(e["matches"], 0))
+        macro(f"RouteMedianMatches{tag}", num(e["median matches per piece"], 0))
+        for stat, ks in (("H_loc(1000 s)", "DHloc"), ("H_loc(100 s)", "DHlocHundred"), ("Delta H", "DH")):
+            macro(f"Route{ks}{tag}", signed(e[stat]["value"], 3))
+            macro(f"Route{ks}{tag}Band", f"[{signed(e[stat]['band'][0], 3)}, {signed(e[stat]['band'][1], 3)}]")
+            macro(f"RouteBase{ks}{tag}", signed(e["baseline"][stat]["value"], 3))
+            macro(f"RouteBase{ks}{tag}Band",
+                  f"[{signed(e['baseline'][stat]['band'][0], 3)}, {signed(e['baseline'][stat]['band'][1], 3)}]")
+        macro(f"RouteExplained{tag}", num(100 * (1 - e["H_loc(1000 s)"]["value"] / e["baseline"]["H_loc(1000 s)"]["value"]), 0))
+    rows = [(r"500~m, 80\%", main)] + [(label, f"route_sample2000{tag}") for label, tag in (
+        (r"500~m, 80\%", ""), (r"300~m, 80\%", "_rho300_cover0.8"), (r"1000~m, 80\%", "_rho1000_cover0.8"),
+        (r"500~m, 70\%", "_rho500_cover0.7"), (r"500~m, 90\%", "_rho500_cover0.9"))]
+    lines = [r"\begin{tabular}{@{}l r c c c@{}}", r"\toprule",
+             r"$\rho$, cover & pieces & route, any date & route, same season and hour & site-day and hour \\",
+             r"\midrule"]
+    for label, name in rows:
+        v = load(MAIN, name)
+        if v is None:
+            continue
+        a, s = v["any date"], v["same season and hour"]
+        pieces = f"{num(v['group pieces'], 0)}: {num(a['pieces'], 0)}"
+        lines.append(f"{label} & {pieces} & {band(a['H_loc(1000 s)'], 3, True)} & {band(s['H_loc(1000 s)'], 3, True)} & "
+                     f"{band(a['baseline']['H_loc(1000 s)'], 3, True)} \\\\")
+    write("route_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+
+
 def redundancy_tex():
     """Which statistics are drawn and why (redundancy.py)."""
     r = load(MAIN, "redundancy")
@@ -469,6 +505,7 @@ def main():
     zones_tex()
     prepost_tex(3000)
     prepost_tex(1260, "Short")
+    route_tex()
     redundancy_tex()
     d = decompose_tex()
     if d is not None:

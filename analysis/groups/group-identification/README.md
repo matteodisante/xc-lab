@@ -506,9 +506,9 @@ because members of larger groups leave less often.
 ## Report: `report/`
 
 `report/group_vs_solo.pdf` is a technical report (8 pages and appendices, figures and tables
-first): what is compared, the raw difference between group and solo flight, three tests that
-separate the group from the pilots, the place and the moment, then size and leader, for reading
-and as the base of a presentation. `report/facts.py` writes the
+first): what is compared, the raw difference between group and solo flight, four tests that
+separate the group from the pilots, the place, the route and the moment, then size and leader, for
+reading and as the base of a presentation. `report/facts.py` writes the
 facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
 `report/generated/`) from the JSON of `out/<run>/`; `latexmk -pdf group_vs_solo.tex` in `report/`
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.

@@ -1,10 +1,12 @@
 \section{What can and cannot be concluded}\label{sec:conclusions}
 
 The raw difference between group time and solo flights is real, and its long-lag part survives the
-three tests (Table~\ref{tab:estimates}). With the pilot fixed, or with the day, site and hour fixed, a
-group progresses straighter over a quarter of an hour (Section~\ref{sec:other}); the zones and hours
-where groups fly explain a fifth to a quarter of the raw gap (Section~\ref{sec:zones}); on the same
-flight the straighter progress starts and stops with the group (Section~\ref{sec:prepost}). At
+tests (Table~\ref{tab:estimates}), but most of it belongs to the routes groups fly. With the pilot
+fixed, or with the day, site and hour fixed, a group progresses straighter over a quarter of an hour
+(Section~\ref{sec:other}); the zones and hours where groups fly explain a fifth to a quarter of the
+raw gap (Section~\ref{sec:zones}); the same routes flown alone on other days explain about
+\RouteExplained\% of it, where they can be compared (Section~\ref{sec:route}); on the same flight the
+straighter progress starts and stops with the group (Section~\ref{sec:prepost}). At
 100~s, within one glide or climb, the progress is no straighter: the difference appears only at lags
 of one to two climb--glide cycles. Faster and flatter glides pass the contrasts and the
 before-and-after test; the climbs pass the contrasts but change only when the group forms. Two pilots
@@ -23,6 +25,9 @@ pilots, day, site, hour & $\G-\Sl$ same site-day and hour & \DHlocThousandSdh & 
  & $\G-\A$ same site-day and hour & \DHlocThousandGroupSdh & \DHlocThousandGroupSdhBand \\
 place & $\G-\Sl$ reweighted, site-day$\times$hour & \ZoneDHlocSSdh & \ZoneDHlocSSdhBand \\
  & $\G-\A$ reweighted, site-day$\times$hour & \ZoneDHlocASdh & \ZoneDHlocASdhBand \\
+route & matched pieces $-$ $\Sl$ same site-day and hour & \RouteBaseDHloc & \RouteBaseDHlocBand \\
+ & matched pieces $-$ same route alone & \RouteDHloc & \RouteDHlocBand \\
+ & the same, same season and hour & \RouteDHlocSeason & \RouteDHlocSeasonBand \\
 moment & entering, start $-$ before & \PPEntryDHloc & \PPEntryDHlocBand \\
  & leaving, end $-$ after & \PPExitDHloc & \PPExitDHlocBand \\
  & after $-$ before & \PPAfterBeforeDHloc & \PPAfterBeforeDHlocBand \\
@@ -30,8 +35,9 @@ moment & entering, start $-$ before & \PPEntryDHloc & \PPEntryDHlocBand \\
  & drift, solo flights ($\Sl$) & \PPCtrlSDHloc & \PPCtrlSDHlocBand \\
 \bottomrule
 \end{tabular}
-\caption{Every estimate of the long-lag difference, from the raw one to the three tests. The drifts are
-later minus earlier windows; for leaving they enter with the opposite sign.}
+\caption{Every estimate of the long-lag difference, from the raw one to the four tests. The route
+rows refer to the matched pieces only. The drifts are later minus earlier windows; for leaving they
+enter with the opposite sign.}
 \label{tab:estimates}
 \end{table}
 
@@ -42,6 +48,8 @@ later minus earlier windows; for leaving they enter with the opposite sign.}
 \begin{itemize}
   \item the progress over a quarter of an hour is straighter in a group, with the pilot fixed
         (\DHlocThousandFlight) and with the day, site and hour fixed (\DHlocThousandGroupSdh);
+  \item about \RouteExplained\% of this advantage comes from the routes groups fly, the rest goes with
+        flying together;
   \item no change of $\Hloc(100~\mathrm{s})$, within one glide or climb;
   \item on the same flight the straighter progress starts and stops with the group, and before and
         after are alike;
@@ -57,8 +65,8 @@ later minus earlier windows; for leaving they enter with the opposite sign.}
 \textbf{Not supported}
 \begin{itemize}
   \item that the group \emph{causes} the effect: the tests fix pilot, day, site, hour, zone and the
-        drift of the flight, but not what brings pilots together (a line, a ridge, a route) nor the
-        coordination needed to stay in contact;
+        drift of the flight and the route flown, but not the conditions of the day that bring pilots
+        together (a line or a thermal working that day) nor the coordination needed to stay in contact;
   \item that larger groups progress straighter than pairs at the same site-day and hour, up to six
         pilots.
 \end{itemize}
@@ -68,6 +76,8 @@ later minus earlier windows; for leaving they enter with the opposite sign.}
   \item the glide statistics are partly fixed by definition, since headings must be aligned in glide
         for a contact;
   \item configurations of 7 or more may be competition gaggles, which the archive does not flag;
+  \item the route test compares different days, and pilots who never meet anyone with pilots in
+        groups;
   \item the leader is assigned from $\ell_{\rm med}$, which is uncertain in thermals (note,
         Appendix~B).
 \end{itemize}
