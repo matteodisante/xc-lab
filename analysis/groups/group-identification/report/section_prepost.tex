@@ -35,39 +35,21 @@ opposite sign.}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.86\textwidth]{prepost_3000_profile.pdf}
-\caption{The four windows on the events that have all of them. Start and end overlap when the group
-lasts less than $2W$.}
-\label{fig:prepost-profile}
+\includegraphics[width=\textwidth]{report_prepost.pdf}
+\caption{Group minus alone on entering (start $-$ before) and on leaving (end $-$ after), each above the
+drift it is read against: the controls later minus earlier for entering, earlier minus later for
+leaving. Bottom row: after $-$ before. Values in Tables~\ref{tab:prepost} and~\ref{tab:prepost-phase},
+the four windows in Figure~\ref{fig:prepost-profile}.}
+\label{fig:prepost-forest}
 \end{figure}
 
-\begin{table}
-\centering\footnotesize\setlength{\tabcolsep}{4pt}
-\input{generated/prepost_table}
-\caption{Differences of the fitted $H$ and of $\Hloc$ at 100 and 1000~s (value, 5--95\% band) between
-windows, on the events with both windows. Controls: two consecutive windows with no change of state,
-later minus earlier, in the solo time of the group flights ($\A$) and in solo flights ($\Sl$).}
-\label{tab:prepost}
-\end{table}
-
-\paragraph{Results at 1000~s.} The first prediction holds. $\Delta\Hloc(1000~\mathrm{s})$ is
-\PPEntryDHloc{} \PPEntryDHlocBand{} entering and \PPExitDHloc{} \PPExitDHlocBand{} leaving, against
-drifts of \PPCtrlADHloc{} and \PPCtrlSDHloc{} in the controls, and after minus before is
-\PPAfterBeforeDHloc{} \PPAfterBeforeDHlocBand. On the \PPProfileEvents{} events with all four
-windows, $\Hloc(1000~\mathrm{s})$ is \PPProfileHlocPre{} before, \PPProfileHlocStart{} and
-\PPProfileHlocEnd{} in the group and \PPProfileHlocPost{} after (Figure~\ref{fig:prepost-profile}):
-a step close to the within-flight estimate of Section~\ref{sec:other} (\DHlocThousandFlight).
-
-\paragraph{Results at short lags and on the phases.} Entering, $\Hloc(100~\mathrm{s})$ and the fitted
-$H$ change by \PPEntryDHlocHundred{} and \PPEntryDH, about the drift of the controls
-(\PPCtrlADHlocHundred{} and \PPCtrlSDHlocHundred; \PPCtrlADH{} and \PPCtrlSDH). Leaving, they change by
-\PPExitDHlocHundred{} and \PPExitDH, which exceed the drift taken with the opposite sign: a small
-asymmetry at short lags, which we do not interpret. Glides are faster and flatter in the group in
-both directions: glide speed \PPEntrySpeed{} km/h entering and \PPExitSpeed{} leaving, against drifts
-of \PPCtrlASpeed{} and \PPCtrlSSpeed{} km/h; height lost per km \PPEntrySink{} entering and
-\PPExitSink{} leaving, against drifts of \PPCtrlASink{} and \PPCtrlSSink{} m/km, so that once each
-drift is taken with its sign the glide flattens by similar amounts both ways (Table~\ref{tab:prepost-phase},
-Appendix~\ref{app:tables}). The climb statistics rise on entering beyond the drift and do not fall on
+\paragraph{Results} (Figure~\ref{fig:prepost-forest}). The first prediction holds at long lags:
+$\Delta\Hloc(1000~\mathrm{s})$ is \PPEntryDHloc{} entering and \PPExitDHloc{} leaving, against drifts
+near zero, and after minus before is \PPAfterBeforeDHloc: a step close to the within-flight estimate
+of Section~\ref{sec:other}. At short lags and on the fitted $H$, entering changes nothing beyond the
+drift, while leaving the group window stays above the drift: a small asymmetry, which we do not
+interpret. Glides are faster and flatter in the group both ways, by similar amounts once each drift
+is taken with its sign. The climb statistics rise on entering beyond the drift and do not fall on
 leaving beyond it.
 
 \paragraph{Limits.} The windows fix the pilot, the glider, the day and the slow drift of the flight,

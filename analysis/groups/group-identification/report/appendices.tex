@@ -73,7 +73,17 @@ phase statistic keeps its sign; at 100~s the estimates turn slightly negative, c
 \end{figure}
 
 %======================================================================================
-\section{Tables and figures of the tests}\label{app:tables}
+\section{Values behind the figures}\label{app:tables}
+
+The tables and figures that the summary figures of the main text replace, in the order of the text.
+
+\begin{table}[H]
+\centering\footnotesize
+\input{generated/raw_table}
+\caption{Pooled statistics of $\Sl$, $\G$ and $\A$ (paragliders), with 5--95\% bands (Figure~\ref{fig:raw}). Exponents on
+loggers of at most 10~s, phases on 1~Hz flights.}
+\label{tab:raw}
+\end{table}
 
 \begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{3.5pt}
@@ -81,6 +91,16 @@ phase statistic keeps its sign; at 100~s the estimates turn slightly negative, c
 \caption{The five contrasts of Section~\ref{sec:other} (Figure~\ref{fig:decompose}): difference and 5--95\% band
 (s-d-h: same site-day and hour).}
 \label{tab:decompose}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{2.6pt}
+\input{generated/zones_table}
+\caption{Fitted $H$ and differences by stratification (Figure~\ref{fig:zones-forest}). ``Reweighted'': the other population
+reweighted to the strata of $\G$ (value, 5--95\% band); ``as is'': the same strata without reweighting. $H_{\Sl\mid\G}$: $H$
+of $\Sl$ reweighted to $\G$. The columns $\G$ and ``kept'' refer to the strata shared with $\Sl$; on those shared with $\A$
+they differ slightly.}
+\label{tab:zones}
 \end{table}
 
 \begin{figure}[H]
@@ -93,12 +113,44 @@ with a solo counterpart in their stratum.}
 \end{figure}
 
 \begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\input{generated/route_table}
+\caption{$\Delta H_\mathrm{loc}(1000~\mathrm{s})$ of the matched pieces against the same route flown alone and against the
+solo flights of their site-day and hour, by radius $\rho$ and cover (Figure~\ref{fig:route-forest}). Pieces: drawn at random,
+and matched.}
+\label{tab:route}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\input{generated/prepost_table}
+\caption{Differences of the fitted $H$ and of $H_\mathrm{loc}$ at 100 and 1000~s between windows, on the events with both
+windows (Figure~\ref{fig:prepost-forest}). Controls: later minus earlier; leaving is end minus after, so its drift is the
+control with the opposite sign.}
+\label{tab:prepost}
+\end{table}
+
+\begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{3.5pt}
 \input{generated/prepost_phase_table}
-\caption{The phase statistics of the comparisons of Section~\ref{sec:prepost} (differences with 5--95\% band); runs and
-glides are placed in the window that holds their middle. Leaving is end minus after: its drift is the control with the
-opposite sign.}
+\caption{The phase statistics of the same comparisons (differences with 5--95\% band); runs and glides are placed in the
+window that holds their middle.}
 \label{tab:prepost-phase}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{prepost_3000_profile.pdf}
+\caption{The four windows of Section~\ref{sec:prepost} on the events that have all of them. Start and end overlap when the
+group lasts less than $2W$.}
+\label{fig:prepost-profile}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\input{generated/size_table}
+\caption{Paragliders, pooled by the size of the configuration (``alone'': the same flights alone).}
+\label{tab:size}
 \end{table}
 
 \begin{table}[H]
@@ -106,6 +158,35 @@ opposite sign.}
 \input{generated/decompose_size_table}
 \caption{The contrasts by size of Section~\ref{sec:size} (Figure~\ref{fig:size}).}
 \label{tab:size-contrasts}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize
+\begin{tabular}{@{}l l c c@{}}
+\toprule
+test & comparison & $\Delta\Hloc(1000~\mathrm{s})$ & band \\
+\midrule
+raw & $\G-\Sl$ pooled & \DHlocThousandRaw & \DHlocThousandRawBand \\
+pilots, day, site, hour & $\G-\Sl$ same site-day and hour & \DHlocThousandSdh & \DHlocThousandSdhBand \\
+ & $\A-\Sl$ same site-day and hour (selection) & \DHlocThousandSel & \DHlocThousandSelBand \\
+ & $\G-\A$ same flight & \DHlocThousandFlight & \DHlocThousandFlightBand \\
+ & $\G-\A$ same site-day and hour & \DHlocThousandGroupSdh & \DHlocThousandGroupSdhBand \\
+place & $\G-\Sl$ reweighted, site-day$\times$hour & \ZoneDHlocSSdh & \ZoneDHlocSSdhBand \\
+ & $\G-\A$ reweighted, site-day$\times$hour & \ZoneDHlocASdh & \ZoneDHlocASdhBand \\
+route & matched pieces $-$ $\Sl$ same site-day and hour & \RouteBaseDHloc & \RouteBaseDHlocBand \\
+ & matched pieces $-$ same route alone & \RouteDHloc & \RouteDHlocBand \\
+ & the same, same season and hour & \RouteDHlocSeason & \RouteDHlocSeasonBand \\
+moment & entering, start $-$ before & \PPEntryDHloc & \PPEntryDHlocBand \\
+ & leaving, end $-$ after & \PPExitDHloc & \PPExitDHlocBand \\
+ & after $-$ before & \PPAfterBeforeDHloc & \PPAfterBeforeDHlocBand \\
+ & drift, solo time of group flights ($\A$) & \PPCtrlADHloc & \PPCtrlADHlocBand \\
+ & drift, solo flights ($\Sl$) & \PPCtrlSDHloc & \PPCtrlSDHlocBand \\
+\bottomrule
+\end{tabular}
+\caption{Every estimate of the long-lag difference, from the raw one to the four tests. The route
+rows refer to the matched pieces only. The drifts are later minus earlier windows; for leaving they
+enter with the opposite sign.}
+\label{tab:estimates}
 \end{table}
 
 %======================================================================================
@@ -191,6 +272,8 @@ uv run python budget.py; uv run python performance.py; uv run python blocks.py
 uv run python redundancy.py; uv run python size.py; uv run python decompose.py
 uv run python zones.py; uv run python prepost.py; uv run python prepost.py --window 1260
 uv run python mechanisms.py; uv run python report/facts.py
-uv run python report/tables.py; cd report; latexmk -pdf group_vs_solo.tex
+uv run python route.py --sample 10000
+uv run python report/tables.py; uv run python report/figures.py
+cd report; latexmk -pdf group_vs_solo.tex
 \end{verbatim}
 Heavy pieces stay on SSD\_DISANTE, in the \texttt{analyses/} folder of each run; figures and JSON in \texttt{out/<run>/}.

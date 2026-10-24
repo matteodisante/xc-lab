@@ -24,35 +24,25 @@ darker orange. The curves themselves are in Figure~\ref{fig:zones}.}
 \label{fig:zones-diff}
 \end{figure}
 
-\begin{table}
-\centering\footnotesize\setlength{\tabcolsep}{2.6pt}
-\input{generated/zones_table}
-\caption{Fitted $H$ and differences by stratification. ``Reweighted'': the other population
-reweighted to the strata of $\G$ (value, 5--95\% band); ``as is'': the same strata without
-reweighting. $H_{\Sl\mid\G}$: $H$ of $\Sl$ reweighted to $\G$. The columns $\G$ and ``kept'' refer to
-the strata shared with $\Sl$; on those shared with $\A$ they differ slightly.}
-\label{tab:zones}
-\end{table}
+\begin{figure}
+\centering
+\includegraphics[width=0.78\textwidth]{report_zones.pdf}
+\caption{$\Delta\Hloc(1000~\mathrm{s})$ by stratification, with the share of $\G$ kept: $\G-\Sl$ with
+$\Sl$ reweighted to the strata of $\G$ and as is, and $\G-\A$ reweighted. Values with the fitted
+$\Delta H$ in Table~\ref{tab:zones}.}
+\label{fig:zones-forest}
+\end{figure}
 
-\paragraph{Results.} The gap opens above $\tau\approx150$~s (Figure~\ref{fig:zones-diff}): in every
-stratification $\Delta\Hloc$ between $\G$ and $\Sl$ lies between $\ZoneShortMin$ and
-$\ZoneShortMax$ from 20 to 140~s, and pooled it reaches \ZoneDHlocSNone{} at 1000~s, above one
-climb--glide cycle. Reweighting removes little of it. To the zones of $\G$, it lowers
-$\Delta\Hloc(1000~\mathrm{s})$ by \ZoneRedLocZone\% (\ZoneDHlocSupportZone{} $\to$ \ZoneDHlocSZone) and
-the fitted $\Delta H$ by \ZoneRedHZone\%; with zone$\times$month, by \ZoneRedLocZoneMonth\% and
-\ZoneRedHZoneMonth\%; with zone$\times$hour, by \ZoneRedLocZoneHour\% and \ZoneRedHZoneHour\%. Solo
-pilots do fly where groups fly: \ZoneKeptZone\% of $\G$ has a solo counterpart in its cell. At the
-same site-day and hour (\ZoneKeptSdh\% of $\G$ kept), $\Delta\Hloc(1000~\mathrm{s})$ is \ZoneDHlocSSdh{}
-\ZoneDHlocSSdhBand, \ZoneRedLocSdh\% below its value as is, and the fitted $\Delta H$ is \ZoneDHSSdh{}
-\ZoneDHSSdhBand. Reweighting raises the fitted $H$ of $\Sl$ by a few thousandths (\ZoneHNoneS{} $\to$
-\ZoneHSdhS) and never brings it to that of $\G$ (\ZoneHSdhG).
-
-Against the same flights alone, $\Delta\Hloc(1000~\mathrm{s})$ is \ZoneDHlocANone{} pooled and
-\ZoneDHlocAZone, \ZoneDHlocAZoneHour{} and \ZoneDHlocASdh{} in zone, zone$\times$hour and
-site-day$\times$hour strata. At the same site-day and hour these values differ from the contrasts of
-Section~\ref{sec:other} on the same strata (\ZoneDHlocASdh{} here against \DHlocThousandGroupSdh{}
-there) only through the weights, $n_{\G,s}$ here and the half harmonic mean there: the difference
-varies between strata, and the group effect at the same site-day and hour lies between the two.
+\paragraph{Results.} The gap opens above $\tau\approx150$~s, above one climb--glide cycle
+(Figure~\ref{fig:zones-diff}). Reweighting the solo flights to the strata of the groups removes little
+of it (Figure~\ref{fig:zones-forest}): from the zones alone to zone$\times$hour,
+$\Delta\Hloc(1000~\mathrm{s})$ falls by \ZoneRedLocZone\% to \ZoneRedLocZoneHour\% and the fitted
+$\Delta H$ by \ZoneRedHZone\% to \ZoneRedHZoneHour\%, although solo pilots do fly where groups fly
+(\ZoneKeptZone\% of $\G$ has a solo counterpart in its cell). Against the same flights alone the gap is
+smaller and does not shrink with the reweighting. At the same site-day and hour the reweighted
+$\G-\A$ (\ZoneDHlocASdh) differs from the contrast of Section~\ref{sec:other} on the same strata
+(\DHlocThousandGroupSdh) only through the weights, $n_{\G,s}$ here and the half harmonic mean there:
+the difference varies between strata, and the group effect there lies between the two.
 
 \paragraph{Limits.} Cells are 25~km, placed by the middle of a piece; the terrain inside a cell is
 not controlled, and a group may choose better air within it, which is then part of what we call the

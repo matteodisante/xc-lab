@@ -510,7 +510,8 @@ first): what is compared, the raw difference between group and solo flight, four
 separate the group from the pilots, the place, the route and the moment, then size and leader, for
 reading and as the base of a presentation. `report/facts.py` writes the
 facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
-`report/generated/`) from the JSON of `out/<run>/`; `latexmk -pdf group_vs_solo.tex` in `report/`
+`report/generated/`) from the JSON of `out/<run>/`, `report/figures.py` the summary figures that
+replace the tables in the main text (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `report/`
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
@@ -565,6 +566,7 @@ uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
 uv run python report/structure_tables.py   # then rebuild the note (README of ideas/group-identification)
-uv run python report/facts.py; uv run python report/tables.py; cd report && latexmk -pdf group_vs_solo.tex
+uv run python report/facts.py; uv run python report/tables.py; uv run python report/figures.py
+cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analysis/groups/group-identification   # from the root of xc-lab
 ```

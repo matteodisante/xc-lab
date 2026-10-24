@@ -28,14 +28,14 @@ bands.}
 \label{fig:route}
 \end{figure}
 
-\begin{table}
-\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\input{generated/route_table}
-\caption{$\Delta\Hloc(1000~\mathrm{s})$ of the matched pieces against the same route flown alone and
-against the solo flights of their site-day and hour, by radius $\rho$ and cover. Pieces: drawn at
-random, and matched. First row: the sample of the text.}
-\label{tab:route}
-\end{table}
+\begin{figure}
+\centering
+\includegraphics[width=0.78\textwidth]{report_route.pdf}
+\caption{$\Delta\Hloc(1000~\mathrm{s})$ of the matched pieces against the solo flights of their site-day
+and hour and against the same route flown alone, by sample, radius $\rho$ and cover. First block: the
+sample of the text. Values in Table~\ref{tab:route}.}
+\label{fig:route-forest}
+\end{figure}
 
 \paragraph{Results.} Of a random sample of \RouteSample{} pieces, \RoutePieces{} have matches
 (\RouteMatches{} segments, \RouteMedianMatches{} per piece in the median). Against the same route
@@ -44,8 +44,8 @@ flown alone $\Delta\Hloc(1000~\mathrm{s})$ is \RouteDHloc{} \RouteDHlocBand, and
 against the solo flights of their site-day and hour give \RouteBaseDHloc{} \RouteBaseDHlocBand, more
 than the \DHlocThousandSdh{} of all the group time, because these pieces lie on frequented routes.
 The route therefore accounts for \RouteExplained\% of the long-lag gap (\RouteExplainedSeason\% with
-the same season and hour), and the rest goes with flying together. Every radius and cover of
-Table~\ref{tab:route} tells the same. At short lags group time is less straight than the same route
+the same season and hour), and the rest goes with flying together. Every radius and cover tells the
+same (Figure~\ref{fig:route-forest}). At short lags group time is less straight than the same route
 flown alone, $\Delta\Hloc(100~\mathrm{s})=$ \RouteDHlocHundred{} \RouteDHlocHundredBand, so the fitted
 $H$ hardly differs (\RouteDH).
 
