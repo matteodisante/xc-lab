@@ -21,38 +21,27 @@ hour (month within one, local hour within two).
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{route_sample10000.pdf}
-\caption{Left: $\Hloc(\tau)$ of the matched pieces of group time and of the same routes flown alone on
-another day. Right: their difference over every lag, any date and same season and hour, with 5--95\%
-bands.}
+\includegraphics[width=\textwidth]{report_route_curves.pdf}
+\caption{Left: $\Hloc(\tau)$ of the matched pieces of group time (orange) and of the same routes flown
+alone on another day (purple). Right: their difference over every lag, any date and, lighter, same
+season and hour, with 5--95\% bands.}
 \label{fig:route}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.78\textwidth]{report_route.pdf}
-\caption{$\Delta\Hloc(1000~\mathrm{s})$ of the matched pieces against the solo flights of their site-day
-and hour and against the same route flown alone, by sample, radius $\rho$ and cover. First block: the
-sample of the text. Values in Table~\ref{tab:route}.}
-\label{fig:route-forest}
-\end{figure}
-
-\paragraph{Results.} Of a random sample of \RouteSample{} pieces, \RoutePieces{} have matches
-(\RouteMatches{} segments, \RouteMedianMatches{} per piece in the median). Against the same route
-flown alone $\Delta\Hloc(1000~\mathrm{s})$ is \RouteDHloc{} \RouteDHlocBand, and \RouteDHlocSeason{}
-\RouteDHlocSeasonBand{} with the same season and hour (\RoutePiecesSeason{} pieces). The same pieces
-against the solo flights of their site-day and hour give \RouteBaseDHloc{} \RouteBaseDHlocBand, more
-than the \DHlocThousandSdh{} of all the group time, because these pieces lie on frequented routes.
-The route therefore accounts for \RouteExplained\% of the long-lag gap (\RouteExplainedSeason\% with
-the same season and hour), and the rest goes with flying together. Every radius and cover tells the
-same (Figure~\ref{fig:route-forest}). At short lags group time is less straight than the same route
-flown alone, $\Delta\Hloc(100~\mathrm{s})=$ \RouteDHlocHundred{} \RouteDHlocHundredBand, so the fitted
-$H$ hardly differs (\RouteDH).
+\paragraph{Results.} Of a random sample of \RouteSample{} pieces, \RoutePieces{} have matches, about
+half. Against the same route flown alone the long-lag gap is less than a third of the gap of the same
+pieces against the solo flights of their site-day and hour (Figures~\ref{fig:route}
+and~\ref{fig:estimates}): fixing the route lowers it by \RouteExplained\% (\RouteExplainedSeason\%
+with the same season and hour), and every radius and cover gives the same
+(Figure~\ref{fig:route-forest}). These pieces lie on frequented routes: their gap at the same site-day
+and hour, \RouteBaseDHloc, is larger than the \DHlocThousandSdh{} of all the group time. At short lags
+group time is less straight than the same route flown alone (Figure~\ref{fig:route}, right), so the
+fitted $H$ hardly differs.
 
 \paragraph{Limits.} The days differ: season and hour are matched, the weather of the day is not. The
 pilots who never meet anyone may differ from those who fly in groups, and this test has no selection
 contrast to measure it. Only the pieces on routes flown alone on other days enter, about half of them,
 on a sample of the pieces.
 
-\paragraph{What we keep.} About \RouteExplained\% of the straighter progress of groups over a quarter
-of an hour comes from the routes they fly; flying together adds the rest.
+\paragraph{What we keep.} Where the route can be matched, fixing it lowers the straighter progress of
+groups over a quarter of an hour by about \RouteExplained\%; the rest goes with flying together.

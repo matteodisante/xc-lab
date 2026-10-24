@@ -373,8 +373,9 @@ blocks; the baseline compares the same pieces with the solo flights of their sit
 Result, on a random sample of 10 000 of the 45 476 pieces: 4 933 pieces have matches (52 912
 segments); ΔH_loc(1000 s) is +0.018 [+0.014, +0.021] against the same route alone and +0.016
 [+0.012, +0.021] with the same season and hour (4 183 pieces), against +0.060 [+0.055, +0.066] for
-the same pieces against the solo flights of their site-day and hour. The route accounts for about
-70% of the long-lag gap (71% and 74%); the rest stays with flying together. Nothing at 100 s. On
+the same pieces against the solo flights of their site-day and hour. Fixing the route lowers the
+long-lag gap of these pieces by about 70% (71% and 74%); the rest stays with flying together. At
+100 s group time is a little less straight than the same route alone (−0.004). On
 2000 pieces, radii of 300 and 1000 m and covers of 70 and 90% give +0.014 to +0.022 against the
 route and 66 to 76% explained.
 
@@ -505,13 +506,13 @@ because members of larger groups leave less often.
 
 ## Report: `report/`
 
-`report/group_vs_solo.pdf` is a technical report (8 pages and appendices, figures and tables
-first): what is compared, the raw difference between group and solo flight, four tests that
+`report/group_vs_solo.pdf` is a technical report (10 pages of text and figures, then appendices
+with the tables): what is compared, the raw difference between group and solo flight, four tests that
 separate the group from the pilots, the place, the route and the moment, then size and leader, for
 reading and as the base of a presentation. `report/facts.py` writes the
 facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
-`report/generated/`) from the JSON of `out/<run>/`, `report/figures.py` the summary figures that
-replace the tables in the main text (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `report/`
+`report/generated/`) from the JSON of `out/<run>/`, `report/figures.py` the figures of the
+report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `report/`
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated

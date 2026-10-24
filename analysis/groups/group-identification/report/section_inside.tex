@@ -12,34 +12,21 @@ site-day and hour, which asks whether a group does more than a pair.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.56\textwidth]{size_hloc.pdf}
-\caption{$\Hloc(\tau)$ over every lag by the size of the configuration (orange, darker with more
-pilots), $\Sl$ (blue) and, dashed, the same flights alone for each size.}
-\label{fig:size-hloc}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{decompose_size.pdf}
-\caption{Orange: $\G_n-\A$ within the flight. Blue: $\G_n-\G_2$ at the same site-day and hour. Values
-with bands in Table~\ref{tab:size-contrasts}.}
+\includegraphics[width=\textwidth]{report_size.pdf}
+\caption{By the number of pilots $n$, with 5--95\% bands. Green: $\G_n-\A$ within the flight. Grey, open:
+$\G_n-\G_2$ at the same site-day and hour. Values in Table~\ref{tab:size-contrasts}.}
 \label{fig:size}
 \end{figure}
 
-Pooled, $\Hloc(1000~\mathrm{s})$ rises with $n$, from \HlocThousandTwo{} with 2 pilots to
-\HlocThousandSeven{} with 7+, while the same flights alone stay between \HlocThousandAloneMin{} and
-\HlocThousandAloneMax{} (Figure~\ref{fig:size-hloc}; values in Table~\ref{tab:size}). Within the flight the
-effect also grows, from \DHlocThousandFlightTwo{} with 2 pilots to \DHlocThousandFlightSeven{} with
-7+ (Figure~\ref{fig:size}); there the day and the site are fixed, so the growth comes from the hour or
-from the flights that join large groups. At the same site-day and hour it vanishes up to six pilots:
-configurations of 3 to 6 pilots differ from pairs by \DHlocThousandMiddleMin{} to
-\DHlocThousandMiddleMax, with bands across zero. Only 7+ stands apart (\DHlocThousandSevenTwoSdh{}
-\DHlocThousandSevenTwoSdhBand, cross-country speed \DXcSevenTwoSdh{} km/h), a rare configuration, 3\%
-of the group time. These may be competition gaggles flying a set task; the archive does not flag
-competitions, so this stays uncontrolled. Time in climb and the flatter glide do grow with $n$ at the
-same place and hour, from \DClimbSizeMin{} to \DClimbSizeMax{} points and from \DSinkSizeMin{} to
-\DSinkSizeMax{} m/km. On six single site-days the differences between days exceed those between
-sizes (Appendix~\ref{app:sitedays}).
+Pooled, $\Hloc(1000~\mathrm{s})$ rises with $n$ while the same flights alone hardly change
+(Appendix~\ref{app:curves}; values in Table~\ref{tab:size}). Within the flight the effect grows from
+\DHlocThousandFlightTwo{} with 2 pilots to \DHlocThousandFlightSeven{} with 7+ (Figure~\ref{fig:size},
+green); there the day and the site are fixed, so the growth comes from the hour or from the flights
+that join large groups. At the same site-day and hour groups of 3 to 6 progress like pairs; only 7+
+stands apart, 3\% of the group time, perhaps competition gaggles flying a set task, which the archive
+does not flag. At the same place and hour larger groups spend more time climbing and glide flatter,
+but a little slower, than pairs, with most of the change from 2 to 4 pilots. On six single site-days
+the differences between days exceed those between sizes (Appendix~\ref{app:sitedays}).
 
 \subsection{Leader and follower}\label{sec:mechanisms}
 
@@ -47,13 +34,12 @@ In configurations of two pilots, the signed median delay $\ell_{\rm med}$ of the
 (Appendix~B of the note) says who passes first: the leader, when the other passes at least 15~s later;
 otherwise the two fly abreast (\Abreast\% of the pairs). Leader and follower are compared within the
 same configuration, the configuration being the stratum of Eq.~\eqref{eq:contrast}
-(Appendix~\ref{app:leaders}). The pilot ahead climbs more and a little faster and glides faster (time
-in climb \LeadClimb{} points, climb rate \LeadRate{} m/s, glide speed \LeadSpeed{} km/h), and glides
-as flat (\LeadSink{} m/km). The share of searches that end in a climb does not differ (\LeadFound{}
+(Appendix~\ref{app:leaders}). The pilot ahead climbs more, climbs a little faster, glides faster and
+glides as flat. The share of searches that end in a climb does not differ (\LeadFound{}
 points): on this measure the follower shows no sign of finding thermals through the leader. How
 groups form and break and whether the same pilots lead are in section 7 of the note.
 
 \paragraph{What we keep.} Most of the effect is there with two pilots. Beyond a pair, at the same
-site-day and hour, size adds climbing and flatter glides but no straighter progress, except in the
-rare configurations of 7 or more. The leader is a little faster, and ends searches in a climb as often
+site-day and hour, size adds climbing and flatter but slightly slower glides, and no straighter
+progress, except in the rare configurations of 7 or more. The leader is a little faster, and ends searches in a climb as often
 as the follower.

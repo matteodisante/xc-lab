@@ -112,6 +112,15 @@ with a solo counterpart in their stratum.}
 \label{fig:zones}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{report_route.pdf}
+\caption{$\Delta\Hloc(1000~\mathrm{s})$ of the matched pieces against the solo flights of their site-day
+and hour (blue) and against the same route flown alone (purple; open: same season and hour), by sample,
+radius $\rho$ and cover. First block: the sample of Section~\ref{sec:route}.}
+\label{fig:route-forest}
+\end{figure}
+
 \begin{table}[H]
 \centering\footnotesize\setlength{\tabcolsep}{3pt}
 \input{generated/route_table}
@@ -190,12 +199,22 @@ enter with the opposite sign.}
 \end{table}
 
 %======================================================================================
-\section{Before, during and after with short windows}\label{app:prepost}
+\section{Before, during and after: curves and short windows}\label{app:prepost}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{prepost_3000_curves.pdf}
+\caption{$\Hloc(\tau)$ of the same flights alone (green) and in the group (orange), entering (left)
+and leaving (middle), windows of \PPWindowMin{} min, 5--95\% bands. Right: the differences, group minus alone, with the two
+controls (later minus earlier window; dashed); for leaving, the drift to compare is the control with the opposite sign.}
+\label{fig:prepost}
+\end{figure}
 
 Same test as Section~\ref{sec:prepost} with windows of \PPShortWindowMin{} min, the shortest a piece of the TA-MSD allows.
 Groups of at least \PPShortWindowMin{} min enter: more events, but at 1000~s a window holds fewer than thirty origins.
-The step at 1000~s is then not seen (\PPShortEntryDHloc{} entering, \PPShortExitDHloc{} leaving, against drifts of
-\PPShortCtrlADHloc{} and \PPShortCtrlSDHloc), and the fitted $H$, dominated by short lags, shows no change beyond the drift.
+At 1000~s entering then stays just above its drifts and leaving at them, taken with the opposite sign
+(\PPShortEntryDHloc{} entering, \PPShortExitDHloc{} leaving, against drifts of \PPShortCtrlADHloc{} and \PPShortCtrlSDHloc);
+on the fitted $H$, dominated by short lags, entering stays below its drifts and leaving above them.
 The phase statistics at entry depend on the window (time in climb \PPShortEntryClimb{} points, glide speed
 \PPShortEntrySpeed{} km/h here, against \PPEntryClimb{} and \PPEntrySpeed{} with \PPWindowMin{} min).
 

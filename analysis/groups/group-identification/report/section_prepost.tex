@@ -25,30 +25,21 @@ opposite one, so on leaving the drift enters with the opposite sign.
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{prepost_3000_curves.pdf}
-\caption{$\Hloc(\tau)$ of the same flights alone (green) and in the group (orange), entering (left)
-and leaving (middle), 5--95\% bands. Right: the differences, group minus alone, with the two controls
-(later minus earlier window; dashed); for leaving, the drift to compare is the control with the
-opposite sign.}
-\label{fig:prepost}
-\end{figure}
-
-\begin{figure}
-\centering
 \includegraphics[width=\textwidth]{report_prepost.pdf}
 \caption{Group minus alone on entering (start $-$ before) and on leaving (end $-$ after), each above the
 drift it is read against: the controls later minus earlier for entering, earlier minus later for
-leaving. Bottom row: after $-$ before. Values in Tables~\ref{tab:prepost} and~\ref{tab:prepost-phase},
-the four windows in Figure~\ref{fig:prepost-profile}.}
+leaving. Last row: after $-$ before. The curves over every lag are in Figure~\ref{fig:prepost}, the values in
+Tables~\ref{tab:prepost} and~\ref{tab:prepost-phase}, the four windows in
+Figure~\ref{fig:prepost-profile}.}
 \label{fig:prepost-forest}
 \end{figure}
 
 \paragraph{Results} (Figure~\ref{fig:prepost-forest}). The first prediction holds at long lags:
 $\Delta\Hloc(1000~\mathrm{s})$ is \PPEntryDHloc{} entering and \PPExitDHloc{} leaving, against drifts
 near zero, and after minus before is \PPAfterBeforeDHloc: a step close to the within-flight estimate
-of Section~\ref{sec:other}. At short lags and on the fitted $H$, entering changes nothing beyond the
-drift, while leaving the group window stays above the drift: a small asymmetry, which we do not
-interpret. Glides are faster and flatter in the group both ways, by similar amounts once each drift
+of Section~\ref{sec:other}. At 100~s entering changes nothing beyond the drift, and on the fitted $H$
+it exceeds the drift of $\A$ but not that of $\Sl$; on leaving the group window stays above both
+drifts, at 100~s and on $H$: a small asymmetry, which we do not interpret. Glides are faster and flatter in the group both ways, by similar amounts once each drift
 is taken with its sign. The climb statistics rise on entering beyond the drift and do not fall on
 leaving beyond it.
 
@@ -56,10 +47,9 @@ leaving beyond it.
 not what brings pilots together: a convergence line, a ridge or a common route may last as long as
 the group and straighten the progress by itself, and two pilots must move alike to stay within
 500~m for long. The events are long groups with solo flight beside them (\PPEntryEvents{} entries,
-\PPExitEvents{} exits). With windows of \PPShortWindowMin~min the step at 1000~s is not seen
-(\PPShortEntryDHloc{} entering, \PPShortExitDHloc{} leaving, against drifts of \PPShortCtrlADHloc{} and
-\PPShortCtrlSDHloc): such a window holds fewer than thirty origins at 1000~s, so the test at that lag
-needs windows of \PPWindowMin~min (Appendix~\ref{app:prepost}).
+\PPExitEvents{} exits). With windows of \PPShortWindowMin~min the step at 1000~s is much smaller,
+since such a window holds fewer than thirty origins at that lag; the test at that lag needs windows of
+\PPWindowMin~min (Appendix~\ref{app:prepost}).
 
 \paragraph{What we keep.} With windows of \PPWindowMin~min, on the same flight the straighter
 progress over a quarter of an hour starts with the group and stops with it, and the glides change
