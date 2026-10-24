@@ -1,7 +1,7 @@
 \section{Group or pilots? Contrasts within strata}\label{sec:other}
 
-How much of the difference belongs to who flies in groups, and how much to the group, with the day,
-the site and the hour fixed?
+How much of the difference belongs to who flies in groups, and how much to the group, once the day,
+the site and the hour are fixed?
 
 \paragraph{Contrast.} For a statistic $X$ and two populations $P$ and $Q$, each stratum $s$ that holds
 both gives $D_s=X_{P,s}-X_{Q,s}$, computed as on the whole archive (ensemble MSD, ratios of sums).
@@ -11,23 +11,24 @@ The contrast is their weighted mean,
 \end{equation}
 with $n_{P,s}$ and $n_{Q,s}$ the flights of each population in $s$. The weight is half the harmonic
 mean of the two counts: a stratum counts as much as its smaller side allows. For the exponents,
-$D_s$ is the difference of $\log\MSD$ at every lag, and $\Delta H$ and $\Delta\Hloc$ are the slopes of
-its weighted mean.
+$D_s$ is the difference of $\log\MSD$ at every lag, and $\Delta H$ and $\Delta\Hloc$ are half the
+slopes of its weighted mean, over all lags and within $\pm0.25$ decades.
 
-\paragraph{Five contrasts.} Each fixes something more (Table~\ref{tab:decompose}):
+\paragraph{Five contrasts} (Figure~\ref{fig:decompose}; values with bands in
+Table~\ref{tab:decompose}, Appendix~\ref{app:tables}):
 \begin{itemize}
   \item $\G-\Sl$ pooled: the raw difference;
-  \item $\G-\Sl$ within site-day and hour: the same day, site and hour;
-  \item $\A-\Sl$ within site-day and hour: \emph{selection}, how the flights that will fly in a group
-        differ when they fly alone;
+  \item $\G-\Sl$ within site-day and hour: day, site and hour fixed;
+  \item $\A-\Sl$ within site-day and hour: \emph{selection}, how the flights that fly in groups differ
+        from solo flights when they fly alone;
   \item $\G-\A$ within the flight, the stratum being one flight: pilot, glider, logger, day and site
-        fixed;
-  \item $\G-\A$ within site-day and hour: the hour fixed as well.
+        fixed, the hour free;
+  \item $\G-\A$ within site-day and hour: day, site and hour fixed, the pilots different.
 \end{itemize}
-The last two estimate the group effect and fail in opposite ways. Within the flight, group time
-falls around midday and the time alone of the same flight earlier and later (section 7 of the
-note), so the hour differs. Within site-day and hour, the hour is the same but the pilots differ.
-Where the two agree, the effect belongs to the group.
+The last two estimate the group effect and fail in opposite ways. Within the flight, group time falls
+around midday and the time alone of the same flight earlier and later (section 7 of the note), so the
+hour differs; within site-day and hour, the hour is the same but the pilots differ. Where the two
+agree, neither the hour nor the pilot explains the difference.
 
 \begin{figure}
 \centering
@@ -37,27 +38,25 @@ points; lower height lost per km is a better glide.}
 \label{fig:decompose}
 \end{figure}
 
-\begin{table}
-\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
-\input{generated/decompose_table}
-\caption{The contrasts of Figure~\ref{fig:decompose}: difference and 5--95\% band (s-d-h: same
-site-day and hour).}
-\label{tab:decompose}
-\end{table}
-
-\paragraph{Results.} The straighter progress over 1000~s survives every control:
+\paragraph{Results.} The straighter progress over 1000~s survives both estimates:
 $\Delta\Hloc(1000~\mathrm{s})$ is \DHlocThousandRaw{} pooled, \DHlocThousandFlight{} within the flight
-and \DHlocThousandGroupSdh{} at the same site-day and hour, while selection gives \DHlocThousandSel.
-Within one phase nothing remains: at 100~s, \DHlocHundredFlight{} within the flight and
-\DHlocHundredGroupSdh{} at the same site-day and hour; the pooled \DHlocHundredRaw{} was selection and
-composition. In a group pilots climb more (\DClimbFlight{} and \DClimbGroupSdh{} points of time in
-climb), end more searches in a climb (\DFoundFlight{} and \DFoundGroupSdh{} points) and climb faster
-(\DRateFlight{} and \DRateGroupSdh{} m/s). Pooled, the climb rate of $\G$ is below that of $\A$: the
-pooled ratios weight flights by their time in each population, and the strata undo that. Glides are
-faster, \DSpeedFlight{} and \DSpeedGroupSdh{} km/h, and flatter, \DSinkFlight{} and \DSinkGroupSdh{} m/km
-of height lost per km; selection adds \DSpeedSel{} km/h of glide speed, so group pilots glide faster
-even alone. The cross-country speed rises by \DXcFlight{} and \DXcGroupSdh{} km/h.
+and \DHlocThousandGroupSdh{} at the same site-day and hour, while selection gives \DHlocThousandSel. At
+100~s the two estimates disagree in sign, \DHlocHundredFlight{} within the flight and
+\DHlocHundredGroupSdh{} at the same site-day and hour: within the flight the hour differs, and fixing
+it removes the difference (Figure~\ref{fig:zones-diff}, right). The pooled \DHlocHundredRaw{} comes
+from who flies in groups (\DHlocHundredSel) and from the day, site and hour.
 
-\paragraph{What we keep.} With the pilot, the day, the site and the hour fixed, a group progresses
-straighter over a quarter of an hour, climbs more and glides faster and flatter. Who flies in groups
-explains little of it.
+In a group pilots spend more time climbing (\DClimbFlight{} and \DClimbGroupSdh{} points), end more
+searches in a climb (\DFoundFlight{} and \DFoundGroupSdh{} points) and climb faster (\DRateFlight{}
+and \DRateGroupSdh{} m/s). Pooled, $\G$ climbs slower than $\A$ (Table~\ref{tab:raw}); within strata
+it climbs faster. Glides are faster, \DSpeedFlight{} and \DSpeedGroupSdh{} km/h, and flatter,
+\DSinkFlight{} and \DSinkGroupSdh{} m/km; the cross-country speed rises by \DXcFlight{} and
+\DXcGroupSdh{} km/h. For the phase statistics the within-flight values are two to three times the
+site-day-and-hour ones, as expected if the hour adds to them, so the site-day-and-hour values are the
+conservative estimates. Selection is small for the motion and for the climbs, but not for speed:
+group pilots glide \DSpeedSel{} km/h faster even alone, over half of the \DSpeedSdh{} km/h between
+$\G$ and $\Sl$ at the same site-day and hour.
+
+\paragraph{What we keep.} With the pilot fixed, or with the day, site and hour fixed, group time
+progresses straighter over a quarter of an hour, climbs more and glides faster and flatter. Who flies
+in groups explains little of the straighter progress and over half of the faster glides.

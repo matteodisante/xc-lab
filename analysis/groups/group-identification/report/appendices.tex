@@ -4,7 +4,7 @@
 $\mathrm{MSD}(\tau)\propto\tau^{2H}$, so $\log_{10}\mathrm{MSD}=2H\log_{10}\tau+c$. \textbf{$H$} is half the slope of the
 least-squares line over all 21 lags (equal weight per lag). \textbf{$H_\mathrm{loc}(\tau_c)$} is half the slope of the line fitted on
 the lags with $|\log_{10}\tau-\log_{10}\tau_c|\le0.25$ (a factor 1.78 on each side), equal weight; where fewer than
-3 lags lie in the window, the 3 nearest are used. It is a windowed regression, not a pointwise derivative.
+3 lags lie in the window, the 3 nearest are used. It is a windowed regression over about half a decade.
 $\Delta H$ and $\Delta H_\mathrm{loc}$ of two curves are the differences of the fitted values; for a stratified
 average they are the same regression on the averaged $\Delta\log\mathrm{MSD}$ (linear: slope of a difference = difference of slopes).
 Bands: the same computation on each bootstrap draw, percentiles lag by lag.
@@ -29,30 +29,14 @@ it is cut at 1000~s and the two values use the same lags, so the end of the curv
 resolves nothing narrower than about half a decade.}
 \end{table}
 
-\textbf{Phase MSD figures (not in this report)} use a different local exponent: the finite-difference derivative of $\log\mathrm{MSD}$
-against $\log\Delta$ on 100 lags, without the factor $1/2$ (about 2 for ballistic motion).
-
-\textbf{Ratios and the glide ratio.} Ratios are sums of numerators over sums of denominators over the runs of a population (a run
-goes to the stretch that holds its middle). In a small stratum a glide in rising air has almost no height lost, the glide ratio
-diverges and its average over strata is unstable; stratified contrasts use the \emph{height lost per km of glide}, the inverse. Pooled tables keep the glide ratio.
-
-%======================================================================================
-\section{Checks of the viewer and of the analyses}\label{app:audit}
-
-The checks of the grouping itself, its code against the note and the properties of its tables, are in
-section 8 of the note.
-
-\begin{itemize}
-  \item \textbf{Viewer.} The \emph{Group flights} tab reads \texttt{groups/} of its data folder: its seven tables are \textbf{byte-identical} to those of the chosen run; the tracks it draws (\texttt{SSD\_DATA}) have the same fixes,
-        times, positions and trimmed starts as those the grouping read (\texttt{SSD\_DISANTE}).
-  \item \textbf{Analyses.} Tests on synthetic flights for every step, and on every number of the README of the analyses; the decomposition is checked on a synthetic case where the day raises
-        a statistic by 10 and the group by 2: pooled 10, stratified 2.
-\end{itemize}
-
 %======================================================================================
 \section{Which statistics are drawn}\label{app:redundancy}
 
-Unit: a population on a site-day with at least 25 flights (119 units). A statistic is redundant when the others explain most of it across units ($R^2$ of its linear
+\textbf{Ratios.} Ratios are sums of numerators over sums of denominators over the runs of a population (a run
+goes to the stretch that holds its middle). In a small stratum a glide in rising air has almost no height lost, the glide ratio
+diverges and its average over strata is unstable; stratified contrasts use the \emph{height lost per km of glide}, the inverse. Pooled tables keep the glide ratio.
+
+\textbf{Redundancy.} Unit: a population on a site-day with at least 25 flights (119 units). A statistic is redundant when the others explain most of it across units ($R^2$ of its linear
 regression on them); backward elimination drops the most explained until every $R^2\le0.5$. The four shares of time sum to 100\%, so one of them goes first.
 
 \begin{table}[H]
@@ -62,20 +46,95 @@ regression on them); backward elimination drops the most explained until every $
 \end{table}
 
 %======================================================================================
+\section{Robustness to the threshold}\label{app:robustness}
+
+With $q=0.2$ a contact needs only 26.4~min: groups are more and shorter, and up to one contact in five may be chance.
+
+\begin{table}[H]
+\centering\footnotesize
+\input{generated/robustness_table}
+\caption{The main results with the two thresholds (s-d-h: same site-day and hour). Every result at 1000~s and every
+phase statistic keeps its sign; at 100~s the estimates turn slightly negative, consistent with no effect within one phase.}
+\end{table}
+
+%======================================================================================
 \section{Pooled curves, hang gliders and sizes}\label{app:curves}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{tamsd.pdf}
-\caption{TA-MSD and $H_\mathrm{loc}$ of S, G and A, paragliders and hang gliders (hang gliders: 418 group flights, wide bands at long lags).}
+\caption{TA-MSD and $H_\mathrm{loc}$ of $\Sl$, $\G$ and $\A$, paragliders and hang gliders (hang gliders: 418 group flights, wide bands at long lags).}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{size_tamsd.pdf}
-\caption{By the size of the configuration (orange, darker with more pilots), S (blue) and, dashed, the same flights alone for each size.}
+\caption{By the size of the configuration (orange, darker with more pilots), $\Sl$ (blue) and, dashed, the same flights alone for each size.}
 \end{figure}
 
+%======================================================================================
+\section{Tables and figures of the tests}\label{app:tables}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\input{generated/decompose_table}
+\caption{The five contrasts of Section~\ref{sec:other} (Figure~\ref{fig:decompose}): difference and 5--95\% band
+(s-d-h: same site-day and hour).}
+\label{tab:decompose}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{zones_curves.pdf}
+\caption{$H_\mathrm{loc}(\tau)$ of $\G$ (orange), of $\Sl$ reweighted to the strata of $\G$ (blue) and of $\A$ reweighted to
+them (green), 5--95\% bands (Section~\ref{sec:zones}). First panel: all flights pooled. ``Share of G kept'': flights of $\G$
+with a solo counterpart in their stratum.}
+\label{fig:zones}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\input{generated/prepost_phase_table}
+\caption{The phase statistics of the comparisons of Section~\ref{sec:prepost} (differences with 5--95\% band); runs and
+glides are placed in the window that holds their middle. Leaving is end minus after: its drift is the control with the
+opposite sign.}
+\label{tab:prepost-phase}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize
+\input{generated/decompose_size_table}
+\caption{The contrasts by size of Section~\ref{sec:size} (Figure~\ref{fig:size}).}
+\label{tab:size-contrasts}
+\end{table}
+
+%======================================================================================
+\section{Before, during and after with short windows}\label{app:prepost}
+
+Same test as Section~\ref{sec:prepost} with windows of \PPShortWindowMin{} min, the shortest a piece of the TA-MSD allows.
+Groups of at least \PPShortWindowMin{} min enter: more events, but at 1000~s a window holds fewer than thirty origins.
+The step at 1000~s is then not seen (\PPShortEntryDHloc{} entering, \PPShortExitDHloc{} leaving, against drifts of
+\PPShortCtrlADHloc{} and \PPShortCtrlSDHloc), and the fitted $H$, dominated by short lags, shows no change beyond the drift.
+The phase statistics at entry depend on the window (time in climb \PPShortEntryClimb{} points, glide speed
+\PPShortEntrySpeed{} km/h here, against \PPEntryClimb{} and \PPEntrySpeed{} with \PPWindowMin{} min).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{prepost_1260_curves.pdf}
+\caption{As Figure~\ref{fig:prepost}, windows of \PPShortWindowMin{} min.}
+\end{figure}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\input{generated/prepost_table_short}
+\caption{As Table~\ref{tab:prepost}, windows of \PPShortWindowMin{} min.}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\input{generated/prepost_phase_table_short}
+\caption{As Table~\ref{tab:prepost-phase}, windows of \PPShortWindowMin{} min.}
+\end{table}
 
 %======================================================================================
 \section{Single site-days}\label{app:sitedays}
@@ -95,42 +154,6 @@ Six site-days chosen by a fixed rule (most sizes with 15 flights or more, then m
 \end{table}
 
 %======================================================================================
-\section{Robustness to the threshold}\label{app:robustness}
-
-With $q=0.2$ contacts need to last only 26.4~min: more and shorter groups, up to one contact in five chance.
-
-\begin{table}[H]
-\centering\footnotesize
-\input{generated/robustness_table}
-\caption{The main results with the two thresholds (s-d-h: same site-day and hour). Every conclusion keeps its sign; at 100~s both estimates of the group effect are slightly negative with $q=0.2$: no robust effect within one phase.}
-\end{table}
-
-%======================================================================================
-\section{Before, during and after with short windows}\label{app:prepost}
-
-Same test as Section~\ref{sec:prepost} with windows of \PPShortWindowMin{} min, the shortest a piece of the TA-MSD allows. Groups of at least \PPShortWindowMin{} min enter: more events, but
-at 1000~s a window holds about 26 origins, so $H_\mathrm{loc}$ over the longest lags is noisy and its drift between consecutive windows is large (controls below). The fitted $H$, dominated by short lags, shows no
-change beyond the drift; the phase statistics at entry depend on the window (time in climb \PPShortEntryClimb{} points, glide speed \PPShortEntrySpeed{} km/h here, against \PPEntryClimb{} and \PPEntrySpeed{} with \PPWindowMin{} min).
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{prepost_1260_curves.pdf}
-\caption{As Fig.~\ref{fig:prepost}, windows of \PPShortWindowMin{} min.}
-\end{figure}
-
-\begin{table}[H]
-\centering\footnotesize\setlength{\tabcolsep}{4pt}
-\input{generated/prepost_table_short}
-\caption{As Table~\ref{tab:prepost}, windows of \PPShortWindowMin{} min.}
-\end{table}
-
-\begin{table}[H]
-\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
-\input{generated/prepost_phase_table_short}
-\caption{As Table~\ref{tab:prepost-phase}, windows of \PPShortWindowMin{} min.}
-\end{table}
-
-%======================================================================================
 \section{Leader minus follower}\label{app:leaders}
 
 \begin{figure}[H]
@@ -145,6 +168,18 @@ change beyond the drift; the phase statistics at entry depend on the window (tim
 \caption{Leader minus follower, same configuration of two pilots (difference with 5--95\% band).}
 \end{table}
 
+%======================================================================================
+\section{Checks of the viewer and of the analyses}\label{app:audit}
+
+The checks of the grouping itself, its code against the note and the properties of its tables, are in
+section 8 of the note.
+
+\begin{itemize}
+  \item \textbf{Viewer.} The \emph{Group flights} tab reads \texttt{groups/} of its data folder: its seven tables are \textbf{byte-identical} to those of the chosen run; the tracks it draws (\texttt{SSD\_DATA}) have the same fixes,
+        times, positions and trimmed starts as those the grouping read (\texttt{SSD\_DISANTE}).
+  \item \textbf{Analyses.} Tests on synthetic flights for every step, and on every number of the README of the analyses; the decomposition is checked on a synthetic case where the day raises
+        a statistic by 10 and the group by 2: pooled 10, stratified 2.
+\end{itemize}
 
 %======================================================================================
 \section{Reproducing the report}\label{app:reproduce}

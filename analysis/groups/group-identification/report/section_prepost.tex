@@ -3,29 +3,33 @@
 Do pilots fly together in the moments when the progress is straight anyway? If so, the same flight
 would already be straight just before the group forms, and still just after it breaks.
 
-\paragraph{Windows.} Every stretch of group time lasting at least $W=\PPWindowMin$~min is an
-\emph{event}, with up to four windows of length $W$ on the clock of the same flight: \emph{before},
-the last $W$ of the solo stretch that precedes it; \emph{start} and \emph{end}, the first and last $W$
-of the group; \emph{after}, the first $W$ of the solo stretch that follows it. Before and after exist
-only when a solo stretch at least $W$ long touches the group. For two windows the ensemble MSD is taken
-on the events that have both, and their difference is read on $\Hloc$ and on the phase statistics.
-The two readings predict different things:
+\paragraph{Windows.} Every stretch of group time is an \emph{event}, with up to four windows of length
+$W=\PPWindowMin$~min on the clock of the same flight: \emph{start} and \emph{end}, the first and last
+$W$ of the group, when it lasts at least $W$; \emph{before} and \emph{after}, the last $W$ of the solo
+stretch that precedes the group and the first $W$ of the one that follows it, when that solo stretch
+lasts at least $W$, whatever the length of the group. A window of 50~min holds about 200 origins at
+$\tau=1000$~s. For two windows the ensemble MSD is taken on the events that have both, and their
+difference is read on $\Hloc$ and on the phase statistics. Entering is start minus before; leaving is
+end minus after, group minus alone in both cases. The two readings predict different things:
 \begin{itemize}
-  \item if the straighter progress belongs to the group, $\Hloc$ rises from before to start, falls
-        from end to after, and before and after are alike;
+  \item if the straighter progress belongs to the group, it appears on entering and on leaving, and
+        before and after are alike;
   \item if it belongs to the moment, before is already high, and the changes are those of any two
         consecutive windows.
 \end{itemize}
+
 \paragraph{Controls.} Two consecutive windows with no change of state, drawn in the solo time of the
 group flights ($\A$) and in solo flights ($\Sl$), measure how much a flight drifts from one window to
-the next.
+the next, later minus earlier. Entering has the same time order as the controls; leaving has the
+opposite one, so on leaving the drift enters with the opposite sign.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{prepost_3000_curves.pdf}
 \caption{$\Hloc(\tau)$ of the same flights alone (green) and in the group (orange), entering (left)
-and leaving (middle), 5--95\% bands. Right: the differences, with the two controls (later minus
-earlier window; dashed).}
+and leaving (middle), 5--95\% bands. Right: the differences, group minus alone, with the two controls
+(later minus earlier window; dashed); for leaving, the drift to compare is the control with the
+opposite sign.}
 \label{fig:prepost}
 \end{figure}
 
@@ -42,40 +46,40 @@ lasts less than $2W$.}
 \input{generated/prepost_table}
 \caption{Differences of the fitted $H$ and of $\Hloc$ at 100 and 1000~s (value, 5--95\% band) between
 windows, on the events with both windows. Controls: two consecutive windows with no change of state,
-in the solo time of the group flights ($\A$) and in solo flights ($\Sl$).}
+later minus earlier, in the solo time of the group flights ($\A$) and in solo flights ($\Sl$).}
 \label{tab:prepost}
 \end{table}
 
-\begin{table}
-\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
-\input{generated/prepost_phase_table}
-\caption{The phase statistics of the same comparisons (differences with 5--95\% band); runs and
-glides are placed in the window that holds their middle.}
-\label{tab:prepost-phase}
-\end{table}
+\paragraph{Results at 1000~s.} The first prediction holds. $\Delta\Hloc(1000~\mathrm{s})$ is
+\PPEntryDHloc{} \PPEntryDHlocBand{} entering and \PPExitDHloc{} \PPExitDHlocBand{} leaving, against
+drifts of \PPCtrlADHloc{} and \PPCtrlSDHloc{} in the controls, and after minus before is
+\PPAfterBeforeDHloc{} \PPAfterBeforeDHlocBand. On the \PPProfileEvents{} events with all four
+windows, $\Hloc(1000~\mathrm{s})$ is \PPProfileHlocPre{} before, \PPProfileHlocStart{} and
+\PPProfileHlocEnd{} in the group and \PPProfileHlocPost{} after (Figure~\ref{fig:prepost-profile}):
+a step close to the within-flight estimate of Section~\ref{sec:other} (\DHlocThousandFlight).
 
-\paragraph{Results.} The first prediction holds. $\Delta\Hloc(1000~\mathrm{s})$ is \PPEntryDHloc{}
-\PPEntryDHlocBand{} entering and \PPExitDHloc{} \PPExitDHlocBand{} leaving, against \PPCtrlADHloc{} and
-\PPCtrlSDHloc{} in the controls, and after minus before is \PPAfterBeforeDHloc{}
-\PPAfterBeforeDHlocBand. On the \PPProfileEvents{} events with all four windows, $\Hloc(1000~\mathrm{s})$
-is \PPProfileHlocPre{} before, \PPProfileHlocStart{} and \PPProfileHlocEnd{} in the group and
-\PPProfileHlocPost{} after (Figure~\ref{fig:prepost-profile}); the step matches the within-flight
-estimate of Section~\ref{sec:other} (\DHlocThousandFlight). At 100~s the changes, \PPEntryDHlocHundred{}
-entering and \PPExitDHlocHundred{} leaving, lie inside the drift of the controls (\PPCtrlADHlocHundred,
-\PPCtrlSDHlocHundred). The fitted $H$ (\PPEntryDH{} and \PPExitDH{} against \PPCtrlADH{} and
-\PPCtrlSDH) does not separate from the drift either, because its slope is set mostly by the lags
-below 150~s. Glides are faster and flatter in the group in both directions: glide speed
-\PPEntrySpeed{} km/h entering and \PPExitSpeed{} leaving, height lost per km \PPEntrySink{} and
-\PPExitSink{} m/km, against \PPCtrlSSpeed{} and \PPCtrlASpeed{} km/h, \PPCtrlASink{} and \PPCtrlSSink{}
-m/km in the controls. Time in climb, successful searches and climb rate move by the size of the drift.
+\paragraph{Results at short lags and on the phases.} Entering, $\Hloc(100~\mathrm{s})$ and the fitted
+$H$ change by \PPEntryDHlocHundred{} and \PPEntryDH, about the drift of the controls
+(\PPCtrlADHlocHundred{} and \PPCtrlSDHlocHundred; \PPCtrlADH{} and \PPCtrlSDH). Leaving, they change by
+\PPExitDHlocHundred{} and \PPExitDH, which exceed the drift taken with the opposite sign: a small
+asymmetry at short lags, which we do not interpret. Glides are faster and flatter in the group in
+both directions: glide speed \PPEntrySpeed{} km/h entering and \PPExitSpeed{} leaving, against drifts
+of \PPCtrlASpeed{} and \PPCtrlSSpeed{} km/h; height lost per km \PPEntrySink{} entering and
+\PPExitSink{} leaving, against drifts of \PPCtrlASink{} and \PPCtrlSSink{} m/km, so that once each
+drift is taken with its sign the glide flattens by similar amounts both ways (Table~\ref{tab:prepost-phase},
+Appendix~\ref{app:tables}). The climb statistics rise on entering beyond the drift and do not fall on
+leaving beyond it.
 
 \paragraph{Limits.} The windows fix the pilot, the glider, the day and the slow drift of the flight,
 not what brings pilots together: a convergence line, a ridge or a common route may last as long as
 the group and straighten the progress by itself, and two pilots must move alike to stay within
-500~m for $W$. The events are long groups with solo flight beside them (\PPEntryEvents{} entries,
-\PPExitEvents{} exits). With windows of \PPShortWindowMin~min the same test is noisier
-(Appendix~\ref{app:prepost}).
+500~m for long. The events are long groups with solo flight beside them (\PPEntryEvents{} entries,
+\PPExitEvents{} exits). With windows of \PPShortWindowMin~min the step at 1000~s is not seen
+(\PPShortEntryDHloc{} entering, \PPShortExitDHloc{} leaving, against drifts of \PPShortCtrlADHloc{} and
+\PPShortCtrlSDHloc): such a window holds fewer than thirty origins at 1000~s, so the test at that lag
+needs windows of \PPWindowMin~min (Appendix~\ref{app:prepost}).
 
-\paragraph{What we keep.} On the same flight the straighter progress over a quarter of an hour starts
-with the group and stops with it, and the glides change with it; the moment of joining does not
-explain them.
+\paragraph{What we keep.} With windows of \PPWindowMin~min, on the same flight the straighter
+progress over a quarter of an hour starts with the group and stops with it, and the glides change
+with it both ways; the moment of joining does not explain them. The climbs change when the group
+forms and not when it breaks, so for them the moment remains a possible cause.
