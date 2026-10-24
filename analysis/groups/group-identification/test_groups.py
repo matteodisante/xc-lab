@@ -18,6 +18,7 @@ import performance  # noqa: E402
 import phase_msd  # noqa: E402
 import redundancy  # noqa: E402
 import size  # noqa: E402
+import route  # noqa: E402
 import survival  # noqa: E402
 import tamsd  # noqa: E402
 import zones as zonelib  # noqa: E402
@@ -819,3 +820,43 @@ def test_hierarchy_numbers_of_the_readme():
     assert (round(100 * s["real"]["dominant_median"]), round(100 * s["chance"]["dominant_median"])) == (73, 69)
     assert (w["experience"]["pairs"], pct(w["experience"])) == (15937, (58.2, [57.5, 58.8]))
     assert (w["wing"]["pairs"], pct(w["wing"])) == (8304, (63.9, [62.8, 64.9]))
+
+
+def test_route_covers_the_same_route_flown_the_same_way_and_not_a_far_one():
+    x = np.arange(0, 20000, 100.0)
+    piece = np.column_stack([x, np.zeros_like(x)])[::3]
+    near = np.column_stack([x, np.full_like(x, 200.0)])  # the same route, 200 m to the side
+    far = np.column_stack([x, np.full_like(x, 2000.0)])
+    owner = np.r_[np.full(len(x), 7), np.full(len(x), 8)]
+    share = route.coverage(piece, route.cKDTree(np.r_[near, far]), owner)
+    assert share.to_dict() == {7: 1.0}
+    assert route.coverage(piece, route.cKDTree(np.r_[near, far]), owner, exclude=[7]).empty
+    assert route.segment(near, piece[0], piece[-1]) == (0, 3 * (len(piece) - 1))  # nearest to the last checked point
+    assert route.segment(near[::-1], piece[0], piece[-1]) is None  # flown the other way
+
+
+def test_route_sites_join_close_takeoffs_and_place_their_origins():
+    lat = np.array([45.0, 45.0 + 300 / route.EARTH_M * 180 / np.pi, 46.0])
+    lon = np.array([6.0, 6.0, 6.0])
+    site, de, dn = route.site_frames(lat, lon)
+    assert site[0] == site[1] != site[2]
+    assert np.allclose(de, 0) and np.allclose(dn[:2], [-150, 150]) and dn[2] == 0
+
+
+@pytest.mark.skipif(not (tamsd.OUT / "route_sample10000.json").exists(), reason="run route.py --sample 10000 first")
+def test_route_numbers_of_the_readme():
+    r = json.loads((tamsd.OUT / "route_sample10000.json").read_text())
+    assert (r["group pieces"], r["alone flights"]) == (10000, 52371)
+    a, s = r["any date"], r["same season and hour"]
+    assert (a["pieces"], a["matches"], s["pieces"]) == (4933, 52912, 4183)
+    rounded = lambda v: [round(v["value"], 3), [round(b, 3) for b in v["band"]]]
+    assert rounded(a["H_loc(1000 s)"]) == [0.018, [0.014, 0.021]]
+    assert rounded(s["H_loc(1000 s)"]) == [0.016, [0.012, 0.021]]
+    assert rounded(a["baseline"]["H_loc(1000 s)"]) == [0.060, [0.055, 0.066]]
+    explained = lambda e: round(100 * (1 - e["H_loc(1000 s)"]["value"] / e["baseline"]["H_loc(1000 s)"]["value"]))
+    assert (explained(a), explained(s)) == (71, 74)
+    variants = [json.loads((tamsd.OUT / f"route_sample2000{t}.json").read_text()) for t in
+                ("", "_rho300_cover0.8", "_rho1000_cover0.8", "_rho500_cover0.7", "_rho500_cover0.9")]
+    loc = [v[k]["H_loc(1000 s)"]["value"] for v in variants for k in ("any date", "same season and hour")]
+    share = [explained(v[k]) for v in variants for k in ("any date", "same season and hour")]
+    assert (round(min(loc), 3), round(max(loc), 3), min(share), max(share)) == (0.014, 0.022, 66, 76)

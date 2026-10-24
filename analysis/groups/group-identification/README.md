@@ -360,6 +360,24 @@ long-lag gap (ΔH_loc(1000 s) = 0.055) falls by only 6, 15 and 19% when S is rew
 cells, the cells and months, or the cells and hours where groups fly, and by 14% at the same
 site-day and hour (53% of G kept); the gap opens above 150 s. It is not a zone effect.
 
+## Group or route: `route.py`
+
+Is the straighter progress of groups the route they fly? The pieces of group time against the same
+route flown alone on another day. Candidates: the 52 371 paraglider flights with no contact of any
+length; a site joins the takeoffs within 1 km across dates, and its flights share one east-north
+frame. A piece and a candidate match when at least 80% of the points of the piece (one every 30 s)
+lie within 500 m of the candidate's track and the candidate flew them the same way; its segment, at
+least 1250 s long, is measured as the pieces of `tamsd.py`; at most 20 matches per piece. The pieces
+and the segments are compared by direct standardisation, one piece per stratum, with bands from
+blocks; the baseline compares the same pieces with the solo flights of their site-day and hour.
+Result, on a random sample of 10 000 of the 45 476 pieces: 4 933 pieces have matches (52 912
+segments); ΔH_loc(1000 s) is +0.018 [+0.014, +0.021] against the same route alone and +0.016
+[+0.012, +0.021] with the same season and hour (4 183 pieces), against +0.060 [+0.055, +0.066] for
+the same pieces against the solo flights of their site-day and hour. The route accounts for about
+70% of the long-lag gap (71% and 74%); the rest stays with flying together. Nothing at 100 s. On
+2000 pieces, radii of 300 and 1000 m and covers of 70 and 90% give +0.014 to +0.022 against the
+route and 66 to 76% explained.
+
 ## Group or moment: `prepost.py`
 
 The same flight before, during and after a group. Each stretch of group time of at least W
@@ -518,7 +536,8 @@ terms of `budget.py`, the climbs, glides and 30-min distances of `performance.py
 flight, the elimination of `redundancy.py`, the groups by size and the choice of the site-days
 of `size.py`, the events of `describe.py` on the episode figure of the note, the delay statistics
 of `cohesion.py` (an Ornstein-Uhlenbeck fit recovers its parameters), the shapes and diameters of
-`chains.py`, the order, triangles and switches of `hierarchy.py`, and every number quoted here.
+`chains.py`, the order, triangles and switches of `hierarchy.py`, the coverage, segments and sites
+of `route.py`, and every number quoted here.
 
 ```
 uv run python tamsd.py [--run NAME]      # from this folder, needs SSD_DISANTE; --recompute: about 5 min
@@ -534,6 +553,9 @@ uv run python size.py --only slopes      # the slopes of the phase MSD by size, 
 uv run python decompose.py [--run NAME] # after size.py; about 40 min (by size included)
 uv run python mechanisms.py [--run NAME] # after size.py, about 5 min
 uv run python zones.py [--run NAME]      # after tamsd.py, about 3 min
+uv run python route.py --sample 10000    # after tamsd.py; one pass over the fixes (about 4 min), then the
+                                         # matching, about 45 min and 2.6 GB: run one at a time
+uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants, about 10 min each
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python size.py --recompute-pieces # TA-MSD pieces by size only, about 3 min
 uv run python describe.py [--run NAME]   # about 15 s
