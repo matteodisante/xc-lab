@@ -17,14 +17,14 @@
     \node[panel] at (0,0) {(a) transitive closure};
     \draw[ink2, rounded corners=8pt, fill=light!60] (0,-0.5) rectangle (2.75,-1.75);
     \node[flight] at (0.5,-1.12) {1}; \node[flight] at (1.4,-1.12) {8}; \node[flight] at (2.3,-1.12) {14};
-    \node[note, anchor=north west, align=left] at (0,-2.4) {one group $\{1,8,14\}$:\\1 and 14 never met};
+    \node[note, anchor=north west, align=left] at (0,-2.4) {whole day:\\one group $\{1,8,14\}$;\\1 and 14 never met};
   \end{scope}
   \begin{scope}[shift={(4.9,-1.7)}]
     \node[panel] at (0,0) {(b) overlapping groups};
     \draw[blueI, line width=0.9pt] (0.95,-1.12) ellipse (0.95 and 0.6);
     \draw[orangeJ, line width=0.9pt] (1.85,-1.12) ellipse (0.95 and 0.6);
     \node[flight] at (0.45,-1.12) {1}; \node[flight] at (1.4,-1.12) {8}; \node[flight] at (2.35,-1.12) {14};
-    \node[note, anchor=north west, align=left] at (0,-2.4) {two groups $\{1,8\}$, $\{8,14\}$:\\8 belongs to both};
+    \node[note, anchor=north west, align=left] at (0,-2.4) {whole day:\\groups $\{1,8\}$ and $\{8,14\}$;\\8 in both: no partition};
   \end{scope}
   \begin{scope}[shift={(9.8,-1.7)}]
     \node[panel] at (0,0) {(c) instant by instant (ours)};
@@ -34,6 +34,6 @@
     \node[lbl] at (3.6,-0.5) {15:30};
     \draw[orangeJ, line width=0.9pt] (3.6,-1.2) ellipse (0.8 and 0.45);
     \node[flight] at (3.6,-1.95) {1}; \node[flight] at (3.25,-1.2) {8}; \node[flight] at (3.95,-1.2) {14};
-    \node[note, anchor=north west, align=left] at (0,-2.4) {$\{1,8\}$ at 13:30, $\{8,14\}$ at 15:30:\\one group per flight at each instant};
+    \node[note, anchor=north west, align=left] at (0,-2.4) {each instant:\\$\{1,8\}$ at 13:30, $\{8,14\}$ at 15:30;\\one group per flight};
   \end{scope}
 \end{tikzpicture}

@@ -96,6 +96,11 @@
 % An animation of the note; viewers without PDF JavaScript show its last frame.
 \newcommand{\anim}[2]{\animategraphics[width=#1,controls={play,step,stop},loop,poster=last,
   timeline=\figdir/#2_frames.tln]{8}{\figdir/#2_frames}{}{}}
+% The y axes of a three-panel figure set at .75\linewidth, one formula under each panel.
+\newcommand{\yaxes}[3]{\makebox[.75\linewidth]{\small%
+  \makebox[.25\linewidth]{$\displaystyle #1$}%
+  \makebox[.25\linewidth]{$\displaystyle #2$}%
+  \makebox[.25\linewidth]{$\displaystyle #3$}}}
 % A full-page divider that opens one part of the talk.
 \newcommand{\partframe}[2]{%
 \begin{frame}[plain,noframenumbering]
@@ -143,7 +148,8 @@ want it within $\delta$.
 \par\bigskip
 Same instant: here about 0.8~km apart, and it varies too.
 \par\bigskip
-Same place (within $\varepsilon_h$), with a delay (within $\delta$): \textbf{in contact}.
+Same place (within $\varepsilon_h$), with a delay (within $\delta$), seen from $i$ or from $j$:
+\textbf{in contact}.
 \end{columns}
 \end{frame}
 
@@ -170,8 +176,9 @@ joins or leaves.
 \textbf{Group}: the same members, from a start to an end. An arrival or a departure starts a
 new one ($g_1,\dots,g_4$).
 \par\medskip
-\textbf{Episode}: groups that follow one another: each starts the instant the previous ends and
-shares a member with it (E1, E2).
+\textbf{Episode}: a chain of groups, each group starting the instant the previous group ends and
+sharing a member with it: $g_1\to g_2\to g_3$ is E1. $g_4$ starts 50~min after $g_3$ ends: a new
+episode, E2.
 \end{columns}
 \end{frame}
 
@@ -241,7 +248,7 @@ $j$ joins the route of $i$, 90~s behind, then leaves it.
 \par\medskip
 Start: $m_{ij}=1$, $m_{ji}=0$. End: the reverse.
 \par\medskip
-Each alone is not symmetric: the contact is $a_{ij}$.
+$m_{ij}\ne m_{ji}$ in general; the contact $a_{ij}=a_{ji}$ is symmetric.
 \end{columns}
 \end{frame}
 
@@ -256,11 +263,12 @@ among the $N(\tau)$ observed:
   \tau^*=\min\Bigl\{\tau:\ \frac{C(\tau)}{N(\tau)}\le q\Bigr\}.
 \]
 Smaller $\tau^*$: more intervals, more of them chance. Larger $\tau^*$: fewer, cleaner.}
-\source{Second deck, \emph{Is it chance?}}
 \end{frame}
 
 \begin{frame}{Contact is not transitive: three ways to define groups}
-\tikzfig[0.7\textheight]{transitivity}
+\tikzfig[0.62\textheight]{transitivity}
+\small (a) and (b): one picture of the whole day, without time. (c): one picture per instant; 8 is
+in two groups, never at the same instant.
 \end{frame}
 
 \begin{frame}{Active graph: the configurations at one instant}
@@ -294,31 +302,13 @@ configuration of $G(t)$ at every $t$ of the interval, and the interval is maxima
 \end{frame}
 
 \begin{frame}{Episode: groups linked in time}
-\tikzfig[0.5\textheight]{episodes}
+\tikzfig[0.4\textheight]{episodes}
 \defn{Episode}{Link $g\to g'$: $g'$ starts the instant $g$ ends, and they share a member,
 \[
   t^{\rm start}_{g'}=t^{\rm end}_g,\qquad M_g\cap M_{g'}\ne\emptyset .
 \]
-An episode: groups tied together by such links, directly or through others.}
-\end{frame}
-
-\begin{frame}{Who follows whom: a label, not used to build the groups}
-\begin{columns}[c,onlytextwidth]
-\column{.62\textwidth}
-\anim{\linewidth}{altitude_clock}
-\column{.35\textwidth}
-\small
-The contact needs only that some delay exists; to say who is ahead we need its value. At $t$,
-the delay at which $j$ passes closest to where $i$ is (Li et al.):
-\[
-  l^*(t)=\arg\min_{l}\,\|\x_i(t)-\x_j(t+l)\|
-\]
-$\ell_{\rm med}=\mathrm{median}\,l^*$ over a pair interval; $\ell_{\rm med}>0$: $j$ follows $i$.
-\par\medskip
-\textbf{Glide}: one sharp minimum.\par
-\textbf{Thermal}: one per turn; altitude leaves $\Delta z/w\pm150$~s, against $\delta=120$~s.\par
-\textbf{Search}: left out.
-\end{columns}
+An episode: a connected component of the graph of these links. $g_1$ and $g_2$ have no link between
+them, but both link to $g_3$: all three are in E1.}
 \end{frame}
 
 \begin{frame}{On the FFVL archive}
@@ -344,22 +334,67 @@ $\ell_{\rm med}=\mathrm{median}\,l^*$ over a pair interval; $\ell_{\rm med}>0$: 
 $\tau^*=38.1$~min.}
 \end{frame}
 
+\begin{frame}{Who follows whom: the delay in a glide}
+The contact needs only that some delay within $\delta$ exists; its sign says who follows whom.
+\defn{Delay (Li et al.)}{a label, not used to build the groups. At $t$, where $j$ passes closest to
+$i$; over a pair interval, the median:
+\[
+  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\|\x_i(t)-\x_j(t+l)\|,\qquad
+  \ell_{\rm med}=\mathrm{median}\,l^*,\qquad \ell_{\rm med}>0:\ j\ \text{follows}\ i.
+\]}
+\begin{columns}[c,onlytextwidth]
+\column{.66\textwidth}
+\includegraphics[width=\linewidth]{delay_glide.pdf}
+\column{.31\textwidth}
+\small\textbf{Glide}: a nearly straight path, so the distance has one sharp minimum: $l^*$ is the
+delay at which $j$ crosses the point of $i$.
+\end{columns}
+\source{Model: $j$ on the route of $i$, 90~s behind and 250~m to the side, at 8~m/s; $\delta=2$~min.}
+\end{frame}
+
+\begin{frame}{Who follows whom: the delay in a thermal, not in search}
+\begin{columns}[c,onlytextwidth]
+\column{.57\textwidth}
+\anim{\linewidth}{altitude_clock}
+\column{.40\textwidth}
+\small
+\textbf{Thermal}: $j$ circles: the distance has an equal minimum at every turn.
+\par\medskip
+Altitude narrows $l$: $z_j(t+l)\simeq z_j(t)+w\,l$ climbing at $w$, so with
+$\Delta z=z_i(t)-z_j(t)$
+\[
+  l\in\Bigl(\frac{\Delta z-\varepsilon_z}{w},\ \frac{\Delta z+\varepsilon_z}{w}\Bigr),
+\]
+around $\Delta z/w$, the time $j$ needs to reach $i$. Here $(-50,250)$~s, cut by $\delta$ to
+$(-50,120]$~s.
+\par\medskip
+\textbf{Search}: $w\simeq0$, one minimum per turn and no altitude window: left out of
+$\ell_{\rm med}$.
+\end{columns}
+\end{frame}
+
 \begin{frame}{Episodes: how long, how many flights}
-\begin{center}
-\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_episodes_q01.pdf}
-\end{center}
-\source{Whole archive, $\delta=2$~min, $q=0.1$. Left: share lasting longer. Middle: share of the episodes
-of each size. Right: share of the episode time. Size: distinct flights of the episode.}
+\begingroup\centering
+\includegraphics[width=.75\linewidth]{assessment_structure_episodes_q01.pdf}\par
+\yaxes{y=\frac{\#\{E:\ D_E\ge d\}}{N}}{y=\frac{N_n}{N}}{y=T(n)=\frac{\sum_{E:\,n_E=n}D_E}{\sum_E D_E}}\par\endgroup
+\source{Episode $E$: $D_E$ from the start of its first group to the end of its last, $n_E$ its distinct
+flights. $N=17\,169$ episodes, $N_n$ of them with $n_E=n$. Whole archive, $\delta=2$~min, $q=0.1$.}
+\par\smallskip\small $T(n)$: of every 100~s of episode time, summed over all episodes, on average
+$100\,T(n)$~s are in episodes of $n$ flights; for $n=5$, 4.2~s.
 \takeaway{With $q=0.1$ the median episode lasts 58~min and 74\% are pairs. Weighted by time
 the pairs drop to 61\%: large episodes last longer.}
 \end{frame}
 
 \begin{frame}{Groups: how long, how many pilots at once}
-\begin{center}
-\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_groups_q01.pdf}
-\end{center}
-\source{Whole archive, $\delta=2$~min, $q=0.1$. A group keeps its members; each arrival or
-departure starts a new one. Size: pilots at once.}
+\begingroup\centering
+\includegraphics[width=.75\linewidth]{assessment_structure_groups_q01.pdf}\par
+\yaxes{y=\frac{\#\{g:\ D_g\ge d\}}{N}}{y=\frac{N_n}{N}}{y=T(n)=\frac{\sum_{g:\,n_g=n}D_g}{\sum_g D_g}}\par\endgroup
+\source{Group $g$: $D_g=t^{\rm end}_g-t^{\rm start}_g$, $n_g=|M_g|$ its pilots; each arrival or departure
+starts a new group. $N=40\,051$ groups, $N_n$ of them with $n_g=n$. Whole archive, $\delta=2$~min,
+$q=0.1$.}
+\par\smallskip\small $T(n)$: of every 100~s of group time, summed over all groups, on average
+$100\,T(n)$~s are in groups of $n$ pilots; for $n=5$, 1.9~s. A group counts its duration once,
+not once per pilot.
 \takeaway{Median group 30~min, 63\% are pairs. Weighted by time the pairs rise to
 77\%: large groups change quickly.}
 \end{frame}
