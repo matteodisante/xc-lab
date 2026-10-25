@@ -1,12 +1,12 @@
 """Fission-fusion: the size distribution of groups from the rates at which they gain and lose pilots.
 
-T(n) is the time spent in configurations of n pilots: the chance that a group seen at a random
+T(n) is the time spent in groups of n pilots: the chance that a group seen at a random
 instant has n pilots. If sizes change one pilot at a time, the flux from n to n + 1 balances the
 flux back (a birth-death chain):
 
     T(n + 1) / T(n) = g(n) / l(n + 1),
 
-with g(n) the rate at which a configuration of n gains pilots (join) and l(n) the rate at which it
+with g(n) the rate at which a group of n gains pilots (join) and l(n) the rate at which it
 loses them (leave, landing), per hour at size n (describe.py). Three predictions of T(n), each
 normalised to the observed T over 2..N_MAX:
 
@@ -49,11 +49,11 @@ def per_capita(a, mu, gamma, n_top):
     return chain(a * m, mu * (m + 1.0) ** (1 - gamma))
 
 
-def tables(confs, flights, episodes):
-    ev = events(confs, flights)
-    hours = (confs["t_end"] - confs["t_start"]).to_numpy() / 3600
-    block = episodes.set_index("episode_id")["block"].reindex(confs["episode_id"]).to_numpy()
-    return pd.DataFrame({"n": confs["n"].to_numpy(), "hours": hours, "outcome": ev["outcome"].to_numpy(), "block": block})
+def tables(groups, flights, episodes):
+    ev = events(groups, flights)
+    hours = (groups["t_end"] - groups["t_start"]).to_numpy() / 3600
+    block = episodes.set_index("episode_id")["block"].reindex(groups["episode_id"]).to_numpy()
+    return pd.DataFrame({"n": groups["n"].to_numpy(), "hours": hours, "outcome": ev["outcome"].to_numpy(), "block": block})
 
 
 def rates(t, w=None):
@@ -92,8 +92,8 @@ def bonabeau(n, t):
     return alpha, n_c
 
 
-def fission(confs, flights, episodes, rng):
-    t = tables(confs, flights, episodes)
+def fission(groups, flights, episodes, rng):
+    t = tables(groups, flights, episodes)
     hours = t.groupby("n")["hours"].sum()
     hours = hours[hours >= MIN_HOURS]
     n_obs, T = hours.index.to_numpy(), hours.to_numpy() / hours.sum()
@@ -169,7 +169,7 @@ def plot(r, path):
     fitted = no ** -bo["alpha"] * np.exp(-no / bo["n_c"])
     b.plot(no, fitted / fitted.sum() * T.sum(), color="#8e5bd0", lw=1, ls="--",
            label=rf"$n^{{-\alpha}}e^{{-n/n_c}}$: $\alpha$ = {bo['alpha']:.1f}, $n_c$ = {bo['n_c']:.0f}")
-    b.set(xscale="log", yscale="log", xlabel="pilots", ylabel="share of the time in configurations")
+    b.set(xscale="log", yscale="log", xlabel="pilots", ylabel="share of the time in groups")
     b.set_xticks([2, 3, 5, 10, 20], labels=["2", "3", "5", "10", "20"])
     b.minorticks_off()
     b.legend(frameon=False, fontsize=7)
@@ -178,7 +178,7 @@ def plot(r, path):
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    result = fission(pd.read_parquet(LABELS / "configurations.parquet"), pd.read_parquet(LABELS / "flights.parquet"),
+    result = fission(pd.read_parquet(LABELS / "groups.parquet"), pd.read_parquet(LABELS / "flights.parquet"),
                      pd.read_parquet(LABELS / "episodes.parquet"), np.random.default_rng(SEED))
     (OUT / "fission.json").write_text(json.dumps(result, indent=1))
     plot(result, OUT / "fission.pdf")

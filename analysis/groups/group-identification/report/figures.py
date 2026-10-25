@@ -254,7 +254,7 @@ def size():
         ax.grid(axis="y", color=LIGHT, lw=0.6)
         ax.set_axisbelow(True)
     for ax in axes[1]:
-        ax.set_xlabel("pilots in the configuration")
+        ax.set_xlabel("pilots in the group")
     fig.legend(*axes.flat[0].get_legend_handles_labels(), loc="outside upper center", ncols=2, fontsize=7)
     save(fig, "report_size")
 

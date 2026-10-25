@@ -1,16 +1,16 @@
-"""What groups are: the size and duration of configurations and episodes, and how a configuration
+"""What groups are: the size and duration of groups and episodes, and how a group
 ends.
 
-Sizes: configurations by number of pilots, counted and weighted by duration; episodes by their
-largest configuration. Durations: the share of configurations and of episodes lasting at least d.
+Sizes: groups by number of pilots, counted and weighted by duration; episodes by their
+largest group. Durations: the share of groups and of episodes lasting at least d.
 
-Events. The configurations of an episode that end at an instant and those that start at it,
+Events. The groups of an episode that end at an instant and those that start at it,
 linked when they share a member (the links of the note), make one event per connected
-component. The outcome of each configuration that ends: join (one to one, members added), leave
+component. The outcome of each group that ends: join (one to one, members added), leave
 (one to one or none, members removed in flight), landing (the same, with a removed member landing
-within STEP s), split (one to several), merge (several to one), other. A configuration with no
+within STEP s), split (one to several), merge (several to one), other. A group with no
 predecessor forms its episode, at departure if a member departs within STEP s. Rates: the
-configurations of size n ending with each outcome per hour spent at size n (sizes above N_MAX
+groups of size n ending with each outcome per hour spent at size n (sizes above N_MAX
 pooled).
 
 Bands: 5-95% of N_BOOT draws of the blocks of the note.
@@ -38,7 +38,7 @@ DURATIONS_MIN = np.geomspace(1, 1200, 60)
 
 
 def outcome(before, after, landed):
-    """Outcome of the configurations with member sets `before` ending where those of `after` start
+    """Outcome of the groups with member sets `before` ending where those of `after` start
     (empty: dissolution); `landed` holds the members landing at that instant."""
     if len(before) == 1 and len(after) <= 1:
         old, new = before[0], (after[0] if after else set())
@@ -54,23 +54,23 @@ def outcome(before, after, landed):
     return "other"
 
 
-def events(confs, flights):
-    """Per configuration (rows of `confs`): outcome, whether it dissolves (no successor), and its
+def events(groups, flights):
+    """Per group (rows of `groups`): outcome, whether it dissolves (no successor), and its
     formation ('' if it has a predecessor, else 'departure' or 'flight')."""
-    n = len(confs)
-    members = [set(m.tolist()) for m in confs["members"]]
-    pos = pd.Series(np.arange(n), index=confs["conf_id"].to_numpy())
-    pairs = confs[["episode_id", "conf_id", "t_end"]].merge(
-        confs[["episode_id", "conf_id", "t_start"]], left_on=["episode_id", "t_end"],
+    n = len(groups)
+    members = [set(m.tolist()) for m in groups["members"]]
+    pos = pd.Series(np.arange(n), index=groups["group_id"].to_numpy())
+    pairs = groups[["episode_id", "group_id", "t_end"]].merge(
+        groups[["episode_id", "group_id", "t_start"]], left_on=["episode_id", "t_end"],
         right_on=["episode_id", "t_start"], suffixes=("_e", "_s"))
-    e, s = pos[pairs["conf_id_e"]].to_numpy(), pos[pairs["conf_id_s"]].to_numpy()
+    e, s = pos[pairs["group_id_e"]].to_numpy(), pos[pairs["group_id_s"]].to_numpy()
     shared = np.array([bool(members[a] & members[b]) for a, b in zip(e, s)], bool)
     e, s = e[shared], s[shared]
     graph = coo_matrix((np.ones(len(e)), (e, s + n)), shape=(2 * n, 2 * n))
     label = connected_components(graph, directed=False)[1]
     landing = dict(zip(flights["flight"], flights["landing"]))
     departure = dict(zip(flights["flight"], flights["departure"]))
-    t_end, t_start = confs["t_end"].to_numpy(), confs["t_start"].to_numpy()
+    t_end, t_start = groups["t_end"].to_numpy(), groups["t_start"].to_numpy()
 
     def landed(group, t):
         return {f for f in group if abs(landing[f] - t) <= STEP}
@@ -88,11 +88,11 @@ def events(confs, flights):
         [any(abs(departure[f] - t_start[a]) <= STEP for f in members[a]) for a in range(n)], "departure", "flight"))
     dissolves = np.ones(n, bool)
     dissolves[e] = False
-    return pd.DataFrame({"outcome": out, "dissolves": dissolves, "form": form}, index=confs.index)
+    return pd.DataFrame({"outcome": out, "dissolves": dissolves, "form": form}, index=groups.index)
 
 
 def rates(table, rng):
-    """Per size 2..N_MAX (the last pooled): hours, configurations ending with each outcome, rate per
+    """Per size 2..N_MAX (the last pooled): hours, groups ending with each outcome, rate per
     hour and its 5-95% band, resampling blocks."""
     ids, k = np.unique(table["block"], return_inverse=True)
     j = np.clip(table["n"].to_numpy(), 2, N_MAX) - 2
@@ -114,32 +114,32 @@ def survival(minutes):
     return [(minutes >= d).mean() for d in DURATIONS_MIN]
 
 
-def describe(confs, episodes, flights, rng):
-    ev = events(confs, flights)
-    minutes = (confs["t_end"] - confs["t_start"]).to_numpy() / 60
+def describe(groups, episodes, flights, rng):
+    ev = events(groups, flights)
+    minutes = (groups["t_end"] - groups["t_start"]).to_numpy() / 60
     ep_minutes = (episodes["t_end"] - episodes["t_start"]).to_numpy() / 60
     block = episodes.set_index("episode_id")["block"]
-    table = pd.DataFrame({"n": confs["n"], "hours": minutes / 60, "outcome": ev["outcome"],
-                          "block": block.reindex(confs["episode_id"]).to_numpy()})
+    table = pd.DataFrame({"n": groups["n"], "hours": minutes / 60, "outcome": ev["outcome"],
+                          "block": block.reindex(groups["episode_id"]).to_numpy()})
     discipline = flights.set_index("flight")["discipline"]
-    with_hang = confs["members"].map(lambda m: (discipline.reindex(m) == "hang").any())
-    by_ep = ev.groupby(confs["episode_id"])["outcome"]
-    n = confs["n"].to_numpy()
+    with_hang = groups["members"].map(lambda m: (discipline.reindex(m) == "hang").any())
+    by_ep = ev.groupby(groups["episode_id"])["outcome"]
+    n = groups["n"].to_numpy()
     return {
-        "configurations": len(confs), "episodes": len(episodes), "with_hang": float(with_hang.mean()),
-        "size_count": {int(k): int(v) for k, v in confs["n"].value_counts().sort_index().items()},
+        "groups": len(groups), "episodes": len(episodes), "with_hang": float(with_hang.mean()),
+        "size_count": {int(k): int(v) for k, v in groups["n"].value_counts().sort_index().items()},
         "size_hours": {int(k): float(v) for k, v in table.groupby("n")["hours"].sum().items()},
         "episode_n_max": {int(k): int(v) for k, v in episodes["n_max"].value_counts().sort_index().items()},
         "durations_min": DURATIONS_MIN.tolist(),
-        "survival_conf": survival(minutes), "survival_episode": survival(ep_minutes),
-        "median_conf_min": float(np.median(minutes)), "median_episode_min": float(np.median(ep_minutes)),
+        "survival_group": survival(minutes), "survival_episode": survival(ep_minutes),
+        "median_group_min": float(np.median(minutes)), "median_episode_min": float(np.median(ep_minutes)),
         "episode_2h": float((ep_minutes >= 120).mean()),
-        "median_conf_min_by_size": {int(k): float(np.median(minutes[np.clip(n, 2, N_MAX) == k]))
-                                    for k in range(2, N_MAX + 1)},
+        "median_group_min_by_size": {int(k): float(np.median(minutes[np.clip(n, 2, N_MAX) == k]))
+                                     for k in range(2, N_MAX + 1)},
         "outcomes": {x: int((ev["outcome"] == x).sum()) for x in OUTCOMES},
         "formations": {x: int((ev["form"] == x).sum()) for x in ("departure", "flight")},
         "dissolutions": {x: int((ev["dissolves"] & (ev["outcome"] == x)).sum()) for x in OUTCOMES},
-        "episode_single": float((episodes["n_config"] == 1).mean()),
+        "episode_single": float((episodes["n_groups"] == 1).mean()),
         "episode_with_split": float(by_ep.apply(lambda o: (o == "split").any()).mean()),
         "episode_with_merge": float(by_ep.apply(lambda o: (o == "merge").any()).mean()),
         "rates": rates(table, rng),
@@ -150,8 +150,8 @@ def plot(r, tau_star, path):
     """Left: sizes; middle: durations, with tau*; right: rate of each outcome by size (a split needs
     at least 4 pilots)."""
     fig, (a, b, c) = plt.subplots(1, 3, figsize=(13, 3.9))
-    for key, label, color, marker in [("size_count", "configurations", "#2a78d6", "o"),
-                                      ("size_hours", "time in configurations", "#1baf7a", "s"),
+    for key, label, color, marker in [("size_count", "groups", "#2a78d6", "o"),
+                                      ("size_hours", "time in groups", "#1baf7a", "s"),
                                       ("episode_n_max", "episodes (largest size)", "#eb6834", "^")]:
         sizes = np.array(list(map(int, r[key])))
         share = np.array(list(r[key].values()), float)
@@ -160,7 +160,7 @@ def plot(r, tau_star, path):
     a.set_xticks([2, 3, 5, 10, 20], labels=["2", "3", "5", "10", "20"])
     a.minorticks_off()
     a.legend(frameon=False, fontsize=8)
-    for key, label, color in [("survival_conf", "configurations", "#2a78d6"),
+    for key, label, color in [("survival_group", "groups", "#2a78d6"),
                               ("survival_episode", "episodes", "#eb6834")]:
         b.plot(r["durations_min"], r[key], color=color, lw=1.5, label=label)
     b.axvline(tau_star / 60, color="#52514e", ls="--", lw=1)
@@ -174,7 +174,7 @@ def plot(r, tau_star, path):
         lo, hi = np.array(rt["band"][x])[:, keep]
         c.fill_between(sizes[keep], lo, hi, color=COLORS[x], alpha=0.2, lw=0)
         c.plot(sizes[keep], np.array(rt["rate"][x])[keep], color=COLORS[x], marker=MARKERS[x], ms=5, lw=1.2, label=x)
-    c.set(yscale="log", xlabel=f"pilots (last: {N_MAX}+)", ylabel="configurations ending per hour")
+    c.set(yscale="log", xlabel=f"pilots (last: {N_MAX}+)", ylabel="groups ending per hour")
     c.set_xticks(sizes)
     c.legend(frameon=False, fontsize=8, ncol=2)
     save(fig, path)
@@ -182,10 +182,10 @@ def plot(r, tau_star, path):
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    confs = pd.read_parquet(LABELS / "configurations.parquet")
+    groups = pd.read_parquet(LABELS / "groups.parquet")
     episodes = pd.read_parquet(LABELS / "episodes.parquet")
     flights = pd.read_parquet(LABELS / "flights.parquet")
-    result = describe(confs, episodes, flights, np.random.default_rng(SEED))
+    result = describe(groups, episodes, flights, np.random.default_rng(SEED))
     (OUT / "describe.json").write_text(json.dumps(result, indent=1))
     plot(result, json.loads((LABELS / "calibration.json").read_text())["tau_star"], OUT / "describe.pdf")
-    print({k: result[k] for k in ("configurations", "episodes", "outcomes", "formations", "episode_single")}, flush=True)
+    print({k: result[k] for k in ("groups", "episodes", "outcomes", "formations", "episode_single")}, flush=True)

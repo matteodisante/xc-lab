@@ -39,7 +39,7 @@ def labels():
     rows = [(0, 1000, 1100, "L", -1, -1), (0, 1100, 9000, "S", -1, -1),
             (1, 2000, 2100, "L", -1, -1), (1, 2100, 3000, "S", -1, -1), (1, 3000, 4000, "G", 5, 7),
             (1, 4000, 6000, "G", 6, 7), (1, 6000, 9000, "S", -1, -1), (2, 3000, 9000, "L", -1, -1)]
-    membership = pd.DataFrame(rows, columns=["flight", "t_start", "t_end", "state", "conf_id", "episode_id"])
+    membership = pd.DataFrame(rows, columns=["flight", "t_start", "t_end", "state", "group_id", "episode_id"])
     summary = pd.DataFrame({"flight": [0, 1, 2], "n_entries": [0, 1, 0], "block": [0, 1, 2]})
     return flights, membership, summary
 
@@ -49,18 +49,18 @@ def test_stretches_split_the_populations_on_the_flight_clock():
     assert list(s.itertuples(index=False, name=None)) == [
         (0, "solo", -1, 100.0, 8000.0),
         (1, "group_solo", -1, 100.0, 1000.0),
-        (1, "group", 7, 1000.0, 4000.0),  # two configurations of one episode are one stretch
+        (1, "group", 7, 1000.0, 4000.0),  # two groups of one episode are one stretch
         (1, "group_solo", -1, 4000.0, 7000.0),
     ]
 
 
-def test_stretches_by_size_end_where_the_configuration_changes():
+def test_stretches_by_size_end_where_the_group_changes():
     flights, membership, summary = labels()
     membership["n"] = [1, 1, 1, 1, 2, 5, 1, 1]  # flight 1: 2 pilots, then 5
     s = tamsd.stretches(flights, membership, summary, by_size=True)
     assert list(s.itertuples(index=False, name=None))[1:] == [
         (1, "group_solo", -1, 100.0, 1000.0),
-        (1, "n2", 7, 1000.0, 2000.0),  # the two configurations of one episode are two stretches
+        (1, "n2", 7, 1000.0, 2000.0),  # the two groups of one episode are two stretches
         (1, "n5-6", 7, 2000.0, 4000.0),
         (1, "group_solo", -1, 4000.0, 7000.0),
     ]
@@ -148,12 +148,12 @@ def test_entries_exits_and_the_phase_at_them():
 
 
 def test_roles_of_the_two_pilots_from_the_signed_delay():
-    configurations = pd.DataFrame({"conf_id": [0, 1], "episode_id": [0, 0], "t_start": [1000, 3000], "t_end": [2000, 4000],
-                                   "n": [2, 2], "members": [[5, 9], [5, 9]]})
+    groups = pd.DataFrame({"group_id": [0, 1], "episode_id": [0, 0], "t_start": [1000, 3000], "t_end": [2000, 4000],
+                           "n": [2, 2], "members": [[5, 9], [5, 9]]})
     pairs = pd.DataFrame({"a": [5, 5], "b": [9, 9], "t_on": [900, 2900], "t_off": [2100, 4100], "ell_med": [30.0, 5.0]})
     flights = pd.DataFrame({"flight": [5, 9], "utc0": [0.0, 500.0]})
-    r = mechanisms.roles(configurations, pairs, flights).sort_values(["conf", "flight"])
-    assert list(r[["conf", "flight", "population"]].itertuples(index=False, name=None)) == [
+    r = mechanisms.roles(groups, pairs, flights).sort_values(["group_id", "flight"])
+    assert list(r[["group_id", "flight", "population"]].itertuples(index=False, name=None)) == [
         (0, 5, "leader"), (0, 9, "follower"), (1, 5, "abreast"), (1, 9, "abreast")]  # 9 follows 5 by 30 s
     assert r.loc[r["flight"] == 9, "a"].tolist() == [500.0, 2500.0]  # on the clock of each flight
 
@@ -303,7 +303,7 @@ TAMSD = {
     ("hang", "group"): (418, 0.899, [0.894, 0.903], 0.914, 0.860),
     ("hang", "group_solo"): (373, 0.889, [0.885, 0.893], 0.912, 0.823),
 }
-# date, discipline, flights, largest configuration, duration (h), members in the MSD, H, band
+# date, discipline, flights, largest group, duration (h), members in the MSD, H, band
 EPISODES = [("2013-04-24", "para", 53, 16, 5.8, 49, 0.926, [0.920, 0.931]),
             ("2013-04-24", "hang", 53, 16, 5.8, 3, 0.861, [0.821, 0.890]),
             ("2015-04-11", "para", 52, 19, 5.1, 52, 0.912, [0.907, 0.917]),
@@ -654,11 +654,11 @@ def test_events_of_the_episode_figure_of_the_note():
     rows = [(1, 0, 0, 100, [1, 2]), (2, 0, 0, 100, [3, 4]), (3, 0, 100, 200, [1, 2, 3, 4]),
             (4, 0, 200, 300, [1, 2]), (5, 0, 200, 280, [3, 4]), (6, 2, 400, 500, [2, 5]),
             (7, 1, 0, 60, [6, 7]), (8, 1, 60, 120, [6, 7, 8]), (9, 1, 120, 180, [6, 7])]
-    confs = pd.DataFrame(rows, columns=["conf_id", "episode_id", "t_start", "t_end", "members"])
-    confs["members"] = confs["members"].map(np.array)
+    groups = pd.DataFrame(rows, columns=["group_id", "episode_id", "t_start", "t_end", "members"])
+    groups["members"] = groups["members"].map(np.array)
     flights = pd.DataFrame({"flight": range(1, 9), "departure": [-50, -50, -50, -50, 398, -50, -50, -50],
                             "landing": [900, 900, 900, 282, 900, 900, 178, 900]})
-    ev = describe.events(confs, flights)
+    ev = describe.events(groups, flights)
     assert ev["outcome"].tolist() == ["merge", "merge", "split", "leave", "landing", "leave", "join", "leave",
                                       "landing"]
     assert ev["dissolves"].tolist() == [False, False, False, True, True, True, False, False, True]
@@ -678,11 +678,11 @@ def test_rates_are_counts_per_hour_and_pool_the_largest_sizes():
 def test_describe_numbers_of_the_readme():
     r = json.loads((tamsd.OUT / "describe.json").read_text())
     count, hours = r["size_count"], r["size_hours"]
-    assert (r["configurations"], r["episodes"], round(100 * r["with_hang"], 1)) == (40051, 17169, 0.9)
+    assert (r["groups"], r["episodes"], round(100 * r["with_hang"], 1)) == (40051, 17169, 0.9)
     assert round(100 * count["2"] / sum(count.values())) == 63 and round(100 * hours["2"] / sum(hours.values())) == 77
     assert max(map(int, count)) == 27
     assert [round(100 * r[k], 1) for k in ("episode_single", "episode_with_split", "episode_with_merge")] == [74.3, 5.0, 4.4]
-    assert (round(r["median_conf_min"]), round(r["median_episode_min"]), round(100 * r["episode_2h"])) == (30, 58, 12)
+    assert (round(r["median_group_min"]), round(r["median_episode_min"]), round(100 * r["episode_2h"])) == (30, 58, 12)
     form, end = r["formations"], r["dissolutions"]
     assert sum(form.values()) == 18218 and round(100 * form["departure"] / 18218) == 34
     assert sum(end.values()) == 18376 and round(100 * end["leave"] / 18376) == 91 and round(100 * end["landing"] / 18376) == 9
@@ -690,7 +690,7 @@ def test_describe_numbers_of_the_readme():
     assert [round(rate[x][0], 2) for x in ("leave", "join")] == [0.96, 0.31]
     assert [round(rate[x][0], 3) for x in ("landing", "merge")] == [0.098, 0.085]
     assert (round(rate["split"][2], 2), round(rate["split"][-1], 1)) == (0.48, 2.7)
-    assert (round(r["median_conf_min_by_size"]["2"]), round(r["median_conf_min_by_size"]["8"])) == (41, 4)
+    assert (round(r["median_group_min_by_size"]["2"]), round(r["median_group_min_by_size"]["8"])) == (41, 4)
 
 
 def test_chain_shapes_and_diameters():
@@ -699,9 +699,9 @@ def test_chain_shapes_and_diameters():
     assert chains.diameter(4, [(0, 1), (2, 3)]) == np.inf
     assert [chains.shape(3, 3), chains.shape(3, 2), chains.shape(4, 3), chains.shape(4, 4)] == \
         ["complete", "tree", "tree", "between"]
-    conf = pd.Series({"members": np.array([10, 11, 12]), "t_start": 0, "t_end": 100})
+    group = pd.Series({"members": np.array([10, 11, 12]), "t_start": 0, "t_end": 100})
     edges = pd.DataFrame({"a": [10, 11, 10], "b": [11, 12, 12], "t_on": [-50, 0, 40], "t_off": [200, 100, 70]})
-    assert chains.pieces_of(conf, edges) == [(0, 40, 2, 2), (40, 70, 3, 1), (70, 100, 2, 2)]
+    assert chains.pieces_of(group, edges) == [(0, 40, 2, 2), (40, 70, 3, 1), (70, 100, 2, 2)]
 
 
 def test_hierarchy_order_triangles_and_switches():

@@ -12,7 +12,7 @@ Per date, with the grid of the note (grid.day), the pair intervals of the run an
   for the pairs whose first contact lasts at least tau*.
 
 Summary: D(s) = <(l(t+s) - l(t))^2> over the pairs of instants of one contact, real by the size
-of its configuration at t, and its Ornstein-Uhlenbeck fit D(s) = 2 sigma^2 (1 - exp(-k s)) + c
+of its group at t, and its Ornstein-Uhlenbeck fit D(s) = 2 sigma^2 (1 - exp(-k s)) + c
 (c: the noise of l*), with the diffusivity 2 k sigma^2; the drift <l(t+DRIFT_S) - l(t) | l(t)> /
 DRIFT_S made symmetric (the order of a pair is arbitrary), its slope -k for |l| <= SLOPE_S, and its
 mean over all instants (offset); the median and quartiles of the distance after the first contact.

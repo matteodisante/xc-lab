@@ -6,13 +6,13 @@ at the departure or ends at the landing is counted apart. The phase at that inst
 the Vilpellet run holding it (1 Hz flights), against the share of time in each phase of the same
 flights alone and in a group (runs placed by their middle, as in survival.py).
 
-Leaders and followers. In a configuration of two pilots the signed median delay of their pair
+Leaders and followers. In a group of two pilots the signed median delay of their pair
 interval (ell_med, positive when the second flight follows the first, from the instants outside
 a search) tells who flies ahead; |ell_med| < ABREAST s counts as abreast. Leader and follower are
-compared within each configuration (decompose.effect with the configuration as stratum): the
+compared within each group (decompose.effect with the group as stratum): the
 budget and performance statistics and the TA-MSD of the pieces of 2 pilots (size.py). Whether
 some pilots lead more often than chance: the dispersion of the lead fractions of the pilots with
-at least MIN_ROLES roles, against N_PERM draws that swap the two roles of every configuration
+at least MIN_ROLES roles, against N_PERM draws that swap the two roles of every group
 with probability 1/2.
 
 Hours. The time of solo flights, of the group flights alone and in a group, over the local hour
@@ -99,10 +99,10 @@ def entries_and_exits(flights, spans, runs, all_runs, block, counts):
     return out
 
 
-def roles(configurations, pairs, flights):
-    """Leader, follower or abreast for each member of every configuration of two pilots, as
-    stretches on the flight clock: flight, population, episode, conf, a, b, delay (ell_med)."""
-    two = configurations[configurations["n"] == 2].copy()
+def roles(groups, pairs, flights):
+    """Leader, follower or abreast for each member of every group of two pilots, as
+    stretches on the flight clock: flight, population, episode, group_id, a, b, delay (ell_med)."""
+    two = groups[groups["n"] == 2].copy()
     two[["x", "y"]] = np.vstack(two["members"].to_numpy())
     m = two.merge(pairs, left_on=["x", "y"], right_on=["a", "b"])
     m = m[(m["t_on"] <= m["t_start"]) & (m["t_end"] <= m["t_off"])]
@@ -114,7 +114,7 @@ def roles(configurations, pairs, flights):
         f = m[who].to_numpy()
         role = np.where(lead < 0, "abreast", np.where(lead == f, "leader", "follower"))
         rows.append(pd.DataFrame({"flight": f, "population": role, "episode": m["episode_id"].to_numpy(),
-                                  "conf": m["conf_id"].to_numpy(), "partner": m[other].to_numpy(),
+                                  "group_id": m["group_id"].to_numpy(), "partner": m[other].to_numpy(),
                                   "a": m["t_start"].to_numpy() - utc0.reindex(f).to_numpy(),
                                   "b": m["t_end"].to_numpy() - utc0.reindex(f).to_numpy(), "delay": np.abs(ell)}))
     return pd.concat(rows, ignore_index=True)
@@ -126,26 +126,26 @@ def by_middle(table, spans):
     return assign(t, spans)
 
 
-def leaders(flights, configurations, pairs, runs, terms, pieces, info, block, counts):
-    """Leader minus follower within each configuration of two pilots, and the delays."""
-    r = roles(configurations, pairs, flights)
+def leaders(flights, groups, pairs, runs, terms, pieces, info, block, counts):
+    """Leader minus follower within each group of two pilots, and the delays."""
+    r = roles(groups, pairs, flights)
     clear = r[r["population"] != "abreast"]
-    out = {"configurations": int(r["conf"].nunique()), "abreast": float((r["population"] == "abreast").mean()),
+    out = {"groups": int(r["group_id"].nunique()), "abreast": float((r["population"] == "abreast").mean()),
            "delay quantiles (s)": np.nanpercentile(r["delay"], [25, 50, 75, 90]).tolist()}
     budget_rows = by_middle(runs.drop(columns=["population", "episode", "a", "b"], errors="ignore"), clear)
     perf_rows = by_middle(terms[terms["population"] == "group"], clear)
     effects = {}
     for table, stats in ((budget_rows, decompose.BUDGET), (perf_rows, decompose.PERFORMANCE)):
-        values = decompose.effect(decompose.ratio_units(table, "conf", info, block, stats), "leader", "follower", counts)
+        values = decompose.effect(decompose.ratio_units(table, "group_id", info, block, stats), "leader", "follower", counts)
         effects.update({stat: decompose.described(values[:, j]) for j, stat in enumerate(stats)})
     two = {k: v[pieces["population"] == "n2"] for k, v in pieces.items()}
     placed = by_middle(pd.DataFrame({"flight": two["flight"], "t_mid": two["start"] + two["duration"] / 2,
                                      "piece": np.arange(len(two["flight"]))}), clear)
     p = {k: v[placed["piece"].to_numpy()] for k, v in two.items()} | {"population": placed["population"].to_numpy(),
-                                                                         "conf": placed["conf"].to_numpy()}
-    values = decompose.effect(decompose.msd_units(p, "conf", info, block), "leader", "follower", counts)
+                                                                      "group_id": placed["group_id"].to_numpy()}
+    values = decompose.effect(decompose.msd_units(p, "group_id", info, block), "leader", "follower", counts)
     effects.update({stat: decompose.described(v) for stat, v in decompose.msd_statistics(values).items()})
-    out["leader - follower, same configuration"] = effects
+    out["leader - follower, same group"] = effects
     print("leader - follower", {k: round(v["value"], 4) for k, v in effects.items()}, flush=True)
     return out, r
 
@@ -153,19 +153,19 @@ def leaders(flights, configurations, pairs, runs, terms, pieces, info, block, co
 def habitual(roles_table, flights, rng):
     """Whether some pilots lead more than chance: dispersion of the lead fractions of the pilots
     with at least MIN_ROLES clear roles, against N_PERM random swaps of the roles of every
-    configuration. Pilots are names of the catalog; anonymised ones are left out."""
+    group. Pilots are names of the catalog; anonymised ones are left out."""
     catalog = pd.read_csv(FIXES["para"].parent.parent / "catalog/catalog.csv", usecols=["flight_id", "pilot"], dtype=str)
     pilot = flights[["flight", "flight_id"]].astype({"flight_id": str}).merge(catalog, on="flight_id", how="left")
     pilot = pilot.set_index("flight")["pilot"]
     r = roles_table[roles_table["population"] != "abreast"].assign(pilot=lambda d: pilot.reindex(d["flight"]).to_numpy())
     r = r[r["pilot"].notna() & ~r["pilot"].astype(str).str.contains(ANONYMISED, regex=False)]
-    both = r.groupby("conf")["pilot"].transform("size") == 2  # both members named
+    both = r.groupby("group_id")["pilot"].transform("size") == 2  # both members named
     r = r[both]
     counts = r.groupby("pilot").size()
     keep = counts.index[counts >= MIN_ROLES]
-    r = r[r["pilot"].isin(keep)].sort_values(["conf", "population"])
+    r = r[r["pilot"].isin(keep)].sort_values(["group_id", "population"])
     lead = (r["population"] == "leader").to_numpy(float)
-    conf = pd.factorize(r["conf"])[0]
+    grp = pd.factorize(r["group_id"])[0]
     who = pd.factorize(r["pilot"])[0]
     n = np.bincount(who)
 
@@ -175,12 +175,12 @@ def habitual(roles_table, flights, rng):
 
     observed = dispersion(lead)
     null = []
-    for _ in range(N_PERM):  # swap the two roles of each configuration with probability 1/2
-        flip = rng.random(conf.max() + 1) < 0.5
-        null.append(dispersion(np.where(flip[conf], 1 - lead, lead)))
+    for _ in range(N_PERM):  # swap the two roles of each group with probability 1/2
+        flip = rng.random(grp.max() + 1) < 0.5
+        null.append(dispersion(np.where(flip[grp], 1 - lead, lead)))
     null = np.array(null)
     fractions = np.bincount(who, lead) / n
-    return {"pilots": int(len(n)), "roles": int(n.sum()), "configurations": int(conf.max() + 1),
+    return {"pilots": int(len(n)), "roles": int(n.sum()), "groups": int(grp.max() + 1),
             "dispersion": observed, "null mean": float(null.mean()), "null 95%": float(np.percentile(null, 95)),
             "p": float((null >= observed).mean()), "lead fractions": fractions.tolist(), "roles per pilot": n.tolist()}
 
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     info, _, _ = decompose.flight_table(decompose.with_takeoffs(flights), summary)
     pieces = size.tamsd_pieces("para")
     terms = pd.read_parquet(CACHE / "performance_terms.parquet")
-    result["leaders"], table = leaders(flights, pd.read_parquet(LABELS / "configurations.parquet"),
+    result["leaders"], table = leaders(flights, pd.read_parquet(LABELS / "groups.parquet"),
                                        pd.read_parquet(LABELS / "pair_intervals.parquet"), runs, terms, pieces, info,
                                        block, counts)
     result["habitual"] = habitual(table, flights, np.random.default_rng(SEED))
@@ -287,8 +287,8 @@ if __name__ == "__main__":
     plot_phases(result, OUT / "mechanisms_phases.pdf")
     plot_hours(result, OUT / "mechanisms_hours.pdf")
     plot_habitual(result, OUT / "mechanisms_habitual.pdf", np.random.default_rng(SEED))
-    name = "leader - follower, same configuration"
+    name = "leader - follower, same group"
     decompose.forest({name: result["leaders"][name]}, OUT / "mechanisms_leaders.pdf", contrasts={name: None},
                      labels={name: "leader - follower"}, colors={name: "#c24a1d"},
-                     title="Paragliders: the pilot ahead minus the one behind, same configuration of 2 pilots",
+                     title="Paragliders: the pilot ahead minus the one behind, same group of 2 pilots",
                      per_row=4)

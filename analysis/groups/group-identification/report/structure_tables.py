@@ -30,7 +30,7 @@ def describe_tex():
     r = load(MAIN, "describe")
     count, hours, form, end = r["size_count"], r["size_hours"], r["formations"], r["dissolutions"]
     rt = r["rates"]
-    macro("StConfigurations", num(r["configurations"], 0))
+    macro("StGroups", num(r["groups"], 0))
     macro("StEpisodes", num(r["episodes"], 0))
     macro("StWithHang", f"{100 * r['with_hang']:.1f}")
     macro("StPairsCount", f"{100 * count['2'] / sum(count.values()):.0f}")
@@ -39,7 +39,7 @@ def describe_tex():
     macro("StEpisodeSingle", f"{100 * r['episode_single']:.0f}")
     macro("StEpisodeSplit", f"{100 * r['episode_with_split']:.1f}")
     macro("StEpisodeMerge", f"{100 * r['episode_with_merge']:.1f}")
-    macro("StMedianConf", f"{r['median_conf_min']:.0f}")
+    macro("StMedianGroup", f"{r['median_group_min']:.0f}")
     macro("StMedianEpisode", f"{r['median_episode_min']:.0f}")
     macro("StEpisodeTwoHours", f"{100 * r['episode_2h']:.0f}")
     macro("StFormations", num(sum(form.values()), 0))
@@ -52,9 +52,9 @@ def describe_tex():
     macro("StRateSplitFour", sig(rt["rate"]["split"][2]))
     macro("StRateSplitMax", sig(rt["rate"]["split"][-1]))
     macro("StSizeMax", str(rt["sizes"][-1]))
-    by_size = r["median_conf_min_by_size"]
-    macro("StMedianConfTwo", f"{by_size['2']:.0f}")
-    macro("StMedianConfMax", f"{by_size[str(rt['sizes'][-1])]:.0f}")
+    by_size = r["median_group_min_by_size"]
+    macro("StMedianGroupTwo", f"{by_size['2']:.0f}")
+    macro("StMedianGroupMax", f"{by_size[str(rt['sizes'][-1])]:.0f}")
     rows = []
     for k, n in enumerate(rt["sizes"]):
         cells = ["--" if x == "split" and n < 4 else

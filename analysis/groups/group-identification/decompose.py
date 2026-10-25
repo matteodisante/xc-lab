@@ -202,13 +202,13 @@ def forest(result, path, stats=DRAWN, contrasts=CONTRASTS, labels=LABEL, colors=
 
 def size_contrasts():
     """By the number of pilots: each size against the same flights alone (same flight), and each
-    size against configurations of 2 pilots (same site-day-hour)."""
+    size against groups of 2 pilots (same site-day-hour)."""
     return ({f"{n} - A, same flight": (n, "group_solo", "flight") for n in SIZES}
             | {f"{n} - n2, same site-day-hour": (n, "n2", "site_hour") for n in list(SIZES)[1:]})
 
 
 def size_figure(result, path, stats=DRAWN, per_row=4):
-    """One panel per statistic, `per_row` to a row: against the size of the configuration, the group
+    """One panel per statistic, `per_row` to a row: against the size of the group, the group
     effect within the flight (each size minus the same flights alone) and, within site-day-hour,
     each size minus 2 pilots."""
     sizes = list(SIZES)
@@ -226,7 +226,7 @@ def size_figure(result, path, stats=DRAWN, per_row=4):
                         capsize=2, label=label)
         ax.axhline(0, color="#999999", lw=0.8, ls=":")
         ax.set_xticks(range(len(sizes)), [n[1:] for n in sizes])
-        ax.set(title="Δ " + stat.replace("(%)", "(points)"), xlabel="pilots in the configuration")
+        ax.set(title="Δ " + stat.replace("(%)", "(points)"), xlabel="pilots in the group")
         ax.title.set_fontsize(8.5)
         ax.tick_params(labelsize=7.5)
         for side in ("top", "right"):

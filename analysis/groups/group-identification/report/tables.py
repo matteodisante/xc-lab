@@ -94,10 +94,10 @@ def facts_tex():
         f"of all paraglider flight time after the departure, and on average "
         f"{100 * p['share of the time in a group, group flights']:.0f}\\% of the time of a group flight. "
         f"The {num(f['pair intervals'], 0)} pair intervals last {q[0]:.0f} to {q[2]:.0f}~min (10th to 90th percentile; "
-        f"median {q[1]:.0f}~min) and form {num(f['configurations'], 0)} configurations in {num(f['episodes'], 0)} "
+        f"median {q[1]:.0f}~min) and form {num(f['groups'], 0)} groups in {num(f['episodes'], 0)} "
         f"episodes. Half of the episodes have two flights, 1\\% have more than {e[2]:.0f}, the largest has {e[3]}. By the size "
-        f"of the configuration, the paraglider group time is: {shares} (the largest configuration has "
-        f"{p['largest configuration']} pilots). In contact, one pilot is behind the other by a median of "
+        f"of the group, the paraglider group time is: {shares} (the largest group has "
+        f"{p['largest group']} pilots). In contact, one pilot is behind the other by a median of "
         f"{d[1]:.0f}~s (75\\% within {d[2]:.0f}~s)."))
 
 
@@ -157,7 +157,7 @@ SIZES = {"n2": "2", "n3": "3", "n4": "4", "n5-6": "5--6", "n7+": "7+"}
 
 
 def size_tex():
-    """Pooled by the size of the configuration: flights, H_loc(1000 s) in group time and for the same
+    """Pooled by the size of the group: flights, H_loc(1000 s) in group time and for the same
     flights alone, and the drawn ratios."""
     t, b, p = load(MAIN, "size_tamsd")["para"], load(MAIN, "size_budget"), load(MAIN, "size_performance")
     rows = []
@@ -264,12 +264,12 @@ def mechanisms_tex():
         for c_, cn in (("climb", "Climb"), ("search", "Search"), ("transition", "Transition")):
             macro(f"Phase{name}{cn}", f"{100 * ph[key][c_]['value']:.1f}")
     ld = m["leaders"]
-    macro("PairConfigurations", num(ld["configurations"], 0))
+    macro("PairGroups", num(ld["groups"], 0))
     macro("Abreast", f"{100 * ld['abreast']:.0f}")
     q = ld["delay quantiles (s)"]
     macro("DelayMedian", f"{q[1]:.0f}")
     macro("DelayNinety", f"{q[3]:.0f}")
-    e = ld["leader - follower, same configuration"]
+    e = ld["leader - follower, same group"]
     rows = []
     for s in DEC_STATS:
         label, digits = STATS[s]

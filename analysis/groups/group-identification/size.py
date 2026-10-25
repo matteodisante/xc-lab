@@ -1,7 +1,7 @@
-"""Group flights by the number of pilots in their configuration, pooled and on chosen site-days.
+"""Group flights by the number of pilots in their group, pooled and on chosen site-days.
 
-The group time of tamsd.py is cut where the configuration changes (tamsd.stretches by_size) and
-each stretch goes to the key of SIZES of its configuration: 2, 3, 4, 5-6 and 7+ pilots. A flight
+The group time of tamsd.py is cut where the group changes (tamsd.stretches by_size) and
+each stretch goes to the key of SIZES of its group: 2, 3, 4, 5-6 and 7+ pilots. A flight
 can have stretches of several sizes, one population each, with the equal weight per flight of the
 other scripts. The solo and the solo-time stretches are those of tamsd.py, phase_msd.py and
 performance.py, so only the group stretches are measured again (SIZE_CACHE, beside their caches).
@@ -220,7 +220,7 @@ def curves_figure(columns, path, pops, colors, per_row=None):
 
 
 def hloc_figure(results, path, pops, colors):
-    """H_loc(tau) of the paragliders by the size of the configuration (bands for solo and the sizes),
+    """H_loc(tau) of the paragliders by the size of the group (bands for solo and the sizes),
     the same flights alone dashed."""
     fig, ax = plt.subplots(figsize=(6.6, 3.9))
     for pop, r in results.items():
@@ -230,7 +230,7 @@ def hloc_figure(results, path, pops, colors):
         ax.plot(lags, r["H_loc"], color=colors[pop], ls="--" if alone else "-", marker="" if alone else "o", ms=3, lw=1.2,
                 label=None if alone else f"{pops[pop]}: H = {r['H']:.3f}")
     ax.plot([], [], color="#555555", ls="--", lw=1, label="dashed: the same flights alone")
-    ax.set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$H_{\rm loc}(\tau)$", title="Paragliders: H_loc by the size of the configuration")
+    ax.set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$H_{\rm loc}(\tau)$", title="Paragliders: H_loc by the size of the group")
     ax.title.set_fontsize(9.5)
     ax.legend(frameon=False, fontsize=7.5, loc="lower left")
     for side in ("top", "right"):
@@ -275,7 +275,7 @@ def trend_figure(pooled, items, stats, path, title):
                         color="#c24a1d" if bold else GREY, marker="o" if bold else MARKERS[k - 1], ms=6 if bold else 4,
                         lw=2 if bold else 0.8, elinewidth=1.5 if bold else 0.8, capsize=0, label=label, zorder=3 if bold else 2)
         ax.set_xticks(range(len(cats)), ["solo", *(s[1:] for s in SIZES)])
-        ax.set(title=name, xlabel="pilots in the configuration")
+        ax.set(title=name, xlabel="pilots in the group")
         ax.grid(axis="y", color="#e6e6e6", lw=0.6)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)

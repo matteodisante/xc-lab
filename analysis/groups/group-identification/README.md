@@ -2,7 +2,7 @@
 
 The motion of paragliders and hang gliders alone and in a group: TA-MSD with its exponent H
 and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
-the same by the number of pilots of the configuration, pooled and on chosen site-days.
+the same by the number of pilots of the group, pooled and on chosen site-days.
 
 **Data.** The group labels of [`ideas/group-identification`](../../../ideas/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
@@ -76,7 +76,7 @@ of at least 1250 s on a logger of at most 10 s, so a few members drop out.
 **Result.** H varies from group to group well beyond the band of each: from 0.879 to 0.926 for
 the paragliders. The three hang gliders of 2013-04-24 give 0.861 [0.821, 0.890].
 
-| episode | flights (largest configuration) | duration | paragliders in the MSD | H |
+| episode | flights (largest group) | duration | paragliders in the MSD | H |
 |---|---|---|---|---|
 | 2013-04-24 | 53 (16) | 5.8 h | 49 | 0.926 [0.920, 0.931] |
 | 2015-04-11 | 52 (19) | 5.1 h | 52 | 0.912 [0.907, 0.917] |
@@ -241,20 +241,20 @@ climb, searches that end in a climb and glide speed are in every set.
 
 ## By the number of pilots: `size.py`
 
-The group time of `tamsd.py` is cut where the configuration changes, so that every stretch has
+The group time of `tamsd.py` is cut where the group changes, so that every stretch has
 one number of pilots, and each goes to a population: 2, 3, 4, 5–6 and 7+ pilots. A flight with
 stretches of several sizes is in several populations, one weight each. The solo and solo-time
 stretches are those of the scripts above; only the group stretches were measured again, in three
 passes over the fixes (`size_*` in the cache folder, about 8 min). Every figure draws the solo
 flights, the sizes and, in the pooled ones, a control for each size: the solo time of the flights
 that have it (dashed). A population enters only with 15 flights in at least 5 blocks of the note;
-the stretches of a configuration must still last 1250 s for the TA-MSD, so the larger
-configurations, which are shorter, lose more of their time.
+the stretches of a group must still last 1250 s for the TA-MSD, so the larger
+groups, which are shorter, lose more of their time.
 
 **TA-MSD** (`size_tamsd.pdf`, paragliders; hang gliders have only 2 and 3 pilots). H and
 H_loc(1000 s) rise with the number of pilots, while the same flights alone stay at 0.86–0.87
 whatever the size: the dependence on size belongs to the group time, not to the flights. A
-configuration of n pilots must keep all of them within contact for at least τ*, so the larger
+group of n pilots must keep all of them within contact for at least τ*, so the larger
 ones are those that fly one line together; how much of the rise this selection explains is not
 checked.
 
@@ -335,15 +335,15 @@ site-day and local hour; G − A within the flight and within site-day and hour 
 the group effect that fail in opposite ways: the first mixes the hour, the second the pilots).
 For the TA-MSD the difference is that of log MSD at every lag, so ΔH and ΔH_loc are differences
 of slopes. Bands: 200 draws of blocks that join the episodes and the site-days, the same draws
-for every statistic. The same contrasts by the size of the configuration: each size minus A
+for every statistic. The same contrasts by the size of the group: each size minus A
 within the flight, each size minus 2 pilots within site-day and hour (`decompose_size.*`). The
 TA-MSD pieces and the performance terms carry their start or middle instant for the hour.
 
 ## Entries, exits, leaders and hours: `mechanisms.py`
 
 The phase (Vilpellet run, read on all the runs of the flight) at the instant a flight enters or
-leaves a group, against the time shares; in configurations of two pilots, leader minus follower
-within the configuration, the leader being the pilot the other passes after (signed median delay
+leaves a group, against the time shares; in groups of two pilots, leader minus follower
+within the group, the leader being the pilot the other passes after (signed median delay
 of the pair interval, |delay| ≥ 15 s, else abreast); whether some pilots lead more than chance
 (dispersion of the lead fractions of pilots with at least 10 roles against 1000 random swaps of
 the roles); and the time of each population over the local hour.
@@ -398,23 +398,23 @@ between consecutive windows.
 
 ## Size, duration and events: `describe.py`
 
-The configurations by number of pilots, the durations of configurations and episodes, and how
-each configuration ends: join, leave (in flight), landing (a member removed lands within 5 s,
-the grid step), split, merge. Rates are configurations ending per hour spent at each size, with
-the bands of the blocks. All disciplines (0.9% of the configurations hold a hang glider).
+The groups by number of pilots, the durations of groups and episodes, and how
+each group ends: join, leave (in flight), landing (a member removed lands within 5 s,
+the grid step), split, merge. Rates are groups ending per hour spent at each size, with
+the bands of the blocks. All disciplines (0.9% of the groups hold a hang glider).
 
-- 40 051 configurations in 17 169 episodes. Configurations of 2 pilots are 63% of them and 77%
-  of the time; the largest has 27. 74% of the episodes are one configuration; 5.0% hold a split,
+- 40 051 groups in 17 169 episodes. Groups of 2 pilots are 63% of them and 77%
+  of the time; the largest has 27. 74% of the episodes are one group; 5.0% hold a split,
   4.4% a merge.
-- Median duration: configuration 30 min, episode 58 min; 12% of the episodes last 2 h or more.
-  Episodes cannot be shorter than τ* = 38 min; configurations can, cut by changes of members.
-- Of the 18 218 configurations with no predecessor, 34% form at a member's departure. Of the
+- Median duration: group 30 min, episode 58 min; 12% of the episodes last 2 h or more.
+  Episodes cannot be shorter than τ* = 38 min; groups can, cut by changes of members.
+- Of the 18 218 groups with no predecessor, 34% form at a member's departure. Of the
   18 376 that end the group, 91% end in flight, 9% at a landing.
-- At 2 pilots a configuration ends 0.96 times per hour by leave, 0.31 by join, 0.098 by landing,
+- At 2 pilots a group ends 0.96 times per hour by leave, 0.31 by join, 0.098 by landing,
   0.085 by merge. Join, leave, split and merge grow with size (split from 0.48/h at 4 pilots to
-  2.7/h at 8+), so the median configuration lasts 41 min at 2 pilots and 4 min at 8+.
+  2.7/h at 8+), so the median group lasts 41 min at 2 pilots and 4 min at 8+.
 
-Large configurations are snapshots: someone joins, leaves or splits off every few minutes. The
+Large groups last minutes: someone joins, leaves or splits off every few minutes. The
 episode is the unit that lasts.
 
 ## Cohesion: `cohesion.py`
@@ -441,9 +441,9 @@ two pilots share along the route; the surrogate pairs are the baseline.
 
 ## Hierarchy: `hierarchy.py`
 
-Order in configurations of 3 pilots or more: each edge points from the pilot ahead (|ℓ_med| ≥ 15 s),
+Order in groups of 3 pilots or more: each edge points from the pilot ahead (|ℓ_med| ≥ 15 s),
 against the same graphs with directions at random (50 draws). Switches of the pilot ahead along
-ℓ*(t) (cache of `cohesion.py`, runs shorter than 60 s dropped). Who leads in configurations of two
+ℓ*(t) (cache of `cohesion.py`, runs shorter than 60 s dropped). Who leads in groups of two
 named pilots: earlier flights in the catalog and wing class (A = 1 to competition = 5).
 
 - Directed triangles are cyclic 2.5% [2.1, 3.0] of the time, against 25% at random; graphs with
@@ -461,9 +461,9 @@ often to the experienced pilot on the faster wing.
 
 ## Chains or compact groups: `chains.py`
 
-The graph inside each configuration of 3 pilots or more, between two changes of its edges:
-density, diameter, and shape (complete, tree, between). Then H and H_loc of the TA-MSD pieces of
-`size.py` by the shape of the graph at their middle (paragliders, bands of the blocks).
+The configurations of each group of 3 pilots or more (its graph between two changes of its
+edges): density, diameter, and shape (complete, tree, between). Then H and H_loc of the TA-MSD
+pieces of `size.py` by the shape of the configuration at their middle (paragliders, bands of the blocks).
 
 - At 3 pilots the graph is a triangle 53% of the time and a chain 47%. The share of complete
   graphs falls from 27% at 4 pilots to 2.5% at 8+; the mean density from 0.84 to 0.45; at 8+ the
@@ -490,7 +490,7 @@ With who flies where and when fixed, pilots still choose the same partners and t
 
 ## Fission-fusion: `fission.py`
 
-T(n), the share of the time in configurations of n pilots, against a birth-death chain,
+T(n), the share of the time in groups of n pilots, against a birth-death chain,
 T(n+1)/T(n) = g(n)/l(n+1), with g the joins and l the leaves and landings per hour at size n.
 
 - With the measured rates the chain reproduces T(n) within 4% from 2 to 8 pilots, inside its

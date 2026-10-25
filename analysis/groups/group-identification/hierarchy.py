@@ -1,9 +1,9 @@
 """Hierarchy: who is ahead of whom, in groups of 3 or more, over time, and who leads.
 
-Order. Inside a configuration of 3 pilots or more, each edge (pair interval) points from the pilot
+Order. Inside a group of 3 pilots or more, each edge (pair interval) points from the pilot
 ahead to the one behind when its signed median delay is at least ABREAST s (mechanisms.py);
-abreast edges have no direction. Over the stretches of constant edges of chains.py: directed
-triangles are transitive (A before B before C, A before C) or cyclic (A before B before C before
+abreast edges have no direction. Over the configurations of chains.py (stretches of constant
+edges): directed triangles are transitive (A before B before C, A before C) or cyclic (A before B before C before
 A); a graph with every edge directed is acyclic or not, and an acyclic one has one leader (one
 member with nobody ahead) or several. Against the same graphs with each direction drawn at random
 (N_NULL draws): a cyclic triangle then has probability 1/4.
@@ -13,7 +13,7 @@ ahead at each instant: |l*| >= ABREAST s, or abreast. Runs shorter than MIN_RUN 
 a switch is a change of the pilot ahead. Per hour of contact, and the share of the directed time
 of the pilot most often ahead, real against chance contacts lasting at least tau*.
 
-Who leads. In configurations of two named pilots with a clear leader: how often the leader is the
+Who leads. In groups of two named pilots with a clear leader: how often the leader is the
 more experienced (more earlier flights in the catalog) or flies the higher wing class (A=1 to
 competition=5), among the pairs that differ. Bands: 5-95% of N_BOOT draws of the blocks of the
 note (order, who leads) or of the dates (switches).
@@ -94,22 +94,22 @@ def triangles(tris, arcs):
     return t, c
 
 
-def stretches(confs, intervals):
-    """Per stretch of constant edges of every configuration of 3 pilots or more: conf_id, episode,
+def stretches(groups, intervals):
+    """Per configuration of every group of 3 pilots or more: group_id, episode,
     n, members, duration, and its edges (a, b, ell_med) as member indices."""
     by_date = dict(tuple(intervals.groupby("date")))
     rows = []
-    for conf in confs[confs["n"] >= 3].itertuples():
-        day = by_date[conf.date]
-        e = day[day["a"].isin(conf.members) & day["b"].isin(conf.members)]
-        e = e[(e["t_on"] < conf.t_end) & (e["t_off"] > conf.t_start)]
-        idx = {f: k for k, f in enumerate(conf.members)}
-        cuts = np.unique(np.clip(np.r_[conf.t_start, conf.t_end, e["t_on"], e["t_off"]], conf.t_start, conf.t_end))
+    for group in groups[groups["n"] >= 3].itertuples():
+        day = by_date[group.date]
+        e = day[day["a"].isin(group.members) & day["b"].isin(group.members)]
+        e = e[(e["t_on"] < group.t_end) & (e["t_off"] > group.t_start)]
+        idx = {f: k for k, f in enumerate(group.members)}
+        cuts = np.unique(np.clip(np.r_[group.t_start, group.t_end, e["t_on"], e["t_off"]], group.t_start, group.t_end))
         for a, b in zip(cuts[:-1], cuts[1:]):
             live = e[(e["t_on"] <= a) & (e["t_off"] >= b)]
             edges = [(idx[x], idx[y], ell) for x, y, ell in zip(live["a"], live["b"], live["ell_med"])]
-            rows.append((conf.conf_id, conf.episode_id, conf.n, conf.members, b - a, edges))
-    return pd.DataFrame(rows, columns=["conf_id", "episode_id", "n", "members", "duration", "edges"])
+            rows.append((group.group_id, group.episode_id, group.n, group.members, b - a, edges))
+    return pd.DataFrame(rows, columns=["group_id", "episode_id", "n", "members", "duration", "edges"])
 
 
 def measure(st, rng):
@@ -129,10 +129,10 @@ def measure(st, rng):
             na, nl, _ = order(s.n, flip) if full else (None, None, None)
             null.append((nc, nt + nc, na, nl == 1 if na else False))
         null = np.array(null, float)
-        rows.append((s.conf_id, s.episode_id, s.n, s.duration, t, c, full, acyc, leaders, depth,
+        rows.append((s.group_id, s.episode_id, s.n, s.duration, t, c, full, acyc, leaders, depth,
                      null[:, 0].mean(), null[:, 1].mean(), null[:, 2].mean() if full else np.nan,
                      null[:, 3].mean() if full else np.nan))
-    return pd.DataFrame(rows, columns=["conf_id", "episode_id", "n", "duration", "transitive", "cyclic", "full",
+    return pd.DataFrame(rows, columns=["group_id", "episode_id", "n", "duration", "transitive", "cyclic", "full",
                                        "acyclic", "leaders", "depth", "null_cyclic", "null_triangles",
                                        "null_acyclic", "null_one_leader"])
 
@@ -234,14 +234,14 @@ def experience(flights):
     return f.merge(catalog[["flight_id", "pilot", "earlier", "wing"]], on="flight_id").set_index("flight")
 
 
-def who_leads(confs, pairs, flights, episodes, rng):
-    """In configurations of two named pilots with a clear leader: the share in which the leader has
+def who_leads(groups, pairs, flights, episodes, rng):
+    """In groups of two named pilots with a clear leader: the share in which the leader has
     more earlier flights, or the higher wing class, among the pairs that differ."""
-    r = roles(confs, pairs, flights)
+    r = roles(groups, pairs, flights)
     r = r[r["population"] != "abreast"]
     x = experience(flights)
-    lead = r[r["population"] == "leader"].set_index("conf")
-    follow = r[r["population"] == "follower"].set_index("conf")
+    lead = r[r["population"] == "leader"].set_index("group_id")
+    follow = r[r["population"] == "follower"].set_index("group_id")
     both = lead.join(follow, lsuffix="_l", rsuffix="_f", how="inner")
     both = both[both["flight_l"].isin(x.index) & both["flight_f"].isin(x.index)]
     xl, xf = x.loc[both["flight_l"]], x.loc[both["flight_f"]]
@@ -301,17 +301,17 @@ def plot(r, path):
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
-    confs = pd.read_parquet(LABELS / "configurations.parquet")
+    groups = pd.read_parquet(LABELS / "groups.parquet")
     intervals = pd.read_parquet(LABELS / "pair_intervals.parquet")
     flights = pd.read_parquet(LABELS / "flights.parquet")
     episodes = pd.read_parquet(LABELS / "episodes.parquet")
     block = episodes.set_index("episode_id")["block"]
-    m = measure(stretches(confs, intervals), rng)
+    m = measure(stretches(groups, intervals), rng)
     days = sorted(p for p in (COHESION / "all" / "days").glob("*.pkl") if not p.name.startswith("."))
     p = json.loads((LABELS / "days" / "params.json").read_text())
     tau_star = json.loads((LABELS / "calibration.json").read_text())["tau_star"]
     result = {"order": order_summary(m, block, rng), "switches": switches(days, p["step"], tau_star, rng),
-              "who_leads": who_leads(confs, intervals, flights, episodes, rng)}
+              "who_leads": who_leads(groups, intervals, flights, episodes, rng)}
     (OUT / "hierarchy.json").write_text(json.dumps(result, indent=1))
     plot(result, OUT / "hierarchy.pdf")
     print(json.dumps({k: v for k, v in result["order"].items() if k != "by_size"}, indent=0), result["order"]["by_size"],

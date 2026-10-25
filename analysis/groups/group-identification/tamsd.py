@@ -50,28 +50,28 @@ H_MAX = 10  # loggers up to this interval are on the grid of the labels at every
 POPULATIONS = {"solo": "solo flights", "group": "group flights, group time",
                "group_solo": "group flights, solo time"}
 COLORS = {"solo": "#2a78d6", "group": "#eb6834", "group_solo": "#1baf7a"}
-# Group time by the number of pilots of the configuration (stretches(by_size=True)).
+# Group time by the number of pilots of the group (stretches(by_size=True)).
 SIZES = {"n2": "2 pilots", "n3": "3 pilots", "n4": "4 pilots", "n5-6": "5-6 pilots", "n7+": "7+ pilots"}
 NAMES = {"para": "paragliders", "hang": "hang gliders"}
 N_BOOT, SEED = 1000, 20261020
 
 
 def size_of(n):
-    """The key of SIZES of a configuration of n pilots."""
+    """The key of SIZES of a group of n pilots."""
     return np.select([n == 2, n == 3, n == 4, n <= 6], ["n2", "n3", "n4", "n5-6"], "n7+")
 
 
 def stretches(flights, membership, summary, by_size=False):
     """Stretches of every eligible flight on its own clock (seconds from the trimmed start):
     flight, population, episode (-1 when solo), a, b. With by_size, a group stretch ends where
-    the configuration changes and its population is the key of SIZES of the configuration."""
+    the group changes and its population is the key of SIZES of the group."""
     ok = flights[(flights["dt_native"] <= H_MAX + 1e-6) & (flights["n_grid"] > 0)]
     mb = membership[membership["flight"].isin(ok["flight"]) & (membership["state"] != "L")]
     mb = mb.sort_values(["flight", "t_start"], kind="stable")
-    # Consecutive rows of one state are one stretch; G rows in a row change only configuration.
+    # Consecutive rows of one state are one stretch; G rows in a row change only the group.
     change = mb["state"] != mb.groupby("flight")["state"].shift()
     if by_size:
-        change |= (mb["state"] == "G") & (mb["conf_id"] != mb.groupby("flight")["conf_id"].shift())
+        change |= (mb["state"] == "G") & (mb["group_id"] != mb.groupby("flight")["group_id"].shift())
     columns = dict(flight=("flight", "first"), state=("state", "first"), a=("t_start", "min"), b=("t_end", "max"),
                    episode=("episode_id", "first"), **({"n": ("n", "first")} if by_size else {}))
     s = mb.groupby(change.cumsum()).agg(**columns)
