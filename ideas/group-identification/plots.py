@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.colors import ListedColormap
-from matplotlib.patches import Circle, Rectangle
+from matplotlib.patches import Circle, Ellipse, Rectangle
 from PIL import Image
 
 import models
@@ -89,7 +89,8 @@ def save_frames(frames, name, size):
 # Contact of a pair.
 
 def contact(static, p=models.PAIR, name="contact", views=True):
-    """The contact of a pair; views=False shows a_ij alone, without m_ij and m_ji."""
+    """The contact of a pair; views=False shows a_ij alone, without m_ij and m_ji, with the discs
+    around both pilots."""
     t, xi, xj = models.pair_tracks(p)
     M, dist = models.correspondences(t, xi, xj, p["delta"], p["eps_h"])
     km, delta = 1e-3, p["delta"]
@@ -100,7 +101,7 @@ def contact(static, p=models.PAIR, name="contact", views=True):
                               top=0.9, bottom=0.11, wspace=0.22, hspace=0.62)
         ax, ap, ab = fig.add_subplot(gs[:, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[1, 1])
         tk, cx = t[k], xi[0, k] * km
-        hits = np.flatnonzero(M[k])
+        hits, back = np.flatnonzero(M[k]), np.flatnonzero(M[:, k])
 
         ax.plot(*(xi * km), color=BLUE, lw=1, alpha=0.25)
         ax.plot(*(xj * km), color=ORANGE, lw=1, alpha=0.25)
@@ -108,7 +109,13 @@ def contact(static, p=models.PAIR, name="contact", views=True):
         ax.plot(*(xj[:, :k + 1] * km), color=ORANGE, lw=1.6)
         win = np.abs(t - tk) <= delta
         ax.plot(*(xj[:, win] * km), color=ORANGE, lw=7, alpha=0.22, solid_capstyle="butt")
-        ax.add_patch(Circle(xi[:, k] * km, p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=INK2))
+        ax.add_patch(Circle(xi[:, k] * km, p["eps_h"] * km, fill=False, ls="--", lw=0.9,
+                            color=INK2 if views else BLUE))
+        if not views:
+            ax.plot(*(xi[:, win] * km), color=BLUE, lw=7, alpha=0.22, solid_capstyle="butt")
+            ax.add_patch(Circle(xj[:, k] * km, p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=ORANGE))
+            if back.size:
+                ax.scatter(*(xi[:, back] * km), s=14, color=BLUE, edgecolor=INK, lw=0.5, zorder=4)
         if hits.size:
             ax.scatter(*(xj[:, hits] * km), s=14, color=ORANGE, edgecolor=INK, lw=0.5, zorder=4)
             best = hits[np.argmin(dist[k, hits])]
@@ -129,8 +136,9 @@ def contact(static, p=models.PAIR, name="contact", views=True):
         ax.plot([cx + 1.4, cx + 2.4], [-2.25, -2.25], color=INK, lw=1.2)
         ax.text(cx + 1.9, -2.12, "1 km", ha="center", va="bottom", fontsize=8)
         ax.text(cx - 2.55, 2.4, r"\textbf{Plan view}", va="top", fontsize=9)
-        ax.text(cx - 2.55, 2.05, r"circle: radius $\varepsilon_h = 500$ m" "\n" r"orange band: $j$ from $t-\delta$ to $t+\delta$",
-                va="top", fontsize=7.5, color=INK2, linespacing=1.4)
+        legend = (r"circle: radius $\varepsilon_h = 500$ m" "\n" r"orange band: $j$ from $t-\delta$ to $t+\delta$" if views
+                  else r"circles: radius $\varepsilon_h = 500$ m" "\n" r"bands: each pilot from $t-\delta$ to $t+\delta$")
+        ax.text(cx - 2.55, 2.05, legend, va="top", fontsize=7.5, color=INK2, linespacing=1.4)
 
         ap.fill_between([0, 1200], [-delta, 1200 - delta], [delta, 1200 + delta], color=LIGHT, lw=0)
         ap.plot([0, 1200], [0, 1200], color=MUTED, lw=0.7, ls="--")
@@ -140,6 +148,9 @@ def contact(static, p=models.PAIR, name="contact", views=True):
         ap.plot([tk, tk], [max(0, tk - delta), min(1200, tk + delta)], color=INK, lw=1.4)
         if hits.size:
             ap.scatter(np.full(hits.size, tk), t[hits], s=3, color=INK, marker="s", lw=0, zorder=4)
+        if not views:
+            ap.plot([max(0, tk - delta), min(1200, tk + delta)], [tk, tk], color=INK, lw=1.4)
+            ap.scatter(t[back], np.full(back.size, tk), s=3, color=INK, marker="s", lw=0, zorder=4)
         if shown.any():
             ap.text(250, 820, r"$\mathcal{M}_{ij}$", fontsize=9, color=AQUA)
         ap.set(xlim=(0, 1200), ylim=(0, 1200), xticks=[0, 600, 1200], yticks=[0, 600, 1200])
@@ -160,8 +171,12 @@ def contact(static, p=models.PAIR, name="contact", views=True):
         ab.set_xlabel("time (s)", labelpad=1)
         ab.set_title(r"Contact: $a_{ij}=m_{ij}\vee m_{ji}$" if views else r"Contact $a_{ij}(t)$", loc="left", pad=4)
         head = rf"$t = {tk:.0f}$ s\quad "
-        head += (rf"correspondences: $t' \in [{t[hits].min():.0f}, {t[hits].max():.0f}]$ s" if hits.size
-                 else "no correspondence")
+        if views:
+            head += (rf"correspondences: $t' \in [{t[hits].min():.0f}, {t[hits].max():.0f}]$ s" if hits.size
+                     else "no correspondence")
+        else:
+            yes = lambda x: "yes" if x.size else "no"  # noqa: E731
+            head += rf"$j$ passes by $i$: {yes(hits)}\quad $i$ passes by $j$: {yes(back)}"
         fig.text(0.045, 0.955, head, fontsize=10, va="center")
 
     k_fig = int(np.searchsorted(t, 420.0))
@@ -236,6 +251,55 @@ def views(static):
     save_frames(frames + [(lambda f: draw(f, keys[0], full=True), 4.0)], "views", (6.3, 3.5))
     if not static:
         save_gif(draw, [(k, 2.0 if k in keys else 0.1) for k in ks], "views", size=(9.0, 5.0))
+
+
+# The delay in a glide: the distance has one sharp minimum.
+
+def glide():
+    p = models.VIEWS
+    t, xi, xj = models.pair_tracks(p)
+    km, delta = 1e-3, p["delta"]
+    k = int(np.searchsorted(t, 600.0))
+    lags = t - t[k]
+    win = np.abs(lags) <= delta
+    d = np.hypot(*(xj - xi[:, k:k + 1]))
+    best = np.flatnonzero(win)[np.argmin(d[win])]
+
+    fig = plt.figure(figsize=(6.3, 2.5))
+    gs = fig.add_gridspec(1, 2, width_ratios=[1, 1.1], left=0.01, right=0.985, top=0.88, bottom=0.17, wspace=0.16)
+    ax, ad = fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1])
+    cx, cy = xi[:, k] * km
+    ax.plot(*(xi * km), color=BLUE, lw=1.4)
+    ax.plot(*(xj * km), color=ORANGE, lw=1.4)
+    ax.plot(*(xj[:, win] * km), color=ORANGE, lw=7, alpha=0.22, solid_capstyle="butt")
+    ax.add_patch(Circle((cx, cy), p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=INK2))
+    ax.plot([cx, xj[0, best] * km], [cy, xj[1, best] * km], color=INK, lw=0.8, zorder=4)
+    ax.scatter([cx], [cy], s=34, color=BLUE, edgecolor=INK, lw=0.6, zorder=5)
+    ax.scatter(*(xj[:, best:best + 1] * km), s=30, color=ORANGE, edgecolor=INK, lw=0.6, zorder=5)
+    ax.annotate(r"$\mathbf{x}_i(t)$", (cx, cy), xytext=(0, 12), textcoords="offset points", fontsize=9, color=BLUE,
+                ha="center")
+    ax.annotate(r"$\mathbf{x}_j(t+l^*)$", xj[:, best] * km, xytext=(-2, -28), textcoords="offset points", fontsize=8.5,
+                color=ORANGE, ha="right")
+    ax.set_aspect("equal")
+    ax.set_xlim(cx - 2.1, cx + 1.1)
+    ax.set_ylim(cy - 1.05, cy + 1.05)
+    ax.set_axis_off()
+    ax.plot([cx + 0.0, cx + 1.0], [cy - 0.95, cy - 0.95], color=INK, lw=1.2)
+    ax.text(cx + 0.5, cy - 0.88, "1 km", ha="center", va="bottom", fontsize=8)
+    ax.set_title(r"Plan view: band of $j$ from $t-\delta$ to $t+\delta$", loc="left", pad=4)
+
+    ad.plot(lags[win], d[win], color=INK, lw=1.1)
+    ad.axhline(p["eps_h"], color=INK2, lw=0.7, ls="--")
+    ad.text(-delta + 4, p["eps_h"] + 40, r"$\varepsilon_h = 500$ m", fontsize=7.5, color=INK2)
+    ad.scatter([lags[best]], [d[best]], s=16, color=INK, zorder=4)
+    ad.annotate(rf"$l^* = {lags[best]:+.0f}$ s", (lags[best], d[best]), xytext=(-8, -8), textcoords="offset points",
+                fontsize=9, ha="right", va="top")
+    ad.set(xlim=(-delta, delta), ylim=(0, None), xticks=[-120, -60, 0, 60, 120])
+    ad.set_xlabel(r"delay $l$ (s)", labelpad=1)
+    ad.set_ylabel("m", labelpad=1)
+    ad.set_title(r"Horizontal distance $\|\mathbf{x}_i(t)-\mathbf{x}_j(t+l)\|$", loc="left", pad=4)
+    fig.savefig(FIGURES / "delay_glide.pdf")
+    plt.close(fig)
 
 
 # Altitude as a clock.
@@ -447,12 +511,20 @@ def day(static):
 
     def summary(fig):
         fig.clear()
-        gs = fig.add_gridspec(2, len(snaps), height_ratios=[0.8, 1.35], left=0.1, right=0.985, top=0.95,
+        gs = fig.add_gridspec(2, len(snaps), height_ratios=[0.8, 1.35], left=0.1, right=0.985, top=0.78,
                               bottom=0.07, hspace=0.12, wspace=0.05)
+        g1 = name[models.label(flights, groups, 1, snaps[0])]
         for n, ts in enumerate(snaps):
             ax = fig.add_subplot(gs[0, n])
             graph(ax, ts, small=True)
             ax.set_title(hhmm(ts), pad=1, fontsize=8)
+            if n < 2:
+                ax.add_patch(Ellipse((0.36, 0.58), 0.72, 0.80, transform=ax.transAxes, fill=False, color=INK2, lw=1.2,
+                                     clip_on=False))
+                ax.annotate(rf"group ${g1[0]}_{{{g1[1:]}}}$," "\n" rf"configuration {n + 1}", xy=(0.636, 0.84),
+                            xycoords="axes fraction", xytext=(0.9, 1.5), textcoords="axes fraction", ha="center",
+                            va="bottom", fontsize=8, linespacing=1.3,
+                            arrowprops=dict(arrowstyle="->", color=INK2, lw=0.8, shrinkA=1, shrinkB=0))
         timeline(fig.add_subplot(gs[1, :]), t1, marks=snaps)
 
     fig = plt.figure(figsize=(6.3, 3.6))
@@ -604,6 +676,7 @@ if __name__ == "__main__":
     contact(static)
     contact(static, models.VIEWS, "contact_simple", views=False)
     views(static)
+    glide()
     clock(static)
     day(static)
     decimation()

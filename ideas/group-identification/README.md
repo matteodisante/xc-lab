@@ -107,7 +107,8 @@ because j passes where i was two minutes later.
 
 ![contact](animations/contact.gif)
 
-The same with the contact a_ij alone, on a similar route 90 s behind (the slides).
+The same with the contact a_ij alone, on a similar route 90 s behind, with the discs around both
+pilots: either one seeing the other is enough (the slides).
 
 ![contact, a_ij alone](animations/contact-simple.gif)
 
