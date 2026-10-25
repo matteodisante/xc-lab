@@ -78,9 +78,9 @@ left out (Section~\ref{sec:contact}).
 8 with 14 later, 1 and 14 may never have met; and pilots join and leave all the time (R4). A
 window on the departures, such as ``departures within $T$ minutes'', makes groups that depend on
 the reference pilot (Figure~\ref{fig:approaches}c). \emph{Idea:} groups are defined instant by
-instant, as the connected components of the graph of contacts. A fixed set of pilots that stays
-one component is a \emph{configuration}, and a chain of configurations that share members is an
-\emph{episode}, after the grouping structure of Buchin et al.~\cite{buchin2015}. Episodes tie the
+instant, as the connected components of the graph of contacts: each component, with its edges,
+is a \emph{configuration}. A fixed set of pilots that stays one component is a \emph{group},
+and a chain of groups that share members is an \emph{episode}, after the grouping structure of Buchin et al.~\cite{buchin2015}. Episodes tie the
 flights into \emph{dependency blocks}, which the statistics resample together
 (Section~\ref{sec:groups}).
 
@@ -165,7 +165,7 @@ The same animations are GIF files in the folder \texttt{animations/}.
     \node[hollow j] (xj) at (1.2,1.45) {};
     \node[lbl, blueI, above=1pt] at (xi) {$\x_i(t)$};
     \node[lbl, orangeJ, below=2pt] at (xj) {$\x_j(t)$};
-    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies the route of $i$,\\a little later};
+    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies a similar route,\\a little later};
   \end{scope}
   % 2: correspondences
   \begin{scope}[shift={(5.45,0)}]
@@ -199,23 +199,23 @@ The same animations are GIF files in the folder \texttt{animations/}.
   \end{scope}
   % 5: groups at each instant
   \begin{scope}[shift={(5.45,-4.2)}]
-    \node[panel] at (0,3.25) {5\enspace Groups at each instant};
+    \node[panel] at (0,3.25) {5\enspace Configurations, groups};
     \coordinate (n1) at (0.45,1.9); \coordinate (n8) at (1.4,2.55); \coordinate (n22) at (1.4,1.25);
     \coordinate (n14) at (2.45,1.9); \coordinate (n5) at (0.45,0.75);
     \draw[edge] (n1) -- (n8) -- (n22);
     \node[inE1] at (n1) {1}; \node[inE1] at (n8) {8}; \node[inE1] at (n22) {22};
     \node[flight] at (n14) {14}; \node[flight] at (n5) {5};
-    \node[note, align=left, anchor=west] at (2.85,1.75) {a fixed set\\of flights over\\a maximal\\interval:\\a configuration};
+    \node[note, align=left, anchor=west] at (2.7,1.75) {linked pilots:\\configuration;\\same members\\in time: group};
   \end{scope}
   % 6: episodes and blocks
   \begin{scope}[shift={(10.9,-4.2)}]
     \node[panel] at (0,3.25) {6\enspace Episodes and blocks};
     \foreach \a/\b/\n in {0.1/1.15/1, 1.2/1.75/2, 1.8/2.6/3} {
       \fill[blueI] (\a,1.9) rectangle (\b,2.4);
-      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$c_\n$};
+      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$g_\n$};
     }
     \fill[orangeJ] (3.3,1.9) rectangle (4.1,2.4);
-    \node[font=\footnotesize, text=white] at (3.7,2.15) {$c_4$};
+    \node[font=\footnotesize, text=white] at (3.7,2.15) {$g_4$};
     \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (0.1,1.8) -- (2.6,1.8)
       node[midway, below=4pt, lbl, ink] {episode E1};
     \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (3.3,1.8) -- (4.1,1.8)
@@ -245,10 +245,10 @@ Departure & the first fix farther than $R_\dep$ from the takeoff & $k_i^\dep$ & 
 Correspondence & two instants of the same clock, $t$ for $i$ and $t'$ for $j$, at most $\delta$ apart, at which the two pilots pass the same place within the tolerances & $(t,t')\in\M_{ij}$ & \ref{sec:correspondences} \\
 Contact & at instant $t$, one of the two pilots is on the path of the other & $a_{ij}(t)=1$ & \ref{sec:correspondences} \\
 Pair interval & a stretch of contact, with short gaps filled and short pieces dropped & $[t_{\rm on},t_{\rm off})$ & \ref{sec:pair-intervals} \\
-Group at instant $t$ & the pilots joined to each other by chains of contacts at $t$ & component of $G(t)$ & \ref{sec:configurations} \\
-Configuration & a fixed set of flights that stays one group over a maximal interval & $c$ & \ref{sec:configurations} \\
-Membership & the label of flight $i$ at instant $t$: local phase, solo, or its configuration & $\gamma_i(t)$ & \ref{sec:configurations} \\
-Episode & a chain of configurations, each starting when the previous one ends and sharing a member with it & & \ref{sec:episodes} \\
+Configuration & the pilots joined to each other by chains of contacts at instant $t$, with their edges; a new edge gives a new configuration & component of $G(t)$ & \ref{sec:configurations} \\
+Group & a fixed set of flights that stays one component over a maximal interval & $g$ & \ref{sec:configurations} \\
+Membership & the label of flight $i$ at instant $t$: local phase, solo, or its group & $\gamma_i(t)$ & \ref{sec:configurations} \\
+Episode & a chain of groups, each starting when the previous one ends and sharing a member with it & & \ref{sec:episodes} \\
 Dependency block & the flights tied together by episodes; the bootstrap resamples them together & & \ref{sec:blocks} \\
 \bottomrule
 \end{tabularx}

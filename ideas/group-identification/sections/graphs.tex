@@ -10,11 +10,11 @@ The few terms of graph theory that the note uses, each with the place where it i
         \emph{connected} when a path joins them.
   \item \textbf{Connected component.} A largest set of nodes connected to each other. Every node is
         in exactly one component; a node with no edge is a component alone (a pilot flying solo).
-        A group is a component with at least two nodes.
+        A configuration is a component with at least two nodes, with its edges.
 \end{itemize}
 
-Two members of a group need not share an edge: in the chain 1--2--3 of Figure~\ref{fig:graph},
-pilots 1 and 3 are in the same group through pilot 2.
+Two members of a configuration need not share an edge: in the chain 1--2--3 of
+Figure~\ref{fig:graph}, pilots 1 and 3 are in the same configuration through pilot 2.
 
 \begin{figure}
 \centering
@@ -25,23 +25,23 @@ pilots 1 and 3 are in the same group through pilot 2.
   \node[node] (a) at (0,0) {1}; \node[node] (b) at (1,1) {2}; \node[node] (c) at (2,0) {3};
   \node[node] (d) at (3.5,0) {4}; \node[node] (e) at (4.5,1) {5}; \node[node] (f) at (6,0.5) {6};
   \draw[gedge] (a) -- (b) -- (c); \draw[gedge] (d) -- (e);
-  \node[note] at (1,-0.85) {group $\{1,2,3\}$ (a chain)};
+  \node[note] at (1,-0.85) {configuration $\{1,2,3\}$ (a chain)};
   \node[note] at (4,-0.85) {$\{4,5\}$};
   \node[note] at (6,-0.85) {solo};
 \end{tikzpicture}
-\caption{The graph at one instant: three components, two of them groups.}
+\caption{The graph at one instant: three components, two of them configurations.}
 \label{fig:graph}
 \end{figure}
 
 \begin{itemize}
   \item \textbf{Directed graph.} The edges carry an arrow. For the episodes the nodes are
-        configurations, with an arrow $c\to c'$ when $c'$ starts as $c$ ends and they share a member
+        groups, with an arrow $g\to g'$ when $g'$ starts as $g$ ends and they share a member
         (Section~\ref{sec:episodes}). An episode is a connected component of this graph, arrows
         ignored.
   \item \textbf{Bipartite graph.} Nodes of two kinds, edges only between kinds. At one instant, the
-        configurations ending and those starting, with an edge when they share a member. Each
+        groups ending and those starting, with an edge when they share a member. Each
         component is one event (Figure~\ref{fig:events}); its outcome follows from how many
-        configurations it has on each side: one to one is a join or a leave (members added or
+        groups it has on each side: one to one is a join or a leave (members added or
         removed), one to several a split, several to one a merge (Section~\ref{sec:describe}).
 \end{itemize}
 
@@ -59,7 +59,7 @@ pilots 1 and 3 are in the same group through pilot 2.
   \node[note] at (7.2,-1.3) {one to one, 3 removed: leave};
   \node[note] at (0,1.3) {ending}; \node[note] at (2.6,1.3) {starting};
 \end{tikzpicture}
-\caption{Two events: each is a connected component of the bipartite graph of the configurations
+\caption{Two events: each is a connected component of the bipartite graph of the groups
 ending and starting at one instant.}
 \label{fig:events}
 \end{figure}

@@ -2,8 +2,8 @@
 
 Who flies with whom, as a group? The contact links two pilots at a time: it flickers, it is not
 transitive, and it changes during the afternoon. This section turns it into groups in four steps:
-pair intervals, groups at each instant (configurations), chains of groups (episodes), and the
-flights tied by them (dependency blocks).
+pair intervals, configurations at each instant and groups over time, chains of groups
+(episodes), and the flights tied by them (dependency blocks).
 
 \subsection{Pair intervals}\label{sec:pair-intervals}
 
@@ -62,9 +62,10 @@ and $j\sim k\Rightarrow i\sim k$), so any definition of groups must give up some
         of Buchin et al.~\cite{buchin2015} do;
   \item the static picture: the groups are defined instant by instant.
 \end{enumerate}
-We take (c): at every instant the groups are the connected components of the graph of active
-contacts, as the components of~\cite{buchin2015}, and their evolution is described without
-giving a group a lasting identity.
+We take (c): at every instant the configurations are the connected components of the graph of
+active contacts, as the components of~\cite{buchin2015}; a group lasts only as long as its
+members stay one component, and the episodes describe the evolution without giving a group a
+lasting identity.
 
 \begin{figure}
 \centering
@@ -101,7 +102,7 @@ giving a group a lasting identity.
     \node[lbl] at (3.6,1.15) {15:30};
     \draw[edge] (3.15,0.45) -- (4.05,0.45);
     \node[flight] at (3.6,-0.35) {1}; \node[inE2] at (3.15,0.45) {8}; \node[inE2] at (4.05,0.45) {14};
-    \node[note, anchor=west, align=left] at (4.6,0.3) {groups are the connected\\components at each instant};
+    \node[note, anchor=west, align=left] at (4.6,0.3) {configurations are the connected\\components at each instant};
   \end{scope}
 \end{tikzpicture}
 \caption{Non-transitivity: 1--8 early in the afternoon, 8--14 later, and 1 and 14 never meet.
@@ -110,7 +111,7 @@ each instant, our choice.}
 \label{fig:transitivity}
 \end{figure}
 
-\subsection{Configurations}\label{sec:configurations}
+\subsection{Configurations and groups}\label{sec:configurations}
 
 The active graph at instant $t$ is
 \begin{equation}\label{eq:graph}
@@ -120,22 +121,25 @@ The active graph at instant $t$ is
   \end{gathered}
 \end{equation}
 its nodes are the pilots that at $t$ have departed, have not landed and have a position; its edges
-are the pairs whose interval contains $t$. A connected component of $G(t)$ with at least two nodes
-is a group at instant $t$: its pilots are joined by chains of contacts (Appendix~\ref{app:graphs}
-recalls the terms).
+are the pairs whose interval contains $t$. A connected component of $G(t)$ with at least two nodes,
+with its edges, is a \emph{configuration} at instant $t$: its pilots are joined by chains of
+contacts, and its edges say who is in contact with whom (Appendix~\ref{app:graphs} recalls the
+terms).
 
-\begin{definition}[configuration]
-A configuration $c$ is given by a set of flights $M_c$, its members, with $|M_c|\ge2$, and by an
-interval of time $[t^{\rm start}_c, t^{\rm end}_c)$, such that $M_c$ is a connected component of
-$G(t)$ at every $t$ of the interval and the interval is maximal. We write
-$c=\bigl(M_c,[t^{\rm start}_c,t^{\rm end}_c)\bigr)$.
+\begin{definition}[group]
+A group $g$ is given by a set of flights $M_g$, its members, with $|M_g|\ge2$, and by an interval
+of time $[t^{\rm start}_g, t^{\rm end}_g)$, such that $M_g$ is the set of nodes of a configuration
+of $G(t)$ at every $t$ of the interval and the interval is maximal. We write
+$g=\bigl(M_g,[t^{\rm start}_g,t^{\rm end}_g)\bigr)$.
 \end{definition}
 
-The members of a configuration are fixed: a pilot who joins or leaves ends it and starts another.
-Only the edges among the members may change: an edge that closes a triangle does not create a new
-configuration (Figure~\ref{fig:configurations}). The configurations are the edges of the Reeb
-graph of~\cite{buchin2015} with at least two entities (Figure~\ref{fig:reeb}), built on delayed
-contacts instead of simultaneous proximity.
+The members of a group are fixed: a pilot who joins or leaves ends it and starts another. Only
+the edges among the members may change, and each change gives a new configuration of the same
+group: an edge that closes a triangle turns a chain into a triangle, and the group goes on
+(Figure~\ref{fig:configurations}). Over time, a configuration keeps its edges over a maximal
+interval, and the configurations of a group follow one another without gaps over the interval of
+the group. The groups are the edges of the Reeb graph of~\cite{buchin2015} with at least two
+entities (Figure~\ref{fig:reeb}), built on delayed contacts instead of simultaneous proximity.
 
 \begin{figure}
 \centering
@@ -156,24 +160,29 @@ contacts instead of simultaneous proximity.
   }
   \begin{scope}[shift={(0,-2.9)}]
     \draw[->, ink2] (0,0) -- (12.4,0) node[right, lbl, ink] {$t$};
-    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,0) -- (\x,4.9); \node[lbl, below] at (\x,0) {$\l$};}
-    \foreach \a/\b/\y/\n in {0.3/11.8/2.1/1--2, 0.3/11.8/1.7/2--3, 4.6/11.8/1.3/1--3, 8.6/11.8/0.9/3--4} {
+    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,1.05) -- (\x,4.9); \draw[ink2] (\x,-0.06) -- (\x,0.06); \node[lbl, below] at (\x,-0.06) {$\l$};}
+    \foreach \a/\b/\y/\n in {0.3/11.8/2.5/1--2, 0.3/11.8/2.1/2--3, 4.6/11.8/1.7/1--3, 8.6/11.8/1.3/3--4} {
       \fill[ink2] (\a,\y-0.09) rectangle (\b,\y+0.09);
       \node[lbl, anchor=east] at (0.2,\y) {\n};
     }
-    \fill[blueI] (0.3,0.25) rectangle (8.55,0.6); \node[font=\footnotesize, text=white] at (4.4,0.425) {$c$: $\{1,2,3\}$};
-    \fill[orangeJ] (8.65,0.25) rectangle (11.8,0.6); \node[font=\footnotesize, text=white] at (10.2,0.425) {$c'$: $\{1,2,3,4\}$};
-    \node[lbl, anchor=east] at (0.2,0.425) {config.};
+    \foreach \a/\b/\l in {0.3/4.55/chain, 4.65/8.55/triangle, 8.65/11.8/triangle and 3--4} {
+      \draw[ink2, fill=light] (\a,0.7) rectangle (\b,1.0); \node[font=\footnotesize] at ({(\a+\b)/2},0.85) {\l};
+    }
+    \node[lbl, anchor=east] at (0.2,0.85) {config.};
+    \fill[blueI] (0.3,0.2) rectangle (8.55,0.55); \node[font=\footnotesize, text=white] at (4.4,0.375) {$g$: $\{1,2,3\}$};
+    \fill[orangeJ] (8.65,0.2) rectangle (11.8,0.55); \node[font=\footnotesize, text=white] at (10.2,0.375) {$g'$: $\{1,2,3,4\}$};
+    \node[lbl, anchor=east] at (0.2,0.375) {group};
   \end{scope}
 \end{tikzpicture}
-\caption{Configurations. Top: the active graph at three instants. Bottom: the pair intervals of
-the four flights and the configurations they produce. At $t_2$ the edge 1--3 closes a triangle:
-the component keeps its members and $c$ goes on. When 4 joins, $c$ ends and $c'$ starts.}
+\caption{Configurations and groups. Top: the active graph at three instants. Bottom: the pair
+intervals of the four flights, the configurations and the groups they produce. At $t_2$ the edge
+1--3 closes a triangle: a new configuration with the same members, so $g$ goes on. When 4 joins,
+$g$ ends and $g'$ starts.}
 \label{fig:configurations}
 \end{figure}
 
 \begin{proposition}
-At every instant each flight belongs to at most one configuration.
+At every instant each flight belongs to at most one configuration, hence to at most one group.
 \end{proposition}
 
 \begin{proof}
@@ -184,36 +193,37 @@ The membership of flight $i$ at instant $t$ is therefore well defined:
 \begin{equation}\label{eq:membership}
   \gamma_i(t)=\begin{cases}
     \st{L} & \text{if } k^0_i\le t<k^\dep_i \text{ (local phase), or the flight is local},\\
-    c & \text{if } i\in M_c \text{ and } t\in[t^{\rm start}_c,t^{\rm end}_c),\\
+    g & \text{if } i\in M_g \text{ and } t\in[t^{\rm start}_g,t^{\rm end}_g),\\
     \st{S} & \text{if } t\in T^\dep_i \text{ otherwise (solo flight).}
   \end{cases}
 \end{equation}
-\fix{In the tables, every instant between the departure and the landing outside a configuration
+\fix{In the tables, every instant between the departure and the landing outside a group
 is labelled \st{S}, the instants in a gap of the track included, where the flight has no position.
 The analyses that read the fixes see nothing there; only the time fractions computed from the
 membership include them.}
 
 \subsection{Episodes}\label{sec:episodes}
 
-A group that gains or loses a pilot becomes a new configuration, yet its pilots go on flying
-together. Episodes keep this continuity.
+A group that gains or loses a pilot becomes a new group, yet its pilots go on flying together.
+Episodes keep this continuity.
 
 \begin{definition}[episode]
-Two configurations are linked, $c\to c'$, if one starts exactly when the other ends and they have
-at least one member in common:
+Two groups are linked, $g\to g'$, if one starts exactly when the other ends and they have at
+least one member in common:
 \begin{equation}\label{eq:link}
-  c\to c' \iff t^{\rm start}_{c'}=t^{\rm end}_c\ \wedge\ M_c\cap M_{c'}\ne\emptyset .
+  g\to g' \iff t^{\rm start}_{g'}=t^{\rm end}_g\ \wedge\ M_g\cap M_{g'}\ne\emptyset .
 \end{equation}
-An episode is a connected component of the undirected graph associated with $\to$.
+An episode is a connected component of the undirected graph associated with $\to$: the groups
+tied together by links, directly or through others.
 \end{definition}
 
-So an episode is a chain of configurations without interruption: each starts when the previous one
-ends and keeps at least one of its members, and two configurations of the same episode need not
-share anyone. In the language of~\cite{buchin2015}, it is a connected component of the Reeb graph
-without the edges of single pilots. Four properties matter (Figure~\ref{fig:episodes}):
+So an episode is a chain of groups without interruption: each starts when the previous one ends
+and keeps at least one of its members, and two groups of the same episode need not share anyone.
+In the language of~\cite{buchin2015}, it is a connected component of the Reeb graph without the
+edges of single pilots. Four properties matter (Figure~\ref{fig:episodes}):
 \begin{enumerate}[label=(\roman*)]
-  \item a split produces two configurations linked to the same previous one, so they stay in the
-        same episode; the same holds for a merge;
+  \item a split produces two groups linked to the same previous one, so they stay in the same
+        episode; the same holds for a merge;
   \item if the group dissolves completely, the chain breaks and the episode ends; a group that
         forms again later opens a new episode;
   \item no threshold is needed: one member in common is enough;
@@ -227,12 +237,12 @@ without the edges of single pilots. Four properties matter (Figure~\ref{fig:epis
     link/.style={->, ink, line width=0.7pt}]
   \draw[->, ink2] (0,-0.4) -- (9.6,-0.4) node[right, lbl, ink] {$t$};
   \def\confbox#1#2#3#4#5{\fill[#5] (#1,#3-0.25) rectangle (#2,#3+0.25); \node[font=\footnotesize, text=white] at ({(#1+#2)/2},#3) {#4};}
-  \confbox{0}{1.95}{2.6}{$c_1\,\{1,2\}$}{blueI}
-  \confbox{0}{1.95}{0.9}{$c_2\,\{3,4\}$}{blueI}
-  \confbox{2.05}{3.95}{1.75}{$c_3\,\{1,2,3,4\}$}{blueI}
-  \confbox{4.05}{5.95}{2.6}{$c_4\,\{1,2\}$}{blueI}
-  \confbox{4.05}{5.45}{0.9}{$c_5\,\{3,4\}$}{blueI}
-  \confbox{7.5}{9.0}{1.75}{$c_6\,\{2,5\}$}{orangeJ}
+  \confbox{0}{1.95}{2.6}{$g_1\,\{1,2\}$}{blueI}
+  \confbox{0}{1.95}{0.9}{$g_2\,\{3,4\}$}{blueI}
+  \confbox{2.05}{3.95}{1.75}{$g_3\,\{1,2,3,4\}$}{blueI}
+  \confbox{4.05}{5.95}{2.6}{$g_4\,\{1,2\}$}{blueI}
+  \confbox{4.05}{5.45}{0.9}{$g_5\,\{3,4\}$}{blueI}
+  \confbox{7.5}{9.0}{1.75}{$g_6\,\{2,5\}$}{orangeJ}
   \draw[link] (1.95,2.6) -- (2.05,1.85);
   \draw[link] (1.95,0.9) -- (2.05,1.65);
   \draw[link] (3.95,1.85) -- (4.05,2.6);
@@ -244,9 +254,9 @@ without the edges of single pilots. Four properties matter (Figure~\ref{fig:epis
   \draw[decorate, decoration={brace, mirror, amplitude=5pt}, blueI] (0,0.2) -- (5.95,0.2) node[midway, below=5pt, lbl, ink] {episode E1};
   \draw[decorate, decoration={brace, mirror, amplitude=5pt}, orangeJ] (7.5,0.2) -- (9.0,0.2) node[midway, below=5pt, lbl, ink] {E2};
 \end{tikzpicture}
-\caption{Episodes. Arrows are the links~\eqref{eq:link}. The merge of $c_1$ and $c_2$ into $c_3$
-and the split of $c_3$ into $c_4$ and $c_5$ keep all five configurations in episode E1, although
-$c_1$ and $c_5$ share no member. After the group dissolves, $c_6$ has no predecessor and opens E2:
+\caption{Episodes. Arrows are the links~\eqref{eq:link}. The merge of $g_1$ and $g_2$ into $g_3$
+and the split of $g_3$ into $g_4$ and $g_5$ keep all five groups in episode E1, although
+$g_1$ and $g_5$ share no member. After the group dissolves, $g_6$ has no predecessor and opens E2:
 flight 2 belongs to both episodes.}
 \label{fig:episodes}
 \end{figure}
@@ -257,7 +267,7 @@ threshold, as methods that track communities in evolving networks do with the Ja
 index~\cite{greene2010}. The choice has three defects: the threshold is arbitrary; a group whose
 members are replaced one at a time keeps its name even when none of the first members is left;
 in splits and merges no natural criterion says who inherits the name. So we let the episode
-record only the continuity, and the configuration the composition.
+record only the continuity, and the group the composition.
 \end{remark}
 
 \subsection{Dependency blocks}\label{sec:blocks}
@@ -308,19 +318,21 @@ splits the trajectories into independent data sets~\cite[§1]{buchin2015}.
 \subsection{An example day}\label{sec:example-day}
 
 Figure~\ref{fig:day} follows a day with five flights. At 11:40 flights 1, 8 and 22 meet (edges
-1--8 and 8--22): configuration $c_1=\{1,8,22\}$ starts. At 12:05 the edge 1--22 closes the
-triangle: the members do not change and $c_1$ goes on. At 12:55 the interval 1--8 ends as 1
-changes route: $c_1$ ends and $c_2=\{8,22\}$ starts; they share 8 and 22, so $c_1\to c_2$. At
-13:30 the edge 8--14 opens: $c_3=\{8,14,22\}$, and $c_2\to c_3$. At 14:10 the group dissolves and
-episode E1 ends. At 15:00 flights 8 and 22 meet again: $c_4=\{8,22\}$ has no predecessor and
-opens episode E2.
+1--8 and 8--22): group $g_1=\{1,8,22\}$ starts, in the configuration of a chain. At 12:05 the
+edge 1--22 closes the triangle: a new configuration with the same members, so $g_1$ goes on; at
+12:30 the edge closes and the chain is back. At 12:55 the interval 1--8 ends as 1 changes route:
+$g_1$ ends and $g_2=\{8,22\}$ starts; they share 8 and 22, so $g_1\to g_2$. At 13:30 the edge
+8--14 opens: $g_3=\{8,14,22\}$, and $g_2\to g_3$. At 14:10 the group dissolves and episode E1
+ends. At 15:00 flights 8 and 22 meet again: $g_4=\{8,22\}$ has no predecessor and opens episode
+E2.
 
-So flights 1 and 14 share an episode without ever sharing a configuration; 8 and 22 belong to two
+So flights 1 and 14 share an episode without ever sharing a group; 8 and 22 belong to two
 episodes; 1, 8, 14 and 22 form one dependency block, and flight 5, never in a group, a block of
 its own.
 
 \paragraph{What we keep.} At every instant each flight has one label, \st{L}, \st{S} or its
-configuration; configurations chain into episodes, and episodes tie the flights into blocks.
+group; the configurations record how the members of a group are linked, groups chain into
+episodes, and episodes tie the flights into blocks.
 These labels are the output of the method (Appendix~\ref{sec:outputs}). They still depend on
 $\tau^*$, which Section~\ref{sec:calibration} fixes.
 
@@ -329,8 +341,8 @@ $\tau^*$, which Section~\ref{sec:calibration} fixes.
 \animated{example_day}
 \caption{\animmark An example day; the animation runs the day from 11:00 to 16:00 and stops at
 each event. Top: the active graph $G(t)$ at the five dotted instants; filled nodes are in a
-configuration, coloured by episode; dashed nodes are in the local phase, faint ones not in flight. Bottom: the membership $\gamma_i(t)$ of each flight:
-hatched is the local phase \st{L}, grey is solo \st{S}, coloured segments are the configurations
-$c_1$--$c_4$, and the last row spans the episodes.}
+group, coloured by episode; dashed nodes are in the local phase, faint ones not in flight. Bottom:
+the membership $\gamma_i(t)$ of each flight: hatched is the local phase \st{L}, grey is solo
+\st{S}, coloured segments are the groups $g_1$--$g_4$, and the last row spans the episodes.}
 \label{fig:day}
 \end{figure}

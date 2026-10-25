@@ -219,7 +219,7 @@ def label(flights, intervals, tau_star):
     t3["episode_id"] = t3["episode_id"].fillna(-1).astype(np.int64)
     t3["n"] = t3["n"].fillna(1).astype(np.int64)
     first_group = t2.groupby("episode_id").agg(date=("date", "first"), t_start=("t_start", "min"), t_end=("t_end", "max"),
-                                              n_max=("n", "max"), n_groups=("group_id", "size"))
+                                               n_max=("n", "max"), n_groups=("group_id", "size"))
     flights_of = t2.explode("members").groupby("episode_id")["members"].agg(lambda m: len(set(m)))
     t4 = first_group.assign(n_flights=flights_of).reset_index()
     t4["block"] = block[[m[0] for m in t2.groupby("episode_id")["members"].first()]]

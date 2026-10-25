@@ -41,7 +41,7 @@ def test_flight_numbers_of_the_readme(out):
 def test_group_numbers_of_the_readme(out):
     iv = out["intervals_raw"]
     assert len(iv) == 728866 and (iv.duration >= 2285).sum() == 36575
-    assert len(out["groups"]) == 40051
+    assert len(out["groups"]) == 40051 and len(out["configurations"]) == 52856
     e = out["episodes"]
     assert len(e) == 17169 and e.n_flights.median() == 2 and e.n_flights.max() == 53
     assert round((e.t_end - e.t_start).median() / 3600, 2) == 0.97

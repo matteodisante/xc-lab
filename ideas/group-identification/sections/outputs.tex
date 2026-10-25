@@ -1,6 +1,6 @@
 \section{Outputs}\label{sec:outputs}
 
-What does a run leave, and how is it read? Five tables in Parquet (Table~\ref{tab:outputs});
+What does a run leave, and how is it read? Six tables in Parquet (Table~\ref{tab:outputs});
 the main one, T3, cuts each flight into stretches of constant membership.
 
 \begin{table}
@@ -13,25 +13,28 @@ Table & Columns (type) and content \\
 T1 \texttt{pair\_intervals} & \texttt{date}, \texttt{a}, \texttt{b} (int32), \texttt{t\_on}, \texttt{t\_off} (int32, s),
   \texttt{duration} (int32), \texttt{ell\_med} (int16, s, signed: positive if \texttt{b} follows \texttt{a}),
   \texttt{d\_dec} (float32, m). Who was with whom, and when. \\ \addlinespace
-T2 \texttt{configurations} & \texttt{date}, \texttt{conf\_id}, \texttt{episode\_id} (int32), \texttt{t\_start},
+T2 \texttt{groups} & \texttt{date}, \texttt{group\_id}, \texttt{episode\_id} (int32), \texttt{t\_start},
   \texttt{t\_end} (int32), \texttt{n} (int16), \texttt{members} (list of int32). \\ \addlinespace
 T3 \texttt{membership} & \texttt{flight} (int32), \texttt{t\_start}, \texttt{t\_end} (int32), \texttt{state} (int8:
-  L, S, G), \texttt{conf\_id}, \texttt{episode\_id} (int32, null if L or S), \texttt{n} (int16, 1 if S).
+  L, S, G), \texttt{group\_id}, \texttt{episode\_id} (int32, null if L or S), \texttt{n} (int16, 1 if S).
   The main table: each flight cut into stretches of constant membership. \\ \addlinespace
 T4 \texttt{episodes} & \texttt{episode\_id}, \texttt{date}, \texttt{t\_start}, \texttt{t\_end}, \texttt{n\_flights},
-  \texttt{n\_max}, \texttt{n\_config}, \texttt{block}. \\ \addlinespace
+  \texttt{n\_max}, \texttt{n\_groups}, \texttt{block}. \\ \addlinespace
 T5 \texttt{flight\_summary} & \texttt{flight}, \texttt{phi\_G} (fraction of $T^\dep_i$ in a group), \texttt{kappa}
-  (distinct companions), \texttt{n\_entries}, \texttt{n\_episodes}, \texttt{block}, \texttt{local} (boolean). \\
+  (distinct companions), \texttt{n\_entries}, \texttt{n\_episodes}, \texttt{block}, \texttt{local} (boolean). \\ \addlinespace
+T6 \texttt{configurations} & \texttt{date}, \texttt{config\_id}, \texttt{group\_id} (int32), \texttt{t\_start},
+  \texttt{t\_end} (int32), \texttt{n} (int16), \texttt{members} (list of int32), \texttt{edges} (list of
+  pairs of int32). How the members of a group are linked, between two changes of the edges. \\
 \bottomrule
 \end{tabularx}
-\caption{Final tables, in Parquet. The members of a configuration are not repeated in T3: they are
-read from T2 through \texttt{conf\_id}.}
+\caption{Final tables, in Parquet. The members of a group are not repeated in T3: they are read
+from T2 through \texttt{group\_id}.}
 \label{tab:outputs}
 \end{table}
 
 The state of flight $i$ at instant $t$ is obtained with an as-of join on (\texttt{flight}, $t$)
 in T3, sorted by \texttt{t\_start} (Figure~\ref{fig:tables}). T3 has about
-$N_{\rm flights}(2+2\bar c)$ rows, with $\bar c$ the mean number of configurations per flight:
+$N_{\rm flights}(2+2\bar g)$ rows, with $\bar g$ the mean number of groups per flight:
 of the order of $10^5$--$10^6$ rows, tens of MB. The other tables are smaller.
 
 \begin{figure}
@@ -40,12 +43,14 @@ of the order of $10^5$--$10^6$ rows, tens of MB. The other tables are smaller.
     tbl/.style={draw=ink2, fill=white, rounded corners=1.5pt, align=left, font=\footnotesize, inner sep=4pt, anchor=north west},
     key/.style={->, blueI, line width=0.8pt}]
   \node[tbl] (t1) at (0,3.6) {\textbf{T1} pair\_intervals\\ a, b, t\_on, t\_off};
-  \node[tbl] (t2) at (4.6,3.6) {\textbf{T2} configurations\\ \underline{conf\_id}, episode\_id,\\ t\_start, t\_end, members};
-  \node[tbl] (t3) at (4.6,0.8) {\textbf{T3} membership\\ flight, t\_start, t\_end,\\ state, conf\_id};
+  \node[tbl] (t2) at (4.6,3.6) {\textbf{T2} groups\\ \underline{group\_id}, episode\_id,\\ t\_start, t\_end, members};
+  \node[tbl] (t3) at (4.6,0.8) {\textbf{T3} membership\\ flight, t\_start, t\_end,\\ state, group\_id};
   \node[tbl] (t4) at (10.6,3.6) {\textbf{T4} episodes\\ \underline{episode\_id}, block};
   \node[tbl] (t5) at (10.6,0.8) {\textbf{T5} flight\_summary\\ flight, phi\_G, block};
   \draw[->, ink2, line width=0.8pt] (t1.east) ++(0,-0.15) -- node[above, note] {Phase 4} ($(t2.west)+(0,-0.15)$);
-  \draw[key] (t3.north) -- node[right, note] {conf\_id} (t2.south);
+  \draw[key] (t3.north) -- node[right, note] {group\_id} (t2.south);
+  \node[tbl] (t6) at (4.6,6.2) {\textbf{T6} configurations\\ config\_id, group\_id,\\ t\_start, t\_end, edges};
+  \draw[key] (t6.south) -- node[right, note] {group\_id} (t2.north);
   \draw[key] (t2.east) ++(0,-0.15) -- node[above, note] {episode\_id} ($(t4.west)+(0,-0.15)$);
   \draw[key] (t5.north) -- node[right, note] {block} (t4.south);
   \node[note, anchor=north west, align=left] at (0,0.8) {state of flight 8 at 13:42:\\the row of T3 with\\t\_start $\le$ 13:42 $<$ t\_end,\\then its members in T2};

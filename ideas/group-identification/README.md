@@ -58,7 +58,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | τ* | 2 285 s; 2 220–2 465 s (5–95%) over 200 draws of the dates with replacement |
 | flights ever in a group | para 33 501 of 154 598 (21.7%), hang 418 of 6 039 (6.9%) |
 | f_G | 0.123 |
-| groups, episodes | 40 051, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
+| groups, configurations, episodes | 40 051, 52 856, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
 
 The assessment of the method, with its figures, is in sections 5–7 and Appendix H of `group_identification.pdf`: what chance
 means (the shifts of the null model, and τ* by class of shift with `shifts.py`: 23 min with

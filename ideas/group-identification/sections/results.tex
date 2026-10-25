@@ -12,14 +12,13 @@ alone; some results here refer to it.
 \subsection{What the groups are}\label{sec:sizes}
 
 How large are the groups, how long do they last, and how do they change? We count episodes and
-configurations (Section~\ref{sec:groups}) by number and by duration; an episode lasts from the
-start of its first configuration to the end of its last, and its participants are the distinct
-flights it holds.
+groups (Section~\ref{sec:groups}) by number and by duration; an episode lasts from the start of
+its first group to the end of its last, and its participants are the distinct flights it holds.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/assessment_structure.pdf}
-\caption{Episodes (top) and configurations (bottom), $\delta=2$~min, whole archive, for three
+\caption{Episodes (top) and groups (bottom), $\delta=2$~min, whole archive, for three
 values of $q$. Left: share lasting longer than a duration. Middle: share of each size. Right:
 share of the total duration in each size.}
 \label{fig:structure}
@@ -37,40 +36,41 @@ episodes & 0.05 & 10\,553 & 74.6 min & 77\% & 67\% & 3.9\% & 8.1\% & 21 \\
  & 0.1 & 17\,169 & 58.2 min & 74\% & 61\% & 5.7\% & 12.6\% & 53 \\
  & 0.2 & 26\,504 & 44.5 min & 73\% & 56\% & 7.0\% & 17.2\% & 91 \\
 \midrule
-configurations & 0.05 & 20\,275 & 52.7 min & 70\% & 81\% & 5.6\% & 2.3\% & 18 \\
+groups & 0.05 & 20\,275 & 52.7 min & 70\% & 81\% & 5.6\% & 2.3\% & 18 \\
  & 0.1 & 40\,051 & 30.4 min & 63\% & 77\% & 9.4\% & 3.5\% & 27 \\
  & 0.2 & 75\,953 & 17.1 min & 56\% & 74\% & 14.1\% & 5.0\% & 40 \\
 \bottomrule
 \end{tabular}
-\caption{Episodes and configurations for three values of $q$ ($\delta=2$~min). Items: share of
-the episodes or configurations of that size; time: share of their total duration.}
+\caption{Episodes and groups for three values of $q$ ($\delta=2$~min). Items: share of the
+episodes or groups of that size; time: share of their total duration.}
 \label{tab:structure}
 \end{table}
 
 \paragraph{Sizes and durations.} With the chosen values the median episode lasts 58.2~min and three
 in four are pairs (Table~\ref{tab:structure}). Episodes last at least $\tau^*$, since a contact
-must, and larger episodes last longer, so they weigh more in time than in number. Configurations
-have no minimum duration: every arrival or departure of a member starts a new one, so 10\% last
-less than 2.1~min, and the median is 30.4~min. Large configurations change quickly, so in time the
-pairs weigh more than in number. \StWithHang\% of the configurations hold a hang glider. A larger
-$q$, hence a shorter $\tau^*$, gives more, shorter and larger groups: the shares of the small sizes
-change little, and the tail moves.
+must, and larger episodes last longer, so they weigh more in time than in number. Groups have no
+minimum duration: every arrival or departure of a member starts a new one, so 10\% last less
+than 2.1~min, and the median is 30.4~min. Large groups change quickly, so in time the pairs weigh
+more than in number. \StWithHang\% of the groups hold a hang glider. Inside a group the edges
+among the members can change: the 40\,051 groups of the chosen values hold 52\,856
+configurations. A larger $q$, hence a shorter $\tau^*$, gives more, shorter and larger groups:
+the shares of the small sizes change little, and the tail moves.
 
-\paragraph{How configurations change.}\label{sec:describe} A configuration ends in one of five ways:
-a \emph{join} (members added), a \emph{leave} (members removed in flight), a \emph{landing} (a
+\paragraph{How groups change.}\label{sec:describe} A group ends in one of five ways: a
+\emph{join} (members added), a \emph{leave} (members removed in flight), a \emph{landing} (a
 removed member lands within 5~s, the grid step), a \emph{split} or a \emph{merge}
-(Appendix~\ref{app:graphs}); a configuration of two pilots that loses one ends the group.
-Table~\ref{tab:rates} gives, by size, the configurations ending per hour spent at that size.
+(Appendix~\ref{app:graphs}); a group of two pilots that loses one dissolves.
+Table~\ref{tab:rates} gives, by size, the groups ending per hour spent at that size.
 \begin{itemize}
   \item \textbf{Most episodes never change:} \StEpisodeSingle\% of the \StEpisodes{} episodes are one
-        configuration; \StEpisodeSplit\% hold a split, \StEpisodeMerge\% a merge.
-  \item \textbf{Episodes last; configurations change.} \StEpisodeTwoHours\% of the episodes
-        last 2~h or more. A configuration lasts \StMedianConfTwo~min with 2 pilots and
-        \StMedianConfMax~min with \StSizeMax{} or more: joins, leaves, splits and merges all grow with
-        size, so a large configuration changes members every few minutes.
-  \item \textbf{Groups break in flight:} \StEndFlight\% of the \StEnds{} configurations that end a group
-        do so in flight, \StEndLanding\% at a landing; a pair ends mostly because the two separate.
-        \StFormDeparture\% of the \StFormations{} configurations with no predecessor form when a member
+        group; \StEpisodeSplit\% hold a split, \StEpisodeMerge\% a merge.
+  \item \textbf{Episodes last; groups change.} \StEpisodeTwoHours\% of the episodes last 2~h or
+        more. A group lasts \StMedianGroupTwo~min with 2 pilots and \StMedianGroupMax~min with
+        \StSizeMax{} or more: joins, leaves, splits and merges all grow with size, so a large group
+        changes members every few minutes.
+  \item \textbf{Groups break in flight:} \StEndFlight\% of the \StEnds{} groups that dissolve do
+        so in flight, \StEndLanding\% at a landing; a pair ends mostly because the two separate.
+        \StFormDeparture\% of the \StFormations{} groups with no predecessor form when a member
         departs: pilots who took off together.
 \end{itemize}
 
@@ -78,8 +78,8 @@ Table~\ref{tab:rates} gives, by size, the configurations ending per hour spent a
 \centering
 \footnotesize
 \input{../../analysis/groups/group-identification/report/generated/structure_rates_table}
-\caption{By size: hours spent, median duration of a configuration, and configurations ending per
-hour by outcome, with 5--95\% bands.}
+\caption{By size: hours spent, median duration of a group, and groups ending per hour by
+outcome, with 5--95\% bands.}
 \label{tab:rates}
 \end{table}
 
@@ -148,11 +148,11 @@ is following or the same choices in the same air, the data cannot tell.
 Who is ahead in a group, how often does that change, and who is it? The answer starts from the
 shape of the group.
 
-\paragraph{Shape.}\label{sec:chains} Inside a configuration the members are fixed, but the pair
-intervals among them start and end. Between two such changes the graph has a density, a diameter
-and a shape: complete, a tree (a chain or a star), or between (Appendix~\ref{app:graphs}). The
-TA-MSD pieces of the report \emph{Group and solo flights} lie inside one configuration and take
-the shape of the graph at their middle.
+\paragraph{Shape.}\label{sec:chains} Inside a group the members are fixed, but the pair intervals
+among them start and end: each edge set is a configuration. A configuration has a density, a
+diameter and a shape: complete, a tree (a chain or a star), or between (Appendix~\ref{app:graphs}).
+The TA-MSD pieces of the report \emph{Group and solo flights} lie inside one group and take the
+shape of its configuration at their middle.
 \begin{itemize}
   \item \textbf{Large groups are strings along the route.} Three pilots form a triangle \StTriangleThree\%
         of the time and a chain \StChainThree\%. Complete graphs fall from \StCompleteFour\% of the time
@@ -180,7 +180,7 @@ complete and tree graphs of 4 or more (flights in brackets), with 5--95\% bands.
 \DelayMedian~s). How leading changes the flight is in \emph{Group and solo flights}; here we ask
 who leads (Figure~\ref{fig:hierarchy}; Figure~\ref{fig:habitual} in Appendix~\ref{app:evidence}).
 \begin{itemize}
-  \item \textbf{Pilots are in a line.} In configurations of 3 pilots or more, each edge points from
+  \item \textbf{Pilots are in a line.} In groups of 3 pilots or more, each edge points from
         the pilot ahead to the one behind; we compare with the same graphs with each direction drawn
         at random (50 draws). Directed triangles are cyclic \StCyclic\% \StCyclicBand{} of the time,
         against \StCyclicNull\% at random; graphs with every edge directed (\StFullShare\% of the time)
@@ -195,7 +195,7 @@ who leads (Figure~\ref{fig:hierarchy}; Figure~\ref{fig:habitual} in Appendix~\re
         \StSwitchesChance{} \StSwitchesChanceBand{} in chance contacts lasting at least $\tau^*$; the
         pilot most often ahead holds \StDominant\% of the directed time (median), against
         \StDominantChance\%.
-  \item \textbf{The experienced pilot on the faster wing leads.} In configurations of two named
+  \item \textbf{The experienced pilot on the faster wing leads.} In groups of two named
         pilots, the leader has more earlier flights in the catalog in \StExp\% \StExpBand{} of
         \StExpPairs{} pairs (\StExpRatio{} times as many, median), and the higher wing class (A~=~1 to
         competition~=~5) in \StWing\% \StWingBand{} of \StWingPairs.
@@ -248,7 +248,7 @@ two pilots of the same club (each pilot's main club); bars at random: 5--95\% of
 \subsection{Where the sizes come from}\label{sec:fission}
 
 Why are most groups pairs, and how do a few grow large? $T(n)$ is the share of the time spent in
-configurations of $n$ pilots: the chance that a group seen at a random instant has $n$ pilots. If
+groups of $n$ pilots: the chance that a group seen at a random instant has $n$ pilots. If
 sizes change one pilot at a time, the flux from $n$ to $n+1$ pilots balances the flux back, a
 birth--death chain (Appendix~\ref{app:models}):
 \begin{equation}\label{eq:chain}
