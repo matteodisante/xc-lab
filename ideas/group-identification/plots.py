@@ -37,13 +37,13 @@ def setup(size=9):
     })
 
 
-def bars(ax, rows, x0, x1, step):
+def bars(ax, rows, x0, x1, step, fontsize=8.5):
     for r, (name, mask, x, color) in enumerate(rows):
         y = len(rows) - 1 - r
         ax.add_patch(Rectangle((x0, y - 0.32), x1 - x0, 0.64, color=LIGHT, lw=0))
         for a, b in models.runs(mask, x, step):
             ax.add_patch(Rectangle((a, y - 0.32), b - a, 0.64, color=color, lw=0))
-        ax.text(x0 - 0.025 * (x1 - x0), y, name, ha="right", va="center", fontsize=8.5)
+        ax.text(x0 - 0.025 * (x1 - x0), y, name, ha="right", va="center", fontsize=fontsize)
     ax.set_xlim(x0, x1)
     ax.set_ylim(-0.6, len(rows) - 0.4)
     ax.set_yticks([])
@@ -88,9 +88,9 @@ def save_frames(frames, name, size):
 
 # Contact of a pair.
 
-def contact(static):
-    p = models.PAIR
-    t, xi, xj = models.pair_tracks()
+def contact(static, p=models.PAIR, name="contact", views=True):
+    """The contact of a pair; views=False shows a_ij alone, without m_ij and m_ji."""
+    t, xi, xj = models.pair_tracks(p)
     M, dist = models.correspondences(t, xi, xj, p["delta"], p["eps_h"])
     km, delta = 1e-3, p["delta"]
 
@@ -150,15 +150,15 @@ def contact(static):
         ap.text(1180, 90, r"$|t'-t|\le\delta$", ha="right", fontsize=7.5, color=INK2)
         ap.text(700, 610, r"$t'=t$", fontsize=7.5, color=MUTED, rotation=45, ha="center")
 
-        m_ij, m_ji = shown.any(axis=1), shown.any(axis=0)
+        m_ij, m_ji = M.any(axis=1), M.any(axis=0)
         if not full:
-            m_ij = m_ij & (t <= tk)
-        bars(ab, [(r"$m_{ij}(t)$", m_ij, t, BLUE), (r"$m_{ji}(t)$", m_ji, t, ORANGE),
-                  (r"$a_{ij}(t)$", m_ij | m_ji, t, AQUA)], 0, 1200, p["step"])
+            m_ij, m_ji = m_ij & (t <= tk), m_ji & (t <= tk)
+        rows = [(r"$m_{ij}(t)$", m_ij, t, BLUE), (r"$m_{ji}(t)$", m_ji, t, ORANGE)] if views else []
+        bars(ab, rows + [(r"$a_{ij}(t)$", m_ij | m_ji, t, AQUA)], 0, 1200, p["step"])
         ab.axvline(tk, color=INK, lw=1.2)
         ab.set_xticks([0, 300, 600, 900, 1200])
         ab.set_xlabel("time (s)", labelpad=1)
-        ab.set_title(r"Contact: $a_{ij}=m_{ij}\vee m_{ji}$", loc="left", pad=4)
+        ab.set_title(r"Contact: $a_{ij}=m_{ij}\vee m_{ji}$" if views else r"Contact $a_{ij}(t)$", loc="left", pad=4)
         head = rf"$t = {tk:.0f}$ s\quad "
         head += (rf"correspondences: $t' \in [{t[hits].min():.0f}, {t[hits].max():.0f}]$ s" if hits.size
                  else "no correspondence")
@@ -167,12 +167,75 @@ def contact(static):
     k_fig = int(np.searchsorted(t, 420.0))
     fig = plt.figure(figsize=(6.3, 3.5))
     draw(fig, k_fig, full=True)
-    fig.savefig(FIGURES / "contact.pdf")
+    fig.savefig(FIGURES / f"{name}.pdf")
     plt.close(fig)
     frames = [(lambda f, k=k: draw(f, k), 0.125) for k in range(0, len(t), 4)]
-    save_frames(frames + [(lambda f: draw(f, k_fig, full=True), 4.0)], "contact", (6.3, 3.5))
+    save_frames(frames + [(lambda f: draw(f, k_fig, full=True), 4.0)], name, (6.3, 3.5))
     if not static:
-        save_gif(draw, [(k, 0.1) for k in range(0, len(t), 2)], "contact", size=(9.0, 5.0))
+        save_gif(draw, [(k, 0.1) for k in range(0, len(t), 2)], name.replace("_", "-"), size=(9.0, 5.0))
+
+
+# The two views of a contact: i looks for j, j looks for i.
+
+def views(static):
+    p = models.VIEWS
+    t, xi, xj = models.pair_tracks(p)
+    M, _ = models.correspondences(t, xi, xj, p["delta"], p["eps_h"])
+    m_ij, m_ji = M.any(axis=1), M.any(axis=0)
+    km, delta = 1e-3, p["delta"]
+    own = lambda who, k: (xi, xj, BLUE, ORANGE, M[k]) if who == "ij" else (xj, xi, ORANGE, BLUE, M[:, k])
+
+    def draw(fig, k, full=False):
+        fig.clear()
+        gs = fig.add_gridspec(1, 2, left=0.03, right=0.985, top=0.85, bottom=0.45, wspace=0.06)
+        gb = fig.add_gridspec(1, 1, left=0.13, right=0.985, top=0.33, bottom=0.13)
+        tk = t[k]
+        win = np.abs(t - tk) <= delta
+        for col, who in enumerate(("ij", "ji")):
+            a, b, ca, cb, row = own(who, k)
+            hits = np.flatnonzero(row)
+            ax = fig.add_subplot(gs[0, col])
+            cx, cy = a[:, k] * km
+            ax.plot(*(a * km), color=ca, lw=1, alpha=0.25)
+            ax.plot(*(b * km), color=cb, lw=1, alpha=0.25)
+            ax.plot(*(a[:, :k + 1] * km), color=ca, lw=1.6)
+            ax.plot(*(b[:, :k + 1] * km), color=cb, lw=1.6)
+            ax.plot(*(b[:, win] * km), color=cb, lw=7, alpha=0.22, solid_capstyle="butt")
+            ax.add_patch(Circle(a[:, k] * km, p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=INK2))
+            if hits.size:
+                ax.scatter(*(b[:, hits] * km), s=14, color=cb, edgecolor=INK, lw=0.5, zorder=4)
+            ax.scatter(*(a[:, k:k + 1] * km), s=34, color=ca, edgecolor=INK, lw=0.6, zorder=5)
+            ax.scatter(*(b[:, k:k + 1] * km), s=30, facecolor="white", edgecolor=cb, lw=1.4, zorder=5)
+            ax.set_aspect("equal")
+            ax.set_xlim(cx - 2.3, cx + 2.3)
+            ax.set_ylim(cy - 1.15, cy + 1.15)
+            ax.set_axis_off()
+            me, you = ("i", "j") if who == "ij" else ("j", "i")
+            ax.set_title(rf"${me}$ at $t$: does ${you}$ pass by?", loc="left", pad=3, fontsize=10.5)
+            ax.set_title(rf"$m_{{{who}}}(t)={int(hits.size > 0)}$", loc="right", pad=3, fontsize=13,
+                         color=INK if hits.size else MUTED)
+            ax.text(0.02, -0.03, rf"band: ${you}$ in $[t-\delta,t+\delta]$", transform=ax.transAxes, fontsize=8.5,
+                    va="top", color=INK2)
+
+        ab = fig.add_subplot(gb[0, 0])
+        shown = np.full(t.size, True) if full else t <= tk
+        bars(ab, [(r"$m_{ij}(t)$", m_ij & shown, t, BLUE), (r"$m_{ji}(t)$", m_ji & shown, t, ORANGE),
+                  (r"$a_{ij}(t)$", (m_ij | m_ji) & shown, t, AQUA)], 0, 1200, p["step"], fontsize=10.5)
+        ab.axvline(tk, color=INK, lw=1.2)
+        ab.set_xticks([0, 300, 600, 900, 1200])
+        ab.tick_params(labelsize=9)
+        ab.set_xlabel("time (s)", labelpad=1, fontsize=10)
+        fig.text(0.03, 0.965, rf"$t = {tk:.0f}$ s", fontsize=12, va="center")
+
+    # Held frames: only m_ij on, both on, only m_ji on.
+    only_ij, only_ji = np.flatnonzero(m_ij & ~m_ji), np.flatnonzero(m_ji & ~m_ij)
+    keys = [int(only_ij[len(only_ij) // 2]), int(np.flatnonzero(m_ij & m_ji)[0]) + 40,
+            int(only_ji[len(only_ji) // 2])]
+    ks = sorted(set(range(0, t.size, 3)) | set(keys))
+    frames = [(lambda f, k=k: draw(f, k), 2.5 if k in keys else 0.125) for k in ks]
+    save_frames(frames + [(lambda f: draw(f, keys[0], full=True), 4.0)], "views", (6.3, 3.5))
+    if not static:
+        save_gif(draw, [(k, 2.0 if k in keys else 0.1) for k in ks], "views", size=(9.0, 5.0))
 
 
 # Altitude as a clock.
@@ -273,14 +336,14 @@ POS = {1: (0.16, 0.56), 8: (0.48, 0.80), 22: (0.48, 0.30), 14: (0.82, 0.56), 5: 
 ROWS = [1, 8, 22, 14, 5]
 EPISODE_COLOUR = {1: BLUE, 2: ORANGE}
 LOG = [("11:20", r"flight 1 departs (it leaves the $R_{\rm dep}$ disc)"),
-       ("11:40", r"1--8 and 8--22 open: $c_1=\{1,8,22\}$ starts"),
-       ("12:05", r"1--22 opens: same members, $c_1$ goes on"),
-       ("12:30", r"1--22 closes: $c_1$ goes on"),
-       ("12:55", r"1--8 closes: $c_1$ ends, $c_2=\{8,22\}$ starts; $c_1\to c_2$"),
-       ("13:30", r"8--14 opens: $c_3=\{8,14,22\}$ starts; $c_2\to c_3$"),
-       ("14:10", r"8--22 and 8--14 close: $c_3$ ends, so does E1"),
-       ("15:00", r"8--22 opens again: $c_4=\{8,22\}$, a new episode E2"),
-       ("15:40", r"8--22 closes: $c_4$ ends, so does E2")]
+       ("11:40", r"1--8 and 8--22 open: group $g_1=\{1,8,22\}$ starts"),
+       ("12:05", r"1--22 opens: new configuration, $g_1$ goes on"),
+       ("12:30", r"1--22 closes: new configuration, $g_1$ goes on"),
+       ("12:55", r"1--8 closes: $g_1$ ends, $g_2=\{8,22\}$ starts; $g_1\to g_2$"),
+       ("13:30", r"8--14 opens: $g_3=\{8,14,22\}$ starts; $g_2\to g_3$"),
+       ("14:10", r"8--22 and 8--14 close: $g_3$ ends, so does E1"),
+       ("15:00", r"8--22 opens again: $g_4=\{8,22\}$, a new episode E2"),
+       ("15:40", r"8--22 closes: $g_4$ ends, so does E2")]
 
 
 def hhmm(m):
@@ -289,8 +352,8 @@ def hhmm(m):
 
 def day(static):
     flights, pairs = models.example_day()
-    configs, episode, _ = models.sweep(flights, pairs)
-    name = {c: f"c{n + 1}" for n, c in enumerate(configs)}
+    groups, episode, _ = models.sweep(flights, pairs)
+    name = {c: f"g{n + 1}" for n, c in enumerate(groups)}
     t0, t1 = models.minutes("11:00"), models.minutes("16:00")
     log = [(models.minutes(a), b) for a, b in LOG]
 
@@ -301,7 +364,7 @@ def day(static):
             if on <= t < off:
                 ax.plot(*zip(POS[a], POS[b]), color=INK, lw=1.4 if small else 2.0, zorder=1)
         for f, (x, y) in POS.items():
-            st = models.label(flights, configs, f, t)
+            st = models.label(flights, groups, f, t)
             if st is None:
                 face, edge, ls, txt = "white", LIGHT, ":", LIGHT
             elif st == "L":
@@ -325,7 +388,7 @@ def day(static):
                                        edgecolor=MUTED, hatch="////", lw=0.6))
             if dep < end:
                 ax.add_patch(Rectangle((dep, y - 0.3), end - dep, 0.6, color=LIGHT, lw=0))
-            for c in configs:
+            for c in groups:
                 if f in c.members and c.start < end:
                     b = min(c.end, end)
                     ax.add_patch(Rectangle((c.start + 0.6, y - 0.3), b - c.start - 1.2, 0.6,
@@ -335,8 +398,8 @@ def day(static):
         ye = -1.25
         ax.text(t0 - 4, ye, "episodes", ha="right", va="center", fontsize=8)
         for e in sorted(set(episode.values())):
-            a = min(c.start for c in configs if episode[c] == e)
-            b = max(c.end for c in configs if episode[c] == e)
+            a = min(c.start for c in groups if episode[c] == e)
+            b = max(c.end for c in groups if episode[c] == e)
             if a < upto:
                 bb = min(b, upto)
                 ax.plot([a, bb], [ye, ye], color=EPISODE_COLOUR[e], lw=2.2, solid_capstyle="butt")
@@ -360,7 +423,7 @@ def day(static):
         ag.set_title(r"Active contact graph $G(t)$", loc="left", pad=2)
         lines = []
         for m in models.active_components(flights, pairs, t):
-            c = models.label(flights, configs, next(iter(m)), t)
+            c = models.label(flights, groups, next(iter(m)), t)
             lines.append(rf"{name[c]} $=\{{{','.join(str(x) for x in sorted(m))}\}}$, episode E{episode[c]}")
         ag.text(0.0, -0.04, "\n".join(lines) if lines else "no group", fontsize=8.5, va="top")
         al.set_axis_off()
@@ -539,6 +602,8 @@ if __name__ == "__main__":
     ANIMATIONS.mkdir(exist_ok=True)
     setup()
     contact(static)
+    contact(static, models.VIEWS, "contact_simple", views=False)
+    views(static)
     clock(static)
     day(static)
     decimation()

@@ -41,6 +41,11 @@ def correspondences(t, xi, xj, delta, eps_h):
     return (np.abs(t[None, :] - t[:, None]) <= delta) & (dist < eps_h), dist
 
 
+# m_ij and m_ji differ: j joins the route of i, 90 s behind, then leaves it.
+
+VIEWS = {**PAIR, "delay": 90.0, "delta": 120.0}
+
+
 # m_ij and m_ji differ: i waits in one place and j flies through it; j follows the route of i.
 
 WAIT = dict(t_leave=600.0, t_pass=500.0, speed=10.0, delta=120.0, eps_h=500.0, step=1.0, t_end=700.0)
@@ -108,7 +113,7 @@ def thermal_scan(p=THERMAL, step=1.0):
                        horizontal < p["eps_h"], np.abs(zi - z) < p["eps_z"])
 
 
-# Groups: configurations, episodes and blocks from pair intervals.
+# Groups, episodes and blocks from pair intervals.
 
 def minutes(hhmm):
     h, m = hhmm.split(":")
@@ -127,7 +132,7 @@ DAY_PAIRS = [((1, 8), "11:40", "12:55"), ((8, 22), "11:40", "14:10"), ((1, 22), 
 
 
 @dataclass(frozen=True)
-class Configuration:
+class Group:
     members: frozenset
     start: int
     end: int
@@ -160,32 +165,32 @@ def active_components(flights, pairs, t):
 
 
 def sweep(flights, pairs):
-    """Configurations, the episode of each configuration, and the dependency blocks."""
+    """Groups, the episode of each group, and the dependency blocks."""
     times = sorted({x for _, a, b in pairs for x in (a, b)} | {x for _, d, e in flights.values() for x in (d, e)})
     open_, done, links = {}, [], []
     for te in times:
         comps = active_components(flights, pairs, te)
-        closed = [Configuration(m, open_.pop(m), te) for m in list(open_) if m not in comps]
+        closed = [Group(m, open_.pop(m), te) for m in list(open_) if m not in comps]
         done += closed
         for m in comps - set(open_):
             open_[m] = te
-            links += [(c, Configuration(m, te, -1)) for c in closed if c.members & m]
-    configs = sorted(done, key=lambda c: (c.start, sorted(c.members)))
-    parent = {c: c for c in configs}
+            links += [(c, Group(m, te, -1)) for c in closed if c.members & m]
+    groups = sorted(done, key=lambda c: (c.start, sorted(c.members)))
+    parent = {c: c for c in groups}
 
     def find(c):
         while parent[c] != c:
             c = parent[c]
         return c
 
-    by_start = {(c.members, c.start): c for c in configs}
+    by_start = {(c.members, c.start): c for c in groups}
     for prev, nxt in links:
         parent[find(prev)] = find(by_start[(nxt.members, nxt.start)])
     roots = []
-    for c in configs:
+    for c in groups:
         if find(c) not in roots:
             roots.append(find(c))
-    episode = {c: roots.index(find(c)) + 1 for c in configs}
+    episode = {c: roots.index(find(c)) + 1 for c in groups}
 
     owner = {f: f for f in flights}
 
@@ -195,23 +200,23 @@ def sweep(flights, pairs):
         return f
 
     for e in set(episode.values()):
-        members = sorted(set().union(*(c.members for c in configs if episode[c] == e)))
+        members = sorted(set().union(*(c.members for c in groups if episode[c] == e)))
         for f in members[1:]:
             owner[root(f)] = root(members[0])
     blocks = {}
     for f in flights:
         blocks.setdefault(root(f), set()).add(f)
-    return configs, episode, sorted(map(sorted, blocks.values()))
+    return groups, episode, sorted(map(sorted, blocks.values()))
 
 
-def label(flights, configs, f, t):
-    """The membership gamma_f(t): 'L', 'S', a Configuration, or None outside the flight."""
+def label(flights, groups, f, t):
+    """The membership gamma_f(t): 'L', 'S', a Group, or None outside the flight."""
     takeoff, dep, end = flights[f]
     if t < takeoff or t >= end:
         return None
     if t < dep:
         return "L"
-    for c in configs:
+    for c in groups:
         if f in c.members and c.start <= t < c.end:
             return c
     return "S"

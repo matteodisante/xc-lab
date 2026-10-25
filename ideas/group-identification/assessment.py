@@ -14,8 +14,9 @@ the runs on SSD_DISANTE.
 - assessment_tolerances: the profiles of tolerances.py (eps_h, eps_z, gap lengths);
 - assessment_q: tau* as a function of q, and the flights ever in a group for three q;
 - assessment_structure: the durations and the participants of the episodes and of the
-  configurations, for the three q with delta = 2 min; assessment_structure_episodes and
-  _configurations: one row each, with larger text, for the slides.
+  groups, for the three q with delta = 2 min; assessment_structure_episodes and _groups: one
+  row each, with larger text, for the slides; the same with the suffix _q01
+  for q = 0.1 only.
 """
 
 import json
@@ -183,11 +184,11 @@ def q_figure(wide, narrow, counts):
 
 def structure(name):
     """Durations (min) and participants of the episodes (distinct flights) and of the
-    configurations (members at once) of a run."""
+    groups (members at once) of a run."""
     e = pd.read_parquet(RUNS / name / "episodes.parquet")
-    c = pd.read_parquet(RUNS / name / "configurations.parquet")
+    g = pd.read_parquet(RUNS / name / "groups.parquet")
     return {"episodes": ((e["t_end"] - e["t_start"]).to_numpy() / 60, e["n_flights"].to_numpy()),
-            "configurations": ((c["t_end"] - c["t_start"]).to_numpy() / 60, c["n"].to_numpy())}
+            "groups": ((g["t_end"] - g["t_start"]).to_numpy() / 60, g["n"].to_numpy())}
 
 
 def size_shares(duration, n):
@@ -196,11 +197,12 @@ def size_shares(duration, n):
     return sizes, np.bincount(k) / len(n), np.bincount(k, weights=duration) / duration.sum()
 
 
-def structure_figure(runs, kinds=("episodes", "configurations"), name="assessment_structure", size=(13, 3.2)):
+def structure_figure(runs, kinds=("episodes", "groups"), name="assessment_structure", size=(13, 3.2)):
     fig, axes = plt.subplots(len(kinds), 3, figsize=(size[0], size[1] * len(kinds)), squeeze=False)
     ticks = {"episodes": ((30, 60, 120, 300, 600), (2, 5, 10, 20, 50, 100)),
-             "configurations": ((0.1, 1, 10, 100), (2, 5, 10, 20, 40))}
-    for q, colour, style in zip(QS, (GREY, BLUE, ORANGE), (":", "-", "--"), strict=True):
+             "groups": ((0.1, 1, 10, 100), (2, 5, 10, 20, 40))}
+    for q in runs:
+        colour, style = {0.05: (GREY, ":"), 0.1: (BLUE, "-"), 0.2: (ORANGE, "--")}[q]
         for row, kind in zip(axes, kinds, strict=True):
             duration, n = runs[q][kind]
             x = np.sort(duration)
@@ -208,16 +210,18 @@ def structure_figure(runs, kinds=("episodes", "configurations"), name="assessmen
             sizes, by_count, by_time = size_shares(duration, n)
             row[1].plot(sizes, by_count, "o", color=colour, ls=style, ms=3)
             row[2].plot(sizes, by_time, "o", color=colour, ls=style, ms=3)
-            size = "flights in the episode" if kind == "episodes" else "pilots in the configuration"
-            row[0].set(xscale="log", yscale="log", xlabel=f"duration of the {kind[:-1]} (min)",
+            noun = {"episodes": "episode", "groups": "group"}[kind]
+            size = "flights in the episode" if kind == "episodes" else "pilots in the group"
+            row[0].set(xscale="log", yscale="log", xlabel=f"duration of the {noun} (min)",
                        ylabel="share lasting longer")
-            row[1].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the {kind}")
-            row[2].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the time in {kind}")
+            row[1].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the {noun}s")
+            row[2].set(xscale="log", yscale="log", xlabel=size, ylabel=f"share of the time in {noun}s")
     for row, kind in zip(axes, kinds, strict=True):
         for ax, t in zip(row, (ticks[kind][0], ticks[kind][1], ticks[kind][1]), strict=True):
             ax.set_xticks(t, [f"{x:g}" for x in t])
             ax.xaxis.set_minor_formatter(plt.NullFormatter())
-    axes[0, 0].legend(frameon=False, fontsize="small")
+    if len(runs) > 1:
+        axes[0, 0].legend(frameon=False, fontsize="small")
     save(fig, name)
 
 
@@ -241,6 +245,7 @@ if __name__ == "__main__":
     runs = {q: structure(NARROW.format(q)) for q in QS}
     structure_figure(runs)
     with plt.rc_context({"font.size": 13}):  # one row per slide of the meeting
-        for kind in ("episodes", "configurations"):
+        for kind in ("episodes", "groups"):
             structure_figure(runs, (kind,), f"assessment_structure_{kind}", size=(12, 3.8))
+            structure_figure({0.1: runs[0.1]}, (kind,), f"assessment_structure_{kind}_q01", size=(12, 3.8))
     print("figures written")

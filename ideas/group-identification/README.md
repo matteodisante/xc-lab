@@ -9,7 +9,8 @@ group, and with whom?
 **Answer.** Two pilots are in contact when one of them is on the path of the other within
 δ = 2 min, 500 m horizontally and 300 m vertically (headings compared only in glide) for at
 least τ* = 38.1 min, the duration at which the time-shift null model explains at most 10% of
-the contacts; the groups of an instant are the connected components of the contact graph.
+the contacts; the configurations of an instant are the connected components of the contact
+graph, and a group keeps the same members over a maximal interval.
 Then 21.7% of the paraglider and 6.9% of the hang-glider flights fly in a group at some point,
 in 17 169 episodes. Why these values, what chance means and how real pairs differ from it:
 sections 5–6 of `group_identification.pdf`. Why `m_ij(t) = 1` does not give
@@ -57,7 +58,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | τ* | 2 285 s; 2 220–2 465 s (5–95%) over 200 draws of the dates with replacement |
 | flights ever in a group | para 33 501 of 154 598 (21.7%), hang 418 of 6 039 (6.9%) |
 | f_G | 0.123 |
-| configurations, episodes | 40 051, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
+| groups, episodes | 40 051, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
 
 The assessment of the method, with its figures, is in sections 5–7 and Appendix H of `group_identification.pdf`: what chance
 means (the shifts of the null model, and τ* by class of shift with `shifts.py`: 23 min with
@@ -65,7 +66,7 @@ shifts over an hour, 53 min under 30 min), the false discovery rate of the conta
 profile (`delays.py`), the distance at the same instant (`separation.py`), the profiles of the
 tolerances (`tolerances.py`), the plateau check (`plateau.py`) with its table, the choice
 of δ and q, and what the groups look like: durations and sizes of the episodes and of the
-configurations, by number and by time, for three q.
+groups, by number and by time, for three q.
 
 ## Files
 
@@ -79,7 +80,7 @@ configurations, by number and by time, for three q.
   `analysis/groups/group-identification`
   writes in its `report/generated/`, and their figures are copies of its `out/<run>/` in
   `figures/structure/`.
-- `models.py`: the synthetic scenarios of the figures and the sweep that builds configurations,
+- `models.py`: the synthetic scenarios of the figures and the sweep that builds groups,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
   animations in the PDF) and `animations/`.
@@ -106,13 +107,22 @@ because j passes where i was two minutes later.
 
 ![contact](animations/contact.gif)
 
+The same with the contact a_ij alone, on a similar route 90 s behind (the slides).
+
+![contact, a_ij alone](animations/contact-simple.gif)
+
+The two views of a contact: j joins the route of i, 90 s behind, so i finds j on its path 100 s
+before j finds i (m_ij = 1 while m_ji = 0), and the reverse when j leaves; a_ij is the union.
+
+![views](animations/views.gif)
+
 The vertical condition in a thermal: the horizontal distance is small at every delay, and only
 the altitude selects one window of delays, so pilots at distant heights are not in contact. Inside
 the window every turn gives an equal minimum, so the delay l* stays undetermined.
 
 ![vertical condition](animations/altitude-clock.gif)
 
-An example day: the contact graph, the configurations c1–c4 and the episodes E1, E2, event by
+An example day: the contact graph, the groups g1–g4 and the episodes E1, E2, event by
 event.
 
 ![example day](animations/example-day.gif)

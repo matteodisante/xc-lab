@@ -1,0 +1,14 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  % The graph at one instant t: no duration, only who is linked to whom at t.
+  \node[panel] at (0,2.1) {$G(t)$ at one instant $t$};
+  \fill[steellight!45] (-0.45,-0.5) rectangle (3.45,1.55);
+  \fill[steellight!45] (3.85,-0.5) rectangle (6.25,1.55);
+  \coordinate (a) at (0.5,0); \coordinate (b) at (1.5,1.0); \coordinate (c) at (2.5,0);
+  \coordinate (d) at (4.3,0); \coordinate (e) at (5.3,1.0); \coordinate (f) at (7.6,0.5);
+  \draw[edge] (a) -- (b) -- (c); \draw[edge] (d) -- (e);
+  \node[inE1] at (a) {1}; \node[inE1] at (b) {2}; \node[inE1] at (c) {3};
+  \node[inE1] at (d) {4}; \node[inE1] at (e) {5}; \node[flight] at (f) {6};
+  \node[note, align=center] at (1.5,-0.95) {configuration\\a chain 1--2--3};
+  \node[note, align=center] at (5.05,-0.95) {configuration\\$\{4,5\}$};
+  \node[note, align=center] at (7.6,-0.95) {solo};
+\end{tikzpicture}

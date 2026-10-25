@@ -6,9 +6,9 @@ Every run writes to its own folder on SSD_DISANTE, named by its parameters (run_
 runs/<name> for all dates, trials/sample<N>/<name> for a sample. Phases 0-3 and the null
 model run per date in parallel; each date is kept in <folder>/days/, so an interrupted run
 resumes. Then tau* comes from the null model over the dates done, and Phase 4 writes the
-tables of the note (section Outputs): pair_intervals (T1), configurations (T2), membership
-(T3), episodes (T4), flight_summary (T5), and flights, the key of the flight index used by
-all of them. calibration.json holds tau* and the false discovery rate, PARAMETERS.md every
+tables of the note (section Outputs): pair_intervals (T1), groups (T2), membership (T3),
+episodes (T4), flight_summary (T5), configurations (T6), and flights, the key of the flight
+index used by all of them. calibration.json holds tau* and the false discovery rate, PARAMETERS.md every
 parameter with its meaning.
 """
 
@@ -80,8 +80,9 @@ def describe(folder, p, dates, calibration=None):
         tau = calibration["tau_star"]
         lines.append(f"| τ* | {tau} s ({tau / 60:.1f} min) | shortest pair interval kept: the first duration "
                      "with FDR ≤ q |")
-    lines += ["", "Tables of the note (section Outputs): `pair_intervals`, `configurations`, `membership`, "
-              "`episodes`, `flight_summary`, `flights`; `calibration.json`; `days/` caches each date."]
+    lines += ["", "Tables of the note (section Outputs): `pair_intervals`, `groups`, `membership`, "
+              "`episodes`, `flight_summary`, `configurations`, `flights`; `calibration.json`; `days/` caches each "
+              "date."]
     (folder / "PARAMETERS.md").write_text("\n".join(lines) + "\n")
 
 
@@ -183,43 +184,48 @@ def calibrate(intervals, null, p):
 
 
 def label(flights, intervals, tau_star):
-    """Phase 4 on every date: tables T1-T5 of the note, with global flight, configuration,
-    episode and block numbers."""
+    """Phase 4 on every date: tables T1-T6 of the note, with global flight, group,
+    configuration, episode and block numbers."""
     kept = intervals[intervals["duration"] >= tau_star]
-    confs, ms = [], []
+    gs, cs, ms = [], [], []
     block = np.zeros(len(flights), np.int64)
-    n_conf = n_episode = n_block = 0
+    n_group = n_config = n_episode = n_block = 0
     for date, table in flights.groupby("date", sort=False):
         first = table["flight"].iat[0]
         local = table.reset_index(drop=True)
         iv = kept[kept["date"] == date]
         rows = [(a - first, b - first, on, off) for a, b, on, off in iv[["a", "b", "t_on", "t_off"]].itertuples(index=False)]
-        configs, links = sweep.configurations(rows)
-        episode = sweep.episodes(len(configs), links)
-        blocks = sweep.blocks(len(local), configs, episode)
+        groups, configs, links = sweep.groups(rows)
+        episode = sweep.episodes(len(groups), links)
+        blocks = sweep.blocks(len(local), groups, episode)
         block[first:first + len(local)] = blocks + n_block
-        for c, (m, start, end) in enumerate(configs):
-            confs.append((date, n_conf + c, n_episode + episode[c], start, end, len(m), sorted(f + first for f in m)))
-        mb = sweep.membership(local, configs)
+        for g, (m, start, end) in enumerate(groups):
+            gs.append((date, n_group + g, n_episode + episode[g], start, end, len(m), sorted(f + first for f in m)))
+        for c, (m, edges, start, end, g) in enumerate(configs):
+            cs.append((date, n_config + c, n_group + g, start, end, len(m), sorted(f + first for f in m),
+                       sorted([a + first, b + first] for a, b in edges)))
+        mb = sweep.membership(local, groups)
         mb["flight"] += first
-        mb["conf_id"] = np.where(mb["conf"] >= 0, mb["conf"] + n_conf, -1)
-        ms.append(mb.drop(columns="conf"))
-        n_conf += len(configs)
-        n_episode += int(episode.max()) + 1 if len(configs) else 0
+        mb["group_id"] = np.where(mb["group"] >= 0, mb["group"] + n_group, -1)
+        ms.append(mb.drop(columns="group"))
+        n_group += len(groups)
+        n_config += len(configs)
+        n_episode += int(episode.max()) + 1 if len(groups) else 0
         n_block += int(blocks.max()) + 1
-    t2 = pd.DataFrame(confs, columns=["date", "conf_id", "episode_id", "t_start", "t_end", "n", "members"])
+    t2 = pd.DataFrame(gs, columns=["date", "group_id", "episode_id", "t_start", "t_end", "n", "members"])
+    t6 = pd.DataFrame(cs, columns=["date", "config_id", "group_id", "t_start", "t_end", "n", "members", "edges"])
     t3 = pd.concat(ms, ignore_index=True)
-    t3 = t3.merge(t2[["conf_id", "episode_id", "n"]], on="conf_id", how="left")
+    t3 = t3.merge(t2[["group_id", "episode_id", "n"]], on="group_id", how="left")
     t3["episode_id"] = t3["episode_id"].fillna(-1).astype(np.int64)
     t3["n"] = t3["n"].fillna(1).astype(np.int64)
-    first_conf = t2.groupby("episode_id").agg(date=("date", "first"), t_start=("t_start", "min"), t_end=("t_end", "max"),
-                                             n_max=("n", "max"), n_config=("conf_id", "size"))
+    first_group = t2.groupby("episode_id").agg(date=("date", "first"), t_start=("t_start", "min"), t_end=("t_end", "max"),
+                                              n_max=("n", "max"), n_groups=("group_id", "size"))
     flights_of = t2.explode("members").groupby("episode_id")["members"].agg(lambda m: len(set(m)))
-    t4 = first_conf.assign(n_flights=flights_of).reset_index()
+    t4 = first_group.assign(n_flights=flights_of).reset_index()
     t4["block"] = block[[m[0] for m in t2.groupby("episode_id")["members"].first()]]
     t5 = summary(flights, t2, t3, block)
     t1 = kept[["date", "a", "b", "t_on", "t_off", "duration", "ell_med", "d_dec"]].reset_index(drop=True)
-    return t1, t2, t3, t4, t5
+    return t1, t2, t3, t4, t5, t6
 
 
 def summary(flights, t2, t3, block):
@@ -234,8 +240,8 @@ def summary(flights, t2, t3, block):
     previous = t3.groupby("flight")["state"].shift()
     entries = t3[(t3["state"] == "G") & (previous != "G")].groupby("flight").size()
     n_episodes = g.groupby("flight")["episode_id"].nunique()
-    pairs = t2.explode("members")[["conf_id", "members"]].rename(columns={"members": "flight"})
-    pairs = pairs.merge(pairs, on="conf_id")
+    pairs = t2.explode("members")[["group_id", "members"]].rename(columns={"members": "flight"})
+    pairs = pairs.merge(pairs, on="group_id")
     pairs = pairs[pairs["flight_x"] != pairs["flight_y"]]
     kappa = pairs.groupby("flight_x")["flight_y"].nunique()
     out = pd.DataFrame({"flight": flights["flight"].to_numpy()})
@@ -248,10 +254,10 @@ def summary(flights, t2, t3, block):
     return out
 
 
-def write(out, flights, t1, t2, t3, t4, t5, calibration):
+def write(out, flights, t1, t2, t3, t4, t5, t6, calibration):
     flights.drop(columns=["X0", "Y0", "Z0"]).to_parquet(out / "flights.parquet", index=False)
-    for name, t in [("pair_intervals", t1), ("configurations", t2), ("membership", t3), ("episodes", t4),
-                    ("flight_summary", t5)]:
+    for name, t in [("pair_intervals", t1), ("groups", t2), ("membership", t3), ("episodes", t4),
+                    ("flight_summary", t5), ("configurations", t6)]:
         t.to_parquet(out / f"{name}.parquet", index=False)
     (out / "calibration.json").write_text(json.dumps({"params": PARAMS, **calibration}, indent=1))
 
@@ -303,5 +309,5 @@ if __name__ == "__main__":
     write(args.out, flights, *tables, calibration)
     describe(args.out, PARAMS, len(dates), calibration)
     t5 = tables[4]
-    print(f"{len(flights)} flights, {len(tables[1])} configurations, {len(tables[3])} episodes; "
+    print(f"{len(flights)} flights, {len(tables[1])} groups, {len(tables[5])} configurations, {len(tables[3])} episodes; "
           f"flights ever in a group: {(t5['n_entries'] > 0).sum()}", flush=True)

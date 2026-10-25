@@ -1,0 +1,21 @@
+\begin{tikzpicture}[x=3.1cm,y=3.4cm]
+  % Side view along the route, i at time t fixed at the origin; j at the instants t' of [t-delta, t+delta].
+  \fill[aqua!18] (-0.5,-0.3) rectangle (0.5,0.3);
+  \draw[aqua, line width=1pt] (-0.5,-0.3) rectangle (0.5,0.3);
+  \draw[->, ink2] (-1.9,0) -- (0.95,0) node[right, lbl, ink] {$\x_j(t')-\x_i(t)$};
+  \draw[->, ink2] (0,-0.5) -- (0,0.62) node[above, lbl, ink] {$z_j(t')-z_i(t)$};
+  \foreach \v/\l in {-0.5/-\varepsilon_h, 0.5/\varepsilon_h} \draw[ink2] (\v,-0.02) -- (\v,0.02) node[below=2pt, lbl] {$\l$};
+  \foreach \v/\l in {-0.3/-\varepsilon_z, 0.3/\varepsilon_z} \draw[ink2] (-0.02,\v) -- (0.02,\v) node[left=2pt, lbl] {$\l$};
+  % j every 30 s, 90 s behind i, a little higher and sinking more slowly: t'-t from -120 s to +120 s.
+  \draw[orangeJ, line width=0.8pt] (-1.68,0.415) -- (-1.44,0.37) -- (-1.2,0.325) -- (-0.96,0.28) -- (-0.72,0.235)
+    -- (-0.48,0.19) -- (-0.24,0.145) -- (0,0.10) -- (0.24,0.055);
+  \foreach \p in {(-1.68,0.415), (-1.44,0.37), (-1.2,0.325), (-0.96,0.28), (-0.72,0.235)} \node[hollow j] at \p {};
+  \foreach \p in {(-0.48,0.19), (-0.24,0.145), (0,0.10), (0.24,0.055)} \node[pt j] at \p {};
+  \node[pt i] at (0,0) {};
+  \node[lbl, blueI, below] at (0,-0.06) {$i$ at $t$};
+  \node[lbl, orangeJ, above] at (-1.68,0.44) {$j$ at $t'=t-\delta$};
+  \node[lbl, orangeJ, above] at (-0.72,0.26) {$t'=t$};
+  \node[lbl, orangeJ, above right=-1pt] at (0.24,0.07) {$t+\delta$};
+  \node[note, align=left, anchor=west] (call) at (0.6,0.47) {$(t,t')\in\M_{ij}$};
+  \draw[->, ink2] (call.south west) -- (0.1,0.12);
+\end{tikzpicture}

@@ -5,11 +5,9 @@
     \draw[ink2] (0,0) -- (-1.6,0) node[pos=0.6, above, lbl] {$R_\dep$};
     \draw[track i] plot[smooth, tension=0.6] coordinates {(0,0) (0.55,0.25) (-0.45,0.45) (0.6,0.62)
       (-0.35,0.85) (0.15,1.05) (0.45,0.9) (0.3,0.7) (0.05,0.95) (0.6,1.05) (1.1,0.9) (1.46,0.66) (2.3,0.95) (3.3,1.4)};
-    \draw[track j] plot[smooth cycle, tension=0.8] coordinates {(-0.9,-0.4) (-0.3,-0.75) (0.4,-0.6) (-0.2,-0.3)};
     \fill[ink] (0,0.13) -- ++(-0.12,-0.2) -- ++(0.24,0) -- cycle;
     \node[pt] (ex) at (1.46,0.66) {};
     \node[lbl, anchor=west, align=left] at (1.75,0.25) {$k^\dep_i$: first exit};
-    \node[note, anchor=north west, align=left] at (-1.9,-1.75) {flight $j$ never leaves the disc:\\a local flight, all \st{L}};
     \node[lbl, blueI] at (3.45,1.6) {$i$};
     \node[note, anchor=south] at (0,1.65) {takeoff area};
   \end{scope}
@@ -24,6 +22,6 @@
     \draw[ink2] (8.6,-0.08) -- (8.6,0.08); \node[lbl, below] at (8.6,-0.1) {$k^\fin_i$};
     \draw[decorate, decoration={brace, amplitude=4pt}, ink2] (2.6,0.75) -- (8.6,0.75)
       node[midway, above=5pt, lbl, ink] {$T^\dep_i$: one instant every $\Delta$};
-    \draw[<->, ink2] (2.95,-0.55) -- (3.3,-0.55) node[midway, below, lbl] {$\Delta$};
+    \draw[<->, ink2] (2.95,-0.55) -- (3.3,-0.55) node[midway, below, lbl] {$\Delta=5$~s};
   \end{scope}
 \end{tikzpicture}

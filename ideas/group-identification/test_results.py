@@ -14,7 +14,7 @@ pytestmark = pytest.mark.skipif(not (OUT / "calibration.json").exists(), reason=
 @pytest.fixture(scope="module")
 def out():
     return {name: pd.read_parquet(OUT / f"{name}.parquet") for name in
-            ("flights", "flight_summary", "configurations", "episodes", "membership", "intervals_raw")}
+            ("flights", "flight_summary", "groups", "configurations", "episodes", "membership", "intervals_raw")}
 
 
 def test_calibration_numbers_of_the_readme():
@@ -41,7 +41,7 @@ def test_flight_numbers_of_the_readme(out):
 def test_group_numbers_of_the_readme(out):
     iv = out["intervals_raw"]
     assert len(iv) == 728866 and (iv.duration >= 2285).sum() == 36575
-    assert len(out["configurations"]) == 40051
+    assert len(out["groups"]) == 40051
     e = out["episodes"]
     assert len(e) == 17169 and e.n_flights.median() == 2 and e.n_flights.max() == 53
     assert round((e.t_end - e.t_start).median() / 3600, 2) == 0.97
@@ -52,12 +52,21 @@ def test_group_numbers_of_the_readme(out):
 
 
 def test_tables_are_consistent(out):
-    m, conf = out["membership"], out["configurations"]
-    # Every G stretch is a configuration that contains the flight, over the configuration's time.
-    g = m[m.state == "G"].merge(conf, on="conf_id", suffixes=("", "_c"))
-    assert (g.t_start == g.t_start_c).all() and (g.t_end == g.t_end_c).all()
+    m, groups = out["membership"], out["groups"]
+    # Every G stretch is a group that contains the flight, over the group's time.
+    g = m[m.state == "G"].merge(groups, on="group_id", suffixes=("", "_g"))
+    assert (g.t_start == g.t_start_g).all() and (g.t_end == g.t_end_g).all()
     assert all(f in members for f, members in zip(g.flight, g.members))
-    assert (conf.n == conf.members.map(len)).all() and (conf.n >= 2).all()
+    assert (groups.n == groups.members.map(len)).all() and (groups.n >= 2).all()
+    # The configurations of a group keep its members, are connected and tile its time.
+    c = out["configurations"].merge(groups, on="group_id", suffixes=("", "_g")).sort_values(["group_id", "t_start"])
+    assert all(list(a) == list(b) for a, b in zip(c.members, c.members_g))
+    assert (c.edges.map(len) >= c.n - 1).all()
+    same = c.group_id.to_numpy()[1:] == c.group_id.to_numpy()[:-1]
+    assert (c.t_start.to_numpy()[1:][same] == c.t_end.to_numpy()[:-1][same]).all()
+    span = c.groupby("group_id").agg(a=("t_start", "min"), b=("t_end", "max"), a_g=("t_start_g", "first"),
+                                     b_g=("t_end_g", "first"))
+    assert (span.a == span.a_g).all() and (span.b == span.b_g).all()
     # The stretches of a flight tile its time from takeoff to landing.
     m = m.sort_values(["flight", "t_start"])
     same = m.flight.to_numpy()[1:] == m.flight.to_numpy()[:-1]

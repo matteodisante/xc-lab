@@ -82,9 +82,7 @@
     \node[anchor=north east,text=white,inner sep=0pt,xshift=-2.3mm,yshift=-4.2mm]
       at(current page.north east){\small\insertframenumber};
   \end{tikzpicture}}
-\setbeamertemplate{footline}{%
-  \hspace{7mm}\textcolor{muted}{\fontsize{6.5}{8}\selectfont
-    Matteo Di Sante\enspace|\enspace Group flight identification\enspace|\enspace xc-lab, 23 October 2026}\vspace{2mm}}
+\setbeamertemplate{footline}{}
 
 \newcommand{\source}[1]{\par\vspace{1mm}{\fontsize{7}{8.3}\selectfont\color{ink2}#1\par}}
 \newcommand{\takeaway}[1]{\par\vfill
@@ -116,13 +114,8 @@
 \begin{frame}[plain]
 \begin{tikzpicture}[remember picture,overlay]
  \fill[steel](current page.south west)rectangle(current page.north east);
- \fill[steellight](current page.south west)rectangle([yshift=20mm]current page.south east);
- \node[text=white,align=center,text width=.9\paperwidth]at([yshift=8mm]current page.center)
-   {{\LARGE\bfseries Who flies with whom?}\\[4mm]
-    {\large Identifying group flights in the FFVL archive}};
- \node[text=steel,align=center]at([yshift=10mm]current page.south)
-   {{\normalsize Matteo Di Sante\quad|\quad xc-lab meeting, 23 October 2026}\\[1.5mm]
-    {\footnotesize Method note and code: \texttt{xc-lab/ideas/group-identification}}};
+ \node[text=white,align=center,text width=.9\paperwidth]at(current page.center)
+   {\LARGE\bfseries Identifying group flights in the FFVL archive};
 \end{tikzpicture}
 \end{frame}
 
@@ -132,49 +125,70 @@
 \begin{beamercolorbox}[wd=\linewidth,sep=6pt,center]{takeaway}
 \large For every flight and every instant: alone or in a group, and with whom?
 \end{beamercolorbox}
-\tikzfig[0.65\textheight]{requirements}
+\tikzfig[0.6\textheight]{requirements}
+\par\small Pilots in a group need not take off from the same site, like $j$ and $k$.
 \end{frame}
 
 \begin{frame}{The method in six steps}
 \tikzfig[0.8\textheight]{overview_idea}
 \end{frame}
 
-\begin{frame}{Two pilots on one route, two minutes apart}
+\begin{frame}{Two pilots on similar routes, 90~s apart}
 \begin{columns}[c,onlytextwidth]
 \column{.66\textwidth}
-\anim{\linewidth}{contact}
+\anim{\linewidth}{contact_simple}
 \column{.31\textwidth}
-$j$ flies the route of $i$, 2~min later.
+$j$ flies a route similar to that of $i$, here 90~s later. In reality the delay varies: we
+want it within $\delta$.
 \par\bigskip
-Same instant: \textbf{1~km apart}.
+Same instant: here about 0.8~km apart, and it varies too.
 \par\bigskip
-Same place, with a delay: \textbf{in contact}.
+Same place (within $\varepsilon_h$), with a delay (within $\delta$): \textbf{in contact}.
 \end{columns}
 \end{frame}
 
-\begin{frame}{From contacts to groups: an example day}
+\begin{frame}{Configuration and group}
+\tikzfig[0.58\textheight]{configuration_group}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}
+\small\textbf{Configuration}: gliders linked by contacts, with their links. A link more or
+less: a new configuration.
+\column{.48\textwidth}
+\small\textbf{Group}: the same gliders, from a start to an end. It changes only when a glider
+joins or leaves.
+\end{columns}
+\end{frame}
+
+\begin{frame}{From configurations to episodes: an example day}
 \begin{columns}[c,onlytextwidth]
 \column{.64\textwidth}
 \anim{\linewidth}{example_day}
 \column{.33\textwidth}
 \small
-\textbf{Group}: pilots linked by chains of contacts.
+\textbf{Configuration} at $t$: pilots linked by chains of contacts, with their links.
 \par\medskip
-\textbf{Configuration}: a group with the same members ($c_1,\dots,c_4$).
+\textbf{Group}: the same members, from a start to an end. An arrival or a departure starts a
+new one ($g_1,\dots,g_4$).
 \par\medskip
-\textbf{Episode}: configurations without a break (E1, E2).
+\textbf{Episode}: groups that follow one another: each starts the instant the previous ends and
+shares a member with it (E1, E2).
 \end{columns}
 \end{frame}
 
-\partframe{Part 2: the definitions}{The same steps, with formulas}
+\partframe{Part 2: quantitative overview}{The same steps, with formulas}
 
 \begin{frame}{Start at the departure}
-\tikzfig[0.55\textheight]{local}
+\tikzfig[0.28\textheight]{local}
 \defn{Departure}{
 \[
   k^\dep_i=\min\bigl\{k:\ \|\x_i(k)-\x_i(k^0_i)\|>R_\dep\bigr\},\qquad R_\dep=3~\text{km}.
 \]
 Before it: local phase \st{L}.}
+\defn{Evaluation instants}{
+\[
+  T^\dep_i=\bigl\{t\in\Delta\Z:\ k^\dep_i\le t\le k^\fin_i,\ \text{$i$ has a position at $t$}\bigr\},
+  \qquad \Delta=5~\text{s}.
+\]}
 \end{frame}
 
 \begin{frame}{Correspondence: the same place at two instants}
@@ -183,22 +197,22 @@ $t'=t+l$, with $l$ the delay:
 \[
   (t,t')\in\M_{ij}\iff |t'-t|\le\delta,\ \ \|\x_i(t)-\x_j(t')\|<\varepsilon_h,\ \
   |z_i(t)-z_j(t')|<\varepsilon_z,\ \ D_{ij}(t,t')=1
-\]}
+\]
+$D_{ij}$ is the heading condition (next slide).}
 \begin{columns}[c,onlytextwidth]
-\column{.62\textwidth}
-\tikzfig[0.5\textheight]{isotropic}
-\column{.34\textwidth}
+\column{.70\textwidth}
+\tikzfig[0.45\textheight]{correspondence}
+\column{.26\textwidth}
 $\delta=2$~min\par
 $\varepsilon_h=500$~m\par
 $\varepsilon_z=300$~m
-\par\bigskip
-\small A group is flat: $\sim$1~km wide, a few hundred m high. A box keeps A and rejects B; one
-3D radius rejects A or accepts B.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Headings count only when both pilots glide}
-\tikzfig[0.45\textheight]{heading}
+\begin{frame}{Heading condition: ruling out chance crossings}
+Pilots who cross on different routes pass the distance and delay tests by chance.
+A group flies the same way.
+\tikzfig[0.36\textheight]{heading}
 \defn{Heading condition}{
 \[
   D_{ij}(t,t')=\begin{cases}
@@ -208,68 +222,84 @@ $\varepsilon_z=300$~m
 \]}
 \end{frame}
 
-\begin{frame}{Contact: the two shadows of $\M_{ij}$}
-\defn{Contact}{
+\begin{frame}{Contact: what $i$ sees, what $j$ sees}
+\begin{columns}[c,onlytextwidth]
+\column{.63\textwidth}
+\anim{\linewidth}{views}
+\column{.34\textwidth}
+\defn{Contact}{\small
 \[
-  m_{ij}(t)=\ind\bigl[\exists\,t':(t,t')\in\M_{ij}\bigr],\qquad
-  m_{ji}(t')=\ind\bigl[\exists\,t:(t,t')\in\M_{ij}\bigr],\qquad
-  a_{ij}=m_{ij}\vee m_{ji}
+  \begin{aligned}
+    m_{ij}(t)&=\ind\bigl[\exists\,t':(t,t')\in\M_{ij}\bigr]\\
+    m_{ji}(t)&=\ind\bigl[\exists\,t':(t',t)\in\M_{ij}\bigr]\\
+    a_{ij}&=m_{ij}\vee m_{ji}
+  \end{aligned}
 \]}
-\begin{center}
-\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{asymmetry_plane.pdf}
-\end{center}
-\source{(b) $i$ waits in a thermal that $j$ crosses. (c) $j$ follows $i$ 90~s behind.}
+\par\medskip
+\small
+$j$ joins the route of $i$, 90~s behind, then leaves it.
+\par\medskip
+Start: $m_{ij}=1$, $m_{ji}=0$. End: the reverse.
+\par\medskip
+Each alone is not symmetric: the contact is $a_{ij}$.
+\end{columns}
 \end{frame}
 
 \begin{frame}{Pair intervals: fill short gaps, drop short contacts}
-\tikzfig[0.5\textheight]{pair_intervals}
-\defn{Pair interval}{A run of $a_{ij}=1$ with gaps $<g=120$~s joined, kept if it lasts
-$\ge\tau^*=38.1$~min: $[t_{\rm on},t_{\rm off})$.}
-\source{$\tau^*$: at most one interval in ten is chance, on pairs shifted in time (second deck,
-\emph{Is it chance?}).}
+\tikzfig[0.3\textheight]{pair_intervals}
+\defn{Pair interval}{A run of $a_{ij}=1$, gaps $<\boldsymbol{g=120}$~\textbf{s} joined, lasting
+$\ge\boldsymbol{\tau^*=38.1}$~\textbf{min}: $[t_{\rm on},t_{\rm off})$.}
+\defn{Choosing $\tau^*$}{Not set by hand: we fix $q=10\%$, the share of kept intervals we accept
+to be chance. The null model (pairs shifted in time) counts the chance intervals $C(\tau)$
+among the $N(\tau)$ observed:
+\[
+  \tau^*=\min\Bigl\{\tau:\ \frac{C(\tau)}{N(\tau)}\le q\Bigr\}.
+\]
+Smaller $\tau^*$: more intervals, more of them chance. Larger $\tau^*$: fewer, cleaner.}
+\source{Second deck, \emph{Is it chance?}}
 \end{frame}
 
-\begin{frame}{Contact is not transitive: cut the graph instant by instant}
-\tikzfig[0.45\textheight]{transitivity}
+\begin{frame}{Contact is not transitive: three ways to define groups}
+\tikzfig[0.7\textheight]{transitivity}
+\end{frame}
+
+\begin{frame}{Active graph: the configurations at one instant}
 \defn{Active graph}{
 \[
   G(t)=\bigl(V(t),E(t)\bigr),\qquad
-  E(t)=\bigl\{\{i,j\}:\ t\in[t_{\rm on},t_{\rm off})\bigr\},\qquad
-  V(t)=\text{flights in the air}.
-\]
-A \textbf{group} at $t$: a connected component of $G(t)$ with two or more flights.}
+  V(t)=\text{flights in the air at }t,\qquad
+  E(t)=\bigl\{\{i,j\}:\ t\in[t_{\rm on},t_{\rm off})\bigr\}.
+\]}
+\tikzfig[0.4\textheight]{active_graph}
+\defn{Configuration}{At $t$: a connected component of $G(t)$ with two or more flights, with its
+edges.}
 \end{frame}
 
-\begin{frame}{Configuration: a group with fixed members}
-\tikzfig[0.4\textheight]{configurations}
+\begin{frame}{Group: fixed members, changing configurations}
+\tikzfig[0.42\textheight]{configurations}
 \begin{columns}[T,onlytextwidth]
 \column{.49\textwidth}
-\defn{Configuration}{$c=\bigl(M_c,[t^{\rm start}_c,t^{\rm end}_c)\bigr)$: $M_c$ is a group of
-$G(t)$ at every $t$ of the interval, and the interval is maximal.}
+\defn{Group}{$g=\bigl(M_g,[t^{\rm start}_g,t^{\rm end}_g)\bigr)$: $M_g$ are the members of a
+configuration of $G(t)$ at every $t$ of the interval, and the interval is maximal.}
 \column{.49\textwidth}
 \defn{Membership}{
 \[
   \gamma_i(t)=\begin{cases}
     \st{L} & \text{before the departure},\\
-    c & i\in M_c,\ t\in[t^{\rm start}_c,t^{\rm end}_c),\\
+    g & i\in M_g,\ t\in[t^{\rm start}_g,t^{\rm end}_g),\\
     \st{S} & \text{otherwise (solo).}
   \end{cases}
 \]}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Episode: a chain of configurations}
+\begin{frame}{Episode: groups linked in time}
 \tikzfig[0.5\textheight]{episodes}
-\defn{Episode}{A connected component of the links
+\defn{Episode}{Link $g\to g'$: $g'$ starts the instant $g$ ends, and they share a member,
 \[
-  c\to c'\iff t^{\rm start}_{c'}=t^{\rm end}_c\ \wedge\ M_c\cap M_{c'}\ne\emptyset .
-\]}
-\end{frame}
-
-\begin{frame}{Dependency block: the flights tied by episodes}
-\tikzfig[0.5\textheight]{blocks}
-\defn{Block}{A connected component of the graph flights--episodes of a day. The bootstrap
-resamples whole blocks.}
+  t^{\rm start}_{g'}=t^{\rm end}_g,\qquad M_g\cap M_{g'}\ne\emptyset .
+\]
+An episode: groups tied together by such links, directly or through others.}
 \end{frame}
 
 \begin{frame}{Who follows whom: a label, not used to build the groups}
@@ -316,22 +346,22 @@ $\tau^*=38.1$~min.}
 
 \begin{frame}{Episodes: how long, how many flights}
 \begin{center}
-\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_episodes.pdf}
+\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_episodes_q01.pdf}
 \end{center}
-\source{Whole archive, $\delta=2$~min. Left: share lasting longer. Middle: share of the episodes
+\source{Whole archive, $\delta=2$~min, $q=0.1$. Left: share lasting longer. Middle: share of the episodes
 of each size. Right: share of the episode time. Size: distinct flights of the episode.}
 \takeaway{With $q=0.1$ the median episode lasts 58~min and 74\% are pairs. Weighted by time
 the pairs drop to 61\%: large episodes last longer.}
 \end{frame}
 
-\begin{frame}{Configurations: how long, how many pilots at once}
+\begin{frame}{Groups: how long, how many pilots at once}
 \begin{center}
-\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_configurations.pdf}
+\includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{assessment_structure_groups_q01.pdf}
 \end{center}
-\source{Whole archive, $\delta=2$~min. A configuration keeps its members; each arrival or
+\source{Whole archive, $\delta=2$~min, $q=0.1$. A group keeps its members; each arrival or
 departure starts a new one. Size: pilots at once.}
-\takeaway{Median configuration 30~min, 63\% are pairs. Weighted by time the pairs rise to
-77\%: large configurations change quickly.}
+\takeaway{Median group 30~min, 63\% are pairs. Weighted by time the pairs rise to
+77\%: large groups change quickly.}
 \end{frame}
 
 \end{document}

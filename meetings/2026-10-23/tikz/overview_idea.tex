@@ -8,7 +8,7 @@
     \node[hollow j] (xj) at (1.2,1.45) {};
     \node[lbl, blueI, above=1pt] at (xi) {$i$};
     \node[lbl, orangeJ, below=2pt] at (xj) {$j$};
-    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies the route of $i$,\\a little later};
+    \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies a similar route,\\a little later};
   \end{scope}
   % 2: same place, shifted times
   \begin{scope}[shift={(5.45,0)}]
@@ -40,28 +40,28 @@
   \end{scope}
   % 5: groups at each instant
   \begin{scope}[shift={(5.45,-4.2)}]
-    \node[panel] at (0,3.25) {5\enspace Groups at each instant};
+    \node[panel] at (0,3.25) {5\enspace Configurations, groups};
     \coordinate (n1) at (0.45,1.9); \coordinate (n8) at (1.4,2.55); \coordinate (n22) at (1.4,1.25);
     \coordinate (n14) at (2.45,1.9); \coordinate (n5) at (0.45,0.75);
     \draw[edge] (n1) -- (n8) -- (n22);
     \node[inE1] at (n1) {1}; \node[inE1] at (n8) {8}; \node[inE1] at (n22) {22};
     \node[flight] at (n14) {14}; \node[flight] at (n5) {5};
-    \node[note, align=left, anchor=west] at (2.85,1.75) {pilots linked\\by contacts;\\same members\\over time:\\a configuration};
+    \node[note, align=left, anchor=west] at (2.7,1.75) {linked pilots:\\configuration;\\same members\\in time: group};
   \end{scope}
   % 6: episodes
   \begin{scope}[shift={(10.9,-4.2)}]
     \node[panel] at (0,3.25) {6\enspace Episodes};
     \foreach \a/\b/\n in {0.1/1.15/1, 1.2/1.75/2, 1.8/2.6/3} {
       \fill[blueI] (\a,1.9) rectangle (\b,2.4);
-      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$c_\n$};
+      \node[font=\footnotesize, text=white] at ({(\a+\b)/2},2.15) {$g_\n$};
     }
     \fill[orangeJ] (3.3,1.9) rectangle (4.1,2.4);
-    \node[font=\footnotesize, text=white] at (3.7,2.15) {$c_4$};
+    \node[font=\footnotesize, text=white] at (3.7,2.15) {$g_4$};
     \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (0.1,1.8) -- (2.6,1.8)
       node[midway, below=4pt, lbl, ink] {episode E1};
     \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (3.3,1.8) -- (4.1,1.8)
       node[midway, below=4pt, lbl, ink] {E2};
-    \node[note, align=left, anchor=north west] at (0,0.75) {configurations that follow\\each other without a break};
+    \node[note, align=left, anchor=north west] at (0,0.75) {groups that follow one\\another, sharing a member};
   \end{scope}
   % reading order
   \foreach \y in {1.6, -2.6} {

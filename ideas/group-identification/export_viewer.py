@@ -13,9 +13,9 @@ from pathlib import Path
 
 import run
 
-FILES = ("flights.parquet", "pair_intervals.parquet", "configurations.parquet", "membership.parquet",
-         "episodes.parquet", "flight_summary.parquet", "episode_distance.parquet", "calibration.json",
-         "PARAMETERS.md")
+FILES = ("flights.parquet", "pair_intervals.parquet", "groups.parquet", "configurations.parquet",
+         "membership.parquet", "episodes.parquet", "flight_summary.parquet", "episode_distance.parquet",
+         "calibration.json", "PARAMETERS.md")
 VIEWER_DATA = Path("/Volumes/SSD_DATA/xc-viewer-data")
 
 

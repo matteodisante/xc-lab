@@ -15,13 +15,17 @@
   }
   \begin{scope}[shift={(0,-2.9)}]
     \draw[->, ink2] (0,0) -- (12.4,0) node[right, lbl, ink] {$t$};
-    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,0) -- (\x,4.9); \node[lbl, below] at (\x,0) {$\l$};}
-    \foreach \a/\b/\y/\n in {0.3/11.8/2.1/1--2, 0.3/11.8/1.7/2--3, 4.6/11.8/1.3/1--3, 8.6/11.8/0.9/3--4} {
+    \foreach \x/\l in {1.3/t_1, 5.6/t_2, 9.9/t_3} {\draw[ink2, densely dotted] (\x,1.05) -- (\x,4.9); \draw[ink2] (\x,-0.06) -- (\x,0.06); \node[lbl, below] at (\x,-0.06) {$\l$};}
+    \foreach \a/\b/\y/\n in {0.3/11.8/2.5/1--2, 0.3/11.8/2.1/2--3, 4.6/11.8/1.7/1--3, 8.6/11.8/1.3/3--4} {
       \fill[ink2] (\a,\y-0.09) rectangle (\b,\y+0.09);
       \node[lbl, anchor=east] at (0.2,\y) {\n};
     }
-    \fill[blueI] (0.3,0.25) rectangle (8.55,0.6); \node[font=\footnotesize, text=white] at (4.4,0.425) {$c$: $\{1,2,3\}$};
-    \fill[orangeJ] (8.65,0.25) rectangle (11.8,0.6); \node[font=\footnotesize, text=white] at (10.2,0.425) {$c'$: $\{1,2,3,4\}$};
-    \node[lbl, anchor=east] at (0.2,0.425) {config.};
+    \foreach \a/\b/\l in {0.3/4.55/chain, 4.65/8.55/triangle, 8.65/11.8/triangle and 3--4} {
+      \draw[ink2, fill=steellight!45] (\a,0.7) rectangle (\b,1.0); \node[font=\footnotesize] at ({(\a+\b)/2},0.85) {\l};
+    }
+    \node[lbl, anchor=east] at (0.2,0.85) {config.};
+    \fill[blueI] (0.3,0.2) rectangle (8.55,0.55); \node[font=\footnotesize, text=white] at (4.4,0.375) {$g$: $\{1,2,3\}$};
+    \fill[orangeJ] (8.65,0.2) rectangle (11.8,0.55); \node[font=\footnotesize, text=white] at (10.2,0.375) {$g'$: $\{1,2,3,4\}$};
+    \node[lbl, anchor=east] at (0.2,0.375) {group};
   \end{scope}
 \end{tikzpicture}

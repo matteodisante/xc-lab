@@ -162,28 +162,49 @@ def as_models(intervals):
 
 
 def compare_with_models(intervals):
-    configs, links = sweep.configurations(intervals)
-    episode = sweep.episodes(len(configs), links)
+    groups, configs, links = sweep.groups(intervals)
+    episode = sweep.episodes(len(groups), links)
     flights, pairs = as_models(intervals)
     ref, ref_episode, ref_blocks = models.sweep(flights, pairs)
-    assert sorted((sorted(m), s, e) for m, s, e in configs) == sorted((sorted(c.members), c.start, c.end) for c in ref)
-    mine = {frozenset((m, s) for k, (m, s, _) in enumerate(configs) if episode[k] == e) for e in set(episode)}
-    theirs = {frozenset((c.members, c.start) for c in ref if ref_episode[c] == e) for e in set(ref_episode.values())}
+    assert sorted((sorted(m), s, e) for m, s, e in groups) == sorted((sorted(g.members), g.start, g.end) for g in ref)
+    mine = {frozenset((m, s) for k, (m, s, _) in enumerate(groups) if episode[k] == e) for e in set(episode)}
+    theirs = {frozenset((g.members, g.start) for g in ref if ref_episode[g] == e) for e in set(ref_episode.values())}
     assert mine == theirs
     n = max(flights) + 1
-    blocks = sweep.blocks(n, configs, episode)
+    blocks = sweep.blocks(n, groups, episode)
     in_groups = {frozenset(np.flatnonzero(blocks == b)) for b in set(blocks)}
     assert {frozenset(b) for b in ref_blocks} <= in_groups | {frozenset([f]) for f in range(n)}
+    check_configurations(intervals, groups, configs)
+
+
+def check_configurations(intervals, groups, configs):
+    """The configurations of each group tile its interval, and their edges are the pair
+    intervals in progress among its members."""
+    for g, (_, start, end) in enumerate(groups):
+        own = sorted((s, e) for _, _, s, e, cg in configs if cg == g)
+        assert own[0][0] == start and own[-1][1] == end
+        assert all(a[1] == b[0] for a, b in zip(own, own[1:]))
+    for m, edges, start, _, g in configs:
+        assert groups[g][0] == m
+        active = {(min(a, b), max(a, b)) for a, b, on, off in intervals if on <= start < off and a in m}
+        assert edges == active
+    ordered = sorted(configs, key=lambda c: (c[4], c[2]))
+    for a, b in zip(ordered, ordered[1:]):
+        assert a[4] != b[4] or a[1] != b[1]  # consecutive configurations of a group differ in their edges
 
 
 def test_sweep_matches_the_example_day_of_the_note():
     flights, pairs = models.example_day()
     intervals = [(a, b, on, off) for (a, b), on, off in pairs]
     compare_with_models(intervals)
-    configs, links = sweep.configurations(intervals)
-    assert sorted((sorted(m), s) for m, s, _ in configs) == [([1, 8, 22], 700), ([8, 14, 22], 810), ([8, 22], 775),
-                                                             ([8, 22], 900)]
-    assert len(set(sweep.episodes(len(configs), links))) == 2
+    groups, configs, links = sweep.groups(intervals)
+    assert sorted((sorted(m), s) for m, s, _ in groups) == [([1, 8, 22], 700), ([8, 14, 22], 810), ([8, 22], 775),
+                                                            ([8, 22], 900)]
+    assert len(set(sweep.episodes(len(groups), links))) == 2
+    chain, triangle = [(1, 8), (8, 22)], [(1, 8), (1, 22), (8, 22)]
+    assert sorted(((sorted(m), sorted(e), s, x) for m, e, s, x, _ in configs), key=lambda c: c[2]) == [
+        ([1, 8, 22], chain, 700, 725), ([1, 8, 22], triangle, 725, 750), ([1, 8, 22], chain, 750, 775),
+        ([8, 22], [(8, 22)], 775, 810), ([8, 14, 22], [(8, 14), (8, 22)], 810, 850), ([8, 22], [(8, 22)], 900, 940)]
 
 
 @pytest.mark.parametrize("seed", range(20))
@@ -207,8 +228,8 @@ def test_membership_matches_the_labels_of_the_note():
     index = {f: k for k, f in enumerate(order)}
     intervals = [(index[a], index[b], on, off) for (a, b), on, off in pairs]
     table = pd.DataFrame([{"takeoff": flights[f][0], "departure": flights[f][1], "landing": flights[f][2]} for f in order])
-    configs, _ = sweep.configurations(intervals)
-    mb = sweep.membership(table, configs)
+    groups, _, _ = sweep.groups(intervals)
+    mb = sweep.membership(table, groups)
     ref, _, _ = models.sweep(*models.example_day())
     for f in order:
         for t in range(flights[f][0], flights[f][2], 5):
@@ -218,7 +239,7 @@ def test_membership_matches_the_labels_of_the_note():
             if isinstance(label, str):
                 assert row.state.iat[0] == label
             else:
-                m, _, _ = configs[row.conf.iat[0]]
+                m, _, _ = groups[row.group.iat[0]]
                 assert {order[k] for k in m} == set(label.members)
 
 
@@ -236,7 +257,7 @@ def test_tau_star_is_where_the_false_discovery_rate_falls_to_q():
 def test_episode_distance_is_the_straight_line_of_a_group_stretch():
     rows = [(0, 100, 200, "L", -1, -1), (0, 200, 500, "S", -1, -1), (0, 500, 900, "G", 3, 7),
             (0, 900, 1300, "G", 4, 7), (0, 1300, 1500, "S", -1, -1), (1, 100, 1500, "S", -1, -1)]
-    membership = pd.DataFrame(rows, columns=["flight", "t_start", "t_end", "state", "conf_id", "episode_id"])
+    membership = pd.DataFrame(rows, columns=["flight", "t_start", "t_end", "state", "group_id", "episode_id"])
     flights = pd.DataFrame({"flight": [0, 1], "utc0": [100.0, 100.0]})
     s = distances.group_stretches(membership, flights)
     assert list(s.itertuples(index=False, name=None)) == [(0, 7, 400.0, 1200.0)]

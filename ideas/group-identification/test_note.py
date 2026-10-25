@@ -77,24 +77,24 @@ def test_same_thermal_matches_up_to_eps_z_plus_w_delta(dz, matched):
 
 # Groups (figure "example_day").
 
-def test_example_day_configurations_episodes_and_blocks():
+def test_example_day_groups_episodes_and_blocks():
     flights, pairs = models.example_day()
-    configs, episode, blocks = models.sweep(flights, pairs)
+    groups, episode, blocks = models.sweep(flights, pairs)
     m = models.minutes
     expected = [({1, 8, 22}, "11:40", "12:55", 1), ({8, 22}, "12:55", "13:30", 1),
                 ({8, 14, 22}, "13:30", "14:10", 1), ({8, 22}, "15:00", "15:40", 2)]
-    got = [(set(c.members), c.start, c.end, episode[c]) for c in configs]
+    got = [(set(g.members), g.start, g.end, episode[g]) for g in groups]
     assert got == [(s, m(a), m(b), e) for s, a, b, e in expected]
     assert blocks == [[1, 8, 14, 22], [5]]
-    assert not any({1, 14} <= c.members for c in configs)
+    assert not any({1, 14} <= g.members for g in groups)
 
 
-def test_each_flight_is_in_at_most_one_configuration_at_a_time():
+def test_each_flight_is_in_at_most_one_group_at_a_time():
     flights, pairs = models.example_day()
-    configs, _, _ = models.sweep(flights, pairs)
+    groups, _, _ = models.sweep(flights, pairs)
     for t in range(models.minutes("11:00"), models.minutes("16:00")):
         for f in flights:
-            assert sum(f in c.members and c.start <= t < c.end for c in configs) <= 1
+            assert sum(f in g.members and g.start <= t < g.end for g in groups) <= 1
 
 
 # Numbers quoted in the note.
