@@ -80,7 +80,7 @@ def window(minutes, step):
 
 def scan(tracks, i, j, instants, delta, eps_h, eps_z, cos_max, profile=None):
     """Phase 2 on one pair: the instants t of i in `instants` with m_ij(t) = 1, the delay l* of
-    the closest accepted correspondence at each, whether either pilot is in search there, and
+    the accepted correspondence closest in 3D at each, whether either pilot is in search there, and
     the instants of j with m_ji = 1. The heading condition holds only when both glide.
     With `profile`, also adds to profile["lags"] the correspondences found at each delay, from
     -delta to delta, and to profile["apart"] the distance of i and j at the same instant, in
@@ -99,7 +99,7 @@ def scan(tracks, i, j, instants, delta, eps_h, eps_z, cos_max, profile=None):
         aligned = xi[:, None, 4] * xj[..., 4] + xi[:, None, 5] * xj[..., 5] > cos_max
         ok = (d < eps_h) & (dz < eps_z) & (~glide | aligned)
         hit = ok.any(axis=1)
-        k = np.where(ok, d, np.inf)[hit].argmin(axis=1)
+        k = np.where(ok, np.hypot(d, dz), np.inf)[hit].argmin(axis=1)
         hits.append(ti[hit])
         best.append(lags[k])
         search.append((xi[hit, 6] == SEARCH) | (xj[hit, k, 6] == SEARCH))

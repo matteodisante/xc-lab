@@ -65,7 +65,7 @@ def brute_force(table, grid, i, j, p):
     a = a[(a >= lo) & (a <= hi)]
     if not a.size:
         return []
-    best = np.where(m, d, np.inf).argmin(axis=1)
+    best = np.where(m, np.hypot(d, dz), np.inf).argmin(axis=1)
     lag = tj[best] - ti
     search = (gi.state.to_numpy() == 1) | (gj.state.to_numpy()[best] == 1)
     out = []
@@ -133,6 +133,36 @@ def test_a_delay_beyond_delta_is_no_contact():
     # At the largest delay j is still 600 m behind along the line: farther than eps_h.
     assert line_pair(delay=P["delta"] + 60)[2].empty
     assert len(line_pair(delay=P["delta"])[2]) == 1
+
+
+def thermal_pair(lag=60, climb=2.0, period=20.0, radius=25.0):
+    """i and j circle in one thermal, climbing at `climb` m/s: j flies the turns of i `lag` s later,
+    so it reaches the altitude of i `lag` s after. The positions of j carry 2 m of noise."""
+    t = 5 * np.arange(400)
+    noise = np.random.default_rng(0).normal(0, 2.0, (2, t.size))
+    rows, x0 = [], []
+    for f, s in enumerate([t, t - lag]):
+        a = 2 * np.pi * s / period
+        rows.append(pd.DataFrame({"f": f, "seg": 0, "t": t, "X": radius * np.cos(a) + f * noise[0],
+                                  "Y": radius * np.sin(a) + f * noise[1], "Z": 0.0, "z": 1500 + climb * s,
+                                  "ve": -np.sin(a), "vn": np.cos(a), "state": 0}))
+        x0.append((rows[-1].X.iat[0], rows[-1].Y.iat[0]))
+    table = pd.DataFrame({"departure": [0.0, 0.0], "landing": [1995.0, 1995.0], "X0": [p[0] for p in x0],
+                          "Y0": [p[1] for p in x0], "Z0": 0.0, "n_grid": 400, "takeoff": 0.0})
+    grid = pd.concat(rows, ignore_index=True)
+    return table, grid, contacts.real_intervals(table, grid, contacts.Tracks(grid, 5), P)
+
+
+def test_in_a_thermal_the_delay_is_where_j_reaches_the_altitude_of_i():
+    # The turns repeat every 20 s, so the horizontal distance has a minimum at every lag + 20k s: altitude picks one.
+    for lag in (60, -60):
+        _, grid, found = thermal_pair(lag)
+        assert len(found) == 1 and found.ell_med.iat[0] == lag
+        instants = grid.t[grid.f == 0].to_numpy()
+        times, best, _, _ = contacts.scan(contacts.Tracks(grid, 5), 0, 1, instants, P["delta"], P["eps_h"], P["eps_z"],
+                                          np.cos(np.radians(P["theta_max"])))
+        inside = (times + lag >= 0) & (times + lag <= 1995)  # the partner at t + lag exists
+        assert inside.any() and set(best[inside]) == {lag}
 
 
 def test_the_shifted_copy_loses_the_real_contact():
