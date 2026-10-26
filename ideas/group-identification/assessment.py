@@ -197,16 +197,23 @@ def size_shares(duration, n):
     return sizes, np.bincount(k) / len(n), np.bincount(k, weights=duration) / duration.sum()
 
 
-def structure_figure(runs, kinds=("episodes", "groups"), name="assessment_structure", size=(13, 3.2)):
+def structure_figure(runs, tau, kinds=("episodes", "groups"), name="assessment_structure", size=(13, 3.2)):
+    """tau (min): the knee of the group durations, where the inset starts."""
     fig, axes = plt.subplots(len(kinds), 3, figsize=(size[0], size[1] * len(kinds)), squeeze=False)
     ticks = {"episodes": ((30, 60, 120, 300, 600), (2, 5, 10, 20, 50, 100)),
              "groups": ((0.1, 1, 10, 100), (2, 5, 10, 20, 40))}
+    zoom = {"groups": (tau, 420)}  # duration range (min) of the inset: the tail from the knee on
+    insets = {kind: row[0].inset_axes([0.24, 0.4, 0.38, 0.46])
+              for row, kind in zip(axes, kinds, strict=True) if kind in zoom}
     for q in runs:
         colour, style = {0.05: (GREY, ":"), 0.1: (BLUE, "-"), 0.2: (ORANGE, "--")}[q]
         for row, kind in zip(axes, kinds, strict=True):
             duration, n = runs[q][kind]
             x = np.sort(duration)
-            row[0].plot(x, 1 - np.arange(len(x)) / len(x), color=colour, ls=style, label=f"q = {q}")
+            longer = 1 - np.arange(len(x)) / len(x)
+            row[0].plot(x, longer, color=colour, ls=style, label=f"q = {q}")
+            if kind in insets:
+                insets[kind].plot(x, longer, color=colour, ls=style)
             sizes, by_count, by_time = size_shares(duration, n)
             row[1].plot(sizes, by_count, "o", color=colour, ls=style, ms=3)
             row[2].plot(sizes, by_time, "o", color=colour, ls=style, ms=3)
@@ -220,6 +227,14 @@ def structure_figure(runs, kinds=("episodes", "groups"), name="assessment_struct
         for ax, t in zip(row, (ticks[kind][0], ticks[kind][1], ticks[kind][1]), strict=True):
             ax.set_xticks(t, [f"{x:g}" for x in t])
             ax.xaxis.set_minor_formatter(plt.NullFormatter())
+    for kind, inset in insets.items():
+        inset.set(xscale="log", yscale="log", xlim=zoom[kind], ylim=(1e-5, 1))
+        inset.set_xticks((tau, 100, 300), [r"$\tau^*$", "100", "300"])
+        inset.text(0.05, 0.05, rf"$\tau^* = {tau:.1f}$ min" "\n" r"($q = 0.1$)", transform=inset.transAxes,
+                   ha="left", va="bottom", fontsize="small")
+        inset.xaxis.set_minor_formatter(plt.NullFormatter())
+        inset.tick_params(labelsize="small")
+        axes[kinds.index(kind), 0].indicate_inset_zoom(inset, edgecolor=GREY)
     if len(runs) > 1:
         axes[0, 0].legend(frameon=False, fontsize="small")
     save(fig, name)
@@ -243,9 +258,10 @@ if __name__ == "__main__":
     tolerance_figure(json.loads(TOLERANCES.read_text()))
     q_figure(wide, narrow, {q: group_flights(NARROW.format(q)) for q in QS})
     runs = {q: structure(NARROW.format(q)) for q in QS}
-    structure_figure(runs)
+    tau = tau_star(narrow, 0.1) / 60
+    structure_figure(runs, tau)
     with plt.rc_context({"font.size": 13}):  # one row per slide of the meeting
         for kind in ("episodes", "groups"):
-            structure_figure(runs, (kind,), f"assessment_structure_{kind}", size=(12, 3.8))
-            structure_figure({0.1: runs[0.1]}, (kind,), f"assessment_structure_{kind}_q01", size=(12, 3.8))
+            structure_figure(runs, tau, (kind,), f"assessment_structure_{kind}", size=(12, 3.8))
+            structure_figure({0.1: runs[0.1]}, tau, (kind,), f"assessment_structure_{kind}_q01", size=(12, 3.8))
     print("figures written")
