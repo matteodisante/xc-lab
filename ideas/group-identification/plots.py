@@ -265,8 +265,8 @@ def glide():
     d = np.hypot(*(xj - xi[:, k:k + 1]))
     best = np.flatnonzero(win)[np.argmin(d[win])]
 
-    fig = plt.figure(figsize=(6.3, 2.5))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1, 1.1], left=0.01, right=0.985, top=0.88, bottom=0.17, wspace=0.16)
+    fig = plt.figure(figsize=(6.3, 2.7))
+    gs = fig.add_gridspec(1, 2, width_ratios=[1, 1.1], left=0.01, right=0.985, top=0.78, bottom=0.16, wspace=0.16)
     ax, ad = fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1])
     cx, cy = xi[:, k] * km
     ax.plot(*(xi * km), color=BLUE, lw=1.4)
@@ -286,7 +286,7 @@ def glide():
     ax.set_axis_off()
     ax.plot([cx + 0.0, cx + 1.0], [cy - 0.95, cy - 0.95], color=INK, lw=1.2)
     ax.text(cx + 0.5, cy - 0.88, "1 km", ha="center", va="bottom", fontsize=8)
-    ax.set_title(r"Plan view: band of $j$ from $t-\delta$ to $t+\delta$", loc="left", pad=4)
+    ax.set_title("Plan view:\n" r"band of $j$ from $t-\delta$ to $t+\delta$", loc="left", pad=4, fontsize=12)
 
     ad.plot(lags[win], d[win], color=INK, lw=1.1)
     ad.axhline(p["eps_h"], color=INK2, lw=0.7, ls="--")
@@ -297,7 +297,7 @@ def glide():
     ad.set(xlim=(-delta, delta), ylim=(0, None), xticks=[-120, -60, 0, 60, 120])
     ad.set_xlabel(r"delay $l$ (s)", labelpad=1)
     ad.set_ylabel("m", labelpad=1)
-    ad.set_title(r"Horizontal distance $\|\mathbf{x}_i(t)-\mathbf{x}_j(t+l)\|$", loc="left", pad=4)
+    ad.set_title("Horizontal distance\n" r"$\|\mathbf{x}_i(t)-\mathbf{x}_j(t+l)\|$", loc="left", pad=4, fontsize=12)
     fig.savefig(FIGURES / "delay_glide.pdf")
     plt.close(fig)
 
