@@ -1,0 +1,124 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathpazo}
+\usefonttheme{serif}
+\usepackage{graphicx,microtype}
+\usepackage{tikz}
+
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{steel}{RGB}{74,96,121}
+\definecolor{steellight}{RGB}{192,206,220}
+
+% Theme: steel-blue title bar, white pages, as in the other decks.
+\setbeamercolor{structure}{fg=steel}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{frametitle}{fg=white,bg=steel}
+\setbeamercolor{alerted text}{fg=blueI}
+\setbeamercolor{panelhead}{fg=steel,bg=steellight!30}
+\setbeamersize{text margin left=7mm,text margin right=7mm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\textcolor{steel}{\small$\bullet$}}
+\setbeamertemplate{itemize subitem}{\textcolor{steel}{\textendash}}
+\setbeamertemplate{itemize/enumerate body begin}{\setlength{\itemsep}{0.3em}}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=9mm,dp=3mm,center]{frametitle}
+    \large\insertframetitle\strut
+  \end{beamercolorbox}}
+\setbeamertemplate{footline}{}
+
+% The header bar of one column.
+\newcommand{\panelhead}[1]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=5pt]{panelhead}\textbf{#1}\end{beamercolorbox}\par\vspace{2mm}}
+
+\hypersetup{pdftitle={Running the viewer tool on different computers}}
+
+\begin{document}
+
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+ \fill[steel](current page.south west)rectangle(current page.north east);
+ \fill[steellight](current page.south west)rectangle([yshift=20mm]current page.south east);
+ \node[text=white,align=center,text width=.9\paperwidth]at([yshift=8mm]current page.center)
+   {{\LARGE\bfseries The viewer tool on other computers}\\[4mm]};
+ \node[text=steel,align=center]at([yshift=10mm]current page.south)
+   {October 2026};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Good news: The tool should now work on any computer}
+\begin{columns}[T,onlytextwidth]
+\column{.52\textwidth}
+\panelhead{First time: two steps}
+\begin{enumerate}
+  \item install \texttt{uv} (and \texttt{git}) if missing: one command
+  \item launch the viewer with the command below, and choose the data folder once
+\end{enumerate}
+\begin{itemize}
+  \item no Python and no library to install by hand
+\end{itemize}
+\column{.44\textwidth}
+\panelhead{Afterwards: one command}
+\begin{itemize}
+  \item the same launch command
+  \item the data folder is remembered
+  \item always the latest code from github.
+\end{itemize}
+\end{columns}
+\vfill
+\begin{beamercolorbox}[wd=\linewidth,sep=5pt,center]{panelhead}
+\ttfamily\small uvx --from git+https://github.com/matteodisante/xc-viewer xc-viewer
+\end{beamercolorbox}
+\end{frame}
+
+\begin{frame}{Bad news: running the viewer on the CFM laptop}
+\begin{columns}[T,onlytextwidth]
+\column{.36\textwidth}
+\panelhead{1. Personal laptops}
+\begin{itemize}
+  \item install \texttt{uv}, one command
+  \item simple and fast
+  \item the data must sit on the laptop: about 120~GB today
+\end{itemize}
+\column{.60\textwidth}
+\panelhead{2.CFM laptops}
+\begin{itemize}
+  \item \textbf{implemented}: one command fetches the code from github and installs the packages. Always up to date, but not compliant with the policy ?
+  \item \textbf{compliant route?}: an environment (Python, libraries) requested for each laptop?
+  \item even then, the code probably cannot come from the aforementioned github repo.
+  \item a new feature needs new libraries: new authorizations, possibly refused. Development is limited.
+\end{itemize}
+\end{columns}
+\vfill
+\begin{beamercolorbox}[wd=\linewidth,sep=5pt]{panelhead}
+Option 2 is operational, but I do not think it can be used on the CFM laptops.
+\end{beamercolorbox}
+\end{frame}
+
+\begin{frame}{Developing the viewer on CFM laptops}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}
+\panelhead{Today: my personal Mac}
+\begin{itemize}
+  \item personal Claude Code, with the code of the viewer and of every analysis
+  \item it knows the whole situation and reuses the functions/context of the analyses
+  \item a new feature is simpler, faster, more effective
+\end{itemize}
+\column{.48\textwidth}
+\panelhead{CFM laptops}
+\begin{itemize}
+  \item Claude without internet access
+  \item no context of the other repositories, where the analyses are developed
+  \item the personal github account cannot be used.
+\end{itemize}
+\end{columns}
+\vfill
+\begin{beamercolorbox}[wd=\linewidth,sep=5pt]{panelhead}
+Without the context of the analyses, every new feature is harder to build.
+\end{beamercolorbox}
+\end{frame}
+
+\end{document}

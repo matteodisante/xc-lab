@@ -12,7 +12,7 @@ This repository tests ideas fast; results that reach the thesis are rewritten th
   lists them with their status.
 - `analysis/<topic>/`: quantities computed on the flight data, as figures and numbers; one
   folder per topic, `analysis/README.md` lists them.
-- `meetings/YYYY-MM-DD/`: the slides for one weekly meeting.
+- `meetings/YYYY-MM/<talk>/`: the slides of one talk, grouped by month.
 - `lab/`: helpers shared by several ideas. `lab/legacy.py` borrows the Vilpellet
   segmenter from [soaring-anomalous-transport](https://github.com/matteodisante/soaring-anomalous-transport)
   at tag `legacy-final`, until xc-dynamics has it.

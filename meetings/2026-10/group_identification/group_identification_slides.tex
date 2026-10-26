@@ -12,8 +12,8 @@
 
 % Figures and animations come from the idea folder; the TikZ figures in tikz/ are copies
 % of those of the note.
-\newcommand{\figdir}{../../ideas/group-identification/figures}
-\graphicspath{{../../ideas/group-identification/figures/}}
+\newcommand{\figdir}{../../../ideas/group-identification/figures}
+\graphicspath{{../../../ideas/group-identification/figures/}}
 
 % Colours of the note: i, j and a third flight; neutrals for text, grids and fills.
 \definecolor{blueI}{HTML}{2A78D6}
@@ -138,13 +138,13 @@
 \tikzfig[0.8\textheight]{overview_idea}
 \end{frame}
 
-\begin{frame}{Two pilots on similar routes, 90~s apart}
+\begin{frame}{Two pilots on similar routes, 70--110~s apart}
 \begin{columns}[c,onlytextwidth]
 \column{.66\textwidth}
 \anim{\linewidth}{contact_simple}
 \column{.31\textwidth}
-$j$ flies a route similar to that of $i$, here 90~s later. In reality the delay varies: we
-want it within $\delta$.
+$j$ flies a route similar to that of $i$, here 70 to 110~s later: the
+delay varies, we want it within $\delta$.
 \par\bigskip
 Same instant: here about 0.8~km apart, and it varies too.
 \par\bigskip
@@ -171,13 +171,13 @@ joins or leaves.
 \anim{\linewidth}{example_day}
 \column{.33\textwidth}
 \small
-\textbf{Configuration} at $t$: pilots linked by chains of contacts, with their links.
+\textbf{Configuration} at $t$: gliders linked by chains of contacts, with their links.
 \par\medskip
 \textbf{Group}: the same members, from a start to an end. An arrival or a departure starts a
 new one ($g_1,\dots,g_4$).
 \par\medskip
 \textbf{Episode}: a chain of groups, each group starting the instant the previous group ends and
-sharing a member with it: $g_1\to g_2\to g_3$ is E1. $g_4$ starts 50~min after $g_3$ ends: a new
+sharing a member with it: $g_1\to g_2\to g_3$ is E1.\\ $g_4$ starts 50~min after $g_3$ ends: a new
 episode, E2.
 \end{columns}
 \end{frame}
@@ -219,7 +219,7 @@ $\varepsilon_z=300$~m
 \begin{frame}{Heading condition: ruling out chance crossings}
 Pilots who cross on different routes pass the distance and delay tests by chance.
 A group flies the same way.
-\tikzfig[0.36\textheight]{heading}
+\tikzfig[0.30\textheight]{heading}
 \defn{Heading condition}{
 \[
   D_{ij}(t,t')=\begin{cases}
@@ -227,6 +227,9 @@ A group flies the same way.
     1 & \text{otherwise,}
   \end{cases}\qquad \theta_{\max}=45^\circ.
 \]}
+\smallskip
+{\small Phases (Vilpellet) exist only on 1~Hz flights. The other flights are grouped all the same,
+without this condition: distance, height and delay alone.\par}
 \end{frame}
 
 \begin{frame}{Contact: what $i$ sees, what $j$ sees}
@@ -316,11 +319,11 @@ them, but both link to $g_3$: all three are in E1.}
 \column{.24\textwidth}
 \centering
 {\Huge\textcolor{blueI}{21.7\%}}\par\smallskip
-\small of paraglider flights fly in a group at some point
+\small of paraglider flights fly in a group at some point\par
 \column{.24\textwidth}
 \centering
 {\Huge\textcolor{orangeJ}{6.9\%}}\par\smallskip
-\small of hang-glider flights
+\small of hang-glider flights\par
 \column{.24\textwidth}
 \centering
 {\Huge\textcolor{steel}{17\,169}}\par\smallskip
@@ -334,44 +337,7 @@ them, but both link to $g_3$: all three are in E1.}
 $\tau^*=38.1$~min.}
 \end{frame}
 
-\begin{frame}{Who follows whom: the delay in a glide}
-The contact needs only that some delay within $\delta$ exists; its sign says who follows whom.
-\defn{Delay (Li et al.)}{a label, not used to build the groups. At $t$, where $j$ passes closest to
-$i$; over a pair interval, the median:
-\[
-  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\|\x_i(t)-\x_j(t+l)\|,\qquad
-  \ell_{\rm med}=\mathrm{median}\,l^*,\qquad \ell_{\rm med}>0:\ j\ \text{follows}\ i.
-\]}
-\begin{columns}[c,onlytextwidth]
-\column{.66\textwidth}
-\includegraphics[width=\linewidth]{delay_glide.pdf}
-\column{.31\textwidth}
-\small\textbf{Glide}: a nearly straight path, so the distance has one sharp minimum: $l^*$ is the
-delay at which $j$ crosses the point of $i$.
-\end{columns}
-\source{Model: $j$ on the route of $i$, 90~s behind and 250~m to the side, at 8~m/s; $\delta=2$~min.}
-\end{frame}
 
-\begin{frame}{Who follows whom: the delay in a thermal, not in search}
-\begin{columns}[c,onlytextwidth]
-\column{.57\textwidth}
-\anim{\linewidth}{altitude_clock}
-\column{.40\textwidth}
-\small
-\textbf{Thermal}: $j$ circles: the distance has an equal minimum at every turn.
-\par\medskip
-Altitude narrows $l$: $z_j(t+l)\simeq z_j(t)+w\,l$ climbing at $w$, so with
-$\Delta z=z_i(t)-z_j(t)$
-\[
-  l\in\Bigl(\frac{\Delta z-\varepsilon_z}{w},\ \frac{\Delta z+\varepsilon_z}{w}\Bigr),
-\]
-around $\Delta z/w$, the time $j$ needs to reach $i$. Here $(-50,250)$~s, cut by $\delta$ to
-$(-50,120]$~s.
-\par\medskip
-\textbf{Search}: $w\simeq0$, one minimum per turn and no altitude window: left out of
-$\ell_{\rm med}$.
-\end{columns}
-\end{frame}
 
 \begin{frame}{Episodes: how long, how many flights}
 \begingroup\centering
@@ -381,7 +347,7 @@ $\ell_{\rm med}$.
 flights. $N=17\,169$ episodes, $N_n$ of them with $n_E=n$. Whole archive, $\delta=2$~min, $q=0.1$.}
 \par\smallskip\small $T(n)$: of every 100~s of episode time, summed over all episodes, on average
 $100\,T(n)$~s are in episodes of $n$ flights; for $n=5$, 4.2~s.
-\takeaway{With $q=0.1$ the median episode lasts 58~min and 74\% are pairs. Weighted by time
+\takeaway{The median episode lasts 58~min and 74\% are pairs. Weighted by time
 the pairs drop to 61\%: large episodes last longer.}
 \end{frame}
 
@@ -398,5 +364,29 @@ not once per pilot.
 \takeaway{Median group 30~min, 63\% are pairs. Weighted by time the pairs rise to
 77\%: large groups change quickly.}
 \end{frame}
+
+
+\begin{frame}{Who follows whom: the delay}
+\defn{Delay}{At $t$, the delay at which $j$ is closest to $i$ in 3D, $\mathbf X=(\x,z)$; over a
+pair interval, the median:
+\[
+  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\|\mathbf X_i(t)-\mathbf X_j(t+l)\|,\qquad
+  \ell_{\rm med}=\mathrm{median}\,l^*,\qquad \ell_{\rm med}>0:\ j\ \text{follows}\ i.
+\]}
+\begin{columns}[c,onlytextwidth]
+\column{.64\textwidth}
+\includegraphics[width=\linewidth]{delay.pdf}
+\column{.33\textwidth}
+\small
+\textbf{Glide}: one sharp minimum, where $j$ crosses the point of $i$.
+\par\medskip
+\textbf{Climb}: one dip per turn; the altitude picks the turn.
+\par\medskip
+\textbf{Search}: no climb, so nothing picks the turn: left out of $\ell_{\rm med}$.
+\end{columns}
+\source{Models: glide, $j$ 90~s behind and 250~m to the side; climb, $j$ 200~m lower, both at 2~m/s,
+circles of 25~m, one turn per 20~s; $\delta=2$~min.}
+\end{frame}
+
 
 \end{document}

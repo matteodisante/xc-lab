@@ -10,15 +10,15 @@
     \node[lbl, orangeJ, below=2pt] at (xj) {$j$};
     \node[note, align=left, anchor=north west] at (0.1,0.55) {$j$ flies a similar route,\\a little later};
   \end{scope}
-  % 2: same place, shifted times
+  % 2: nearby places, shifted times
   \begin{scope}[shift={(5.45,0)}]
-    \node[panel] at (0,3.25) {2\enspace Same place, with a delay};
+    \node[panel] at (0,3.25) {2\enspace Nearby places, with a delay};
     \fill[light] (0,0) -- (0.6,0) -- (2.6,2.0) -- (2.6,2.6) -- (2.0,2.6) -- (0,0.6) -- cycle;
     \draw[muted, densely dashed] (0,0) -- (2.6,2.6);
     \fill[aqua, rotate around={45:(1.15,1.5)}] (1.15,1.5) ellipse (0.78 and 0.12);
     \draw[->, ink2] (0,0) -- (2.85,0) node[midway, below, lbl, ink] {when $i$ passes};
     \draw[->, ink2] (0,0) -- (0,2.85) node[pos=0.6, anchor=north, rotate=90, lbl, ink] {when $j$ passes};
-    \node[note, align=left, anchor=west] at (2.75,1.55) {both pass\\the same\\place;\\above the\\diagonal:\\$j$ passes\\later};
+    \node[note, align=left, anchor=west] at (2.75,1.55) {they pass\\nearby;\\above the\\diagonal:\\$j$ passes\\later};
   \end{scope}
   % 3: contact
   \begin{scope}[shift={(10.9,0)}]
@@ -26,7 +26,7 @@
     \draw[->, ink2] (0,1.0) -- (4.5,1.0) node[right, lbl, ink] {time};
     \fill[light] (0,1.3) rectangle (4.3,1.8);
     \foreach \a/\b in {0.3/1.15, 1.3/2.2, 2.75/2.9, 3.55/3.66} \fill[aqua] (\a,1.3) rectangle (\b,1.8);
-    \node[note, align=left, anchor=north west] at (0,0.75) {when one of the two pilots\\is on the path of the other};
+    \node[note, align=left, anchor=north west] at (0,0.75) {when the two pilots' paths\\come close enough for contact};
   \end{scope}
   % 4: long contacts
   \begin{scope}[shift={(0,-4.2)}]
