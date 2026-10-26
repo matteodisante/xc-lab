@@ -58,7 +58,7 @@
   \end{tikzpicture}}
 \setbeamertemplate{footline}{%
   \hspace{7mm}\textcolor{muted}{\fontsize{6.5}{8}\selectfont
-    Matteo Di Sante\enspace|\enspace Method assessment\enspace|\enspace xc-lab, 23 October 2026}\vspace{2mm}}
+   October 2026}\vspace{2mm}}
 
 \newcommand{\source}[1]{\par\vspace{1mm}{\fontsize{7}{8.3}\selectfont\color{ink2}#1\par}}
 \newcommand{\takeaway}[1]{\par\vfill
@@ -92,30 +92,27 @@
  \fill[steel](current page.south west)rectangle(current page.north east);
  \fill[steellight](current page.south west)rectangle([yshift=20mm]current page.south east);
  \node[text=white,align=center,text width=.9\paperwidth]at([yshift=8mm]current page.center)
-   {{\LARGE\bfseries Is it chance?}\\[4mm]
-    {\large Calibrating and tuning the group identification}};
+   {{\LARGE\bfseries The effect of chance on group identification}\\[4mm]
+   {\small Group identificaiton}};
  \node[text=steel,align=center]at([yshift=10mm]current page.south)
-   {{\normalsize Matteo Di Sante\quad|\quad xc-lab meeting, 23 October 2026}\\[1.5mm]
-    {\footnotesize Method note, sections 5--7: \texttt{xc-lab/ideas/group-identification}}};
+   {{\normalsize October 2026}\\[1.5mm]};
 \end{tikzpicture}
 \end{frame}
 
 \begin{frame}{The question}
+\begin{itemize}
+  \item Contact: close in space, at most $\delta$ apart in time.
+  \item Same takeoff, ridges, thermals: chance contacts, mostly short.
+  \item We keep contacts lasting $\ge\tau^*$.
+\end{itemize}
+\tikzfig[0.32\textheight]{contacts}
 \begin{beamercolorbox}[wd=\linewidth,sep=6pt,center]{takeaway}
-\large Same site, same ridges, same house thermals: pilots meet without interacting.
+\large Can a null model that counts the chance contacts give $\tau^*$?
 \end{beamercolorbox}
-\bigskip
-\[
-  N(\tau)=\#\{\text{real contacts}\ge\tau\},\qquad
-  C(\tau)=\text{expected by chance}
-\]
-\[
-  \text{keep}\ \tau\ge\tau^*,\qquad \frac{C(\tau^*)}{N(\tau^*)}\le q
-\]
 \source{162\,485 flights, 6\,209 dates, FFVL archive; profiles on 300 dates.}
 \end{frame}
 
-\partframe{Part 1: chance}{Null model, false discovery rate, $\tau^*$}
+\partframe{Part 1: Null model, false discovery rate, $\tau^*$}{}
 
 \begin{frame}{Null model: shift one flight in time}
 \defn{Surrogate pair}{$i,j$ same date, $\|\x_i(k^0_i)-\x_j(k^0_j)\|<R_s=10$~km:
@@ -148,8 +145,11 @@
 \end{frame}
 
 \begin{frame}{False discovery rate}
-\defn{Date $d$}{$M_d(\tau)$ surrogate intervals $\ge\tau$; $S_d$, $H_d$ surrogate and real
-exposure (time both fly).}
+\defn{Definitions}{\begin{itemize}\setlength{\itemsep}{0pt}
+  \item $M_d(\tau)$: surrogate intervals $\ge\tau$ on date $d$
+  \item $S_d$, $H_d$: surrogate and real exposure on date $d$ (time both fly)
+  \item $N(\tau)$: real intervals $\ge\tau$, all dates
+\end{itemize}}
 \[
   \rho_{0,d}(\tau)=\frac{M_d(\tau)}{S_d},\qquad
   C(\tau)=\sum_d\rho_{0,d}(\tau)\,H_d
@@ -167,7 +167,7 @@ exposure (time both fly).}
   \FDR(0)=0.74,\qquad \FDR(10~\text{min})=0.47,\qquad \FDR(30~\text{min})=0.16
 \]
 \[
-  q=0.1\ \Rightarrow\ \tau^*=38.1~\text{min}\quad[37.0,\,41.1]
+  q=0.1\ \Rightarrow\ \tau^*=38.1~\text{min}
 \]
 \source{$\delta=2$~min (blue), 5~min (grey). Bracket: 5--95\% over 200 resamplings of the dates.}
 \end{frame}
@@ -187,9 +187,14 @@ $|r|\ge60$ min & 0.26 & 0.05 & 23.0 \\
 \[
   \tau^*\in[23,\,53]~\text{min, set by}\ |r|
 \]
-\begin{center}
-\small short $|r|$: same weather, but also followers a few minutes apart
-\end{center}
+\defn{Why $\tau^*$ is longer for short $|r|$}{A real follower of $i$ more than $\delta$ behind is
+no contact in the real data. A short shift brings it within $\delta$: it counts as chance, though
+it is a real pair.}
+\medskip
+\defn{Why $\tau^*$ is shorter for long $|r|$}{Two real pilots of the same hour both go where the thermals
+work, so they meet without flying together. The copy of $j$ flies in another hour's weather and
+does not go where $i$ is. These chance meetings are in the real data but not in the surrogates: chance
+is underestimated.}
 \source{$q=0.1$, $\delta=2$~min, 2\,737 dates with all classes. We keep $r$ from the takeoff
 delays.}
 \end{frame}
@@ -202,10 +207,10 @@ delays.}
 \toprule
 & value & set by \\
 \midrule
-$\delta$ & 2 min & measured: $R(l)$ \\
-$q$ & 0.1 & chosen \\
+$\delta$ & 2 min & chosen/measured: $R(l)$ \\
+$q$ & 0.1 & chosen/measured \\
 $\tau^*$ & 38.1 min & $\FDR(\tau^*)\le q$ \\
-$\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 120 s & definitions: no edge \\
+$\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 120 s & chosen \\
 $\theta_{\max}$ & 45$^\circ$ & no effect \\
 $\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & & fixed: bounds, exactness \\
 \bottomrule
@@ -275,36 +280,6 @@ $\ge90$ min & 25 s & 90\% & 6 of 10\,734 \\
 \source{$\Delta\x_l=\x_i(t)-\x_j(t+l)$, $\Delta z_l=z_i(t)-z_j(t+l)$; 210 dates, $\delta=2$~min.}
 \end{frame}
 
-\begin{frame}{One parameter at a time: no plateau}
-\[
-  f_G=\frac{\sum_i\bigl|\{t\in T^\dep_i:\ \gamma_i(t)\notin\{L,S\}\}\bigr|}{\sum_i|T^\dep_i|}
-\]
-\begin{columns}[c,onlytextwidth]
-\column{.55\textwidth}
-\scriptsize
-\renewcommand{\arraystretch}{0.92}
-\begin{tabular}{@{}l c c c@{}}
-\toprule
-setting & $\tau^*$ (min) & $f_G$ & episodes \\
-\midrule
-start & 126.1 & 0.034 & 98 \\
-$\varepsilon_h=250$, 1000 m & 75.1, 126.8 & 0.058, 0.065 & 253, 162 \\
-$\varepsilon_z=150$, 600 m & 126.1, 126.1 & 0.020, 0.044 & 61, 122 \\
-$\delta=2$, 10 min & 42.6, 128.4 & 0.106, 0.062 & 600, 153 \\
-$\theta_{\max}=30^\circ$, $90^\circ$ & 126.1, 126.1 & 0.034, 0.034 & 97, 98 \\
-$g=60$, 300 s & 75.8, 126.1 & 0.087, 0.055 & 332, 141 \\
-\bottomrule
-\end{tabular}
-\column{.42\textwidth}
-\[
-  \theta_{\max}:\ f_G\ \text{unchanged}
-\]
-\[
-  \text{others:}\ f_G\times\le3,\ \text{via}\ \tau^*
-\]
-\end{columns}
-\source{300 dates, start $\delta=5$~min, $q=0.05$, $\tau^*$ recalibrated each time.}
-\end{frame}
 
 \begin{frame}{$q$: how much chance we accept}
 \fig[0.38\textheight]{assessment_q.pdf}
@@ -323,32 +298,8 @@ $q$ & $\tau^*$ (min) & para in a group & hang in a group & episodes \\
 \source{$\delta=2$~min. We take $q=0.1$.}
 \end{frame}
 
-\begin{frame}{$q$: episodes, how long and how many flights}
-\fig[0.5\textheight]{assessment_structure_episodes.pdf}
-\source{Whole archive, $\delta=2$~min, $q=0.05$, 0.1, 0.2. Left: share lasting longer. Middle:
-share of the episodes of each size. Right: share of the episode time. Size: distinct flights of
-the episode.}
-\takeaway{With $q=0.1$ the median episode lasts 58~min and 74\% are pairs. Weighted by time
-the pairs drop to 61\%: large episodes last longer.}
-\end{frame}
 
-\begin{frame}{$q$: groups, how long and how many pilots at once}
-\fig[0.5\textheight]{assessment_structure_groups.pdf}
-\source{Whole archive, $\delta=2$~min, $q=0.05$, 0.1, 0.2. A group keeps its members; each
-arrival or departure starts a new one. Size: pilots at once.}
-\takeaway{With $q=0.1$ the median group lasts 30~min and 63\% are pairs. Weighted by time the
-pairs rise to 77\%: large groups change quickly.}
-\end{frame}
 
-\begin{frame}{Limits}
-\begin{itemize}
-  \item chance $=$ null model: $|r|\sim1$~h removes the weather of the hour $\Rightarrow$ ``real''
-        includes same thermal, same time
-  \item $\tau^*\in[23,\,53]$~min with the class of $|r|$
-  \item profiles: 300 dates; plateau: 300 dates, $\delta=5$~min
-  \item data: old repository; phases on 1~Hz flights only
-\end{itemize}
-\end{frame}
 
 \begin{frame}{In short}
 \[
@@ -358,10 +309,10 @@ pairs rise to 77\%: large groups change quickly.}
   \FDR(\tau^*)\le0.1\ \Rightarrow\ \tau^*=38.1~\text{min}
 \]
 \[
-  \delta=2~\text{min}:\quad R(\delta)=3.7,\quad 90\%\ \text{of long contacts}
+  \delta=2~\text{min}:\quad \text{real/chance}(\delta)=R(\delta)=3.7,\quad 90\%\ \text{of long contacts}
 \]
 \[
-  \varepsilon_h,\ \varepsilon_z,\ g:\ \text{definitions},\quad f_G\times\le3
+  \varepsilon_h,\ \varepsilon_z,\ g:\ \text{definitions}
 \]
 \takeaway{In a group at some point: 21.7\% of the paraglider flights, 6.9\% of the hang-glider
 flights; 17\,169 episodes.}

@@ -1,0 +1,23 @@
+\begin{tikzpicture}[x=1cm,y=1cm, contact/.style={light, line width=13pt}, track/.style={line width=1.3pt}]
+  % Flying together: the two tracks stay close all along, a long contact.
+  \node[lbl, ink] at (2.8,2.7) {flying together};
+  \draw[contact] (0.1,-0.05) .. controls (1.6,1.1) and (3.1,0.5) .. (5.55,1.5);
+  \draw[track, blueI] (0,0) .. controls (1.5,1.2) and (3,0.6) .. (5.5,1.65) node[right, lbl] {$i$};
+  \draw[track, orangeJ] (0.2,-0.12) .. controls (1.7,1.0) and (3.2,0.4) .. (5.6,1.35) node[right, lbl] {$j$};
+  \fill[ink] (0.1,-0.05) ++(-0.12,-0.1) -- ++(0.24,0) -- ++(-0.12,0.2) -- cycle;
+  \node[note] at (2.8,-0.6) {long contact};
+  % By chance: different routes from the same takeoff, the same thermal a minute apart.
+  \begin{scope}[shift={(7.5,0)}]
+    \node[lbl, ink] at (2.8,2.7) {by chance};
+    \fill[light] (2.5,0.8) circle (0.42);
+    \node[note, anchor=west] at (2.95,0.95) {same thermal,};
+    \node[note, anchor=west] at (2.95,0.6) {a minute apart};
+    \draw[track, blueI] (0,0) .. controls (1,0.2) and (2,0.5) .. (2.5,0.8)
+      .. controls (3,1.1) and (4,2) .. (5.5,2.2) node[right, lbl] {$i$};
+    \draw[track, orangeJ] (0.1,-0.1) .. controls (1.2,0.9) and (2.1,1.1) .. (2.5,0.8)
+      .. controls (3,0.4) and (4,-0.2) .. (5.5,-0.3) node[right, lbl] {$j$};
+    \fill[ink] (0.05,-0.05) ++(-0.12,-0.1) -- ++(0.24,0) -- ++(-0.12,0.2) -- cycle;
+    \node[note] at (2.8,-0.6) {short contact};
+  \end{scope}
+  \node[note, anchor=west] at (0,-1.1) {$\blacktriangle$ takeoff;\quad grey: where the two are in contact};
+\end{tikzpicture}
