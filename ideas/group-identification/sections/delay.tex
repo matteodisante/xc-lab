@@ -2,58 +2,60 @@
 
 The groups of Section~\ref{sec:groups} are built from the contact alone. To say who follows whom
 (Sections~\ref{sec:leaders} and~\ref{sec:comparison}) we also need how many seconds $j$ is behind
-$i$. As in~\cite{li2013}, at each instant $t$ with $m_{ij}(t)=1$ we take the delay at which $j$
-passes closest to where $i$ is,
+$i$. We estimate it twice: at each instant of a contact, and over the whole contact.
+
+\paragraph{The delay at one instant.} At an instant $t$ with $m_{ij}(t)=1$, pilot $i$ has at least
+one correspondence $(t,t+l)\in\M_{ij}$: a delay $l$ at which $j$ is where $i$ is, within the
+tolerances. Of these we take the delay at which $j$ is closest to $i$ in space, with the altitude
+added to the closest point of~\cite{li2013},
 \begin{equation}\label{eq:lstar}
-  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\|\x_i(t)-\x_j(t+l)\| ,
+  l^*(t)=\arg\min_{l:\,(t,t+l)\in\M_{ij}}\ \sqrt{\|\x_i(t)-\x_j(t+l)\|^2+\bigl(z_i(t)-z_j(t+l)\bigr)^2}\,,
 \end{equation}
-and over a pair interval $[t_{\rm on},t_{\rm off})$ (Definition~\ref{def:pair-interval}) the
-signed median delay
-\[
-  \ell_{\rm med}=\mathrm{median}\{l^*(t):\ t\in[t_{\rm on},t_{\rm off}),\ m_{ij}(t)=1\},
-\]
-with $\ell_{\rm med}>0$ when $j$ follows $i$. How well $l^*$ is defined depends on the phase of
+so $l^*(t)>0$ when $j$ passes later where $i$ was. How well it is defined depends on the phase of
 flight.
 
-\paragraph{Glide.} The path is nearly straight and the distance has a single sharp minimum: $l^*$
-is the delay at which $j$ crosses the point of $i$, $+120$~s in Figure~\ref{fig:contact}.
-
-\paragraph{Thermal.} $j$ circles over one spot, so the distance $\|\x_i(t)-\x_j(t+l)\|$, as a
-function of $l$, has a nearly equal minimum at every turn (Figure~\ref{fig:clock}, top right): the
-minimiser is degenerate, and $l^*(t)$ falls anywhere among the accepted delays. Altitude narrows
-them. In a climb at rate $w$, pilot $j$ gains $wl$ metres in $l$ seconds,
-\begin{equation}\label{eq:climb}
-  z_j(t+l)\simeq z_j(t)+w\,l ,
+\paragraph{The delay of a contact.} Over a pair interval $[t_{\rm on},t_{\rm off})$
+(Definition~\ref{def:pair-interval}) the delay is the signed median of $l^*(t)$,
+\begin{equation}\label{eq:lmed}
+  \ell_{\rm med}=\mathrm{median}\{l^*(t):\ t\in[t_{\rm on},t_{\rm off}),\ m_{ij}(t)=1,\ \text{neither
+  pilot in a search}\},
 \end{equation}
-so, with $\Delta z = z_i(t)-z_j(t)$ the height of $i$ above $j$, the vertical condition
-$|z_i(t)-z_j(t+l)|<\varepsilon_z$ becomes $|\Delta z-w\,l|<\varepsilon_z$, that is
-\begin{equation}\label{eq:window}
-  l\in\left(\frac{\Delta z-\varepsilon_z}{w},\ \frac{\Delta z+\varepsilon_z}{w}\right):
-\end{equation}
-an interval of width $2\varepsilon_z/w$ around $\Delta z/w$, the time $j$ needs to reach the
-altitude of $i$, which the scan cuts to $[-\delta,\delta]$. With the starting $\delta=5$~min this
-at least halves the range of $l^*$. With the chosen $\delta=2$~min the interval, 300~s wide at
-$w=2$~m/s, is wider than $[-\delta,\delta]$, and altitude gains little: at $\Delta z=200$~m, from
-$[-120,120]$ to $(-50,120]$~s.
+with $\ell_{\rm med}>0$ when $j$ follows $i$. It says who follows, and it does not enter the groups.
+It is undefined when every instant is in a search.
 
-\paragraph{Search.} The pilot turns without climbing, $w\simeq0$, and altitude constrains no delay.
-The instants at which either pilot is in \st{search} are left out of the median; $\ell_{\rm med}$
-is undefined when none remains.
+\paragraph{Glide.} The path is nearly straight, and a second of delay moves $j$ by about 10~m along
+it and changes its altitude by about 1~m: the distance has a single sharp minimum, and $l^*$ is the
+delay at which $j$ crosses the point of $i$ (Figure~\ref{fig:delay}, left).
+
+\paragraph{Climb.} $j$ circles over one spot, so the horizontal distance repeats at every turn and
+has an equal minimum at each, about every 20~s: it cannot tell which turn is the right one. The
+altitude can, since $j$ climbs and passes the altitude of $i$ once. In the 3D distance the position
+on the circle sets the dips and the altitude sets their depth, so the deepest dip is the turn at
+which $j$ is at the height of $i$ and at its point of the circle (Figure~\ref{fig:delay}, right).
+The altitude changes by tens of metres from one turn to the next, as much as the radius of the
+circle, so at one instant $l^*$ is known to about a turn.
+
+\paragraph{Search.} The pilot turns without climbing: the altitude does not change with the delay,
+and the 3D distance has, as the horizontal one, an equal minimum at every turn and no way to choose
+among them. The instants at which $i$ at $t$ or $j$ at $t+l^*$ is in a \st{search} are left out of
+the median.
 
 \begin{figure}
 \centering
-\animated{altitude_clock}
-\caption{\animmark The delay in a thermal, for one instant $t$ and every delay $l$; the animation
-runs the delay $l$ from $-300$ to $300$~s. Left: $i$ and $j$ in the same thermal, $j$ lower by
-$\Delta z=200$~m; the band is $z_i(t)\pm\varepsilon_z$. Top right: the horizontal distance between
-$\x_i(t)$ and $\x_j(t+l)$; inside the thermal it never exceeds 50~m, far below
-$\varepsilon_h=500$~m, so the horizontal condition alone accepts every delay of the stay; it has
-an equal minimum at every turn, so it cannot fix $l^*$. Middle right: the altitude of $j$ at $t+l$
-crosses the band in a single window. Bottom: the delays that satisfy each condition and both; both
-hold for $-50<l<250$~s, the interval~\eqref{eq:window}, centred on $\Delta z/w=100$~s, and the scan
-keeps those with $|l|\le\delta$: $-50<l\le120$~s with $\delta=2$~min.
-Before $l=-120$~s, $j$ was gliding towards the thermal: at $l\approx-280$~s it had the right
-altitude but was 1.4~km away. Model: $j$ circles with radius 25~m, one turn every 20~s, climbing at
-$w=2$~m/s; it arrives at 9~m/s, sinking at 1~m/s; $i$ is on the same circle.}
-\label{fig:clock}
+\includegraphics[width=\textwidth]{figures/delay.pdf}
+\caption{The delay at one instant $t$, for every delay $l$ of $[-\delta,\delta]$, $\delta=2$~min.
+The curve is the 3D distance between $i$ at $t$ and $j$ at $t+l$; the black part marks the delays
+that are correspondences ($\varepsilon_h=500$~m, $\varepsilon_z=300$~m) and the dot the minimum,
+$l^*$. Left: $j$ flies the route of $i$ 90~s later and 250~m to the side, at the same altitude: one
+minimum, at $l^*=+90$~s. Right: $i$ and $j$ circle in one thermal, 25~m in radius, one turn every
+20~s, both climbing at 2~m/s, $j$ lower by 200~m. The distance dips at every turn; the deepest dip,
+at $l^*=+103$~s, is where $j$ has climbed the 200~m (100~s) and reached the point of the circle
+where $i$ was (3~s more).}
+\label{fig:delay}
 \end{figure}
+
+\paragraph{What we keep.} At each instant of a contact, the delay $l^*(t)$ is the minimum of the
+3D distance between $i$ at $t$ and $j$ at $t+l$ over the correspondences. Over a pair interval,
+$\ell_{\rm med}$ is the median of $l^*(t)$ outside the searches. In a glide $l^*$ is the delay at
+which $j$ crosses the point of $i$; in a climb the altitude chooses the turn; in a search nothing
+chooses, and the instant is left out.

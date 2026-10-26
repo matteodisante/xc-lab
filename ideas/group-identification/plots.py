@@ -253,145 +253,36 @@ def views(static):
         save_gif(draw, [(k, 2.0 if k in keys else 0.1) for k in ks], "views", size=(9.0, 5.0))
 
 
-# The delay in a glide: the distance has one sharp minimum.
+# The delay l*: the minimum of the 3D distance over the accepted delays, in a glide and in a climb.
 
-def glide():
-    p = models.VIEWS
+def delay():
+    p, q = models.VIEWS, models.THERMAL
+    delta = p["delta"]
     t, xi, xj = models.pair_tracks(p)
-    km, delta = 1e-3, p["delta"]
     k = int(np.searchsorted(t, 600.0))
     lags = t - t[k]
     win = np.abs(lags) <= delta
-    d = np.hypot(*(xj - xi[:, k:k + 1]))
-    best = np.flatnonzero(win)[np.argmin(d[win])]
+    d = np.hypot(*(xj - xi[:, k:k + 1]))  # the glide model keeps one altitude: the 3D distance is the horizontal one
+    s = models.thermal_scan(q)
+    keep = np.abs(s.lags) <= delta
+    total = np.hypot(s.horizontal, s.zi - s.zj)
+    panels = [("Glide", lags[win], d[win], d[win] < p["eps_h"]), ("Climb", s.lags[keep], total[keep], s.both[keep])]
 
-    fig = plt.figure(figsize=(6.3, 2.7))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1, 1.1], left=0.01, right=0.985, top=0.78, bottom=0.16, wspace=0.16)
-    ax, ad = fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1])
-    cx, cy = xi[:, k] * km
-    ax.plot(*(xi * km), color=BLUE, lw=1.4)
-    ax.plot(*(xj * km), color=ORANGE, lw=1.4)
-    ax.plot(*(xj[:, win] * km), color=ORANGE, lw=7, alpha=0.22, solid_capstyle="butt")
-    ax.add_patch(Circle((cx, cy), p["eps_h"] * km, fill=False, ls="--", lw=0.9, color=INK2))
-    ax.plot([cx, xj[0, best] * km], [cy, xj[1, best] * km], color=INK, lw=0.8, zorder=4)
-    ax.scatter([cx], [cy], s=34, color=BLUE, edgecolor=INK, lw=0.6, zorder=5)
-    ax.scatter(*(xj[:, best:best + 1] * km), s=30, color=ORANGE, edgecolor=INK, lw=0.6, zorder=5)
-    ax.annotate(r"$\mathbf{x}_i(t)$", (cx, cy), xytext=(0, 12), textcoords="offset points", fontsize=9, color=BLUE,
-                ha="center")
-    ax.annotate(r"$\mathbf{x}_j(t+l^*)$", xj[:, best] * km, xytext=(-2, -28), textcoords="offset points", fontsize=8.5,
-                color=ORANGE, ha="right")
-    ax.set_aspect("equal")
-    ax.set_xlim(cx - 2.1, cx + 1.1)
-    ax.set_ylim(cy - 1.05, cy + 1.05)
-    ax.set_axis_off()
-    ax.plot([cx + 0.0, cx + 1.0], [cy - 0.95, cy - 0.95], color=INK, lw=1.2)
-    ax.text(cx + 0.5, cy - 0.88, "1 km", ha="center", va="bottom", fontsize=8)
-    ax.set_title("Plan view:\n" r"band of $j$ from $t-\delta$ to $t+\delta$", loc="left", pad=4, fontsize=12)
-
-    ad.plot(lags[win], d[win], color=INK, lw=1.1)
-    ad.axhline(p["eps_h"], color=INK2, lw=0.7, ls="--")
-    ad.text(-delta + 4, p["eps_h"] + 40, r"$\varepsilon_h = 500$ m", fontsize=7.5, color=INK2)
-    ad.scatter([lags[best]], [d[best]], s=16, color=INK, zorder=4)
-    ad.annotate(rf"$l^* = {lags[best]:+.0f}$ s", (lags[best], d[best]), xytext=(-8, -8), textcoords="offset points",
-                fontsize=9, ha="right", va="top")
-    ad.set(xlim=(-delta, delta), ylim=(0, None), xticks=[-120, -60, 0, 60, 120])
-    ad.set_xlabel(r"delay $l$ (s)", labelpad=1)
-    ad.set_ylabel("m", labelpad=1)
-    ad.set_title("Horizontal distance\n" r"$\|\mathbf{x}_i(t)-\mathbf{x}_j(t+l)\|$", loc="left", pad=4, fontsize=12)
-    fig.savefig(FIGURES / "delay_glide.pdf")
+    with plt.rc_context({"font.size": 11, "axes.labelsize": 11, "axes.titlesize": 11, "xtick.labelsize": 10, "ytick.labelsize": 10}):
+        fig, axes = plt.subplots(1, 2, figsize=(6.3, 2.7),
+                                 gridspec_kw=dict(left=0.115, right=0.985, top=0.85, bottom=0.22, wspace=0.34))
+        for ax, (title, l, dist, ok) in zip(axes, panels, strict=True):
+            best = np.flatnonzero(ok)[np.argmin(dist[ok])]
+            ax.plot(l, dist, color=MUTED, lw=1.1)
+            ax.plot(l[ok], dist[ok], color=INK, lw=1.5)
+            ax.scatter([l[best]], [dist[best]], s=22, color=INK, zorder=4)
+            ax.text(0.97, 0.9, rf"$l^* = {l[best]:+.0f}$ s", transform=ax.transAxes, ha="right", va="top", fontsize=12)
+            ax.set(xlim=(-delta, delta), ylim=(0, None), xticks=[-120, -60, 0, 60, 120])
+            ax.set_xlabel(r"delay $l$ (s)", labelpad=1)
+            ax.set_ylabel("3D distance (m)", labelpad=1)
+            ax.set_title(title, loc="left", pad=4, fontsize=13)
+        fig.savefig(FIGURES / "delay.pdf")
     plt.close(fig)
-
-
-# Altitude as a clock.
-
-def clock(static):
-    p = models.THERMAL
-    s = models.thermal_scan()
-    lags, d, zj, zi, both = s.lags, s.horizontal, s.zj, s.zi, s.both
-    delta, eps_z = p["delta"], p["eps_z"]
-    k0 = int(np.argmin(np.abs(lags)))
-
-    def draw(fig, l_now, full=False):
-        fig.clear()
-        gs = fig.add_gridspec(3, 2, width_ratios=[0.8, 1.25], height_ratios=[1, 1, 0.62], left=0.075, right=0.985,
-                              top=0.89, bottom=0.085, wspace=0.28, hspace=0.62)
-        aa, ab, ac, ad = (fig.add_subplot(gs[:, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[1, 1]),
-                          fig.add_subplot(gs[2, 1]))
-        k = int(np.argmin(np.abs(lags - l_now)))
-        seen = np.full(lags.size, True) if full else lags <= l_now
-
-        aa.axhspan(zi - eps_z, zi + eps_z, color=LIGHT, lw=0)
-        aa.axhline(zi, color=BLUE, lw=0.7, ls="--")
-        aa.plot(s.xj[0], zj, color=ORANGE, lw=0.8)
-        aa.scatter([s.xi[0]], [zi], s=40, color=BLUE, edgecolor=INK, lw=0.6, zorder=5)
-        aa.annotate(r"$i$ at time $t$", (s.xi[0], zi), xytext=(14, 16), textcoords="offset points", fontsize=8,
-                    color=BLUE, arrowprops=dict(arrowstyle="-", color=BLUE, lw=0.6))
-        aa.scatter([s.xj[0, k0]], [zj[k0]], s=30, facecolor="white", edgecolor=ORANGE, lw=1.3, zorder=5)
-        aa.annotate(r"$j$ at time $t$", (s.xj[0, k0], zj[k0]), xytext=(14, -22), textcoords="offset points",
-                    fontsize=8, color=ORANGE, arrowprops=dict(arrowstyle="-", color=ORANGE, lw=0.6))
-        if s.xj[0, k] < -88:
-            aa.annotate(rf"$j$ is {abs(s.xj[0, k]):.0f} m away", xy=(-88, zj[k]), xytext=(-60, zj[k] + 60),
-                        fontsize=8, color=ORANGE, arrowprops=dict(arrowstyle="->", color=ORANGE, lw=0.8))
-        else:
-            aa.scatter([s.xj[0, k]], [zj[k]], s=70, facecolor=ORANGE, edgecolor=AQUA if both[k] else MUTED, lw=2.2,
-                       zorder=6)
-        aa.annotate("", xy=(-70, zi), xytext=(-70, p["z_j0"]), arrowprops=dict(arrowstyle="<->", color=INK2, lw=0.7))
-        aa.text(-66, (zi + p["z_j0"]) / 2, r"$\Delta z$", fontsize=8, color=INK2, va="center")
-        aa.text(88, zi + eps_z - 12, r"$z_i(t)\pm\varepsilon_z$", fontsize=8, color=INK2, ha="right", va="top")
-        aa.text(88, 890, r"radius 25 m, one turn every 20 s" "\n" r"$w = 2$ m/s", fontsize=7.5, color=INK2,
-                ha="right", va="bottom", linespacing=1.4)
-        aa.set(xlim=(-90, 90), ylim=(880, 1860))
-        aa.set_xlabel("horizontal position (m)", labelpad=1)
-        aa.set_ylabel("altitude (m)", labelpad=1)
-        aa.set_title("Side view: one thermal", loc="left", pad=4)
-
-        ab.plot(lags, d, color=INK, lw=0.5, alpha=0.18)
-        ab.plot(lags[seen], d[seen], color=INK, lw=0.9)
-        mins = np.flatnonzero((d[1:-1] < d[:-2]) & (d[1:-1] <= d[2:]) & (d[1:-1] < 5)) + 1
-        ab.scatter(lags[mins], d[mins], s=9, color=INK2, zorder=4, lw=0)
-        ab.axvline(l_now, color=INK, lw=1.1)
-        ab.set(xlim=(-delta, delta), ylim=(0, 100))
-        ab.set_ylabel("m", labelpad=1)
-        ab.set_title(r"Horizontal distance $\|\mathbf{x}_i(t)-\mathbf{x}_j(t+l)\|$", loc="left", pad=4)
-        box = dict(facecolor="white", edgecolor="none", pad=0.6)
-        ab.text(-delta + 8, 96, r"$\varepsilon_h = 500$ m \textuparrow\ off scale: inside the thermal it always holds",
-                fontsize=7.5, color=INK2, va="top", zorder=5, bbox=box)
-        ab.text(-delta + 8, 78, r"inside the thermal: an equal minimum at every turn (20 s)", fontsize=7.5,
-                color=INK2, va="top", zorder=5, bbox=box)
-
-        ac.axhspan(zi - eps_z, zi + eps_z, color=LIGHT, lw=0)
-        ac.axhline(zi, color=BLUE, lw=0.7, ls="--")
-        ac.plot(lags, zj, color=ORANGE, lw=0.8, alpha=0.25)
-        ac.plot(lags[seen], zj[seen], color=ORANGE, lw=1.4)
-        ac.axvline(l_now, color=INK, lw=1.1)
-        l_true = p["dz"] / p["climb"]
-        ac.plot([l_true], [zi], marker="o", ms=4, color=INK)
-        ac.annotate(r"$l = \Delta z / w$", (l_true, zi), xytext=(8, -14), textcoords="offset points", fontsize=8)
-        ac.set(xlim=(-delta, delta), ylim=(880, 1860))
-        ac.set_ylabel("m", labelpad=1)
-        ac.set_title(r"Altitude $z_j(t+l)$ and band $z_i(t)\pm\varepsilon_z$", loc="left", pad=4)
-
-        bars(ad, [("horizontal", s.ok_h & seen, lags, MUTED), ("vertical", s.ok_z & seen, lags, MUTED),
-                  ("both", both & seen, lags, AQUA)], -delta, delta, 1.0)
-        ad.axvline(l_now, color=INK, lw=1.1)
-        ad.set_xlabel(r"delay $l$ (s)", labelpad=1)
-        for axx in (ab, ac, ad):
-            axx.set_xticks([-300, -150, 0, 150, 300])
-        ab.tick_params(labelbottom=False)
-        ac.tick_params(labelbottom=False)
-        tick = r"\checkmark" if both[k] else r"$\times$"
-        fig.text(0.075, 0.955, rf"$l = {lags[k]:+.0f}$ s\quad horizontal: {d[k]:.0f} m\quad "
-                               rf"vertical: {abs(zi - zj[k]):.0f} m\quad correspondence: {tick}", fontsize=10, va="center")
-
-    fig = plt.figure(figsize=(6.3, 3.9))
-    draw(fig, p["dz"] / p["climb"], full=True)
-    fig.savefig(FIGURES / "altitude_clock.pdf")
-    plt.close(fig)
-    frames = [(lambda f, l=l: draw(f, l), 0.125) for l in np.arange(-delta, delta + 1e-9, 10.0)]
-    save_frames(frames + [(lambda f: draw(f, p["dz"] / p["climb"], full=True), 4.0)], "altitude_clock",
-                (6.3, 3.9))
-    if not static:
-        save_gif(draw, [(l, 0.1) for l in np.arange(-delta, delta + 1e-9, 5.0)], "altitude-clock", size=(9.0, 5.4))
 
 
 # A day of group flying.
@@ -676,8 +567,7 @@ if __name__ == "__main__":
     contact(static)
     contact(static, models.VIEWS, "contact_simple", views=False)
     views(static)
-    glide()
-    clock(static)
+    delay()
     day(static)
     decimation()
     asymmetry()

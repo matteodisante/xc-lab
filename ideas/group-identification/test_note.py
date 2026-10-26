@@ -48,7 +48,7 @@ def test_m_ij_and_m_ji_differ_by_at_most_delta_in_time():
     assert models.runs(M.any(axis=0), t, q["step"]) == [(q["delay"], 601.0 + q["delay"])]  # the same run, delayed
 
 
-# Altitude as a clock (figure "altitude_clock").
+# Altitude as a clock (the climb panel of figure "delay").
 
 def test_altitude_selects_one_window_of_delays():
     p = models.THERMAL
@@ -66,6 +66,14 @@ def test_horizontal_distance_alone_is_degenerate_in_the_thermal():
     minima = (d[1:-1] < d[:-2]) & (d[1:-1] <= d[2:]) & (d[1:-1] < 5)
     assert minima.sum() == 21
     assert (s.ok_z & ~s.ok_h).any()
+
+
+def test_the_3d_minimum_is_where_j_reaches_the_altitude_of_i():
+    p = models.THERMAL
+    s = models.thermal_scan()
+    total = np.hypot(s.horizontal, s.zi - s.zj)
+    best = s.lags[s.both][np.argmin(total[s.both])]
+    assert abs(best - p["dz"] / p["climb"]) <= p["period"] / 2  # within one turn of dz / w
 
 
 @pytest.mark.parametrize("dz, matched", [(880.0, True), (900.0, False)])

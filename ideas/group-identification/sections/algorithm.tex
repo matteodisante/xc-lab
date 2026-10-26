@@ -94,8 +94,8 @@ grid instants, compared with the tolerances:
         and a whole thermal of radius 25~m fits in a small fraction of it;
   \item vertically, $w\Delta/2=5$~m at 2~m/s and at most 12.5~m at 5~m/s, against
         $\varepsilon_z=300$~m;
-  \item on the delay, a grid of 5~s against $\delta=120$~s; in a thermal $l^*$ is undetermined
-        over the whole window of accepted delays anyway (Appendix~\ref{sec:lag});
+  \item on the delay, a grid of 5~s against $\delta=120$~s; in a thermal $l^*$ is known to about
+        a turn, 20~s, anyway (Appendix~\ref{sec:lag});
   \item on the ends of the intervals, $\pm\Delta$ against $g=120$~s.
 \end{itemize}
 States and headings are computed on the fixes, before the grid, and lose nothing. The check of
@@ -344,7 +344,7 @@ points of the day.
 For one candidate pair, Phase~2 tests Definition~\ref{def:correspondence} exactly, at every
 instant $t$ of the window $W_{ij}$ and every delay $l$ of the grid up to $\delta$, and keeps three
 results: $m_{ij}(t)$, whether $i$ at $t$ has a correspondence; $m_{ji}(t')$, whether $j$ at $t'$
-has one; and $l^*(t)$, the delay of the closest correspondence of $i$ at $t$
+has one; and $l^*(t)$, the delay of the correspondence of $i$ at $t$ that is closest in 3D
 (Appendix~\ref{sec:lag}).
 
 \begin{lemma}\label{lem:scan}
@@ -364,13 +364,13 @@ $W_{ij}$.
 \begin{algorithmic}[1]
 \Require flights $i<j$, on the grid; window $W\subseteq T^\dep_i$; delays $\Lambda$
 \Ensure contact $a$ on the support $W\cup(W+\Lambda)$; delay $l^*$ on $W$
-\State $m_{ij}\gets0$;\ $m_{ji}\gets0$;\ $d^{\min}\gets+\infty$;\ $l^*\gets$ undefined
+\State $m_{ij}\gets0$;\ $m_{ji}\gets0$;\ $r^{\min}\gets+\infty$;\ $l^*\gets$ undefined
 \For{$l\in\Lambda$}
   \State $\tau\gets\{t\in W:\ t+l\in T^\dep_j\}$ \Comment{array of instants}
-  \State $d\gets\|\x_i(\tau)-\x_j(\tau+l)\|$;\ $h\gets|z_i(\tau)-z_j(\tau+l)|$
+  \State $d\gets\|\x_i(\tau)-\x_j(\tau+l)\|$;\ $h\gets|z_i(\tau)-z_j(\tau+l)|$;\ $r\gets\sqrt{d^2+h^2}$
   \State $c\gets(d<\varepsilon_h)\wedge(h<\varepsilon_z)\wedge D_{ij}(\tau,\tau+l)$
   \State $m_{ij}[\tau]\gets m_{ij}[\tau]\vee c$;\ $m_{ji}[\tau+l]\gets m_{ji}[\tau+l]\vee c$
-  \State $u\gets c\wedge(d<d^{\min}[\tau])$;\ $d^{\min}[\tau]\gets d$ and $l^*[\tau]\gets l$ where $u$
+  \State $u\gets c\wedge(r<r^{\min}[\tau])$;\ $r^{\min}[\tau]\gets r$ and $l^*[\tau]\gets l$ where $u$
 \EndFor
 \State $a(t)\gets m_{ij}(t)\vee m_{ji}(t)$
 \State \Return $a$, $l^*$
@@ -381,7 +381,7 @@ $W_{ij}$.
 Each pass of the loop fixes one delay $l$ and compares $i$ at every instant of the window with
 $j$ at the instant $l$ later: one distance, one height difference and, if both glide, one angle per
 instant. Where the three conditions hold, $i$ at $t$ and $j$ at $t+l$ both get a correspondence. A
-running minimum of the distance over the delays that pass gives $l^*(t)$.
+running minimum of the 3D distance over the delays that pass gives $l^*(t)$.
 \end{inwords}
 
 In the $(t,t')$ plane a pass is the diagonal $t'=t+l$, evaluated over the whole window at once

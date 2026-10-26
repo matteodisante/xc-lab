@@ -117,11 +117,10 @@ before j finds i (m_ij = 1 while m_ji = 0), and the reverse when j leaves; a_ij 
 
 ![views](animations/views.gif)
 
-The vertical condition in a thermal: the horizontal distance is small at every delay, and only
-the altitude selects one window of delays, so pilots at distant heights are not in contact. Inside
-the window every turn gives an equal minimum, so the delay l* stays undetermined.
-
-![vertical condition](animations/altitude-clock.gif)
+The delay l* of a contact, at one instant: the minimum of the 3D distance over the delays that are
+correspondences. In a glide the distance has one sharp minimum; in a climb the horizontal distance
+dips at every turn and the altitude picks the turn; in a search nothing does, and the instant is
+left out of the median delay. Static figure: `figures/delay.pdf`.
 
 An example day: the contact graph, the groups g1–g4 and the episodes E1, E2, event by
 event.
