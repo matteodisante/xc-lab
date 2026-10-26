@@ -425,12 +425,12 @@ pairs (takeoffs within 10 km) and inside the 134 202 surrogate contacts, 980 of 
 least τ*; and the distance at the same instant after the first contact of each near pair. The
 per-date cache is in `analyses/cohesion/all/days/` of the run on SSD_DISANTE.
 
-- D(s) = ⟨(ℓ(t+s) − ℓ(t))²⟩ fitted by an Ornstein-Uhlenbeck process: groups 1/k = 3.9 min
-  [3.8, 4.0], σ = 54 s [53, 54]; chance contacts of at least τ*, 4.4 min [4.2, 4.7] and 78 s
-  [77, 79]. The diffusivity 2kσ² is 24.5 [23.9, 25.1] s²/s in groups, 46 [44, 48] for chance
-  contacts of at least τ*, 69 [68, 70] for all of them; 24.2, 24.5 and 25.0 at 2, 3 and 4+ pilots.
-- The drift of ℓ, made symmetric, pulls back to 0 with 1/k = 4.7 min [4.6, 4.7] in groups and
-  6.4 min [5.9, 6.9] for chance contacts of at least τ*.
+- D(s) = ⟨(ℓ(t+s) − ℓ(t))²⟩ fitted by an Ornstein-Uhlenbeck process: groups 1/k = 4.7 min
+  [4.6, 4.7], σ = 55 s [54, 55]; chance contacts of at least τ*, 4.8 min [4.5, 5.1] and 79 s
+  [78, 80]. The diffusivity 2kσ² is 21.4 [20.9, 22.0] s²/s in groups, 43 [41, 46] for chance
+  contacts of at least τ*, 62 [61, 63] for all of them; 21.2, 21.4 and 21.8 at 2, 3 and 4+ pilots.
+- The drift of ℓ, made symmetric, pulls back to 0 with 1/k = 6.9 min [6.7, 7.0] in groups and
+  7.5 min [6.9, 8.1] for chance contacts of at least τ*.
 - After a first contact of at least τ*, the median distance is 1.0 km at 60 min against 2.4 km by
   chance, 2.9 against 5.8 km at 2 h. After any first contact, 3.7 against 5.1 km at 30 min.
 
@@ -446,14 +446,14 @@ against the same graphs with directions at random (50 draws). Switches of the pi
 ℓ*(t) (cache of `cohesion.py`, runs shorter than 60 s dropped). Who leads in groups of two
 named pilots: earlier flights in the catalog and wing class (A = 1 to competition = 5).
 
-- Directed triangles are cyclic 2.5% [2.1, 3.0] of the time, against 25% at random; graphs with
-  every edge directed (33% of the time) are acyclic 98.5%, against 88%; with one leader 80.6%
-  [79.6, 81.7], against 77.0% [76.5, 77.6]. One leader: 86% at 3 pilots, 68% at 4, 50% at 5+.
-- The pilot ahead changes 3.4 times per hour of contact [3.3, 3.4] in groups, 4.4 [4.2, 4.5] in
-  chance contacts of at least τ*; the pilot most often ahead holds 73% of the directed time
+- Directed triangles are cyclic 2.3% [1.8, 2.8] of the time, against 25% at random; graphs with
+  every edge directed (34% of the time) are acyclic 98.7%, against 88%; with one leader 80.9%
+  [80.0, 82.0], against 77.2% [76.7, 77.8]. One leader: 86% at 3 pilots, 68% at 4, 52% at 5+.
+- The pilot ahead changes 3.3 times per hour of contact [3.3, 3.4] in groups, 4.3 [4.1, 4.4] in
+  chance contacts of at least τ*; the pilot most often ahead holds 74% of the directed time
   (median), 69% by chance.
-- The leader has more earlier flights in 58.2% [57.5, 58.8] of 15 937 pairs, the higher wing class
-  in 63.9% [62.8, 64.9] of 8 304.
+- The leader has more earlier flights in 58.5% [57.8, 59.1] of 16 294 pairs, the higher wing class
+  in 64.3% [63.4, 65.3] of 8 475.
 
 Pilots in a group are in a line along the route, as positions on a route must be: the low share of
 cycles is geometry, not rank. Leadership is fluid, a little steadier than chance, and goes more

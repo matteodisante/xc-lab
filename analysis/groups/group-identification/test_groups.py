@@ -786,16 +786,16 @@ def test_cohesion_numbers_of_the_readme():
     def minutes(k, b):
         return round(1 / k / 60, 1), np.round(1 / np.array(b[::-1]) / 60, 1).tolist()
 
-    assert minutes(f["real/all"]["k"], f["real/all"]["k_band"]) == (3.9, [3.8, 4.0])
-    assert minutes(f["chance_long/all"]["k"], f["chance_long/all"]["k_band"]) == (4.4, [4.2, 4.7])
-    assert (round(f["real/all"]["sigma"]), np.round(f["real/all"]["sigma_band"]).tolist()) == (54, [53, 54])
-    assert (round(f["chance_long/all"]["sigma"]), np.round(f["chance_long/all"]["sigma_band"]).tolist()) == (78, [77, 79])
-    assert (round(f["real/all"]["q"], 1), np.round(f["real/all"]["q_band"], 1).tolist()) == (24.5, [23.9, 25.1])
-    assert (round(f["chance_long/all"]["q"]), np.round(f["chance_long/all"]["q_band"]).tolist()) == (46, [44, 48])
-    assert (round(f["chance/all"]["q"]), np.round(f["chance/all"]["q_band"]).tolist()) == (69, [68, 70])
-    assert [round(f[f"real/{n}"]["q"], 1) for n in ("2", "3", "4+")] == [24.2, 24.5, 25.0]
-    assert minutes(d["real/all"]["k"], d["real/all"]["k_band"]) == (4.7, [4.6, 4.7])
-    assert minutes(d["chance_long/all"]["k"], d["chance_long/all"]["k_band"]) == (6.4, [5.9, 6.9])
+    assert minutes(f["real/all"]["k"], f["real/all"]["k_band"]) == (4.7, [4.6, 4.7])
+    assert minutes(f["chance_long/all"]["k"], f["chance_long/all"]["k_band"]) == (4.8, [4.5, 5.1])
+    assert (round(f["real/all"]["sigma"]), np.round(f["real/all"]["sigma_band"]).tolist()) == (55, [54, 55])
+    assert (round(f["chance_long/all"]["sigma"]), np.round(f["chance_long/all"]["sigma_band"]).tolist()) == (79, [78, 80])
+    assert (round(f["real/all"]["q"], 1), np.round(f["real/all"]["q_band"], 1).tolist()) == (21.4, [20.9, 22.0])
+    assert (round(f["chance_long/all"]["q"]), np.round(f["chance_long/all"]["q_band"]).tolist()) == (43, [41, 46])
+    assert (round(f["chance/all"]["q"]), np.round(f["chance/all"]["q_band"]).tolist()) == (62, [61, 63])
+    assert [round(f[f"real/{n}"]["q"], 1) for n in ("2", "3", "4+")] == [21.2, 21.4, 21.8]
+    assert minutes(d["real/all"]["k"], d["real/all"]["k_band"]) == (6.9, [6.7, 7.0])
+    assert minutes(d["chance_long/all"]["k"], d["chance_long/all"]["k_band"]) == (7.5, [6.9, 8.1])
     s = r["sep"]
     km = {k: [round(v["median"][m // 5] / 1000, 1) for m in (30, 60, 120)] for k, v in s.items()}
     assert km["real_long"][1:] == [1.0, 2.9] and km["chance_long"][1:] == [2.4, 5.8]
@@ -810,16 +810,16 @@ def test_hierarchy_numbers_of_the_readme():
     def pct(v, d=1):
         return round(100 * v["value"], d), np.round(100 * np.array(v["band"]), d).tolist()
 
-    assert pct(o["cyclic"]) == (2.5, [2.1, 3.0]) and round(100 * o["cyclic_null"]["value"]) == 25
-    assert round(100 * o["full_share"]) == 33 and round(100 * o["acyclic"]["value"], 1) == 98.5
+    assert pct(o["cyclic"]) == (2.3, [1.8, 2.8]) and round(100 * o["cyclic_null"]["value"]) == 25
+    assert round(100 * o["full_share"]) == 34 and round(100 * o["acyclic"]["value"], 1) == 98.7
     assert round(100 * o["acyclic_null"]["value"]) == 88
-    assert pct(o["one_leader"]) == (80.6, [79.6, 81.7]) and pct(o["one_leader_null"]) == (77.0, [76.5, 77.6])
-    assert [round(100 * o["by_size"][k]["one_leader"]) for k in ("3", "4", "5")] == [86, 68, 50]
-    assert (round(s["real"]["per_hour"], 1), np.round(s["real"]["per_hour_band"], 1).tolist()) == (3.4, [3.3, 3.4])
-    assert (round(s["chance"]["per_hour"], 1), np.round(s["chance"]["per_hour_band"], 1).tolist()) == (4.4, [4.2, 4.5])
-    assert (round(100 * s["real"]["dominant_median"]), round(100 * s["chance"]["dominant_median"])) == (73, 69)
-    assert (w["experience"]["pairs"], pct(w["experience"])) == (15937, (58.2, [57.5, 58.8]))
-    assert (w["wing"]["pairs"], pct(w["wing"])) == (8304, (63.9, [62.8, 64.9]))
+    assert pct(o["one_leader"]) == (80.9, [80.0, 82.0]) and pct(o["one_leader_null"]) == (77.2, [76.7, 77.8])
+    assert [round(100 * o["by_size"][k]["one_leader"]) for k in ("3", "4", "5")] == [86, 68, 52]
+    assert (round(s["real"]["per_hour"], 1), np.round(s["real"]["per_hour_band"], 1).tolist()) == (3.3, [3.3, 3.4])
+    assert (round(s["chance"]["per_hour"], 1), np.round(s["chance"]["per_hour_band"], 1).tolist()) == (4.3, [4.1, 4.4])
+    assert (round(100 * s["real"]["dominant_median"]), round(100 * s["chance"]["dominant_median"])) == (74, 69)
+    assert (w["experience"]["pairs"], pct(w["experience"])) == (16294, (58.5, [57.8, 59.1]))
+    assert (w["wing"]["pairs"], pct(w["wing"])) == (8475, (64.3, [63.4, 65.3]))
 
 
 def test_route_covers_the_same_route_flown_the_same_way_and_not_a_far_one():
