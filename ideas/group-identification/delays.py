@@ -85,10 +85,10 @@ def profile(results, p):
             "apart_real": apart["real"].tolist(), "apart_chance": apart["null"].tolist()}
 
 
-def plot(prof, path):
+def plot(prof, path, size=(13, 3.8)):
     d = np.array(prof["delay"]) / 60
     real, chance = np.array(prof["real"]), np.array(prof["chance"])
-    fig, (left, middle, right) = plt.subplots(1, 3, figsize=(13, 3.8))
+    fig, (left, middle, right) = plt.subplots(1, 3, figsize=size)
     left.plot(d, real, color="#2a78d6", label="real pairs")
     left.plot(d, chance, color="#eb6834", ls="--", label="by chance")
     left.set(yscale="log", xlabel="|delay| (min)", ylabel="correspondences per s of exposure")

@@ -7,7 +7,7 @@ the runs on SSD_DISANTE.
 - assessment_fdr: intervals lasting at least tau, real and by chance, and the false discovery
   rate, for delta = 5 min and 2 min;
 - assessment_delays: the delay profile of delays.py (real and chance per delay, their ratio,
-  the distance at the same instant);
+  the distance at the same instant); assessment_delays_slides: the same with larger text;
 - assessment_ell: the median delay of the pair intervals by duration (delta = 5 min);
 - assessment_separation: the distance at the same instant of separation.py, real and chance,
   and their ratio g(d);
@@ -128,10 +128,10 @@ def ell_figure(classes):
     save(fig, "assessment_ell")
 
 
-def separation_figure(prof):
+def separation_figure(prof, name="assessment_separation", size=(10, 3.4)):
     km = np.array(prof["distance_m"])[:-1] / 1000  # the last bin holds the rest
     real, chance = np.array(prof["real"])[:-1], np.array(prof["chance"])[:-1]
-    fig, (left, right) = plt.subplots(1, 2, figsize=(10, 3.4))
+    fig, (left, right) = plt.subplots(1, 2, figsize=size)
     left.plot(km, real, color=BLUE, label="real pairs")
     left.plot(km, chance, color=ORANGE, ls="--", label="by chance")
     left.set(xscale="log", xlabel="distance at the same instant (km)",
@@ -140,7 +140,7 @@ def separation_figure(prof):
     right.plot(km, real / chance, color=INK)
     right.axhline(1, color=GREY, lw=0.8)
     right.set(xscale="log", yscale="log", xlabel="distance at the same instant (km)", ylabel="g(d) = real / chance")
-    save(fig, "assessment_separation")
+    save(fig, name)
 
 
 def tolerance_figure(prof):
@@ -244,8 +244,13 @@ if __name__ == "__main__":
     fdr_figure(wide, narrow)
     delays.plot(json.loads(PROFILE.read_text()), FIGURES / "assessment_delays.pdf")
     (FIGURES / "assessment_delays.png").unlink()  # delays.plot also writes a PNG
+    with plt.rc_context({"font.size": 15}):  # the same profile with larger text, for the slides
+        delays.plot(json.loads(PROFILE.read_text()), FIGURES / "assessment_delays_slides.pdf", size=(13, 3.0))
+    (FIGURES / "assessment_delays_slides.png").unlink()
     ell_figure(ell_classes(pd.read_parquet(RUNS / WIDE / "intervals_raw.parquet")))
     separation_figure(json.loads(SEPARATION.read_text()))
+    with plt.rc_context({"font.size": 15}):  # the same with larger text, for the slides
+        separation_figure(json.loads(SEPARATION.read_text()), "assessment_separation_slides", (11, 3.0))
     tolerance_figure(json.loads(TOLERANCES.read_text()))
     q_figure(wide, narrow, {q: group_flights(NARROW.format(q)) for q in QS})
     runs = {q: structure(NARROW.format(q)) for q in QS}
