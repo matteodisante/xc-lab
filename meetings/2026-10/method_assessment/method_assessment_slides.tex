@@ -172,6 +172,25 @@
 \source{$\delta=2$~min (blue), 5~min (grey). Bracket: 5--95\% over 200 resamplings of the dates.}
 \end{frame}
 
+
+\begin{frame}{$q$: how much chance we accept}
+\fig[0.38\textheight]{assessment_q.pdf}
+\begin{center}
+\small
+\begin{tabular}{@{}c c c c c@{}}
+\toprule
+$q$ & $\tau^*$ (min) & para in a group & hang in a group & episodes \\
+\midrule
+0.05 & 51.9 & 13.7\% & 3.8\% & 10\,553 \\
+0.1 & 38.1 & 21.7\% & 6.9\% & 17\,169 \\
+0.2 & 26.4 & 31.7\% & 13.9\% & 26\,504 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\source{$\delta=2$~min. We take $q=0.1$.}
+\end{frame}
+
+
 \begin{frame}{How much the shift matters}
 \begin{center}
 \begin{tabular}{@{}l c c c@{}}
@@ -201,34 +220,37 @@ delays.}
 
 \partframe{Part 2: parameters}{Measured, chosen, or definitions}
 
-\begin{frame}{Three kinds of parameters}
+\begin{frame}{Parameters}
 \begin{center}
 \begin{tabular}{@{}l l l@{}}
 \toprule
 & value & set by \\
 \midrule
-$\delta$ & 2 min & chosen/measured: $R(l)$ \\
+$\delta$ & 2 min & chosen/measured \\
 $q$ & 0.1 & chosen/measured \\
 $\tau^*$ & 38.1 min & $\FDR(\tau^*)\le q$ \\
 $\varepsilon_h$, $\varepsilon_z$, $g$ & 500 m, 300 m, 120 s & chosen \\
 $\theta_{\max}$ & 45$^\circ$ & no effect \\
-$\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & & fixed: bounds, exactness \\
+$\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & & fixed: bounds \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{frame}
 
-\begin{frame}{$\delta$: delay profile}
+\begin{frame}{Choosing $\delta$. The delay profile}
 \[
   R(l)=\frac{n_{\rm real}(l)/H_{\rm real}}{n_{\rm chance}(l)/H_{\rm chance}},\qquad
   n(l)=\#\{(t,t+l)\in\M\}
 \]
-\fig[0.4\textheight]{assessment_delays.pdf}
+\[
+  H=\text{exposure: time both flights of a pair are in the air, real or shifted}
+\]
+\fig[0.42\textheight]{assessment_delays_slides.pdf}
 \[
   R_{\max}=5.6,\quad R(105~\text{s})\approx4,\quad R(195~\text{s})\approx3,\quad
   R(500~\text{s})\approx2,\quad R(15~\text{min})=1.5
 \]
-\source{300 dates, window 15~min. Fast part: flying together; slow tail: same thermals, same hour.}
+\source{300 dates, window 15~min. Fast part: flying together; slow tail: same thermals. Chance is flat: a shifted copy has no preferred delay.}
 \end{frame}
 
 \begin{frame}{$\delta$: long contacts, short delays}
@@ -239,7 +261,7 @@ $\Delta$, $h_{\max}$, $R_\dep$, $v_{\max}$, $R_s$, $r_{\min}$ & & fixed: bounds,
 \small
 \begin{tabular}{@{}l c c c@{}}
 \toprule
-duration & median $|\ell_{\rm med}|$ & $|\ell_{\rm med}|\le2$ min & $|\ell_{\rm med}|\ge285$ s \\
+interval duration $t_{\rm off}-t_{\rm on}$ & median $|\ell_{\rm med}|$ & $|\ell_{\rm med}|\le2$ min & $|\ell_{\rm med}|\ge285$ s \\
 \midrule
 $<10$ min & 210 s & 32\% & 29\% \\
 10--30 min & 160 s & 39\% & 12\% \\
@@ -252,50 +274,22 @@ $\ge90$ min & 25 s & 90\% & 6 of 10\,734 \\
   \delta=2~\text{min}:\qquad R(\delta)=3.7,\qquad
   P\bigl(|\ell_{\rm med}|\le\delta\ \big|\ \text{duration}\ge90~\text{min}\bigr)=0.9
 \]
-\source{Run with $\delta=5$~min, 965\,770 intervals.}
+\source{Run with $\delta=5$~min, 965\,770 intervals, all of them: the duration is not $\tau^*$, no threshold is applied.}
 \end{frame}
 
 \begin{frame}{Distance at the same instant}
 \[
   g(d)=\frac{p_{\rm real}(d)}{p_{\rm chance}(d)},\qquad d=\|\x_i(t)-\x_j(t)\|
 \]
-\fig[0.4\textheight]{assessment_separation.pdf}
+\[
+  p(d)=\frac{\text{time both fly at distance in }[d,d+100~\text{m})}{\text{time both fly}}
+\]
+\fig[0.36\textheight]{assessment_separation_slides.pdf}
 \[
   g(d<100~\text{m})=10.4,\quad g<1\ \text{for}\ d>5.7~\text{km},\quad
   \text{in contact: } d\le\varepsilon_h+v_{\max}\delta\approx3.8~\text{km}
 \]
 \source{210 dates, every instant both fly. Excess beyond sight (1.5~km): weather of the hour too.}
-\end{frame}
-
-\begin{frame}{Tolerances: no edge}
-\[
-  d_h(t)=\min_{|l|\le\delta,\ |\Delta z_l|<\varepsilon_z}\|\Delta\x_l\|,\qquad
-  d_z(t)=\min_{|l|\le\delta,\ \|\Delta\x_l\|<\varepsilon_h}|\Delta z_l|
-\]
-\fig[0.4\textheight]{assessment_tolerances.pdf}
-\[
-  \frac{\text{real}}{\text{chance}}\approx1.5\ \text{at}\ \varepsilon_h,\ \varepsilon_z;\qquad
-  \text{gaps: same lengths}\ \Rightarrow\ \varepsilon_h,\varepsilon_z,g\ \text{definitions}
-\]
-\source{$\Delta\x_l=\x_i(t)-\x_j(t+l)$, $\Delta z_l=z_i(t)-z_j(t+l)$; 210 dates, $\delta=2$~min.}
-\end{frame}
-
-
-\begin{frame}{$q$: how much chance we accept}
-\fig[0.38\textheight]{assessment_q.pdf}
-\begin{center}
-\small
-\begin{tabular}{@{}c c c c c@{}}
-\toprule
-$q$ & $\tau^*$ (min) & para in a group & hang in a group & episodes \\
-\midrule
-0.05 & 51.9 & 13.7\% & 3.8\% & 10\,553 \\
-0.1 & 38.1 & 21.7\% & 6.9\% & 17\,169 \\
-0.2 & 26.4 & 31.7\% & 13.9\% & 26\,504 \\
-\bottomrule
-\end{tabular}
-\end{center}
-\source{$\delta=2$~min. We take $q=0.1$.}
 \end{frame}
 
 
