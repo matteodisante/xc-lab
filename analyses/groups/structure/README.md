@@ -2,14 +2,14 @@
 
 **Status:** working note, from the section "What we find" of
 `methods/group-identification` (note of the method), 2026-10-29. The analyses that give its numbers
-and figures are in [`../group-identification`](../group-identification/).
+and figures are in [`..`](../).
 
 **Question.** Once the groups are labelled, what are they: how large and lasting, what holds
 their pilots together, who leads, with whom pilots fly, and where the sizes come from?
 
 The note studies the groups in themselves: not the method that builds them (that is
 `methods/group-identification`), not the difference between group and solo flight (that is
-`../group-identification/report`).
+`../vs-solo`).
 
 ## Files
 
@@ -22,10 +22,10 @@ The note studies the groups in themselves: not the method that builds them (that
 - `figures/structure/`: copies of the figures of the analyses. `assessment_structure.pdf` is read
   from `methods/group-identification/figures/`.
 
-The numbers are macros written by `../group-identification`
-(`report/generated/macros.tex` and `structure_macros.tex`).
+The numbers are macros written by the scripts of `..`
+(`vs-solo/generated/macros.tex` and `structure_macros.tex`).
 
 ```bash
-cp ../group-identification/out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission}.pdf figures/structure/   # after the analyses
+cp ../out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission}.pdf figures/structure/   # after the analyses
 latexmk -pdf group_structure.tex
 ```

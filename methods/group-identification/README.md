@@ -25,7 +25,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 
 | folder | content |
 |---|---|
-| `runs/<name>/` | the tables of the note for all dates, `calibration.*`, `episode_distance.parquet`, `days/` (cache per date), `analyses/` (the measured pieces of `analyses/groups/group-identification`, whose figures are in its `out/<run>/`) |
+| `runs/<name>/` | the tables of the note for all dates, `calibration.*`, `episode_distance.parquet`, `days/` (cache per date), `analyses/` (the measured pieces of `analyses/groups`, whose figures are in its `out/<run>/`) |
 | `runs/d120_eh500_ez300_th45_g120_q0.1/` | the chosen run; `_q0.05` and `_q0.2` beside it share its contacts; `calibration_shifts.json`: τ* by class of surrogate shift |
 | `runs/d300_eh500_ez300_th45_g120_q0.05/` | the starting values of the note (δ = 5 min) |
 | `delays/sample300_d900_.../` | the delay profile that chose δ |
@@ -76,14 +76,14 @@ groups, by number and by time, for three q.
   viewers that run PDF JavaScript; elsewhere they show the static figure.
   Sections 5–6 hold the calibration and the tuning on the data, the appendices the literature,
   the algorithm and the details; the chosen values sit beside the starting ones in the note's
-  table of symbols. What the groups are on the archive is in `analyses/groups/group-structure/`.
+  table of symbols. What the groups are on the archive is in `analyses/groups/structure/`.
 - `models.py`: the synthetic scenarios of the figures and the sweep that builds groups,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
   animations in the PDF) and `animations/`.
 - `test_note.py`: checks every number the note quotes.
 - `assessment.py`: writes `figures/assessment_*.pdf`, the figures of sections 5–6 and Appendix H of the note, and the `assessment_structure*` one
-  that `analyses/groups/group-structure/` reads.
+  that `analyses/groups/structure/` reads.
 - `grid.py` (Phase 0), `contacts.py` (Phases 1-3 and the null model), `sweep.py` (Phase 4),
   `run.py` (the loop over dates, τ*, the tables of section Outputs, PARAMETERS.md),
   `calibration.py` (the figure and the band of τ*), `delays.py` (the delay profile),
@@ -140,7 +140,7 @@ uv run python plateau.py --sample 300        # about 1 h
 uv run python separation.py --sample 300
 uv run python tolerances.py --sample 300
 uv run python shifts.py                      # after run.py on the chosen run; about 20 s
-uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 5-6 and of group-structure
+uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 5-6 and of analyses/groups/structure
 uv run pytest methods/group-identification     # from the root of xc-lab
 ```
 

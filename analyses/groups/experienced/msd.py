@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from population import CACHE, COLORS, LEVELS, LABELS, OUT, POPULATIONS, SEED, keep, load, read_pieces, save
-import route  # noqa: E402  (population puts group-identification on the path)
+import route  # noqa: E402  (population puts the groups folder on the path)
 from route_level import results as route_results  # noqa: E402
 from tamsd import summarize  # noqa: E402
 

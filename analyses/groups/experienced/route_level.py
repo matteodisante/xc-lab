@@ -1,6 +1,6 @@
 """Pieces of group time against the same route flown alone, by wing level.
 
-Matches, strata and weights are those of group-identification/route.py (the piece is the stratum,
+Matches, strata and weights are those of ../route.py (the piece is the stratum,
 the solo segments are reweighted to one piece per stratum), with both sides restricted to the
 flights of one level. The result has the layout of tamsd.summarize, with the matched pieces as
 "group" and their solo segments as "solo"; "flights" counts pieces and segments.

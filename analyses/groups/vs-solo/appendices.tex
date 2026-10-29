@@ -284,15 +284,15 @@ section 8 of the note.
 %======================================================================================
 \section{Reproducing the report}\label{app:reproduce}
 
-From \texttt{xc-lab/analyses/groups/group-identification}, SSD\_DISANTE mounted:
+From \texttt{xc-lab/analyses/groups}, SSD\_DISANTE mounted:
 \begin{verbatim}
 uv run python tamsd.py; uv run python phase_msd.py; uv run python survival.py
 uv run python budget.py; uv run python performance.py; uv run python blocks.py
 uv run python redundancy.py; uv run python size.py; uv run python decompose.py
 uv run python zones.py; uv run python prepost.py; uv run python prepost.py --window 1260
-uv run python mechanisms.py; uv run python report/facts.py
+uv run python mechanisms.py; uv run python vs-solo/facts.py
 uv run python route.py --sample 10000
-uv run python report/tables.py; uv run python report/figures.py
+uv run python vs-solo/tables.py; uv run python vs-solo/figures.py
 cd report; latexmk -pdf group_vs_solo.tex
 \end{verbatim}
 Heavy pieces stay on SSD\_DISANTE, in the \texttt{analyses/} folder of each run; figures and JSON in \texttt{out/<run>/}.

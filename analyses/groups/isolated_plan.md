@@ -1,6 +1,6 @@
 # Plan: group time against isolated solo flights on the same route
 
-Folder: `xc-lab/analyses/groups/group-identification/`. File to rewrite: `isolated.py`.
+Folder: `xc-lab/analyses/groups/`. File to rewrite: `isolated.py`.
 
 `isolated.py` already holds `sphere()` (positions on the sphere, in m), the index of every flight of
 the archive (`read_index`, cache `CACHE/archive_index.npz`, 30 M positions, one per minute),
@@ -111,7 +111,7 @@ every phase Delta, the min and max over the years next to the band.
 
 **8. Share explained.** With `route.baseline(...)`, the same pieces against the solo flights of
 their site-day and hour. Share explained at 1000 s with the formula of `\RouteExplained`: find it
-in `report/facts.py` and reuse it, do not rewrite it.
+in `vs-solo/facts.py` and reuse it, do not rewrite it.
 
 **9. Output.**
 - Match cache `CACHE / f"isolated_matches{tag}.parquet"`: `level, piece, solo, i, j, cover`.
@@ -146,7 +146,7 @@ in `report/facts.py` and reuse it, do not rewrite it.
   comments.
 - Heavy caches only in `CACHE` on SSD_DISANTE; JSON and figure in `out/<run>/`; temporary trials
   in the scratchpad.
-- Do not touch `report/` or the thesis. No commit unless asked.
+- Do not touch `vs-solo/` or the thesis. No commit unless asked.
 - Before each edit and each command, say in plain words what it does. One small change at a time.
 
 ## Report at the end

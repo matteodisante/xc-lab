@@ -1,7 +1,7 @@
 """Survival of the phase durations of experienced and beginner paragliders, in a group and with no
 contact, with a maximum likelihood fit.
 
-Durations as in group-identification/survival.py: Vilpellet's runs on 1-Hz tracks (a duration is
+Durations as in ../survival.py: Vilpellet's runs on 1-Hz tracks (a duration is
 its number of fixes, in seconds), a search only when a climb follows, each run whole in the
 population of the stretch that holds its middle, the 0.0001 and 99.9999 percentiles cut. Per
 case: mean, median and empirical variance. Every family of families.py is fitted to every case and

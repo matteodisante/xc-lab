@@ -1,9 +1,9 @@
-"""The tables and the numbers of section 7 of the group identification note
-(methods/group-identification/group_identification.tex), from the JSON of the analyses:
-report/generated/structure_*.tex. Every number in those sections is a macro of
+"""The tables and the numbers of the note on the structure of groups
+(structure/group_structure.tex), from the JSON of the analyses:
+vs-solo/generated/structure_*.tex. Every number of the note is a macro of
 generated/structure_macros.tex or of generated/macros.tex.
 
-    uv run python report/structure_tables.py    # from analyses/groups/group-identification, after describe.py
+    uv run python vs-solo/structure_tables.py    # from analyses/groups, after describe.py
 """
 
 import numpy as np

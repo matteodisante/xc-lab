@@ -26,7 +26,7 @@ import pandas as pd
 from phase_msd import PHASES, RUNS
 from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, save, stretches
 
-sys.path.insert(0, str(Path(__file__).parents[2] / "phases"))
+sys.path.insert(0, str(Path(__file__).parents[1] / "phases"))
 from durations import ccdf, fit, hill, log_resample, trim  # noqa: E402
 
 

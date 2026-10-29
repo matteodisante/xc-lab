@@ -48,7 +48,7 @@ from common.msd import tamsd_sums
 from phase_msd import RUNS
 from tamsd import CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OUT, SEED, SUPPORT, TAU_MAX, save
 
-sys.path.insert(0, str(Path(__file__).parents[1] / "experienced"))
+sys.path.insert(0, str(Path(__file__).parent / "experienced"))
 from population import CATALOG, LEVELS, wing_class  # noqa: E402
 
 STEP_S = 60  # s between the positions of the index
@@ -592,7 +592,7 @@ def analyse(found, tracks, flights, summary, runs):
 
 def explained(result, found, tracks, flights, summary, level):
     """Per level, the share of the group - solo difference at 1000 s that the route explains: the
-    formula of \\RouteExplained (report/tables.py), 1 - Delta H_loc(1000 s) over its value for the
+    formula of \\RouteExplained (vs-solo/tables.py), 1 - Delta H_loc(1000 s) over its value for the
     same pieces against the solo flights of their site-day and hour (route.baseline), within the level."""
     info, block, n_blocks = decompose.flight_table(flights, summary)
     counts = np.ones((2, n_blocks), np.int32)  # the point estimate only

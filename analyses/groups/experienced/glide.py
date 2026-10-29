@@ -1,7 +1,7 @@
 """Glide ratio of experienced and beginner paragliders, in a group and with no contact.
 
 Total straight-line distance over total height lost on the glides, the runs of
-group-identification/performance.py kept for the flights of population.py at each level; bands as
+../performance.py kept for the flights of population.py at each level; bands as
 in budget.py (5-95% of the bootstrap of the dependency blocks).
 
     uv run python glide.py [--run NAME]    # from this folder; writes out/<run>/glide.*
@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from population import CACHE, COLORS, LEVELS, OUT, POPULATIONS, SEED, keep, load
-from budget import budget  # noqa: E402  (population puts group-identification on the path)
+from budget import budget  # noqa: E402  (population puts the groups folder on the path)
 
 STATS = {"glide ratio": ("chord_m", "loss_m", 1, 1)}
 FACE = {"experienced": None, "beginners": "white"}  # marker face

@@ -1,9 +1,9 @@
-"""The tables and the numbers of the report, from the JSON of the analyses: report/generated/*.tex.
+"""The tables and the numbers of the report, from the JSON of the analyses: vs-solo/generated/*.tex.
 
 Every number quoted in the text of the report is a macro of generated/macros.tex, so that the text
 follows the analyses.
 
-    uv run python report/tables.py    # from analyses/groups/group-identification, after the scripts of the report
+    uv run python vs-solo/tables.py    # from analyses/groups, after the scripts of the report
 """
 
 import json

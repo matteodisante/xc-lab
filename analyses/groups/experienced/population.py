@@ -3,7 +3,7 @@
 Level by the wing class of the FFVL catalog: experienced C, D or CIVL Competition Class (CCC),
 beginners A or B. Group: flights with group time. Solo: flights with no contact of any length,
 i.e. no group time and no row in the raw intervals of the run. The pieces, the equal weight per
-flight and the bands are those of group-identification/tamsd.py, which this module puts on the path.
+flight and the bands are those of ../tamsd.py, which this module puts on the path.
 """
 
 import sys
@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).parents[1] / "group-identification"))
+sys.path.insert(0, str(Path(__file__).parents[1]))
 from tamsd import CACHE, COLORS, LABELS, SEED, read_pieces, save  # noqa: E402
 
 OUT = Path(__file__).with_name("out") / LABELS.name

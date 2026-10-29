@@ -4,7 +4,7 @@ The motion of paragliders and hang gliders alone and in a group: TA-MSD with its
 and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
 the same by the number of pilots of the group, pooled and on chosen site-days.
 
-**Data.** The group labels of [`methods/group-identification`](../../../methods/group-identification/),
+**Data.** The group labels of [`methods/group-identification`](../../methods/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
 contact of at least τ* = 38.1 min; see sections 5–6 of its `group_identification.pdf`), and the cleaned tracks of
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
@@ -518,22 +518,22 @@ T(n+1)/T(n) = g(n)/l(n+1), with g the joins and l the leaves and landings per ho
 The size distribution follows from one pilot joining or leaving at a time; its tail is heavy
 because members of larger groups leave less often.
 
-## Report: `report/`
+## Report: `vs-solo/`
 
-`report/group_vs_solo.pdf` is a technical report (10 pages of text and figures, then appendices
+`vs-solo/group_vs_solo.pdf` is a technical report (10 pages of text and figures, then appendices
 with the tables): what is compared, the raw difference between group and solo flight, four tests that
 separate the group from the pilots, the place, the route and the moment, then size and leader, for
-reading and as the base of a presentation. `report/facts.py` writes the
-facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
-`report/generated/`) from the JSON of `out/<run>/`, `report/figures.py` the figures of the
-report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `report/`
+reading and as the base of a presentation. `vs-solo/facts.py` writes the
+facts of the grouping, `vs-solo/tables.py` the tables and the numbers of the text (macros in
+`vs-solo/generated/`) from the JSON of `out/<run>/`, `vs-solo/figures.py` the figures of the
+report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `vs-solo/`
 builds it. The figures are read from `out/<run>/` and from `methods/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
-partners and where the sizes come from are in the note `analyses/groups/group-structure/group_structure.pdf`,
-with the graph theory and the two models in its appendices. `report/structure_tables.py` writes the macros the note reads
+partners and where the sizes come from are in the note `analyses/groups/structure/group_structure.pdf`,
+with the graph theory and the two models in its appendices. `vs-solo/structure_tables.py` writes the macros the note reads
 (`generated/structure_*.tex`); it also reads the macros of `tables.py`. The note reads copies of
-the figures, in `analyses/groups/group-structure/figures/structure/`.
+the figures, in `analyses/groups/structure/figures/structure/`.
 
 ## To do
 
@@ -580,8 +580,8 @@ uv run python chains.py [--run NAME]     # after size.py, about 40 s
 uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
-uv run python report/structure_tables.py   # then rebuild the note (README of methods/group-identification)
-uv run python report/facts.py; uv run python report/tables.py; uv run python report/figures.py
+uv run python vs-solo/structure_tables.py   # then rebuild the note (README of methods/group-identification)
+uv run python vs-solo/facts.py; uv run python vs-solo/tables.py; uv run python vs-solo/figures.py
 cd report && latexmk -pdf group_vs_solo.tex
-uv run pytest analyses/groups/group-identification   # from the root of xc-lab
+uv run pytest analyses/groups   # from the root of xc-lab
 ```
