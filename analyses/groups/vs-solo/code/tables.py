@@ -132,6 +132,24 @@ def raw_tex():
         macro(f"Xc{name}", num(p[k]["cross-country speed over 30 min (km/h)"]["value"], 1))
 
 
+def populations_tex():
+    """Sizes of the populations S, G and A behind the raw table, per statistic."""
+    t, b, p = load(MAIN, "tamsd")["para"], load(MAIN, "budget"), load(MAIN, "performance")
+    pops = (("solo", "S"), ("group", "G"), ("group_solo", "A"))
+    rows = [("flights, $H$ and $\\Hloc$", lambda k: t[k]["flights"]),
+            (r"pieces of at least 1250~s", lambda k: t[k]["pieces"]),
+            ("flights, time in climb and searches", lambda k: b[k]["flights"]),
+            ("flights, climb rate and glides", lambda k: p[k]["flights"])]
+    lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule",
+             r" & solo flights $\Sl$ & group time $\G$ & same flights alone $\A$ \\", r"\midrule"]
+    for label, get in rows:
+        lines.append(label + " & " + " & ".join(num(get(k), 0) for k, _ in pops) + r" \\")
+    write("populations_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+    for k, name in pops:
+        macro(f"PopFlights{name}", num(t[k]["flights"], 0))
+        macro(f"PopPieces{name}", num(t[k]["pieces"], 0))
+
+
 def decompose_tex(run=MAIN, name="decompose_table"):
     d = load(run, "decompose")
     if d is None:
@@ -510,7 +528,11 @@ def isolated_tex():
         lines.append(f"{level} & {num(c['pieces with a match'], 0)} & {num(c['matches'], 0)} & {signed(s['delta baseline'], 3)} & "
                      f"{band(e['H_loc(1000 s)'], 3, True)} & {num(s['share explained (%)'], 0)}\\% \\\\")
     write("isolated_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-    lines = [r"\begin{tabular}{@{}l r r c@{}}", r"\toprule", r"all levels & group time & same route alone & difference \\", r"\midrule"]
+    c = r["levels"]["all"]["counts"]
+    macro("IsoPhasePieces", num(c["pieces with phases"], 0))
+    macro("IsoPhaseSegments", num(c["segments with phases"], 0))
+    lines = [r"\begin{tabular}{@{}l r r c@{}}", r"\toprule", r"all levels & group time & same route alone & difference \\", r"\midrule",
+             f"pieces, segments & {num(c['pieces with phases'], 0)} & {num(c['segments with phases'], 0)} & \\\\"]
     for name, (label, digits) in ISOLATED_PHASES:
         p = r["levels"]["all"]["phases"][name]
         lines.append(f"{label} & {num(p['group']['value'], digits)} & {num(p['control']['value'], digits)} & "
@@ -539,6 +561,7 @@ def main():
     GEN.mkdir(exist_ok=True)
     facts_tex()
     raw_tex()
+    populations_tex()
     size_tex()
     decompose_size_tex()
     siteday_tex()

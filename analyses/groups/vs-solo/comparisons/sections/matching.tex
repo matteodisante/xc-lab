@@ -1,15 +1,9 @@
-\section{The control and the measure}\label{sec:matching}
+\subsection{The control and the measure}\label{sec:matching}
 
 Which flights are the same route flown alone, and how is the gap with group time measured?
 
-\paragraph{Pieces and measure.} The pieces and $\Hloc(\tau)$ are those of the general report: a
-\emph{piece} is a stretch of group time of a paraglider within one segment of the track, of at least
-1250~s; $\MSD(\tau)$ is the ensemble time-averaged mean squared displacement; $\Hloc(\tau)$ is half
-the local slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$ decades of $\tau$. We
-read it at $\tau=100$~s, within one climb or glide, and at $\tau=1000$~s, over one to two climb--glide
-cycles.
-
-\paragraph{Matching.} A segment $k$ of a solo flight is a control of the piece $g$ when all hold.
+\paragraph{Matching.} The pieces of group time are those of Section~\ref{sec:populations}. A segment
+$k$ of a solo flight is a control of the piece $g$ when all hold.
 \begin{enumerate}[label=(\roman*)]
   \item \textbf{Route.} At least 80\% of the points of $g$, one every 30~s, lie within 500~m of the
         track of the flight of $k$, which flew them in the same direction; $k$ is the part of the track
@@ -19,7 +13,8 @@ cycles.
         in local hours within two.
   \item \textbf{Wing level.} The same: beginners (A, B) or experienced (C, D, CCC) in the FFVL
         catalogue.
-  \item \textbf{Solo.} The flight never had a contact of any length.
+  \item \textbf{Solo.} The flight never had a contact of any length, which is stricter than $\Sl$:
+        a contact shorter than $\tau^*$ already excludes it.
   \item \textbf{Isolation.} At every point of $k$, one every 30~s, no other flight of the archive,
         alone or in a group, paraglider or hang glider, was within 10~km within one minute (the index
         of the archive holds one position per minute).

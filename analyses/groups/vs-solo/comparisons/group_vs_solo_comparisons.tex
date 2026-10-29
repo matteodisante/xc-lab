@@ -26,6 +26,7 @@
 
 \graphicspath{{../../out/d120_eh500_ez300_th45_g120_q0.1/}}
 \newcommand{\G}{\mathrm{G}}
+\newcommand{\A}{\mathrm{A}}
 \newcommand{\Sl}{\mathrm{S}}
 \newcommand{\MSD}{\mathrm{MSD}}
 \newcommand{\Hloc}{H_\mathrm{loc}}
@@ -34,8 +35,8 @@
 \captionsetup{font=footnotesize}
 \input{../generated/macros}
 
-\title{\textbf{Group time against the same route flown alone}\\[2pt]
-  \large Does the straighter progress of groups remain on the same route?}
+\title{\textbf{Group and solo flight: comparisons}\\[2pt]
+  \large What differs between group time and solo flight, and what remains when the controls are in place?}
 \author{Matteo Di Sante}
 \date{29 October 2026 \;\textbullet\; analysis: \texttt{xc-lab/analyses/groups/isolated.py} \;\textbullet\;
   grouping run \texttt{d120\_eh500\_ez300\_th45\_g120\_q0.1}}
@@ -45,24 +46,21 @@
 
 \begin{abstract}
 \noindent
-Over a quarter of an hour a paraglider in a group progresses straighter than a solo one, but groups
-form on routes where any pilot may progress straight. We compare each piece of group time with the
-same route flown on another day, in the same season, hour and wing level, by flights that never had
-a contact and that no other flight came within 10~km of at the same time. On \IsoPieces{} pieces the
-gap $\Delta\Hloc(1000~\mathrm{s})$ is \IsoDHloc{} \IsoDHlocBand{} against these controls and
-\IsoBaseDHloc{} against the solo flights of the same site, day and hour: fixing the route lowers it by
-\IsoExplained\%, by \IsoExplainedExp\% for experienced pilots and \IsoExplainedBeg\% for beginners.
-The rest is small and its band excludes zero. At 100~s group time is less straight ($\Delta\Hloc(100~\mathrm{s})$ is \IsoDHlocHundred),
-and groups spend more time climbing and less gliding, while climb rate, glide speed and glide ratio do not
-differ. The route accounts for most of the straighter progress; what remains goes with flying together,
-and whether the group causes it stays open.
+Group time differs from solo flight, but so do the pilots, the places and the routes of groups. This
+report compares paragliders in three populations, solo flights, group time and the same flights
+alone, and gives for each result the number of flights or pieces behind it. Raw, group time has a
+straighter progress over a quarter of an hour than solo flights, $\Hloc(1000~\mathrm{s})$ of \HlocThousandG{}
+against \HlocThousandS{}, and glides faster and flatter. Against the same route flown on another day by
+isolated solo flights of the same wing level, the gap $\Delta\Hloc(1000~\mathrm{s})$ falls from
+\IsoBaseDHloc{} to \IsoDHloc{} \IsoDHlocBand{} on \IsoPieces{} pieces: the route explains \IsoExplained\% of it,
+for experienced pilots and beginners alike. What remains is small and goes with flying together;
+whether the group causes it stays open.
 \end{abstract}
 
-\input{sections/question}
-\input{sections/matching}
-\input{sections/gap}
-\input{sections/levels}
-\input{sections/phases}
+\input{sections/intro}
+\input{sections/populations}
+\input{sections/raw}
+\input{sections/route}
 \input{sections/conclusions}
 
 \end{document}

@@ -6,7 +6,7 @@ pipeline on the labels and import each other; the questions are split by their d
 
 | question | scripts | document |
 |---|---|---|
-| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/general/group_vs_solo.pdf`; the route and isolated controls in `vs-solo/same-route/group_vs_route.pdf` |
+| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/general/group_vs_solo.pdf`; the route and isolated controls in `vs-solo/comparisons/group_vs_solo_comparisons.pdf` |
 | What are the groups? | describe, mechanisms, cohesion, hierarchy, chains, partners, fission | `structure/group_structure.pdf` |
 | Does it depend on the wing level? | `experienced/` | none |
 
@@ -86,7 +86,7 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   +0.018 against the route, +0.060 against S of the same site-day and hour: the route explains
   about 70%, on every radius (300–1000 m) and cover (70–90%) tried.
 - **`isolated.py`**: the same with controls nobody came within 10 km of (same minute), on other
-  days, same season, hour and wing level; all pieces (report `vs-solo/same-route/group_vs_route.pdf`; plan in
+  days, same season, hour and wing level; all pieces (report `vs-solo/comparisons/group_vs_solo_comparisons.pdf`; plan in
   `isolated_plan.md`). ΔH_loc(1000 s) at the same site-day and hour, then against the isolated
   controls:
 
@@ -137,7 +137,7 @@ of any length (`population.py`); not in a document yet.
 | experienced, glide ratio | 13.0 | 10.2 | | |
 | beginners, glide ratio | 12.4 | 8.9 | | |
 
-`count.py`, `glide.py`, `msd.py` (with `route_level.py` for the same-route columns),
+`count.py`, `glide.py`, `msd.py` (with `route_level.py` for the comparisons columns),
 `phase_survival.py` (phase durations fitted by `families.py` and `lomax.py`).
 
 ## To do
