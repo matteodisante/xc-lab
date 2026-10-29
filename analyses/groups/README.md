@@ -6,7 +6,7 @@ pipeline on the labels and import each other; the questions are split by their d
 
 | question | scripts | document |
 |---|---|---|
-| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/group_vs_solo.pdf` |
+| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/general/group_vs_solo.pdf` |
 | What are the groups? | describe, mechanisms, cohesion, hierarchy, chains, partners, fission | `structure/group_structure.pdf` |
 | Does it depend on the wing level? | `experienced/` | none |
 
@@ -36,7 +36,7 @@ of the method (flights tied by episodes; a solo flight is a block alone).
 
 ## Does flying in a group change the flight?
 
-Results in `vs-solo/group_vs_solo.pdf @ 6e45daf`.
+Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 
 - **`tamsd.py`**: TA-MSD, H and H_loc of S, G, A. Paragliders: H 0.899 (S), 0.916 (G), 0.914
   (A): the gap in H is the flights and days. H_loc(1000 s) 0.837, 0.893, 0.860: at long lags
@@ -182,7 +182,7 @@ uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
 uv run python vs-solo/code/facts.py; uv run python vs-solo/code/tables.py; uv run python vs-solo/code/figures.py
 uv run python vs-solo/code/structure_tables.py
-cd vs-solo && latexmk -pdf group_vs_solo.tex
+cd vs-solo/general && latexmk -pdf group_vs_solo.tex
 cd structure && latexmk -pdf group_structure.tex   # after the method note, for the gi- labels
 uv run pytest analyses/groups   # from the root of xc-lab
 ```
