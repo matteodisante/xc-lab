@@ -379,6 +379,20 @@ long-lag gap of these pieces by about 70% (71% and 74%); the rest stays with fly
 2000 pieces, radii of 300 and 1000 m and covers of 70 and 90% give +0.014 to +0.022 against the
 route and 66 to 76% explained.
 
+## Group or route, against flights with nobody around: `isolated.py`
+
+The same question with truly solo controls: matches on other days, whatever the site, in the same
+season and hour (`route.MONTHS`, `route.HOURS`) and with the same wing level (beginners A, B;
+experienced C, D, CCC), by a segment of a flight with no contact that nobody of the archive, para or
+hang, came within 10 km of (same minute, from the index of one position per minute). All matches
+are kept. Per level and for all: MSD, H and H_loc of the pieces and of their controls over the lags of
+`tamsd.LAGS` and, on the pieces and segments long enough, over longer lags; the time in each phase.
+The controls are reweighted to one piece per stratum. Bands: 1000 draws of pilots and blocks,
+independent (pigeonhole), the same for every statistic; the range over the years leaves one year out
+at a time. The share explained at 1000 s is that of `route.py`, within the level. Output:
+`isolated.json`, `isolated.pdf` (H_loc of both sides, Δ of the statistics drawn) and
+`isolated_dhloc.pdf`; the plan is `isolated_plan.md`.
+
 ## Group or moment: `prepost.py`
 
 The same flight before, during and after a group. Each stretch of group time of at least W
@@ -557,6 +571,7 @@ uv run python zones.py [--run NAME]      # after tamsd.py, about 3 min
 uv run python route.py --sample 10000    # after tamsd.py; one pass over the fixes (about 4 min), then the
                                          # matching, about 45 min and 2.6 GB: run one at a time
 uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants, about 10 min each
+uv run python isolated.py [--sample N]   # after route.py, performance.py and the archive index; matching one level at a time (1.7 GB on 2000 pieces)
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python size.py --recompute-pieces # TA-MSD pieces by size only, about 3 min
 uv run python describe.py [--run NAME]   # about 15 s

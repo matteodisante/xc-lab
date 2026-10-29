@@ -84,9 +84,9 @@ def standardized(units, P, Q, counts):
     return np.array(mp), np.array(mq), np.array(mo), np.array(share)
 
 
-def curve(msd):
+def curve(msd, lags=LAGS):
     """H_loc at every lag and the fitted H of each row of `msd` (draws x lags)."""
-    return np.array([local_h(LAGS, m) for m in msd]), np.array([fit_h(LAGS, m) for m in msd])
+    return np.array([local_h(lags, m) for m in msd]), np.array([fit_h(lags, m) for m in msd])
 
 
 def band(draws):

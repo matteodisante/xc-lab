@@ -79,10 +79,10 @@ def site_frames(lat0, lon0):
     return site, EARTH_M * np.cos(lat_c) * (lon - lon_c), EARTH_M * (lat - lat_c)
 
 
-def coverage(points, tree, owner, exclude=()):
+def coverage(points, tree, owner, exclude=(), workers=-1):
     """For every flight owning points of `tree` (owner: its flight per point), the share of
     `points` with one of its points within RHO; flights in `exclude` are left out."""
-    hits = tree.query_ball_point(points, RHO, workers=-1)  # every core, one copy of the tree
+    hits = tree.query_ball_point(points, RHO, workers=workers)  # threads share one copy of the tree
     n = np.fromiter((len(h) for h in hits), int, len(hits))
     if not n.sum():
         return pd.Series(dtype=float)
@@ -208,12 +208,14 @@ def compare(u, counts, populations=("group", "route")):
             "H_loc": {"group": hp[0].tolist(), "route": hq[0].tolist()}, "H": {"group": float(fp[0]), "route": float(fq[0])}}
 
 
-def baseline(found, tracks, info, block, counts):
+def baseline(found, tracks, info, block, counts, solo=None):
     """The same pieces of group time against the solo flights (never in a group) of their site-day
-    and hour, from the pieces of tamsd.py: the comparison of the report, on these pieces only."""
+    and hour, from the pieces of tamsd.py: the comparison of the report, on these pieces only.
+    With `solo` (flight numbers), only those solo flights."""
     p = read_pieces(CACHE / "pieces.npz")["para"]
     mine = pd.MultiIndex.from_arrays([tracks["flight"][found["piece"]], tracks["start"][found["piece"]]])
-    keep = (p["population"] == "solo") | ((p["population"] == "group")
+    allowed = np.ones(len(p["flight"]), bool) if solo is None else np.isin(p["flight"], solo)
+    keep = ((p["population"] == "solo") & allowed) | ((p["population"] == "group")
                                           & pd.MultiIndex.from_arrays([p["flight"], p["start"]]).isin(mine))
     u = decompose.msd_units({k: v[keep] for k, v in p.items()}, "site_hour", info, block)
     return {"pieces": int(keep[p["population"] == "group"].sum()), **compare(u, counts, ("group", "solo"))}
