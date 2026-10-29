@@ -4,6 +4,17 @@ The motion of paragliders and hang gliders alone and in a group: TA-MSD with its
 and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
 the same by the number of pilots of the group, pooled and on chosen site-days.
 
+The scripts are one pipeline on the labels and import each other; the questions are split by
+their documents:
+
+| question | scripts | document |
+|---|---|---|
+| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/group_vs_solo.pdf` |
+| What are the groups? | describe, mechanisms, cohesion, hierarchy, chains, partners, fission | `structure/group_structure.pdf` |
+| Does it depend on the wing level? | `experienced/` | none |
+
+`tamsd.py` (labels, pieces, bands) and `blocks.py` (dependency blocks) serve every question.
+
 **Data.** The group labels of [`methods/group-identification`](../../methods/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
 contact of at least τ* = 38.1 min; see sections 5–6 of its `group_identification.pdf`), and the cleaned tracks of
@@ -580,8 +591,8 @@ uv run python chains.py [--run NAME]     # after size.py, about 40 s
 uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
-uv run python vs-solo/structure_tables.py   # then rebuild the note (README of methods/group-identification)
+uv run python vs-solo/structure_tables.py   # then rebuild the note (README of structure/)
 uv run python vs-solo/facts.py; uv run python vs-solo/tables.py; uv run python vs-solo/figures.py
-cd report && latexmk -pdf group_vs_solo.tex
+cd vs-solo && latexmk -pdf group_vs_solo.tex
 uv run pytest analyses/groups   # from the root of xc-lab
 ```
