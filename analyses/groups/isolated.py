@@ -47,13 +47,13 @@ from blocks import EARTH_M, with_takeoffs
 from common.legacy import stream_flights
 from common.msd import tamsd_sums
 from phase_msd import RUNS
-from tamsd import CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OUT, SEED, SUPPORT, TAU_MAX, save
+from tamsd import CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OUT, SEED, SHARED, SUPPORT, TAU_MAX, read_flights, save
 
 sys.path.insert(0, str(Path(__file__).parent / "experienced"))
 from population import CATALOG, LEVELS, wing_class  # noqa: E402
 
 STEP_S = 60  # s between the positions of the index
-INDEX = CACHE / "archive_index.npz"
+INDEX = SHARED / "archive_index.npz"  # every flight of the archive, also with --open
 ISOLATION_M = 10_000.0  # m: nobody within this of any point of the segment
 TIME_S = 60  # s: "at the same instant" for the isolation, within this
 WORKERS = 6  # threads of the queries, processes of the isolation
@@ -687,7 +687,7 @@ if __name__ == "__main__":
         figure_dhloc(saved, OUT / "isolated_dhloc.pdf")
         sys.exit()
     sample = route.option("--sample", 0) or None
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     assert route.TRACKS.exists(), "run route.py first"
     tracks = route.read_tracks(flights, None)
     tag = "" if sample is None else f"_sample{sample}"

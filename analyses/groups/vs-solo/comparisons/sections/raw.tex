@@ -14,13 +14,14 @@ Table~\ref{tab:populations}. Values in Table~\ref{tab:raw}.}
 Group time progresses straighter over long lags than solo flights: $\Hloc(1000~\mathrm{s})$ is
 \HlocThousandG{} in $\G$, \HlocThousandA{} in $\A$ and \HlocThousandS{} in $\Sl$
 (Figure~\ref{fig:raw}). It also spends more time climbing, ends more searches in a climb and glides
-faster and flatter, with a glide ratio of \RatioG{} against \RatioS{}. The same flights alone sit
-between the two at long lags and have the highest climb rate. Part of the raw difference may belong to
-who flies in groups, and to where and when they fly.
+faster and flatter, with a glide ratio of \RatioG{} against \RatioS{}. The same flights alone are no
+straighter than solo flights at long lags and spend the least time in climb, but have the highest climb
+rate, and sit between the two in the searches that end in a climb, the glide speed and the glide ratio. Part
+of the raw difference may belong to who flies in groups, and to where and when they fly.
 
 \begin{table}
 \centering\small
-\input{../generated/comparisons_raw_table}
+\input{../generated/open/comparisons_raw_table}
 \caption{Pooled statistics of the populations of Table~\ref{tab:populations}, with 5--95\% bands. The
 first row is the number of flights of the exponents; the other rows rest on the flights with phases
 (Table~\ref{tab:populations}).}
@@ -45,15 +46,17 @@ each curve. $\Hloc$ is read from $\MSD$ over the lags within $\pm0.25$ decades.
 \caption{$\Hloc(\tau)$ with an inset of $\MSD(\tau)$ in $\mathrm{m}^2$. Top left: $\Sl$, $\G$ and $\A$, lags up to
 \LongTauPooled~s. Top right: $\Sl$ and group time by the number of pilots of the group, up to
 \LongTauSize~s. Bottom left: $\Sl$ and the same flights alone, by the size of the group the flight
-had, up to \LongTauAlone~s. Thin: all the pieces, up to 1000~s, with the flights in the legend; dashed:
-the pieces long enough for the longest lag of the panel; 5--95\% bands. Bottom right: flights with
-pieces of at least $\tau/0.8$~s; dotted, the minimum of \LongMinFlights{} flights.}
+had, up to \LongTauAlone~s. Each population has two curves of its colour. Thin: all its pieces, up to
+1000~s, with its flights in the legend. Dashed: only its pieces long enough for the longest lag of the
+panel, a subset of the thin ones, measured over the same population at every lag; 5--95\% bands.
+Bottom right: flights with pieces of at least $\tau/0.8$~s, one line per population (dashed for the
+flights alone); dotted, the minimum of \LongMinFlights{} flights.}
 \label{fig:long}
 \end{figure}
 
 \begin{table}
 \centering\small
-\input{../generated/longlags_table}
+\input{../generated/open/longlags_table}
 \caption{Flights of each curve of Figure~\ref{fig:long}: those of all the pieces, up to 1000~s, and those
 of the long series, with pieces of at least $T/0.8$~s for the longest lag $T$ of the panel.}
 \label{tab:long}
@@ -63,19 +66,20 @@ of the long series, with pieces of at least $T/0.8$~s for the longest lag $T$ of
 $\Hloc$ is \LongPooledGMid{} \LongPooledGMidBand{} in $\G$, against \LongPooledSMid{} in $\Sl$ and
 \LongPooledAMid{} in $\A$; at \LongLagEnd~s it is \LongPooledGEnd{} \LongPooledGEndBand{} against
 \LongPooledSEnd{} and \LongPooledAEnd{}. For every population $\Hloc$ falls with the lag as the motion
-saturates, and $\A$ follows $\Sl$ more than $\G$. The long series of $\G$ rests on few flights
+saturates, and $\A$ is below $\Sl$. The long series of $\G$ rests on few flights
 (Table~\ref{tab:long}), and its band is wide.
 
-\paragraph{By size.} Group time is straighter with more pilots, up to 5--6: at \LongLagSize~s $\Hloc$
-is \LongSizeS{} in $\Sl$ and \LongSizeTwo{}, \LongSizeThree{}, \LongSizeFour{}, \LongSizeFiveSix{} and
-\LongSizeSevenPlus{} \LongSizeSevenPlusBand{} for 2, 3, 4, 5--6 and 7+ pilots. The 7+ pilots, with few flights,
-are as straight as 5--6 within the band.
+\paragraph{By size.} Group time is straighter than solo flights at every size, though the band of 7+ pilots reaches $\Sl$: at \LongLagSize~s $\Hloc$
+is \LongSizeS{} in $\Sl$ and \LongSizeTwo{} \LongSizeTwoBand{} for 2 pilots, \LongSizeThree{},
+\LongSizeFour{}, \LongSizeFiveSix{} and \LongSizeSevenPlus{} \LongSizeSevenPlusBand{} for 3, 4, 5--6 and 7+
+pilots. Two pilots are the least straight; from three on the sizes are within each other's bands.
 
-\paragraph{Alone, by size.} The solo time of the flights of groups is above solo flights at every size:
-at \LongLagEnd~s \LongAloneTwo{} for flights that had groups of two, \LongAloneFiveSix{} for 5--6
-pilots, against \LongAloneS{} in $\Sl$; the band of the 7+ pilots, \LongAloneSevenPlusBand, reaches $\Sl$.
+\paragraph{Alone, by size.} The solo time of the flights of groups is not straighter than solo flights:
+at \LongLagAlone~s \LongAloneTwo{} \LongAloneTwoBand{} for flights that had groups of two, against
+\LongAloneS{} in $\Sl$; \LongAloneFiveSix{} \LongAloneFiveSixBand{} for 5--6 pilots, whose band reaches $\Sl$,
+and \LongAloneSevenPlus{} \LongAloneSevenPlusBand{} for 7+.
 
 \paragraph{What we keep.} A difference to explain, largest at long lags and in the glides: group time
-against solo flights, with the same flights alone in between; on the long pieces group time keeps its
-progress to lags of hours, and group time is straighter with more pilots up to 5--6. The next sections ask where the difference
+against solo flights, while the same flights alone are no straighter than solo flights; on the long pieces group time keeps its
+progress to lags of hours, at every size of the group. The next sections ask where the difference
 comes from.

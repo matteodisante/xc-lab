@@ -9,13 +9,15 @@ their bands.
     uv run python vs-solo/code/figures.py    # from analyses/groups, after vs-solo/code/tables.py
 """
 
+import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-from tables import MAIN, OUTS, SINK, load
+from tables import MAIN, OPEN_ONLY, OUTS, SINK, SUB, load
 
-OUT = OUTS / MAIN
+OUT = OUTS / MAIN / SUB
 WIDTH = 6.6  # in, the text width of the report
 COLOR = {"S": "#2a78d6", "G": "#eb6834", "A": "#1baf7a", "R": "#7b5cc4"}
 INK, GREY, MUTED, LIGHT = "#0b0b0b", "#76746f", "#9a9893", "#e6e5e1"
@@ -289,6 +291,9 @@ def estimates():
 
 
 if __name__ == "__main__":
+    if OPEN_ONLY:  # the figure of comparisons/ on the open flights
+        raw(False, "comparisons_raw")
+        sys.exit()
     raw()
     raw(False, "comparisons_raw")
     contrasts()

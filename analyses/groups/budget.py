@@ -18,7 +18,7 @@ import pandas as pd
 
 from phase_msd import RUNS
 from survival import assign
-from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, save, stretches
+from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, read_flights, save, stretches
 
 # name: numerator, denominator (columns of `columns`), scale, decimals shown
 STATS = {
@@ -118,7 +118,7 @@ def plot(result, path, stats=STATS, title="Paragliders: how the time is spent, s
 
 
 if __name__ == "__main__":
-    flights = pd.read_parquet(LABELS / "flights.parquet")
+    flights = read_flights()
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
     runs = phase_runs(flights, spans)

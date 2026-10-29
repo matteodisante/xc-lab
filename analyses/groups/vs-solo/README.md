@@ -12,7 +12,9 @@ flown alone? The analyses are the scripts of [`..`](../); here are the documents
   time with solo flight, each with the size of its populations: the definitions of solo, group and
   the same flights alone and their maps, their raw difference over lags of hours and by group size,
   the same in the six zones with the most group flights, and the same route flown alone by isolated
-  solo flights (`../isolated.py`), by wing level. Built from `group_vs_solo_comparisons.tex` and
+  solo flights (`../isolated.py`), by wing level. Open flights only (takeoff to landing more than 6 km,
+  `../openflights.py`): the analyses behind it run with `--open`, results in `../out/<run>/open`, caches in
+  `<run>/analyses_open`, tables in `generated/open`. Built from `group_vs_solo_comparisons.tex` and
   `sections/`; more comparisons will be added as sections.
 - `code/`: the scripts that turn the JSON of the analyses into what the documents read.
   `tables.py` writes the tables and the macros, `figures.py` the report figures, `facts.py` the
@@ -26,5 +28,8 @@ Figures come from `../out/<run>/`.
 cd analyses/groups
 uv run python vs-solo/code/facts.py; uv run python vs-solo/code/tables.py; uv run python vs-solo/code/figures.py   # after the analyses
 cd vs-solo/general && latexmk -pdf group_vs_solo.tex
-cd ../comparisons && latexmk -pdf group_vs_solo_comparisons.tex   # after isolated.py and tables.py
+# the open flights, in this order: tamsd, budget, performance, size --recompute-pieces --only tamsd,
+# longlags --recompute, regions, maps, route --sample 100, isolated; each with --open (about 30 min)
+uv run python vs-solo/code/tables.py --open; uv run python vs-solo/code/figures.py --open
+cd vs-solo/comparisons && latexmk -pdf group_vs_solo_comparisons.tex
 ```

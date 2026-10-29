@@ -24,7 +24,7 @@ from budget import budget, plot
 from common.legacy import stream_flights
 from phase_msd import RUNS
 from survival import assign
-from tamsd import CACHE, FIXES, GRID_S, LABELS, OUT, SEED, SUPPORT, folders, grids, stretches
+from tamsd import CACHE, FIXES, GRID_S, LABELS, OUT, SEED, SUPPORT, folders, grids, read_flights, stretches
 
 XC_S = 1800  # s
 # name: numerator, denominator, scale, decimals shown
@@ -117,7 +117,7 @@ def save_terms(path, flights, spans):
 
 if __name__ == "__main__":
     folders()
-    flights = pd.read_parquet(LABELS / "flights.parquet")
+    flights = read_flights()
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     saved = CACHE / "performance_terms.parquet"
     # One pass over 40 GB of fixes: reuse its terms unless asked.

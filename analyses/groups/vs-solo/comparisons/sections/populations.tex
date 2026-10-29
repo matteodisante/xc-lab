@@ -9,6 +9,14 @@ other within $\delta=2$~min, $\varepsilon_h=500$~m horizontally and $\varepsilon
 are the connected components of the contact graph, and a group keeps the same members over a maximal
 interval. A contact means shared air within sight; it does not prove interaction.
 
+\paragraph{Open flights.} Only flights that fly open are analysed: the distance between the first and the
+last fix of the flight, its takeoff and its landing, is more than \OpenKm~km. This keeps \OpenFlights{} of
+the \OpenAll{} paraglider flights that depart and are logged every 10~s or finer, and \OpenGroupShare\% of the flights with group time.
+It agrees with the type the pilot declared on the FFVL catalogue (free distance and distance with
+turn points are open, triangles, quadrilaterals and out-and-returns closed) for \OpenAgree\% of the
+flights. The groups are those of the run, whoever the companions: a flight in a group with a closed flight
+keeps its group time.
+
 \paragraph{States.} After its \emph{departure}, the first fix 3~km from the takeoff, every instant of a
 flight is in a group or solo; before it the pilot counts as neither. Flights that never depart are
 left out. We use paraglider flights logged every 10~s or finer, so that the labels exist at every
@@ -41,7 +49,7 @@ draws that resample the pilots and the dependency blocks of the grouping.
 
 \begin{table}
 \centering\small
-\input{../generated/populations_table}
+\input{../generated/open/populations_table}
 \caption{Members of the populations, paragliders. The flights of $\G$ and $\A$ are the same flights,
 and $\A$ keeps those with a solo stretch of at least 1250~s.}
 \label{tab:populations}

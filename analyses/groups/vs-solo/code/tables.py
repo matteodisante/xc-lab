@@ -3,19 +3,22 @@
 Every number quoted in the text of the report is a macro of generated/macros.tex, so that the text
 follows the analyses.
 
-    uv run python vs-solo/code/tables.py    # from analyses/groups, after the scripts of the report
+    uv run python vs-solo/code/tables.py [--open]    # from analyses/groups, after the scripts of the report
 """
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 from scipy.stats import binom
 
 HERE = Path(__file__).parents[1]
+OPEN_ONLY = "--open" in sys.argv  # the tables of comparisons/ on the open flights: out/<run>/open -> generated/open
+SUB = "open" if OPEN_ONLY else ""
 OUTS = HERE.parent / "out"
 MAIN, Q2 = "d120_eh500_ez300_th45_g120_q0.1", "d120_eh500_ez300_th45_g120_q0.2"
-GEN = HERE / "generated"
+GEN = HERE / "generated" / SUB
 STATS = {  # name in the JSON: (label, digits)
     "H_loc(100 s)": (r"$H_\mathrm{loc}(100~\mathrm{s})$", 3),
     "H_loc(1000 s)": (r"$H_\mathrm{loc}(1000~\mathrm{s})$", 3),
@@ -38,7 +41,7 @@ macros = {}
 
 
 def load(run, name):
-    path = OUTS / run / f"{name}.json"
+    path = OUTS / run / SUB / f"{name}.json"
     return json.loads(path.read_text()) if path.exists() else None
 
 
@@ -532,6 +535,12 @@ def isolated_tex():
         lines.append(f"{level} & {num(c['pieces with a match'], 0)} & {num(c['matches'], 0)} & {signed(s['delta baseline'], 3)} & "
                      f"{band(e['H_loc(1000 s)'], 3, True)} & {num(s['share explained (%)'], 0)}\\% \\\\")
     write("isolated_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+    long = r["levels"]["all"]["msd"]["long"]
+    k = long["lags"].index(1000)
+    macro("IsoLongTau", num(long["lags"][-1], 0))
+    macro("IsoLongPieces", num(r["levels"]["all"]["counts"]["pieces of the long series"], 0))
+    macro("IsoLongDHloc", signed(long["delta"]["H_loc"]["value"][k], 3))
+    macro("IsoLongDHlocBand", f"[{signed(long['delta']['H_loc']['band'][0][k], 3)}, {signed(long['delta']['H_loc']['band'][1][k], 3)}]")
     c = r["levels"]["all"]["counts"]
     macro("IsoPhasePieces", num(c["pieces with phases"], 0))
     macro("IsoPhaseSegments", num(c["segments with phases"], 0))
@@ -591,15 +600,18 @@ def longlags_tex():
             i = c["lags"].index(lag)
             macro(f"{prefix}{tag}", f"{c['H_loc'][i]:.3f}")
             macro(f"{prefix}{tag}Band", f"[{c['H_loc_band'][0][i]:.3f}, {c['H_loc_band'][1][i]:.3f}]")
-    macro("LongLagMid", num(5080, 0))
-    macro("LongLagEnd", num(9350, 0))
-    pooled = r["panels"]["pooled"]["curves"]
-    for lag, name in ((5080, "Mid"), (9350, "End")):
-        quoted("LongPooled", pooled, lag, {"solo": f"S{name}", "group": f"G{name}", "group_solo": f"A{name}"})
-    macro("LongLagSize", num(2250, 0))
-    quoted("LongSize", r["panels"]["size"]["curves"], 2250,
+    pooled = r["panels"]["pooled"]
+    lags = pooled["curves"]["solo"]["lags"]
+    mid = min(lags, key=lambda t: abs(t - pooled["tau_max"] / 2))  # the lag nearest to half the longest
+    macro("LongLagMid", num(mid, 0))
+    macro("LongLagEnd", num(pooled["tau_max"], 0))
+    for lag, name in ((mid, "Mid"), (pooled["tau_max"], "End")):
+        quoted("LongPooled", pooled["curves"], lag, {"solo": f"S{name}", "group": f"G{name}", "group_solo": f"A{name}"})
+    macro("LongLagSize", num(r["panels"]["size"]["tau_max"], 0))
+    quoted("LongSize", r["panels"]["size"]["curves"], r["panels"]["size"]["tau_max"],
            {"solo": "S", "n2": "Two", "n3": "Three", "n4": "Four", "n5-6": "FiveSix", "n7+": "SevenPlus"})
-    quoted("LongAlone", r["panels"]["alone"]["curves"], 9350,
+    macro("LongLagAlone", num(r["panels"]["alone"]["tau_max"], 0))
+    quoted("LongAlone", r["panels"]["alone"]["curves"], r["panels"]["alone"]["tau_max"],
            {"solo": "S", "n2/alone": "Two", "n3/alone": "Three", "n4/alone": "Four", "n5-6/alone": "FiveSix", "n7+/alone": "SevenPlus"})
 
 
@@ -620,8 +632,28 @@ def redundancy_tex():
                                           r"\bottomrule", r"\end{tabular}"]))
 
 
+def open_main():
+    """The macros and tables of comparisons/, from the analyses run with --open."""
+    macro("tauStar", num(json.loads((OUTS / MAIN / "facts.json").read_text())["tau_star_s"] / 60, 1))  # the grouping, whichever the flights
+    closure = json.loads((OUTS / MAIN / "closure.json").read_text())["open"]  # closure.py, on every flight
+    macro("OpenKm", num(closure["km"], 0))
+    macro("OpenFlights", num(closure["flights"], 0))
+    macro("OpenAll", num(closure["of"], 0))
+    macro("OpenAgree", num(closure["agreement (%)"], 0))
+    macro("OpenGroupShare", num(closure["group"], 0))
+    raw_tex()
+    populations_tex()
+    isolated_tex()
+    regions_tex()
+    longlags_tex()
+    (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
+    print(f"{len(macros)} macros")
+
+
 def main():
-    GEN.mkdir(exist_ok=True)
+    GEN.mkdir(parents=True, exist_ok=True)
+    if OPEN_ONLY:
+        return open_main()
     facts_tex()
     raw_tex()
     populations_tex()

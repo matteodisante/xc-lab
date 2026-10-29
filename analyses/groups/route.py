@@ -40,7 +40,7 @@ import zones
 from blocks import EARTH_M, components, with_takeoffs
 from common.legacy import stream_flights
 from common.msd import tamsd_sums
-from tamsd import (CACHE, FIXES, GRID_S, H_MAX, LABELS, LAGS, OUT, SEED, SUPPORT, TAU_MAX, grids, read_pieces, save,
+from tamsd import (CACHE, FIXES, GRID_S, H_MAX, LABELS, LAGS, OUT, SEED, SUPPORT, TAU_MAX, grids, read_flights, read_pieces, save,
                    stretches)
 
 def option(name, default):
@@ -242,7 +242,7 @@ def figure(result, path):
 
 if __name__ == "__main__":
     sample = int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else None
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     group, alone = eligible(flights, summary, pd.read_parquet(LABELS / "intervals_raw.parquet"))
     spans = None

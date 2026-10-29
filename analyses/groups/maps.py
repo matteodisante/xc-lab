@@ -49,7 +49,7 @@ def corners(z, km):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(tamsd.read_flights())
     p = tamsd.read_pieces(CACHE / "pieces.npz")["para"]
     lat, lon = zones.lonlat(p, flights.set_index("flight")[["lat0", "lon0"]])
     panels = json.loads(BASEMAP.read_text())["panels"]

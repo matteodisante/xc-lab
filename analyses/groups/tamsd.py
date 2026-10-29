@@ -15,7 +15,7 @@ Populations, after the departure and with loggers of at most H_MAX:
 - group, solo time: the solo stretches of the group flights, a control with the same pilots
   and days.
 
-    uv run python tamsd.py [--run NAME] [--recompute]    # from this folder; writes out/<run>/
+    uv run python tamsd.py [--run NAME] [--recompute] [--open]    # from this folder; writes out/<run>/ (out/<run>/open with --open)
 """
 
 import json
@@ -38,8 +38,10 @@ from common.msd import tamsd_sums
 RUNS = Path("/Volumes/SSD_DISANTE/xc-lab/group-identification/runs")
 RUN = "d120_eh500_ez300_th45_g120_q0.1"  # the run the README quotes; --run NAME picks another
 LABELS = RUNS / (sys.argv[sys.argv.index("--run") + 1] if "--run" in sys.argv else RUN)
-OUT = Path(__file__).with_name("out") / LABELS.name
-CACHE = LABELS / "analyses"
+OPEN_ONLY = "--open" in sys.argv  # only the flights that fly open (openflights.py), results and caches kept apart
+SHARED = LABELS / "analyses"  # the caches that do not depend on the flights kept
+OUT = Path(__file__).with_name("out") / LABELS.name / ("open" if OPEN_ONLY else "")
+CACHE = LABELS / ("analyses_open" if OPEN_ONLY else "analyses")
 DISK = Path("/Volumes/SSD_DISANTE")
 FIXES = {"para": DISK / "paragliders/ffvl_cfd_igc/derived/fixes.parquet",
          "hang": DISK / "hang_gliders/delta_cfd_igc/derived/fixes.parquet"}
@@ -54,6 +56,15 @@ COLORS = {"solo": "#2a78d6", "group": "#eb6834", "group_solo": "#1baf7a"}
 SIZES = {"n2": "2 pilots", "n3": "3 pilots", "n4": "4 pilots", "n5-6": "5-6 pilots", "n7+": "7+ pilots"}
 NAMES = {"para": "paragliders", "hang": "hang gliders"}
 N_BOOT, SEED = 1000, 20261020
+
+
+def read_flights():
+    """The flight table of the run; with --open, only the paragliders that fly open."""
+    flights = pd.read_parquet(LABELS / "flights.parquet")
+    if OPEN_ONLY:
+        from openflights import open_flights
+        flights = flights[flights["flight"].isin(open_flights(LABELS, SHARED / "flight_ends.parquet"))]
+    return flights
 
 
 def size_of(n):
@@ -258,7 +269,7 @@ def folders():
 
 if __name__ == "__main__":
     folders()
-    flights = pd.read_parquet(LABELS / "flights.parquet")
+    flights = read_flights()
     membership = pd.read_parquet(LABELS / "membership.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     saved = CACHE / "pieces.npz"

@@ -5,8 +5,7 @@ Do the three populations differ in the same way where groups are most frequent?
 A zone is a cell of \RegionCell~km $\times$ \RegionCell~km that holds the middle of a piece, whichever
 the takeoff of the flight; the pilots of a zone need not take off from the same place. The
 \RegionZones{} cells with the most flights that have group time in them are kept, and each is named
-by the takeoff most flown by its group flights (the cells are on a fixed grid, so a busy site can fill
-two of them; Figure~\ref{fig:maps}). In each zone the pieces of $\Sl$, $\G$ and $\A$ are those of
+by the takeoff most flown by its group flights (the cells are on a fixed grid; Figure~\ref{fig:maps}). In each zone the pieces of $\Sl$, $\G$ and $\A$ are those of
 Section~\ref{sec:populations}, the measure is the same, and a population is drawn when it has at least
 \RegionMinFlights{} flights in the zone. Bands are 5--95\% of bootstrap draws that resample the dependency
 blocks of the grouping.
@@ -21,17 +20,17 @@ legend and in Table~\ref{tab:zones}.}
 \end{figure}
 
 In \RegionOrdered{} of the \RegionZones{} zones $\Hloc(1000~\mathrm{s})$ is highest in group time,
-then in the same flights alone, then in solo flights, the order of the pooled populations
-(Figure~\ref{fig:regions}, Table~\ref{tab:zones}). In the other zone the same flights alone are above
-group time at 1000~s.
+then in the same flights alone, then in solo flights (Figure~\ref{fig:regions}, Table~\ref{tab:zones}). In the pooled data the same
+flights alone are below solo flights, so inside the zones their order with $\Sl$ is reversed.
 
 \begin{table}
 \centering\footnotesize
-\input{../generated/regions_table}
+\input{../generated/open/regions_table}
 \caption{The zones, by the number of flights with group time in them. Flights of each population and
 $\Hloc(1000~\mathrm{s})$; the bands are in Figure~\ref{fig:regions}.}
 \label{tab:zones}
 \end{table}
 
-\paragraph{What we keep.} The ordering of the three populations at long lags is there in most of the zones
-where groups fly most, and not only in the pooled data.
+\paragraph{What we keep.} Inside the zones where groups fly most, group time is straighter at long lags than
+the same flights alone, and these than solo flights; the pooled order of $\A$ and $\Sl$ is reversed there,
+so it depends on where the flights are.

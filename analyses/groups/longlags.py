@@ -121,7 +121,7 @@ if __name__ == "__main__":
         figure(json.loads((OUT / "longlags.json").read_text()), OUT / "longlags.pdf")
         sys.exit()
     if "--recompute" in sys.argv or not PIECES.exists():
-        measure(pd.read_parquet(LABELS / "flights.parquet"), pd.read_parquet(LABELS / "membership.parquet"),
+        measure(tamsd.read_flights(), pd.read_parquet(LABELS / "membership.parquet"),
                 pd.read_parquet(LABELS / "flight_summary.parquet"))
     p = dict(np.load(PIECES))
     block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]

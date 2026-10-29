@@ -290,7 +290,7 @@ def to_json(path, value):
 
 if __name__ == "__main__":
     tamsd.folders()
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(tamsd.read_flights())
     membership = pd.read_parquet(LABELS / "membership.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     if "--recompute" in sys.argv or "--recompute-pieces" in sys.argv or not all(p.exists() for p in SIZE_CACHE.values()):

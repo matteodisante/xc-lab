@@ -42,7 +42,7 @@ def choose(p, code):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(tamsd.read_flights())
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     catalog = pd.read_csv(tamsd.FIXES["para"].parent.parent / "catalog/catalog.csv", usecols=["flight_id", "takeoff"], dtype=str).rename(columns={"takeoff": "site_name"})
     site = flights.astype({"flight_id": str}).merge(catalog, how="left", on="flight_id").set_index("flight")["site_name"]
