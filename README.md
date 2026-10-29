@@ -8,7 +8,7 @@ This repository tests ideas fast; results that reach the thesis are rewritten th
 
 ## Layout
 
-- `ideas/<slug>/`: one idea per folder, with its code, tests and notes; `ideas/README.md`
+- `methods/<slug>/`: one method we build per folder, with its code, tests and notes; `methods/README.md`
   lists them with their status.
 - `analysis/<topic>/`: quantities computed on the flight data, as figures and numbers; one
   folder per topic, `analysis/README.md` lists them.

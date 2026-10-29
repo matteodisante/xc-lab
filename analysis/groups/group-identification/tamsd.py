@@ -1,6 +1,6 @@
 """TA-MSD of solo flights and of group flights during their group time, with H and H_loc.
 
-Labels: a run of ideas/group-identification/run.py on SSD_DISANTE (RUN). Tracks: the
+Labels: a run of methods/group-identification/run.py on SSD_DISANTE (RUN). Tracks: the
 cleaned east and north E, N of the old repository on SSD_DISANTE. Conventions of the fixed
 transport of chapter 3 (soaring, legacy-final): positions on a 10-s grid, the lags of its
 common grid up to TAU_MAX, a stretch enters only if it lasts at least TAU_MAX / 0.8 so that
@@ -32,7 +32,7 @@ import pandas as pd
 from lab.legacy import stream_flights
 from lab.msd import tamsd_sums
 
-# The labels are a run of ideas/group-identification on SSD_DISANTE, named by its grouping
+# The labels are a run of methods/group-identification on SSD_DISANTE, named by its grouping
 # parameters (see its PARAMETERS.md). Figures and numbers go to out/<run>/ with a copy of
 # PARAMETERS.md; the measured pieces, too heavy for the repository, stay in <run>/analyses.
 RUNS = Path("/Volumes/SSD_DISANTE/xc-lab/group-identification/runs")

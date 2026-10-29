@@ -1,6 +1,6 @@
 """Can 2-s, 3-s and 5-s loggers be labelled? Keep one fix every k seconds of 1-Hz flights,
 interpolate back to 1 s, label, and compare with the labels of the full flight on the fixes
-both keep. Run from the root of xc-lab: uv run python ideas/phase-labelling/cadence.py"""
+both keep. Run from the root of xc-lab: uv run python methods/phase-labelling/cadence.py"""
 
 import argparse
 import subprocess

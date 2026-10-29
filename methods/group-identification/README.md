@@ -141,7 +141,7 @@ uv run python separation.py --sample 300
 uv run python tolerances.py --sample 300
 uv run python shifts.py                      # after run.py on the chosen run; about 20 s
 uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 5-6 and of group-structure
-uv run pytest ideas/group-identification     # from the root of xc-lab
+uv run pytest methods/group-identification     # from the root of xc-lab
 ```
 
 `uv run python plots.py --static` skips the GIFs. `run.py --sample N` or `--dates D1,D2` runs a

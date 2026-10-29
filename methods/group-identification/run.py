@@ -72,7 +72,7 @@ def describe(folder, p, dates, calibration=None):
     dirty = subprocess.run(["git", "status", "--porcelain", "."], cwd=here, capture_output=True, text=True)
     version = commit.stdout.strip() + (" with uncommitted changes" if dirty.stdout.strip() else "")
     lines = [f"# Group identification: {folder.name}", "",
-             f"`ideas/group-identification/run.py` of xc-lab ({version}) on {dates} dates of the cleaned "
+             f"`methods/group-identification/run.py` of xc-lab ({version}) on {dates} dates of the cleaned "
              "tracks of soaring (tag legacy-final) on SSD_DISANTE.", "",
              "| parameter | value | meaning |", "|---|---|---|"]
     lines += [f"| {symbol or key} | {p[key]:g} {unit} | {meaning} |" for key, (symbol, unit, meaning) in MEANINGS.items()]

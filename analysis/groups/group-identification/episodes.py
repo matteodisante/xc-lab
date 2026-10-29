@@ -1,7 +1,7 @@
 """MSD of the largest episodes, each over the group time of its members, with H and H_loc.
 
 Input: the pieces that tamsd.py measured (CACHE/pieces.npz), where a piece in a group carries
-its episode, and the episodes table of ideas/group-identification. Largest means the most
+its episode, and the episodes table of methods/group-identification. Largest means the most
 distinct flights (n_flights). Conventions of tamsd.py: a member enters with its pieces in the
 episode that last at least TAU_MAX / 0.8, with equal weight per member; the band resamples
 the members of the episode.

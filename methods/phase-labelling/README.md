@@ -33,10 +33,10 @@ climbs from 4 s on, and at 10 s neither works.
 From the root of xc-lab, with `/Volumes/SSD_DATA` mounted:
 
 ```
-uv run python ideas/phase-labelling/cadence.py
-uv run python ideas/phase-labelling/mechanism.py
-uv run python ideas/phase-labelling/plots.py
-uv run pytest ideas/phase-labelling
+uv run python methods/phase-labelling/cadence.py
+uv run python methods/phase-labelling/mechanism.py
+uv run python methods/phase-labelling/plots.py
+uv run pytest methods/phase-labelling
 ```
 
 then `latexmk -pdf phase_labelling.tex` in this folder.

@@ -4,7 +4,7 @@ The motion of paragliders and hang gliders alone and in a group: TA-MSD with its
 and local exponent H_loc, the largest groups one by one, and the MSD of each flight phase; then
 the same by the number of pilots of the group, pooled and on chosen site-days.
 
-**Data.** The group labels of [`ideas/group-identification`](../../../ideas/group-identification/),
+**Data.** The group labels of [`methods/group-identification`](../../../methods/group-identification/),
 run `d120_eh500_ez300_th45_g120_q0.1` (δ = 2 min, q = 0.1: a flight is in a group only in a
 contact of at least τ* = 38.1 min; see sections 5–6 of its `group_identification.pdf`), and the cleaned tracks of
 soaring (tag `legacy-final`) on SSD_DISANTE. xc-dynamics at `d72e1b9` (not used).
@@ -527,7 +527,7 @@ reading and as the base of a presentation. `report/facts.py` writes the
 facts of the grouping, `report/tables.py` the tables and the numbers of the text (macros in
 `report/generated/`) from the JSON of `out/<run>/`, `report/figures.py` the figures of the
 report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_solo.tex` in `report/`
-builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
+builds it. The figures are read from `out/<run>/` and from `methods/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
 partners and where the sizes come from are in the note `analysis/groups/group-structure/group_structure.pdf`,
@@ -580,7 +580,7 @@ uv run python chains.py [--run NAME]     # after size.py, about 40 s
 uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
-uv run python report/structure_tables.py   # then rebuild the note (README of ideas/group-identification)
+uv run python report/structure_tables.py   # then rebuild the note (README of methods/group-identification)
 uv run python report/facts.py; uv run python report/tables.py; uv run python report/figures.py
 cd report && latexmk -pdf group_vs_solo.tex
 uv run pytest analysis/groups/group-identification   # from the root of xc-lab

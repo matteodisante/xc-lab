@@ -1,4 +1,4 @@
-"""Figures of the note: uv run python ideas/phase-labelling/plots.py from the root of xc-lab.
+"""Figures of the note: uv run python methods/phase-labelling/plots.py from the root of xc-lab.
 Needs out/cadence.csv from cadence.py and the flight disk."""
 
 import sys
