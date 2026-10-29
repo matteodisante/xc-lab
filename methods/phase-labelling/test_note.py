@@ -265,7 +265,7 @@ def test_same_labels_as_the_reference_script_on_three_flights():
         fixes, _ = preprocess(Path("/Volumes/SSD_DATA/xc-viewer-data/paragliders") / paths[fid], cfg["altitude"],
                               cfg["speed"]["median_max_kmh"]["para"], cfg["speed"]["max_kmh"]["para"],
                               cfg["excursion"]["window_s"], cfg["vertical"]["max_ms"]["para"],
-                              cfg["airborne"]["min_kmh"], cfg["airborne"]["min_s"])
+                              cfg["airborne"], cfg["sampling"]["max_s"])
         seg = fixes[fixes.segment == fixes.segment.value_counts().idxmax()]
         track = pd.DataFrame({"time": seg.t.to_numpy(float), "Lat": seg.lat.to_numpy(),
                               "Long": seg.lon.to_numpy(), "AltGNSS": seg.gnss_alt.to_numpy()})

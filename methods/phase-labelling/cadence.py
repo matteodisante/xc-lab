@@ -27,8 +27,8 @@ def preprocessed(path, cfg):
     """The fixes of one paraglider track after every step of the xc-dynamics pre-processing,
     and the row of its counters."""
     return preprocess(path, cfg["altitude"], cfg["speed"]["median_max_kmh"]["para"], cfg["speed"]["max_kmh"]["para"],
-                      cfg["excursion"]["window_s"], cfg["vertical"]["max_ms"]["para"], cfg["airborne"]["min_kmh"],
-                      cfg["airborne"]["min_s"])
+                      cfg["excursion"]["window_s"], cfg["vertical"]["max_ms"]["para"], cfg["airborne"],
+                      cfg["sampling"]["max_s"])
 
 
 def max_gap(k):
