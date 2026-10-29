@@ -476,6 +476,48 @@ def route_tex(main="route_sample10000"):
     write("route_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
 
 
+ISOLATED_LEVELS = (("all", ""), ("experienced", "Exp"), ("beginners", "Beg"))
+ISOLATED_PHASES = (  # name in the JSON: (label, digits)
+    ("time in glide (transition) (%)", ("time in glide (\\%)", 1)), ("time in search (%)", ("time in search (\\%)", 1)),
+    ("time in climb (%)", ("time in climb (\\%)", 1)), ("searches that end in a climb (%)", ("searches ending in a climb (\\%)", 1)),
+    ("climbs per hour", ("climbs per hour", 2)), ("climb rate (m/s)", ("climb rate (m/s)", 2)),
+    ("glide speed (km/h)", ("glide speed (km/h)", 1)), ("glide ratio", ("glide ratio", 1)),
+    ("height lost per km of glide (m/km)", ("height lost per km of glide (m/km)", 1)))
+
+
+def isolated_tex():
+    """Macros and tables of isolated.py: group time against isolated solo flights on the same route."""
+    r = load(MAIN, "isolated")
+    if r is None:
+        return
+    lines = [r"\begin{tabular}{@{}l r r c c r@{}}", r"\toprule",
+             r"wing level & pieces & matches & against site-day and hour & against isolated, same route & explained \\",
+             r"\midrule"]
+    for level, tag in ISOLATED_LEVELS:
+        c, e, s = r["levels"][level]["counts"], r["levels"][level]["msd"]["main"]["delta"]["at"], r["share explained"][level]
+        macro(f"IsoPieces{tag}", num(c["pieces with a match"], 0))
+        macro(f"IsoPiecesBefore{tag}", num(r["matches before isolation"][level]["pieces with a match"], 0))
+        macro(f"IsoMatches{tag}", num(c["matches"], 0))
+        macro(f"IsoSolo{tag}", num(c["solo flights"], 0))
+        macro(f"IsoPilotsGroup{tag}", num(c["pilots, group side"], 0))
+        macro(f"IsoPilotsControl{tag}", num(c["pilots, control side"], 0))
+        macro(f"IsoMedianMatches{tag}", num(c["median matches per piece"], 0))
+        macro(f"IsoBaseDHloc{tag}", signed(s["delta baseline"], 3))
+        macro(f"IsoExplained{tag}", num(s["share explained (%)"], 0))
+        for stat, ks in (("H_loc(1000 s)", "DHloc"), ("H_loc(100 s)", "DHlocHundred")):
+            macro(f"Iso{ks}{tag}", signed(e[stat]["value"], 3))
+            macro(f"Iso{ks}{tag}Band", f"[{signed(e[stat]['band'][0], 3)}, {signed(e[stat]['band'][1], 3)}]")
+        lines.append(f"{level} & {num(c['pieces with a match'], 0)} & {num(c['matches'], 0)} & {signed(s['delta baseline'], 3)} & "
+                     f"{band(e['H_loc(1000 s)'], 3, True)} & {num(s['share explained (%)'], 0)}\\% \\\\")
+    write("isolated_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+    lines = [r"\begin{tabular}{@{}l r r c@{}}", r"\toprule", r"all levels & group time & same route alone & difference \\", r"\midrule"]
+    for name, (label, digits) in ISOLATED_PHASES:
+        p = r["levels"]["all"]["phases"][name]
+        lines.append(f"{label} & {num(p['group']['value'], digits)} & {num(p['control']['value'], digits)} & "
+                     f"{band(p['delta'], digits, True)} \\\\")
+    write("isolated_phases_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+
+
 def redundancy_tex():
     """Which statistics are drawn and why (redundancy.py)."""
     r = load(MAIN, "redundancy")
@@ -506,6 +548,7 @@ def main():
     prepost_tex(3000)
     prepost_tex(1260, "Short")
     route_tex()
+    isolated_tex()
     redundancy_tex()
     d = decompose_tex()
     if d is not None:

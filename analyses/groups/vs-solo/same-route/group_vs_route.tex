@@ -1,0 +1,68 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.1cm,top=1.9cm,bottom=1.9cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon,skip=3pt]{caption}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+
+\graphicspath{{../../out/d120_eh500_ez300_th45_g120_q0.1/}}
+\newcommand{\G}{\mathrm{G}}
+\newcommand{\Sl}{\mathrm{S}}
+\newcommand{\MSD}{\mathrm{MSD}}
+\newcommand{\Hloc}{H_\mathrm{loc}}
+\setlist{itemsep=1pt, topsep=2pt, parsep=0pt, leftmargin=1.3em}
+\setlength{\parskip}{2pt}
+\captionsetup{font=footnotesize}
+\input{../generated/macros}
+
+\title{\textbf{Group time against the same route flown alone}\\[2pt]
+  \large Does the straighter progress of groups remain on the same route?}
+\author{Matteo Di Sante}
+\date{29 October 2026 \;\textbullet\; analysis: \texttt{xc-lab/analyses/groups/isolated.py} \;\textbullet\;
+  grouping run \texttt{d120\_eh500\_ez300\_th45\_g120\_q0.1}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Over a quarter of an hour a paraglider in a group progresses straighter than a solo one, but groups
+form on routes where any pilot may progress straight. We compare each piece of group time with the
+same route flown on another day, in the same season, hour and wing level, by flights that never had
+a contact and that no other flight came within 10~km of at the same time. On \IsoPieces{} pieces the
+gap $\Delta\Hloc(1000~\mathrm{s})$ is \IsoDHloc{} \IsoDHlocBand{} against these controls and
+\IsoBaseDHloc{} against the solo flights of the same site, day and hour: fixing the route lowers it by
+\IsoExplained\%, by \IsoExplainedExp\% for experienced pilots and \IsoExplainedBeg\% for beginners.
+The rest is small and its band excludes zero. At 100~s group time is less straight ($\Delta\Hloc(100~\mathrm{s})$ is \IsoDHlocHundred),
+and groups spend more time climbing and less gliding, while climb rate, glide speed and glide ratio do not
+differ. The route accounts for most of the straighter progress; what remains goes with flying together,
+and whether the group causes it stays open.
+\end{abstract}
+
+\input{sections/question}
+\input{sections/matching}
+\input{sections/gap}
+\input{sections/levels}
+\input{sections/phases}
+\input{sections/conclusions}
+
+\end{document}
