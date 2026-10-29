@@ -3,7 +3,7 @@
 xc-dynamics does not yet have the Vilpellet segmenter or the preprocessing it expects,
 so the lab takes both from ``soaring`` at tag ``legacy-final``, checked out read-only in
 ``../soaring-legacy``. This is the only module that imports ``soaring``: when a piece is
-ported to xc-dynamics, its import changes here and the ideas keep working.
+ported to xc-dynamics, its import changes here and the methods and analyses keep working.
 """
 
 from __future__ import annotations

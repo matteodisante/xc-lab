@@ -16,7 +16,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
-from lab.legacy import LocalFrame, enu_to_geodetic, geodetic_to_ecef
+from common.legacy import LocalFrame, enu_to_geodetic, geodetic_to_ecef
 
 DISK = Path("/Volumes/SSD_DISANTE")
 DERIVED = {"para": DISK / "paragliders/ffvl_cfd_igc/derived", "hang": DISK / "hang_gliders/delta_cfd_igc/derived"}

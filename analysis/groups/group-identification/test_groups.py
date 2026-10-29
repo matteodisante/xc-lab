@@ -22,7 +22,7 @@ import route  # noqa: E402
 import survival  # noqa: E402
 import tamsd  # noqa: E402
 import zones as zonelib  # noqa: E402
-from lab.msd import tamsd as lab_tamsd  # noqa: E402
+from common.msd import tamsd as lab_tamsd  # noqa: E402
 
 
 def test_fft_msd_is_the_direct_average():

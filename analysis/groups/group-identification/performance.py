@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 from budget import budget, plot
-from lab.legacy import stream_flights
+from common.legacy import stream_flights
 from phase_msd import RUNS
 from survival import assign
 from tamsd import CACHE, FIXES, GRID_S, LABELS, OUT, SEED, SUPPORT, folders, grids, stretches

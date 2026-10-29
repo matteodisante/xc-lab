@@ -29,8 +29,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from lab.legacy import stream_flights
-from lab.msd import tamsd_sums
+from common.legacy import stream_flights
+from common.msd import tamsd_sums
 
 # The labels are a run of methods/group-identification on SSD_DISANTE, named by its grouping
 # parameters (see its PARAMETERS.md). Figures and numbers go to out/<run>/ with a copy of

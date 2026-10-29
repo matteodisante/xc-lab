@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import soaring
 
-from lab.legacy import UNCLASSIFIED, VILPELLET_STATES, clean_flight, segment
+from common.legacy import UNCLASSIFIED, VILPELLET_STATES, clean_flight, segment
 
 LAB = Path(__file__).resolve().parents[1]
 SAMPLE = Path(

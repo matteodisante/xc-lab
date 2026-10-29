@@ -38,8 +38,8 @@ from scipy.spatial import cKDTree
 import decompose
 import zones
 from blocks import EARTH_M, components, with_takeoffs
-from lab.legacy import stream_flights
-from lab.msd import tamsd_sums
+from common.legacy import stream_flights
+from common.msd import tamsd_sums
 from tamsd import (CACHE, FIXES, GRID_S, H_MAX, LABELS, LAGS, OUT, SEED, SUPPORT, TAU_MAX, grids, read_pieces, save,
                    stretches)
 

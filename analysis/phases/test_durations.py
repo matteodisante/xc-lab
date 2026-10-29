@@ -106,7 +106,7 @@ def test_quoted_exponents(population, discipline):
 @on_disk
 def test_stored_runs_match_the_legacy_segmenter():
     # Hang flight 3336 lies wholly inside row group 1 of the cleaned fixes.
-    from lab.legacy import UNCLASSIFIED, segment
+    from common.legacy import UNCLASSIFIED, segment
 
     root = durations.DISK / "hang_gliders/delta_cfd_igc/derived"
     columns = ["source", "flight_id", "segment_id", "t", "E", "N", "z"]

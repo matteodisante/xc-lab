@@ -43,8 +43,8 @@ import performance
 import route
 import zones
 from blocks import EARTH_M, with_takeoffs
-from lab.legacy import stream_flights
-from lab.msd import tamsd_sums
+from common.legacy import stream_flights
+from common.msd import tamsd_sums
 from phase_msd import RUNS
 from tamsd import CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OUT, SEED, SUPPORT, TAU_MAX, save
 

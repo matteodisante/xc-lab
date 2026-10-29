@@ -73,7 +73,7 @@ least tau / `SUPPORT` (0.8).
     when only pieces and segments lasting at least tau_max / 0.8 are kept.
   - `LONG_TAU_MAX` = the largest tau_max with at least `MIN_PIECES = 200` pieces per level.
   - On that fixed subset, MSD and H_loc over every lag up to `LONG_TAU_MAX`.
-- MSD per segment with `lab.msd.tamsd_sums` on the 10-s grid positions, as in `route.units`.
+- MSD per segment with `common.msd.tamsd_sums` on the 10-s grid positions, as in `route.units`.
 - H and H_loc with the functions of `tamsd` (`fit_h`, `local_h`) or `zones.curve`. If they assume
   `tamsd.LAGS`, add an optional `lags` argument whose default leaves the current results unchanged.
 

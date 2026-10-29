@@ -24,8 +24,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from lab.legacy import stream_flights
-from lab.msd import tamsd
+from common.legacy import stream_flights
+from common.msd import tamsd
 from tamsd import CACHE, FIXES, LABELS, NAMES, OUT, POPULATIONS, SEED, folders, save, stretches
 
 RUNS = {"para": FIXES["para"].parent / "segmentation/vilpellet/phase_segments.parquet",

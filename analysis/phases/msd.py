@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from lab.legacy import stream_flights
+from common.legacy import stream_flights
 
 DISK = Path("/Volumes/SSD_DISANTE")
 DERIVED = {"para": DISK / "paragliders/ffvl_cfd_igc/derived", "hang": DISK / "hang_gliders/delta_cfd_igc/derived"}
