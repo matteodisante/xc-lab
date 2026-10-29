@@ -4,19 +4,17 @@ What can be concluded, and what cannot?
 
 \paragraph{What we keep.}
 \begin{itemize}
-  \item Raw, group time ($\G$, \PopFlightsG{} flights) progresses straighter than solo flights
-        ($\Sl$, \PopFlightsS{}) over long lags, and the same flights alone ($\A$, \PopFlightsA{}) are no
-        straighter than solo flights.
-  \item On the long pieces group time keeps its progress to lags of hours, at every size of the group.
-        $\Hloc(1000~\mathrm{s})$ is highest in group time, then in the same flights alone, then in solo
-        flights in \RegionOrdered{} of the \RegionZones{} zones with the most group flights, where pooled the
-        same flights alone are below solo flights.
-  \item The route, with the season, the hour and the wing level, explains \IsoExplained\% of the gap
-        $\Delta\Hloc(1000~\mathrm{s})$ between group time and solo flight: \IsoExplainedExp\% for experienced
-        pilots, \IsoExplainedBeg\% for beginners.
-  \item What remains, \IsoDHloc{} \IsoDHlocBand{}, is small, with a band away from zero; at short lags group time is less
-        straight than the control.
-  \item On the same route no statistic of climbs and glides differs from the control beyond its band.
+  \item Declared open flights fold back on themselves; we keep the straight ones, with an opening of at
+        least \FoldMinOpening, so that the shape of the flights does not pass for an effect of the group.
+  \item On straight open flights group time ($\G$, \PopFlightsG{} flights), solo flights ($\Sl$,
+        \PopFlightsS{}) and the same flights alone ($\A$, \PopFlightsA{}) progress almost alike, up to lags
+        of hours; group time is straighter in the larger groups. Group time climbs more and glides faster and
+        flatter. Zone by zone the order of the three populations changes.
+  \item On the declared open flights, the route, with the season, the hour and the wing level, explains
+        \IsoExplained\% of the gap $\Delta\Hloc(1000~\mathrm{s})$ between group time and solo flights
+        (\IsoExplainedExp\% for experienced pilots, \IsoExplainedBeg\% for beginners). What remains,
+        \IsoDHloc{} \IsoDHlocBand, is small; no statistic of climbs and glides differs from the control
+        beyond its band.
 \end{itemize}
 
 \paragraph{Limits.}
@@ -26,9 +24,10 @@ What can be concluded, and what cannot?
   \item The controls flew with nobody within 10~km. They may differ from the pilots who fly in
         groups, and this test has no selection contrast to measure it.
   \item Only the \IsoPieces{} pieces whose route was flown alone on another day enter; their routes
-        are frequented ones.
+        are frequented ones. On the straight open flights too few pieces have a control, so the route test
+        rests on the declared open flights.
   \item The bands measure the sampling of pilots and blocks. The radius and the cover of the route
         were varied only in the general report, on a sample, and the isolation distance not at all.
 \end{itemize}
-Fixing the route removes most of the straighter progress of groups; whether what remains is caused by
-the group stays open.
+Most of the straighter progress of group time comes from the shape of the flights and from the route;
+what remains is small, and whether the group causes it stays open.

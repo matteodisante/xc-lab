@@ -40,8 +40,8 @@ CONTRASTS = {"raw": r"$\G-\Sl$, pooled", "same site-day-hour": r"$\G-\Sl$, same 
 macros = {}
 
 
-def load(run, name):
-    path = OUTS / run / SUB / f"{name}.json"
+def load(run, name, sub=SUB):
+    path = OUTS / run / sub / f"{name}.json"
     return json.loads(path.read_text()) if path.exists() else None
 
 
@@ -510,9 +510,9 @@ ISOLATED_PHASES = (  # name in the JSON: (label, digits)
     ("height lost per km of glide (m/km)", ("height lost per km of glide (m/km)", 1)))
 
 
-def isolated_tex():
+def isolated_tex(sub=SUB):
     """Macros and tables of isolated.py: group time against isolated solo flights on the same route."""
-    r = load(MAIN, "isolated")
+    r = load(MAIN, "isolated", sub)
     if r is None:
         return
     lines = [r"\begin{tabular}{@{}l r r c c r@{}}", r"\toprule",
@@ -535,12 +535,13 @@ def isolated_tex():
         lines.append(f"{level} & {num(c['pieces with a match'], 0)} & {num(c['matches'], 0)} & {signed(s['delta baseline'], 3)} & "
                      f"{band(e['H_loc(1000 s)'], 3, True)} & {num(s['share explained (%)'], 0)}\\% \\\\")
     write("isolated_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-    long = r["levels"]["all"]["msd"]["long"]
-    k = long["lags"].index(1000)
-    macro("IsoLongTau", num(long["lags"][-1], 0))
-    macro("IsoLongPieces", num(r["levels"]["all"]["counts"]["pieces of the long series"], 0))
-    macro("IsoLongDHloc", signed(long["delta"]["H_loc"]["value"][k], 3))
-    macro("IsoLongDHlocBand", f"[{signed(long['delta']['H_loc']['band'][0][k], 3)}, {signed(long['delta']['H_loc']['band'][1][k], 3)}]")
+    long = r["levels"]["all"]["msd"].get("long")  # none when too few pieces last long enough
+    if long is not None:
+        k = long["lags"].index(1000)
+        macro("IsoLongTau", num(long["lags"][-1], 0))
+        macro("IsoLongPieces", num(r["levels"]["all"]["counts"]["pieces of the long series"], 0))
+        macro("IsoLongDHloc", signed(long["delta"]["H_loc"]["value"][k], 3))
+        macro("IsoLongDHlocBand", f"[{signed(long['delta']['H_loc']['band'][0][k], 3)}, {signed(long['delta']['H_loc']['band'][1][k], 3)}]")
     c = r["levels"]["all"]["counts"]
     macro("IsoPhasePieces", num(c["pieces with phases"], 0))
     macro("IsoPhaseSegments", num(c["segments with phases"], 0))
@@ -596,6 +597,8 @@ def longlags_tex():
     def quoted(prefix, curves, lag, tags):
         """H_loc at `lag` of the curves with their band, as macros prefix + tag."""
         for k, tag in tags.items():
+            if k not in curves:
+                continue
             c = curves[k]
             i = c["lags"].index(lag)
             macro(f"{prefix}{tag}", f"{c['H_loc'][i]:.3f}")
@@ -635,15 +638,30 @@ def redundancy_tex():
 def open_main():
     """The macros and tables of comparisons/, from the analyses run with --open."""
     macro("tauStar", num(json.loads((OUTS / MAIN / "facts.json").read_text())["tau_star_s"] / 60, 1))  # the grouping, whichever the flights
-    closure = json.loads((OUTS / MAIN / "closure.json").read_text())["open"]  # closure.py, on every flight
-    macro("OpenKm", num(closure["km"], 0))
-    macro("OpenFlights", num(closure["flights"], 0))
-    macro("OpenAll", num(closure["of"], 0))
-    macro("OpenAgree", num(closure["agreement (%)"], 0))
-    macro("OpenGroupShare", num(closure["group"], 0))
+    closure = json.loads((OUTS / MAIN / "closure.json").read_text())  # closure.py, on every flight
+    macro("OpenAll", num(closure["flights"], 0))
+    macro("OpenAgree", num(closure["open"]["agreement (%)"], 0))
+    macro("OpenAgreeKm", num(closure["open"]["km"], 0))
+    fold = json.loads((OUTS / MAIN / "open_declared" / "folding.json").read_text())  # folding.py
+    long = f"{fold['long_h']} h or more"
+    macro("FoldMinOpening", f"{fold['min_opening']:.1f}")
+    macro("FoldLongH", num(fold["long_h"], 0))
+    macro("FoldDeclared", num(fold["flights"]["all"], 0))
+    macro("FoldDeclaredLong", num(fold["flights"][long], 0))
+    macro("FoldMedian", f"{fold['median opening']['all']:.2f}")
+    macro("FoldMedianLong", f"{fold['median opening'][long]:.2f}")
+    macro("FoldShare", num(fold["share at least the minimum (%)"]["all"], 0))
+    macro("FoldShareLong", num(fold["share at least the minimum (%)"][long], 0))
+    macro("FoldStraight", num(fold["straight open flights"], 0))
+    macro("FoldTau", num(fold["tau_max"], 0))
+    macro("FoldMedianGroup", f"{fold['median opening, group flights']:.2f}")
+    macro("FoldMedianSolo", f"{fold['median opening, never in a group']:.2f}")
+    for k, tag in (("solo", "S"), ("group", "G"), ("group_solo", "A")):
+        macro(f"FoldH{tag}", f"{fold['H_loc at tau_max'][k]:.3f}")
+        macro(f"FoldFlights{tag}", num(fold["flights of the long series"][k], 0))
     raw_tex()
     populations_tex()
-    isolated_tex()
+    isolated_tex("open_declared")  # the route on the declared open flights: too few straight ones match
     regions_tex()
     longlags_tex()
     (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")

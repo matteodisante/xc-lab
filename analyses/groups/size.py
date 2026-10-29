@@ -328,8 +328,9 @@ if __name__ == "__main__":
         para = tamsd_pieces("para")
         on_days = [(label, tamsd_results(para, by_flight, rng, f, plain)) for label, f in days]
         to_json(OUT / "siteday_tamsd.json", dict(on_days))
-        curves_figure([(f"{label} ({len(f)} flights)", r) for (label, r), (_, f) in zip(on_days, days)],
-                      OUT / "siteday_tamsd.pdf", plain, plain_colors, per_row=3)
+        if on_days:  # none when the flights kept are too few on every site-day
+            curves_figure([(f"{label} ({len(f)} flights)", r) for (label, r), (_, f) in zip(on_days, days)],
+                          OUT / "siteday_tamsd.pdf", plain, plain_colors, per_row=3)
 
     for name, table, stats, plotted, title in (
             ("budget", None, budget.STATS, budget.PLOTTED, "Paragliders: how the time is spent, by the number of pilots"),

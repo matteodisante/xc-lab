@@ -24,7 +24,7 @@
 \renewcommand{\textfraction}{0.1}
 \renewcommand{\floatpagefraction}{0.75}
 
-\graphicspath{{../../out/d120_eh500_ez300_th45_g120_q0.1/open/}}
+\graphicspath{{../../out/d120_eh500_ez300_th45_g120_q0.1/open/}{../../out/d120_eh500_ez300_th45_g120_q0.1/open_declared/}}
 \newcommand{\G}{\mathrm{G}}
 \newcommand{\A}{\mathrm{A}}
 \newcommand{\Sl}{\mathrm{S}}
@@ -46,22 +46,23 @@
 
 \begin{abstract}
 \noindent
-Group time differs from solo flight, but so do the pilots, the places and the routes of groups. This
-report compares paragliders on open flights in three populations, solo flights, group time and the same flights
-alone, and gives for each result the number of flights or pieces behind it. Raw, group time progresses
-straighter over a quarter of an hour than solo flights, $\Hloc(1000~\mathrm{s})$ of \HlocThousandG{}
-against \HlocThousandS{}, and glides faster and flatter; the same flights alone are no straighter than solo
-flights. On the long pieces group time keeps its progress to lags of hours, at every size of the group. In
-\RegionOrdered{} of the \RegionZones{} zones of \RegionCell~km with the most group flights, group time is
-straighter than the same flights alone, and these than solo flights. Against the same
-route flown on another day by isolated solo flights of the same wing level, the gap
-$\Delta\Hloc(1000~\mathrm{s})$ falls from \IsoBaseDHloc{} to \IsoDHloc{} \IsoDHlocBand{} on \IsoPieces{} pieces:
-the route explains \IsoExplained\% of it (\IsoExplainedExp\% for experienced pilots, \IsoExplainedBeg\% for
-beginners). What remains is small and goes with flying together; whether the group causes it stays open.
+Group time differs from solo flight, but so do the pilots, the places, the routes and the shape of the
+flights. This report compares paragliders in three populations, solo flights, group time and the same
+flights alone, and gives for each result the number of flights or pieces behind it. Flights declared open
+fold back on themselves, and their shape enters the mean squared displacement: we keep those whose
+landing is at least \FoldMinOpening{} of the path flown from the takeoff. On them the three populations
+progress almost alike, $\Hloc(1000~\mathrm{s})$ of \HlocThousandG{} in group time against \HlocThousandS{}
+in solo flights, up to lags of hours; group time is straighter only in the larger groups, and it climbs
+more and glides faster and flatter. Against the same route flown on another day by isolated solo flights of
+the same wing level, on the declared open flights, the gap $\Delta\Hloc(1000~\mathrm{s})$ falls from
+\IsoBaseDHloc{} to \IsoDHloc{} \IsoDHlocBand{} on \IsoPieces{} pieces: the route explains \IsoExplained\% of it
+(\IsoExplainedExp\% for experienced pilots, \IsoExplainedBeg\% for beginners). What remains is small, and
+whether the group causes it stays open.
 \end{abstract}
 
 \input{sections/intro}
 \input{sections/populations}
+\input{sections/open}
 \input{sections/raw}
 \input{sections/zones}
 \input{sections/route}

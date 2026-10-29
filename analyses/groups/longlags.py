@@ -129,8 +129,10 @@ if __name__ == "__main__":
     masks = populations(p)
     result = {"min_flights": MIN_FLIGHTS, "available": {k: available(p, m) for k, m in masks.items()}, "panels": {}}
     for name, members in PANELS.items():
+        dropped = [k for k in members if longest(result["available"][k]) < tamsd.TAU_MAX]  # too few flights even at 1000 s
+        members = [k for k in members if k not in dropped]
         tau = min(longest(result["available"][k]) for k in members)
-        result["panels"][name] = {"tau_max": int(tau), "curves": {k: curve(p, masks[k], block, rng, tau) for k in members}}
-        print(name, tau, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
+        result["panels"][name] = {"tau_max": int(tau), "dropped": dropped, "curves": {k: curve(p, masks[k], block, rng, tau) for k in members}}
+        print(name, tau, "dropped", dropped, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
     (OUT / "longlags.json").write_text(json.dumps(result, indent=1))
     figure(result, OUT / "longlags.pdf")

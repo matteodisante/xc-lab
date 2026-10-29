@@ -106,10 +106,12 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   longest T at which each keeps 100 flights (14 030 s pooled, 2 250 s by size, 9 350 s alone by size). On
   the long pieces H_loc(5080 s) is 0.89 in G against 0.79 in S and 0.81 in A. `curves.py` draws
   H_loc(tau) with an inset of MSD for any set of populations.
-- **`openflights.py`**: `--open` on any script keeps the paragliders that fly open (takeoff to landing
-  more than 6 km; 91% agreement with the type declared on the FFVL catalogue, `closure.py`), results in
-  `out/<run>/open`. 66 996 of 154 598 flights are open. On them `A` is no straighter than `S` (H_loc(1000 s)
-  0.885 against 0.891) and the route explains 73% (`isolated.py`).
+- **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue,
+  `--open` only those of them whose landing is at least 0.5 of the path flown from the takeoff (17 687 of 66 845);
+  results in `out/<run>/open_declared` and `out/<run>/open`. `closure.py` checks the declared type against the
+  track (91% agreement), `folding.py` shows that declared open flights fold. On straight open flights S, G and
+  A progress almost alike (H_loc(1000 s) 0.940, 0.947, 0.941); the route test runs on the declared open ones
+  (3 224 pieces, 74% explained).
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.

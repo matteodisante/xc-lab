@@ -9,14 +9,6 @@ other within $\delta=2$~min, $\varepsilon_h=500$~m horizontally and $\varepsilon
 are the connected components of the contact graph, and a group keeps the same members over a maximal
 interval. A contact means shared air within sight; it does not prove interaction.
 
-\paragraph{Open flights.} Only flights that fly open are analysed: the distance between the first and the
-last fix of the flight, its takeoff and its landing, is more than \OpenKm~km. This keeps \OpenFlights{} of
-the \OpenAll{} paraglider flights that depart and are logged every 10~s or finer, and \OpenGroupShare\% of the flights with group time.
-It agrees with the type the pilot declared on the FFVL catalogue (free distance and distance with
-turn points are open, triangles, quadrilaterals and out-and-returns closed) for \OpenAgree\% of the
-flights. The groups are those of the run, whoever the companions: a flight in a group with a closed flight
-keeps its group time.
-
 \paragraph{States.} After its \emph{departure}, the first fix 3~km from the takeoff, every instant of a
 flight is in a group or solo; before it the pilot counts as neither. Flights that never depart are
 left out. We use paraglider flights logged every 10~s or finer, so that the labels exist at every
@@ -31,7 +23,8 @@ instant; the phases (climb, search, glide) exist on the flights logged every sec
   \item $\A$, \emph{the same flights alone}: the solo stretches of those same flights, a control with
         the same pilots, gliders, loggers and days as $\G$.
 \end{itemize}
-The control of Section~\ref{sec:route} is stricter than $\Sl$ and is defined there.
+The flights are the open ones of Section~\ref{sec:open}. The control of Section~\ref{sec:route} is stricter
+than $\Sl$ and is defined there.
 
 \paragraph{Measure.} A \emph{piece} is a stretch within one segment of the track, of at least
 1250~s, on a 10-s grid of its clock. For a flight $f$ and a population, the time-averaged mean
@@ -46,27 +39,3 @@ lags within $\pm0.25$ decades of $\tau$. It is read at $\tau=1000$~s, over one t
 time in climb, the share of searches that end in a climb, the climb rate, the glide speed and the
 glide ratio, each a ratio of sums over the phase runs of a population. Bands are 5--95\% of bootstrap
 draws that resample the pilots and the dependency blocks of the grouping.
-
-\begin{table}
-\centering\small
-\input{../generated/open/populations_table}
-\caption{Members of the populations, paragliders. The flights of $\G$ and $\A$ are the same flights,
-and $\A$ keeps those with a solo stretch of at least 1250~s.}
-\label{tab:populations}
-\end{table}
-
-\paragraph{Sizes.} Table~\ref{tab:populations} counts the members. $\G$ has \PopFlightsG{} flights in
-\PopPiecesG{} pieces and $\Sl$ has \PopFlightsS{} flights in \PopPiecesS{}. $\A$ has \PopFlightsA{} flights
-in \PopPiecesA{} pieces, fewer flights than $\G$: the others have no solo stretch long enough. The phase
-statistics rest on fewer flights, those logged every second.
-
-\paragraph{Where.} Figure~\ref{fig:maps} maps the middle of the pieces of $\Sl$ and of $\G$.
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{maps.pdf}
-\caption{Density of the middles of the pieces of solo flights $\Sl$ (\PopPiecesS{} pieces, \PopFlightsS{}
-flights) and of group time $\G$ (\PopPiecesG{} pieces, \PopFlightsG{} flights), in pieces per 1000~km$^2$,
-on one colour scale. Squares: the zones of Section~\ref{sec:zones}.}
-\label{fig:maps}
-\end{figure}

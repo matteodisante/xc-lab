@@ -21,12 +21,12 @@ import pandas as pd
 
 import tamsd
 from common.legacy import stream_flights
-from openflights import OPEN_KM
 from tamsd import FIXES, H_MAX, LABELS, OUT
 
 ENDS = tamsd.SHARED / "flight_ends.parquet"
 CLOSED = {"triangle", "triangle FAI", "Quadrilatère", "Aller-Retour", "Marche et Vol bouclé", "Marche et Vol FAI"}
 OPEN = {"Dist libre", "Dist 1 pt", "Dist 2 pts", "Dist 3 pts"}
+OPEN_KM = 6  # km: the takeoff to landing distance that best tells the declared open from the closed
 
 
 def read_ends():
