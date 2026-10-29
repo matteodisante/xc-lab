@@ -1,6 +1,6 @@
 """MSD per phase of solo flights and of group flights during their group time, with slopes.
 
-Method of analysis/phases/msd.py, which is Vilpellet's: runs longer than 180 fixes, searches
+Method of analyses/phases/msd.py, which is Vilpellet's: runs longer than 180 fixes, searches
 followed by a transition dropped (the rule reads whole flights), positions smoothed by his
 6-fix Gaussian within each segment, per run the MSD averaged along it, at each lag the median
 over runs weighted by the T - D pairs each run contributes. Here a run is first cut to the
@@ -33,7 +33,7 @@ RUNS = {"para": FIXES["para"].parent / "segmentation/vilpellet/phase_segments.pa
 PHASES = ("transition", "search", "climb")
 PHASE_COLORS = {"transition": "#2a78d6", "search": "#eb6834", "climb": "#1baf7a"}
 MIN_FIXES, SMOOTH = 180, 6  # his cut (pieces strictly longer) and smoothing window, in fixes
-DELTAS = np.unique(np.round(np.geomspace(1, 599, 100)).astype(int))  # as analysis/phases
+DELTAS = np.unique(np.round(np.geomspace(1, 599, 100)).astype(int))  # as analyses/phases
 MAX_PLOT, MIN_RUNS = 360, 100  # his plotted range; a lag needs this many pieces to be drawn
 SEARCH_FIT = (100, 360)  # s
 N_BOOT = 200

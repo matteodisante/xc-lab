@@ -6,7 +6,7 @@ controls grey, the group itself orange); a filled point is an estimate, an open 
 a variant. Estimates are points with their 5-95% bands on one axis, curves over every lag carry
 their bands.
 
-    uv run python report/figures.py    # from analysis/groups/group-identification, after report/tables.py
+    uv run python report/figures.py    # from analyses/groups/group-identification, after report/tables.py
 """
 
 import matplotlib.pyplot as plt

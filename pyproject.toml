@@ -33,6 +33,6 @@ build-backend = "hatchling.build"
 packages = ["common"]
 
 [tool.pytest.ini_options]
-testpaths = ["common", "methods", "analysis"]
+testpaths = ["common", "methods", "analyses"]
 # Idea and analysis folders are not packages and reuse file names like test_run.py.
 addopts = "-ra --import-mode=importlib"

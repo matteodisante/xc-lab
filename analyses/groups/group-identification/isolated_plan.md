@@ -1,6 +1,6 @@
 # Plan: group time against isolated solo flights on the same route
 
-Folder: `xc-lab/analysis/groups/group-identification/`. File to rewrite: `isolated.py`.
+Folder: `xc-lab/analyses/groups/group-identification/`. File to rewrite: `isolated.py`.
 
 `isolated.py` already holds `sphere()` (positions on the sphere, in m), the index of every flight of
 the archive (`read_index`, cache `CACHE/archive_index.npz`, 30 M positions, one per minute),

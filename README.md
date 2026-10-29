@@ -10,8 +10,8 @@ This repository tests ideas fast; results that reach the thesis are rewritten th
 
 - `methods/<slug>/`: one method we build per folder, with its code, tests and notes; `methods/README.md`
   lists them with their status.
-- `analysis/<topic>/`: quantities computed on the flight data, as figures and numbers; one
-  folder per topic, `analysis/README.md` lists them.
+- `analyses/<topic>/`: quantities computed on the flight data, as figures and numbers; one
+  folder per topic, `analyses/README.md` lists them.
 - `meetings/YYYY-MM/<talk>/`: the slides of one talk, grouped by month.
 - `common/`: helpers shared by the methods and the analyses, with their tests. `common/legacy.py` borrows the Vilpellet
   segmenter from [soaring-anomalous-transport](https://github.com/matteodisante/soaring-anomalous-transport)

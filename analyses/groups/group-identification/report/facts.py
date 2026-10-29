@@ -1,6 +1,6 @@
 """The facts of the grouping that the report quotes, from the tables of one run: out/<run>/facts.json.
 
-    uv run python report/facts.py [--run NAME]    # from analysis/groups/group-identification
+    uv run python report/facts.py [--run NAME]    # from analyses/groups/group-identification
 """
 
 import json

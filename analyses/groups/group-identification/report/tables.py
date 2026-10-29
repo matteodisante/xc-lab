@@ -3,7 +3,7 @@
 Every number quoted in the text of the report is a macro of generated/macros.tex, so that the text
 follows the analyses.
 
-    uv run python report/tables.py    # from analysis/groups/group-identification, after the scripts of the report
+    uv run python report/tables.py    # from analyses/groups/group-identification, after the scripts of the report
 """
 
 import json

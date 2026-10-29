@@ -28,7 +28,7 @@ from families import FAMILIES, aic, bands
 from phase_msd import RUNS
 from survival import assign, counted
 from tamsd import N_BOOT, stretches
-from durations import ccdf, log_resample  # noqa: E402  (survival puts analysis/phases on the path)
+from durations import ccdf, log_resample  # noqa: E402  (survival puts analyses/phases on the path)
 
 PHASES = {"climb": "climb", "search": "search", "transition": "glide"}  # in the runs -> shown
 MIN_ABOVE = 20  # runs above a point of the survival for it to enter the log error

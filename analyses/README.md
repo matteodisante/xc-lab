@@ -1,4 +1,4 @@
-# Analysis
+# Analyses
 
 | Topic | Contents |
 |---|---|

@@ -87,7 +87,7 @@ the paragliders. The three hang gliders of 2013-04-24 give 0.861 [0.821, 0.890].
 ## MSD per phase: `phase_msd.py`
 
 The MSD of transitions, searches and climbs (`phase_msd.pdf`, with their local exponent),
-by the method of [`analysis/phases/msd.py`](../../phases/): Vilpellet's pieces longer than 180
+by the method of [`analyses/phases/msd.py`](../../phases/): Vilpellet's pieces longer than 180
 fixes, his 6-fix smoothing and his median over pieces weighted by the T − Δ pairs; lags
 drawn up to 360 s where at least 100 pieces reach them. Here a phase run is first cut to the
 stretches of its population, so a group flight's runs count only in its group time. Phases
@@ -99,7 +99,7 @@ levels off near Vilpellet's Δ^0.6 guide. Bands: 5–95% of 200 bootstrap draws 
 for solo flights (paragliders), and equally so in their solo time, 1.977. Search slopes do not
 separate: 0.606 in group time, 0.715 in the solo time of the same flights, 0.619 for solo
 flights, with bands that overlap. Hang gliders have too few group searches for a slope, and
-their solo searches lose their pool beyond 180 s (as in `analysis/phases`), so their search
+their solo searches lose their pool beyond 180 s (as in `analyses/phases`), so their search
 slope means nothing.
 
 | | flights (transitions, searches) | transition slope | search slope, 100–360 s |
@@ -114,7 +114,7 @@ slope means nothing.
 ## Phase durations: `survival.py`
 
 Survival of the durations of transitions, searches and climbs (`survival.pdf`), paragliders only,
-by the method of [`analysis/phases/durations.py`](../../phases/): a duration is the number of fixes
+by the method of [`analyses/phases/durations.py`](../../phases/): a duration is the number of fixes
 of a run (1 Hz), a search counts only when the next run is a climb, the 0.0001 and 99.9999
 percentiles are cut. A run keeps its whole duration and goes to the population of the stretch
 that holds its middle: cutting it where a flight enters or leaves a group would shorten the
@@ -530,10 +530,10 @@ report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_s
 builds it. The figures are read from `out/<run>/` and from `methods/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
-partners and where the sizes come from are in the note `analysis/groups/group-structure/group_structure.pdf`,
+partners and where the sizes come from are in the note `analyses/groups/group-structure/group_structure.pdf`,
 with the graph theory and the two models in its appendices. `report/structure_tables.py` writes the macros the note reads
 (`generated/structure_*.tex`); it also reads the macros of `tables.py`. The note reads copies of
-the figures, in `analysis/groups/group-structure/figures/structure/`.
+the figures, in `analyses/groups/group-structure/figures/structure/`.
 
 ## To do
 
@@ -583,5 +583,5 @@ uv run python fission.py [--run NAME]    # about 10 s
 uv run python report/structure_tables.py   # then rebuild the note (README of methods/group-identification)
 uv run python report/facts.py; uv run python report/tables.py; uv run python report/figures.py
 cd report && latexmk -pdf group_vs_solo.tex
-uv run pytest analysis/groups/group-identification   # from the root of xc-lab
+uv run pytest analyses/groups/group-identification   # from the root of xc-lab
 ```

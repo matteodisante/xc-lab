@@ -1,6 +1,6 @@
 """Survival of the phase durations of paragliders, solo and in a group, with the tail exponent mu.
 
-Method of analysis/phases/durations.py, which is Vilpellet's: a run's duration is its number
+Method of analyses/phases/durations.py, which is Vilpellet's: a run's duration is its number
 of fixes (1 Hz, so seconds), a search counts only when the next run of the flight is a climb,
 values outside the 0.0001 and 99.9999 percentiles are dropped, and powerlaw.Fit picks xmin
 and mu = alpha - 1. Since that xmin moves from one population to another, the populations are
