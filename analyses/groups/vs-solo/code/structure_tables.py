@@ -3,7 +3,7 @@
 vs-solo/generated/structure_*.tex. Every number of the note is a macro of
 generated/structure_macros.tex or of generated/macros.tex.
 
-    uv run python vs-solo/structure_tables.py    # from analyses/groups, after describe.py
+    uv run python vs-solo/code/structure_tables.py    # from analyses/groups, after describe.py
 """
 
 import numpy as np

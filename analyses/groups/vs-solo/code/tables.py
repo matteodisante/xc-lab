@@ -3,7 +3,7 @@
 Every number quoted in the text of the report is a macro of generated/macros.tex, so that the text
 follows the analyses.
 
-    uv run python vs-solo/tables.py    # from analyses/groups, after the scripts of the report
+    uv run python vs-solo/code/tables.py    # from analyses/groups, after the scripts of the report
 """
 
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import binom
 
-HERE = Path(__file__).parent
+HERE = Path(__file__).parents[1]
 OUTS = HERE.parent / "out"
 MAIN, Q2 = "d120_eh500_ez300_th45_g120_q0.1", "d120_eh500_ez300_th45_g120_q0.2"
 GEN = HERE / "generated"

@@ -111,7 +111,7 @@ every phase Delta, the min and max over the years next to the band.
 
 **8. Share explained.** With `route.baseline(...)`, the same pieces against the solo flights of
 their site-day and hour. Share explained at 1000 s with the formula of `\RouteExplained`: find it
-in `vs-solo/facts.py` and reuse it, do not rewrite it.
+in `vs-solo/code/facts.py` and reuse it, do not rewrite it.
 
 **9. Output.**
 - Match cache `CACHE / f"isolated_matches{tag}.parquet"`: `level, piece, solo, i, j, cover`.

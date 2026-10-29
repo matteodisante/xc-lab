@@ -592,7 +592,7 @@ def analyse(found, tracks, flights, summary, runs):
 
 def explained(result, found, tracks, flights, summary, level):
     """Per level, the share of the group - solo difference at 1000 s that the route explains: the
-    formula of \\RouteExplained (vs-solo/tables.py), 1 - Delta H_loc(1000 s) over its value for the
+    formula of \\RouteExplained (vs-solo/code/tables.py), 1 - Delta H_loc(1000 s) over its value for the
     same pieces against the solo flights of their site-day and hour (route.baseline), within the level."""
     info, block, n_blocks = decompose.flight_table(flights, summary)
     counts = np.ones((2, n_blocks), np.int32)  # the point estimate only

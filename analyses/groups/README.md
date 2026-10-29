@@ -107,7 +107,7 @@ Results in `vs-solo/group_vs_solo.pdf @ 6e45daf`.
 ## What are the groups?
 
 Results in `structure/group_structure.pdf @ 6e45daf`; numbers as macros from
-`vs-solo/structure_tables.py`, figures copied to `structure/figures/structure/`.
+`vs-solo/code/structure_tables.py`, figures copied to `structure/figures/structure/`.
 
 - **`describe.py`**: sizes, durations and how each group ends (join, leave, landing, split,
   merge). Pairs are 63% of the groups and 77% of the time; median group 30 min, episode 58 min.
@@ -180,8 +180,8 @@ uv run python chains.py [--run NAME]     # after size.py, about 40 s
 uv run python hierarchy.py [--run NAME]  # after cohesion.py, about 25 s
 uv run python partners.py [--run NAME]   # about 4 min
 uv run python fission.py [--run NAME]    # about 10 s
-uv run python vs-solo/facts.py; uv run python vs-solo/tables.py; uv run python vs-solo/figures.py
-uv run python vs-solo/structure_tables.py
+uv run python vs-solo/code/facts.py; uv run python vs-solo/code/tables.py; uv run python vs-solo/code/figures.py
+uv run python vs-solo/code/structure_tables.py
 cd vs-solo && latexmk -pdf group_vs_solo.tex
 cd structure && latexmk -pdf group_structure.tex   # after the method note, for the gi- labels
 uv run pytest analyses/groups   # from the root of xc-lab

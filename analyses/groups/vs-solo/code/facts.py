@@ -1,6 +1,6 @@
 """The facts of the grouping that the report quotes, from the tables of one run: out/<run>/facts.json.
 
-    uv run python vs-solo/facts.py [--run NAME]    # from analyses/groups
+    uv run python vs-solo/code/facts.py [--run NAME]    # from analyses/groups
 """
 
 import json
@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).parents[1]))
+sys.path.insert(0, str(Path(__file__).parents[2]))
 from tamsd import H_MAX, LABELS, OUT, SIZES, size_of  # noqa: E402
 
 if __name__ == "__main__":
