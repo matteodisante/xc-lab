@@ -60,7 +60,7 @@ in folders named by the grouping parameters, each with a `PARAMETERS.md`:
 | f_G | 0.123 |
 | groups, configurations, episodes | 40 051, 52 856, 17 169; episodes of 2 flights (median) to 53, lasting 0.97 h (median) |
 
-The assessment of the method, with its figures, is in sections 5–7 and Appendix H of `group_identification.pdf`: what chance
+The assessment of the method, with its figures, is in sections 5–6 and Appendix H of `group_identification.pdf`: what chance
 means (the shifts of the null model, and τ* by class of shift with `shifts.py`: 23 min with
 shifts over an hour, 53 min under 30 min), the false discovery rate of the contacts, the delay
 profile (`delays.py`), the distance at the same instant (`separation.py`), the profiles of the
@@ -74,18 +74,16 @@ groups, by number and by time, for three q.
   English version with figures of the Italian note of 14 October 2026. Figures 5, 15 and 30 are
   animated inside the PDF (LaTeX package `animate`): they play in Acrobat Reader and other
   viewers that run PDF JavaScript; elsewhere they show the static figure.
-  Sections 5–7 hold the calibration, the tuning on the data and what we find on the archive, the
-  appendices the literature, the algorithm and the details; the chosen values sit beside the
-  starting ones in the note's table of symbols. The numbers of section 7 are macros that
-  `analysis/groups/group-identification`
-  writes in its `report/generated/`, and their figures are copies of its `out/<run>/` in
-  `figures/structure/`.
+  Sections 5–6 hold the calibration and the tuning on the data, the appendices the literature,
+  the algorithm and the details; the chosen values sit beside the starting ones in the note's
+  table of symbols. What the groups are on the archive is in `analysis/groups/group-structure/`.
 - `models.py`: the synthetic scenarios of the figures and the sweep that builds groups,
   episodes and blocks.
 - `plots.py`: writes `figures/` (static figures, and `*_frames.pdf` with `*_frames.tln` for the
   animations in the PDF) and `animations/`.
 - `test_note.py`: checks every number the note quotes.
-- `assessment.py`: writes `figures/assessment_*.pdf`, the figures of sections 5–7 and Appendix H of the note.
+- `assessment.py`: writes `figures/assessment_*.pdf`, the figures of sections 5–6 and Appendix H of the note, and the `assessment_structure*` one
+  that `analysis/groups/group-structure/` reads.
 - `grid.py` (Phase 0), `contacts.py` (Phases 1-3 and the null model), `sweep.py` (Phase 4),
   `run.py` (the loop over dates, τ*, the tables of section Outputs, PARAMETERS.md),
   `calibration.py` (the figure and the band of τ*), `delays.py` (the delay profile),
@@ -97,7 +95,7 @@ groups, by number and by time, for three q.
   xc-viewer data folder, where the Group flights tab reads it).
 - `test_pipeline.py`: Phases 1-3 against every pair of instants on random synthetic days, the
   conditions on synthetic pairs, the sweep against `models.py`, τ*, Phase 0 on one real date.
-- `test_results.py`: the numbers of this README; `test_assessment.py`: those of sections 5–7 of
+- `test_results.py`: the numbers of this README; `test_assessment.py`: those of sections 5–6 of
   the note.
 
 ## Animations
@@ -142,8 +140,7 @@ uv run python plateau.py --sample 300        # about 1 h
 uv run python separation.py --sample 300
 uv run python tolerances.py --sample 300
 uv run python shifts.py                      # after run.py on the chosen run; about 20 s
-uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 5-7
-cp ../../analysis/groups/group-identification/out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission}.pdf figures/structure/   # section 7, after the analyses
+uv run python assessment.py && latexmk -pdf group_identification.tex   # figures of sections 5-6 and of group-structure
 uv run pytest ideas/group-identification     # from the root of xc-lab
 ```
 

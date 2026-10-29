@@ -1,6 +1,8 @@
 \section{Graphs, from scratch}\label{app:graphs}
 
-The few terms of graph theory that the note uses, each with the place where it is used.
+The few terms of graph theory that the note uses, each with the place where it is used. The terms
+of the study of the groups, shape and order of a group and the configuration model, are in
+the note \emph{The structure of groups in free flight}.
 
 \begin{itemize}
   \item \textbf{Graph.} A set of \emph{nodes} and a set of \emph{edges}, each edge joining two
@@ -42,7 +44,7 @@ Figure~\ref{fig:graph}, pilots 1 and 3 are in the same configuration through pil
         groups ending and those starting, with an edge when they share a member. Each
         component is one event (Figure~\ref{fig:events}); its outcome follows from how many
         groups it has on each side: one to one is a join or a leave (members added or
-        removed), one to several a split, several to one a merge (Section~\ref{sec:describe}).
+        removed), one to several a split, several to one a merge (Section~\ref{gs-sec:describe} of the note on the structure of groups).
 \end{itemize}
 
 \begin{figure}
@@ -63,31 +65,3 @@ Figure~\ref{fig:graph}, pilots 1 and 3 are in the same configuration through pil
 ending and starting at one instant.}
 \label{fig:events}
 \end{figure}
-
-\paragraph{Shape} (Section~\ref{sec:chains}). For a connected graph of $n$ nodes and $m$ edges:
-\begin{itemize}
-  \item \textbf{Density} $m/\binom{n}{2}$: the share of the node pairs joined by an edge.
-  \item \textbf{Distance} between two nodes: the fewest edges of a path joining them.
-        \textbf{Diameter}: the largest distance. In the chain 1--2--3 the diameter is 2; in a
-        triangle, 1.
-  \item \textbf{Complete graph}: every pair joined, density 1, diameter 1. \textbf{Tree}: $m=n-1$,
-        the fewest edges that keep $n$ nodes connected, with no closed path; a \emph{chain} is a tree
-        with diameter $n-1$, a \emph{star} one with diameter 2.
-\end{itemize}
-
-\paragraph{Order} (Section~\ref{sec:leaders}). In a directed graph:
-\begin{itemize}
-  \item a \textbf{cycle} is a path that follows the arrows back to its start (A$\to$B$\to$C$\to$A);
-        a graph with none is \textbf{acyclic}, and its nodes can be put in a line with every arrow
-        pointing forward;
-  \item a \textbf{source} has no arrow coming in: here, a pilot with nobody ahead, a leader;
-  \item the \textbf{depth} of an acyclic graph is its longest chain of arrows: 1 for a star, $n-1$
-        for a line.
-\end{itemize}
-A directed triangle is \emph{transitive} (A$\to$B, B$\to$C, A$\to$C) or \emph{cyclic}; with arrows
-drawn at random, 2 of its 8 orientations are cyclic.
-
-\paragraph{Configuration model} (Section~\ref{sec:partners}). A random graph with the
-\emph{degrees} (the number of edges of each node) of a given one: each node gets as many half-edges
-as its degree, and the half-edges are paired at random~\cite{newman2010}. It keeps how many
-partners each pilot had and changes only who they were.

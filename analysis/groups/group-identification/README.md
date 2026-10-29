@@ -516,11 +516,10 @@ report, drawn at the text width (`out/<run>/report_*`); `latexmk -pdf group_vs_s
 builds it. The figures are read from `out/<run>/` and from `ideas/group-identification/figures/`.
 
 What groups are, what keeps two pilots together, the shape of groups, who leads, repeated
-partners and where the sizes come from are in section 7 of the note
-`ideas/group-identification/group_identification.pdf`, with the graph theory and the two models
-in its appendices F–G. `report/structure_tables.py` writes the macros the note reads
+partners and where the sizes come from are in the note `analysis/groups/group-structure/group_structure.pdf`,
+with the graph theory and the two models in its appendices. `report/structure_tables.py` writes the macros the note reads
 (`generated/structure_*.tex`); it also reads the macros of `tables.py`. The note reads copies of
-the figures, in `ideas/group-identification/figures/structure/`.
+the figures, in `analysis/groups/group-structure/figures/structure/`.
 
 ## To do
 

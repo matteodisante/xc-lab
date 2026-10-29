@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+% Labels of the note, as gi-<label>; they exist once the note has been compiled.
+\usepackage{xr-hyper}
+\externaldocument[gi-]{../../../ideas/group-identification/group_identification}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% Numbers of the analyses of analysis/groups/group-identification
+% (report/tables.py and report/structure_tables.py).
+\input{../group-identification/report/generated/macros}
+\input{../group-identification/report/generated/structure_macros}
+
+\title{\textbf{The structure of groups in free flight}\\[4pt]
+  \large Sizes, cohesion, leadership and partners of the groups labelled by the method of the note
+  \emph{Group flights in free flight}}
+\author{Matteo Di Sante}
+\date{Working version, 29 October 2026}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\input{sections/structure}
+\appendix
+\input{sections/graphs}
+\input{sections/models}
+\input{sections/evidence}
+\input{sections/references}
+
+\end{document}
