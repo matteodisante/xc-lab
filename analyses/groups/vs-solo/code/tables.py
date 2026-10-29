@@ -544,6 +544,65 @@ def isolated_tex():
     write("isolated_phases_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
 
 
+def regions_tex():
+    """Macros and table of regions.py: the zones with the most group flights."""
+    r = load(MAIN, "regions")
+    if r is None:
+        return
+    macro("RegionCell", num(r["cell_km"], 0))
+    macro("RegionMinFlights", num(r["min_flights"], 0))
+    macro("RegionZones", num(len(r["zones"]), 0))
+    macro("RegionOrdered", num(sum(at(z["populations"]["group"], 1000) > at(z["populations"]["group_solo"], 1000)
+                                   > at(z["populations"]["solo"], 1000) for z in r["zones"]), 0))
+    lines = [r"\begin{tabular}{@{}l r r r r c c c@{}}", r"\toprule",
+             r"zone & group flights & flights $\Sl$ & flights $\G$ & flights $\A$ & $\Hloc(1000~\mathrm{s})$ $\Sl$ & $\G$ & $\A$ \\",
+             r"\midrule"]
+    for z in r["zones"]:
+        pops = z["populations"]
+        cells = [f"{pops[k]['flights']:,}".replace(",", r"\,") if k in pops else "" for k in ("solo", "group", "group_solo")]
+        h = [f"{at(pops[k], 1000):.3f}" if k in pops and pops[k]["flights"] >= r["min_flights"] else "" for k in ("solo", "group", "group_solo")]
+        label = rf"{z['name']} ({z['lat']:.1f}$^\circ$N, {z['lon']:.1f}$^\circ$E)"
+        lines.append(f"{label} & {num(z['group flights'], 0)} & " + " & ".join(cells) + " & " + " & ".join(h) + r" \\")
+    write("regions_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+
+
+def longlags_tex():
+    """Table of longlags.py: per panel, the flights of each curve up to 1000 s and on its long series."""
+    r = load(MAIN, "longlags")
+    if r is None:
+        return
+    main = {**load(MAIN, "tamsd")["para"], **load(MAIN, "size_tamsd")["para"]}
+    sizes = {"n2": "2 pilots", "n3": "3 pilots", "n4": "4 pilots", "n5-6": "5--6 pilots", "n7+": "7+ pilots"}
+    names = {"solo": r"solo flights $\Sl$", "group": r"group time $\G$", "group_solo": r"same flights alone $\A$",
+             **{k: f"$\\G$, {v}" for k, v in sizes.items()}, **{f"{k}/alone": f"$\\A$, flights of {v}" for k, v in sizes.items()}}
+    titles = {"pooled": "pooled populations", "size": "group time by the size of the group", "alone": "the same flights alone, by size"}
+    macro("LongMinFlights", num(r["min_flights"], 0))
+    lines = [r"\begin{tabular}{@{}l r r@{}}", r"\toprule", r"population & flights up to 1000~s & flights of the long series \\"]
+    for name, panel in r["panels"].items():
+        macro(f"LongTau{name.capitalize()}", num(panel["tau_max"], 0))
+        lines += [r"\midrule", rf"\multicolumn{{3}}{{@{{}}l}}{{\emph{{{titles[name]}, lags up to {num(panel['tau_max'], 0)}~s}}}} \\"]
+        for k, c in panel["curves"].items():
+            lines.append(f"{names[k]} & {num(main[k]['flights'], 0)} & {num(c['flights'], 0)} \\\\")
+    write("longlags_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
+    def quoted(prefix, curves, lag, tags):
+        """H_loc at `lag` of the curves with their band, as macros prefix + tag."""
+        for k, tag in tags.items():
+            c = curves[k]
+            i = c["lags"].index(lag)
+            macro(f"{prefix}{tag}", f"{c['H_loc'][i]:.3f}")
+            macro(f"{prefix}{tag}Band", f"[{c['H_loc_band'][0][i]:.3f}, {c['H_loc_band'][1][i]:.3f}]")
+    macro("LongLagMid", num(5080, 0))
+    macro("LongLagEnd", num(9350, 0))
+    pooled = r["panels"]["pooled"]["curves"]
+    for lag, name in ((5080, "Mid"), (9350, "End")):
+        quoted("LongPooled", pooled, lag, {"solo": f"S{name}", "group": f"G{name}", "group_solo": f"A{name}"})
+    macro("LongLagSize", num(2250, 0))
+    quoted("LongSize", r["panels"]["size"]["curves"], 2250,
+           {"solo": "S", "n2": "Two", "n3": "Three", "n4": "Four", "n5-6": "FiveSix", "n7+": "SevenPlus"})
+    quoted("LongAlone", r["panels"]["alone"]["curves"], 9350,
+           {"solo": "S", "n2/alone": "Two", "n3/alone": "Three", "n4/alone": "Four", "n5-6/alone": "FiveSix", "n7+/alone": "SevenPlus"})
+
+
 def redundancy_tex():
     """Which statistics are drawn and why (redundancy.py)."""
     r = load(MAIN, "redundancy")
@@ -576,6 +635,8 @@ def main():
     prepost_tex(1260, "Short")
     route_tex()
     isolated_tex()
+    regions_tex()
+    longlags_tex()
     redundancy_tex()
     d = decompose_tex()
     if d is not None:

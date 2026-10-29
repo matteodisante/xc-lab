@@ -101,23 +101,26 @@ def grids(fixes, spans, shortest):
             yield span, g[0], np.column_stack([np.interp(g, ts, fixes[c].to_numpy(float)[q]) for c in ("E", "N")])
 
 
-def pieces(fixes, spans):
-    """The pieces of grids() that last at least TAU_MAX / SUPPORT: population, episode, first
-    instant (flight clock), duration, the east and north of the middle of the piece (frame of the
-    flight), and their sums and origins at LAGS."""
+def pieces(fixes, spans, lags=LAGS, shortest=TAU_MAX / SUPPORT):
+    """The pieces of grids() that last at least `shortest`: population, episode, first instant
+    (flight clock), duration, the east and north of the middle of the piece (frame of the flight),
+    and their sums and origins at `lags`; a lag the piece is too short for gets NaN and no origins."""
     out = []
-    for span, start, pos in grids(fixes, spans, TAU_MAX / SUPPORT):
-        sums, origins = tamsd_sums(pos, LAGS // GRID_S)
+    for span, start, pos in grids(fixes, spans, shortest):
+        d = lags // GRID_S
+        ok = d < len(pos)
+        sums, origins = np.full(len(d), np.nan), np.zeros(len(d), np.int64)
+        sums[ok], origins[ok] = tamsd_sums(pos, d[ok])
         mid = pos[len(pos) // 2]
         out.append((span.population, span.episode, start, (len(pos) - 1) * GRID_S, mid[0], mid[1], sums, origins))
     return out
 
 
-def _job(flight, fixes, spans):
-    return flight, pieces(fixes, spans)
+def _job(flight, fixes, spans, lags, shortest):
+    return flight, pieces(fixes, spans, lags, shortest)
 
 
-def measure(discipline, flights, spans):
+def measure(discipline, flights, spans, lags=LAGS, shortest=TAU_MAX / SUPPORT):
     """Pieces of every flight of one discipline, from one pass over its fixes."""
     ids = flights.loc[flights["discipline"] == discipline].set_index("flight_id")["flight"]
     by_flight = dict(tuple(spans.groupby("flight")))
@@ -133,7 +136,7 @@ def measure(discipline, flights, spans):
             flight = ids.get(str(fixes["flight_id"].iat[0]))
             if flight is None or flight not in by_flight:
                 continue
-            pending.add(pool.submit(_job, flight, fixes, by_flight[flight]))
+            pending.add(pool.submit(_job, flight, fixes, by_flight[flight], lags, shortest))
             if len(pending) >= 4 * os.cpu_count():
                 done, pending = wait(pending, return_when=FIRST_COMPLETED)
                 for future in done:

@@ -101,6 +101,14 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 - **`prepost.py`**: the same flight before, during and after a group (windows of 3000 s,
   `--window`), against two consecutive windows with no change. ΔH_loc(1000 s) +0.027 entering,
   +0.031 leaving, −0.003 after minus before: the effect follows the group in time.
+- **`longlags.py`**: S, G and A, and the group time by size with the same flights alone, over lags up to
+  hours: a curve to the lag T is measured on the pieces of at least T/0.8 s, the curves of a panel share the
+  longest T at which each keeps 100 flights (14 030 s pooled, 2 250 s by size, 9 350 s alone by size). On
+  the long pieces H_loc(5080 s) is 0.89 in G against 0.79 in S and 0.81 in A. `curves.py` draws
+  H_loc(tau) with an inset of MSD for any set of populations.
+- **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
+  (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
+  **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.
 - **`mechanisms.py`**: phase at entry and exit, leader minus follower in groups of two, habitual
   leaders, hours (the last three serve the structure note too).
 
@@ -173,6 +181,8 @@ uv run python route.py --sample 10000    # after tamsd.py; one pass over the fix
                                          # matching, about 45 min and 2.6 GB: run one at a time
 uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants, about 10 min each
 uv run python isolated.py [--sample N]   # after route.py, performance.py and the archive index; about 25 min and 2 GB
+uv run python longlags.py [--recompute]  # after size.py; the pass over the fixes (about 4 min, 1.5 GB), then about 20 s
+uv run python regions.py; uv run python maps.py   # after tamsd.py; seconds
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python describe.py [--run NAME]   # about 15 s
 uv run python cohesion.py [--jobs J]     # one pass over the grid of every date, about 25 min with 6 jobs
@@ -183,6 +193,7 @@ uv run python fission.py [--run NAME]    # about 10 s
 uv run python vs-solo/code/facts.py; uv run python vs-solo/code/tables.py; uv run python vs-solo/code/figures.py
 uv run python vs-solo/code/structure_tables.py
 cd vs-solo/general && latexmk -pdf group_vs_solo.tex
+cd vs-solo/comparisons && latexmk -pdf group_vs_solo_comparisons.tex
 cd structure && latexmk -pdf group_structure.tex   # after the method note, for the gi- labels
 uv run pytest analyses/groups   # from the root of xc-lab
 ```

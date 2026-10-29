@@ -860,3 +860,18 @@ def test_route_numbers_of_the_readme():
     loc = [v[k]["H_loc(1000 s)"]["value"] for v in variants for k in ("any date", "same season and hour")]
     share = [explained(v[k]) for v in variants for k in ("any date", "same season and hour")]
     assert (round(min(loc), 3), round(max(loc), 3), min(share), max(share)) == (0.014, 0.022, 66, 76)
+
+
+def test_the_longest_common_lag_keeps_the_minimum_of_flights():
+    import longlags
+    lags = [1000, 1500, 2000]
+    assert longlags.longest({"lags": lags, "flights": [500, longlags.MIN_FLIGHTS, longlags.MIN_FLIGHTS - 1]}) == 1500
+    assert longlags.longest({"lags": lags, "flights": [3, 2, 1]}) == 0
+
+
+def test_regions_keep_the_busiest_cells_by_flights_of_group_time():
+    import regions
+    p = {"population": np.array(["group"] * 5 + ["solo"] * 3), "flight": np.array([1, 2, 3, 4, 4, 9, 9, 9])}
+    code = np.array([8, 8, 8, 7, 7, 7, 7, 7])
+    kept = regions.choose(p, code)  # the solo flights do not count, and a flight counts once per cell
+    assert list(kept.index) == [8, 7] and list(kept) == [3, 1]

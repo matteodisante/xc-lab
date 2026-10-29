@@ -40,17 +40,27 @@ CONTRASTS = {"S": ("group", "solo"), "A": ("group", "group_solo")}
 RAMP = ("#9a9893", "#f7c59f", "#f2a065", "#d4561f", "#8c2f0f")  # grey, then orange, light to dark: finer strata
 
 
-def zone_of(p, takeoff):
-    """The cell of CELL_KM km, as an integer code, of the middle of every piece of `p` (dict with
-    flight, mid_e, mid_n): the takeoff (lat0, lon0 by flight in `takeoff`) plus the east and north
-    offsets, on a plane centred on France. The conversion is approximate (the east-west error is
-    below 7 km at 300 km from the takeoff), enough for cells of this size."""
+def lonlat(p, takeoff):
+    """Latitude and longitude, in degrees, of the middle of every piece of `p` (dict with flight, mid_e,
+    mid_n): the takeoff (lat0, lon0 by flight in `takeoff`) plus the east and north offsets. The
+    conversion is approximate (the east-west error is below 7 km at 300 km from the takeoff)."""
     t = takeoff.reindex(p["flight"])
     lat0, lon0 = t["lat0"].to_numpy(float), t["lon0"].to_numpy(float)
     lat = lat0 + np.degrees(p["mid_n"] / EARTH_KM / 1000)
     lon = lon0 + np.degrees(p["mid_e"] / EARTH_KM / 1000 / np.cos(np.radians(lat0)))
-    x, y = (lon - 2.5) * 111.32 * np.cos(np.radians(46.5)), (lat - 46.5) * 111.2
-    return (np.floor(x / CELL_KM).astype(np.int64) + 500) * 1000 + np.floor(y / CELL_KM).astype(np.int64) + 500
+    return lat, lon
+
+
+def plane(lat, lon):
+    """East and north, in km, on a plane centred on France."""
+    return (lon - 2.5) * 111.32 * np.cos(np.radians(46.5)), (lat - 46.5) * 111.2
+
+
+def zone_of(p, takeoff, cell_km=CELL_KM):
+    """The cell of `cell_km` km, as an integer code, of the middle of every piece of `p`, enough for
+    cells of this size (see lonlat)."""
+    x, y = plane(*lonlat(p, takeoff))
+    return (np.floor(x / cell_km).astype(np.int64) + 500) * 1000 + np.floor(y / cell_km).astype(np.int64) + 500
 
 
 def with_strata(p, flights):

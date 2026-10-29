@@ -10,8 +10,9 @@ flown alone? The analyses are the scripts of [`..`](../); here are the documents
   `abstract.tex` and `appendices.tex`.
 - `comparisons/`: `group_vs_solo_comparisons.pdf`, a short report of selected comparisons of group
   time with solo flight, each with the size of its populations: the definitions of solo, group and
-  the same flights alone, their raw difference, and the same route flown alone by isolated solo
-  flights (`../isolated.py`), by wing level. Built from `group_vs_solo_comparisons.tex` and
+  the same flights alone and their maps, their raw difference over lags of hours and by group size,
+  the same in the six zones with the most group flights, and the same route flown alone by isolated
+  solo flights (`../isolated.py`), by wing level. Built from `group_vs_solo_comparisons.tex` and
   `sections/`; more comparisons will be added as sections.
 - `code/`: the scripts that turn the JSON of the analyses into what the documents read.
   `tables.py` writes the tables and the macros, `figures.py` the report figures, `facts.py` the
