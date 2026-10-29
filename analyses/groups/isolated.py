@@ -23,6 +23,7 @@ Positions are on the sphere (x, y, z in m), so that distances are the same every
 all the flights of the archive, one position per minute, is read once from the fixes.
 
     uv run python isolated.py [--run NAME] [--sample N]    # after tamsd.py and route.py
+    uv run python isolated.py --redraw                     # the figures again, from the saved JSON
 """
 
 import json
@@ -608,7 +609,7 @@ def explained(result, found, tracks, flights, summary, level):
 
 
 LEVEL_COLORS = {"beginners": "#1baf7a", "experienced": "#c24a1d", "all": "#555555"}
-DRAWN = ("H_loc(100 s)", "H_loc(1000 s)", *decompose.DRAWN[2:], "time in search (%)")  # decompose.DRAWN plus the search
+DRAWN = ("H_loc(1000 s)", *decompose.DRAWN[2:], "time in search (%)")  # decompose.DRAWN without H_loc(100 s), plus the search
 
 
 def _delta(level, stat):
@@ -673,11 +674,18 @@ def figure(result, path):
         ax.grid(axis="x", color="#e6e6e6", lw=0.6)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
+    for ax in grid.flat[len(DRAWN):]:
+        ax.axis("off")
     fig.savefig(path, bbox_inches="tight")
     fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
 
 
 if __name__ == "__main__":
+    if "--redraw" in sys.argv:  # the figures from the saved JSON
+        saved = json.loads((OUT / "isolated.json").read_text())
+        figure(saved, OUT / "isolated.pdf")
+        figure_dhloc(saved, OUT / "isolated_dhloc.pdf")
+        sys.exit()
     sample = route.option("--sample", 0) or None
     flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
     assert route.TRACKS.exists(), "run route.py first"

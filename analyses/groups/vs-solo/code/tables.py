@@ -120,6 +120,10 @@ def raw_tex():
     write("raw_table", "\n".join([r"\begin{tabular}{@{}l l l l@{}}", r"\toprule",
                                   " & " + " & ".join(lbl for _, lbl in pops) + r" \\", r"\midrule", *rows,
                                   r"\bottomrule", r"\end{tabular}"]))
+    no_hundred = [r for r in rows if r"(100~" not in r]
+    write("comparisons_raw_table", "\n".join([r"\begin{tabular}{@{}l l l l@{}}", r"\toprule",
+                                              " & " + " & ".join(lbl for _, lbl in pops) + r" \\", r"\midrule", *no_hundred,
+                                              r"\bottomrule", r"\end{tabular}"]))
     for k, name in (("solo", "S"), ("group", "G"), ("group_solo", "A")):
         macro(f"HlocThousand{name}", f"{at(t[k], 1000):.3f}")
         macro(f"HlocHundred{name}", f"{at(t[k], 100):.3f}")

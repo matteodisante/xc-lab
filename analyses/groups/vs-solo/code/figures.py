@@ -78,24 +78,26 @@ def save(fig, name):
     plt.close(fig)
 
 
-def raw():
-    """Pooled S, G and A for the two exponents and the five drawn phase statistics."""
+def raw(hundred=True, name="report_raw"):
+    """Pooled S, G and A for the exponents and the five drawn phase statistics; the 100 s exponent only with `hundred`."""
     t, b, p = load(MAIN, "tamsd")["para"], load(MAIN, "budget"), load(MAIN, "performance")
     pops = (("solo", "S", "S, solo flights"), ("group", "G", "G, group time"), ("group_solo", "A", "A, same flights alone"))
-    get = {r"$H_{\rm loc}(100~{\rm s})$": lambda k: at(t[k], 100), r"$H_{\rm loc}(1000~{\rm s})$": lambda k: at(t[k], 1000)}
+    get = {r"$H_{\rm loc}(100~{\rm s})$": lambda k: at(t[k], 100)} if hundred else {}
+    get[r"$H_{\rm loc}(1000~{\rm s})$"] = lambda k: at(t[k], 1000)
     for src, s, title in ((b, "time in climb (%)", "time in climb (%)"),
                           (b, "searches that end in a climb (%)", "searches ending\nin a climb (%)"),
                           (p, "climb rate (m/s)", "climb rate (m/s)"), (p, "glide speed (km/h)", "glide speed (km/h)"),
                           (p, "glide ratio", "glide ratio")):
         get[title] = lambda k, src=src, s=s: described(src[k][s])
-    fig, axes = plt.subplots(2, 4, figsize=(WIDTH, 2.9), constrained_layout=True)
+    fig, axes = plt.subplots(2, 4 if hundred else 3, figsize=(WIDTH if hundred else 0.75 * WIDTH, 2.9), constrained_layout=True)
     for ax, (title, g) in zip(axes.flat, get.items()):
-        forest(ax, [(name, *g(k), COLOR[c], True) for k, c, name in pops], title, zero=False, ticks=3)
+        forest(ax, [(label, *g(k), COLOR[c], True) for k, c, label in pops], title, zero=False, ticks=3)
         ax.tick_params(axis="x", labelsize=7)
         if ax not in axes[:, 0]:
             ax.set_yticklabels([])
-    axes.flat[-1].axis("off")
-    save(fig, "report_raw")
+    if hundred:
+        axes.flat[-1].axis("off")
+    save(fig, name)
 
 
 def contrasts():
@@ -288,6 +290,7 @@ def estimates():
 
 if __name__ == "__main__":
     raw()
+    raw(False, "comparisons_raw")
     contrasts()
     zones_lags()
     zones_forest()
