@@ -97,10 +97,9 @@ def panels(available):
 
 
 def figure(result, path):
-    """H_loc(tau) of S, G and A, one panel per longest lag, on the pieces long enough for it. Last panel: the
-    flights that remain at each lag, against the minimum."""
+    """H_loc(tau) of S, G and A, one panel per longest lag, on the pieces long enough for it."""
     label = {"solo": "S", "group": "G", "group_solo": "A"}
-    fig, axes = plt.subplots(1, 3, figsize=(7.4, 3.1), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(6.0, 3.1), constrained_layout=True)
     for ax, panel in zip(axes, result["panels"].values()):
         drawn = []
         for k in POOLED:
@@ -111,15 +110,6 @@ def figure(result, path):
         curves.plot(ax, drawn, ylim=(np.floor((low - 0.01) * 50) / 50, high + 0.04), inset=None)
         ax.set_title(f"up to {panel['tau_max']:,} s", fontsize=8)
         ax.legend(frameon=False, fontsize=6.5, loc="upper center", ncol=1, handlelength=1.6, borderaxespad=0.1)
-    ax = axes[-1]
-    for k in POOLED:
-        v = result["available"][k]
-        ax.plot(v["lags"], v["flights"], color=COLORS[k], lw=1.1, label=label[k])
-    ax.axhline(result["min_flights"], color="#555555", lw=0.8, ls=":")
-    ax.set(xscale="log", yscale="log", xlabel=r"$\tau$ (s)", ylabel="flights with pieces of at least $\\tau/0.8$ s")
-    ax.legend(frameon=False, fontsize=6.5)
-    for side in ("top", "right"):
-        ax.spines[side].set_visible(False)
     fig.savefig(path, bbox_inches="tight")
     fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
 
