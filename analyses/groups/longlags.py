@@ -110,6 +110,9 @@ def figure(result, path):
         curves.plot(ax, drawn, ylim=(np.floor((low - 0.01) * 50) / 50, high + 0.04), inset=None)
         ax.set_title(f"up to {panel['tau_max']:,} s", fontsize=8)
         ax.legend(frameon=False, fontsize=6.5, loc="upper center", ncol=1, handlelength=1.6, borderaxespad=0.1)
+    from openflights import MIN_OPENING
+    fig.suptitle("open flights: declared open, opening > %g" % MIN_OPENING if tamsd.OPEN.startswith("open_min") else "declared open flights",
+                 fontsize=9)
     fig.savefig(path, bbox_inches="tight")
     fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
 
