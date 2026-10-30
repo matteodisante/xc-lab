@@ -24,7 +24,7 @@ import pandas as pd
 
 import curves
 import tamsd
-from tamsd import CACHE, COLORS, LABELS, OUT, SEED, SIZES, SUPPORT, ensemble, local_h, stretches
+from tamsd import CACHE, COLORS, LABELS, OUT, SEED, SIZES, SUPPORT, ensemble, fit_h, local_h, stretches
 
 # The lags of tamsd.py, then the same geometric step up to 30 000 s.
 STEP = tamsd.TAU_MAX ** (1 / 34)
@@ -82,7 +82,9 @@ def curve(p, mask, block, rng, tau):
     np.add.at(origins, k, p["origins"][keep][:, :len(lags)])
     mean, draws = ensemble(sums / origins, block.reindex(flights).to_numpy(), rng)
     h = np.array([local_h(lags, d) for d in draws])
+    fitted = np.array([fit_h(lags, d) for d in draws])
     return {"flights": len(flights), "pieces": int(keep.sum()), "lags": lags.tolist(), "msd": mean.tolist(),
+            "H": fit_h(lags, mean), "H_band": np.percentile(fitted, [5, 95]).tolist(),
             "msd_band": np.percentile(draws, [5, 95], axis=0).tolist(), "H_loc": local_h(lags, mean).tolist(),
             "H_loc_band": np.percentile(h, [5, 95], axis=0).tolist()}
 
@@ -100,15 +102,18 @@ def figure(result, path):
     that remain at each lag, against the minimum."""
     main = json.loads((OUT / "tamsd.json").read_text())["para"]
     label = {"solo": "S", "group": "G", "group_solo": "A"}
-    fig, axes = plt.subplots(1, 3, figsize=(7.4, 2.9), constrained_layout=True)
+    fig, axes = plt.subplots(1, 3, figsize=(7.4, 3.1), constrained_layout=True)
     for ax, panel in zip(axes, result["panels"].values()):
         drawn = []
         for k in POOLED:
-            drawn.append(curves.series(main[k], f"{label[k]} ({main[k]['flights']:,})", COLORS[k]))
-            drawn.append(curves.series(panel["curves"][k], None, COLORS[k], "--"))
-        curves.plot(ax, drawn, ylim=(0.45, 1.0), inset=None)
+            drawn.append(curves.series(main[k], f"{label[k]} ({main[k]['flights']:,}), to 1000 s: H = {main[k]['H']:.3f}", COLORS[k]))
+            c = panel["curves"][k]
+            drawn.append(curves.series(c, f"{label[k]} ({c['flights']:,}), to {panel['tau_max']:,} s: H = {c['H']:.3f}", COLORS[k], "--"))
+        low = min(np.min(c["H_loc_band"][0]) for c in drawn)
+        high = max(np.max(c["H_loc_band"][1]) for c in drawn)
+        curves.plot(ax, drawn, ylim=(np.floor((low - 0.01) * 50) / 50, high + 0.07), inset=None)
         ax.set_title(f"up to {panel['tau_max']:,} s", fontsize=8)
-        ax.legend(frameon=False, fontsize=6, loc="lower right")
+        ax.legend(frameon=False, fontsize=5.3, loc="upper center", ncol=1, handlelength=1.6, borderaxespad=0.1)
     ax = axes[-1]
     for k in POOLED:
         v = result["available"][k]
