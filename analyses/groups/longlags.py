@@ -95,7 +95,7 @@ def panels(available):
 
 
 def figure(result, path):
-    """H_loc(tau) of S, G and A with an inset of MSD, one panel per longest lag. Thin: every piece of tamsd.py,
+    """H_loc(tau) of S, G and A, one panel per longest lag. Thin: every piece of tamsd.py,
     up to 1000 s; dashed: the pieces long enough for the longest lag of the panel. Last panel: the flights
     that remain at each lag, against the minimum."""
     main = json.loads((OUT / "tamsd.json").read_text())["para"]
@@ -106,7 +106,7 @@ def figure(result, path):
         for k in POOLED:
             drawn.append(curves.series(main[k], f"{label[k]} ({main[k]['flights']:,})", COLORS[k]))
             drawn.append(curves.series(panel["curves"][k], None, COLORS[k], "--"))
-        curves.plot(ax, drawn, ylim=(0.45, 1.0))
+        curves.plot(ax, drawn, ylim=(0.45, 1.0), inset=None)
         ax.set_title(f"up to {panel['tau_max']:,} s", fontsize=8)
         ax.legend(frameon=False, fontsize=6, loc="lower right")
     ax = axes[-1]

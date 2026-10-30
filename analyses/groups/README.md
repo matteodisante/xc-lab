@@ -103,7 +103,7 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   +0.031 leaving, −0.003 after minus before: the effect follows the group in time.
 - **`longlags.py`**: S, G and A over lags up to hours: a curve to the lag T is measured on the pieces of at
   least T/0.8 s, the curves of a panel share T (about 4000 s, and the longest with 100 flights in each
-  population). `curves.py` draws H_loc(tau) with an inset of MSD for any set of populations.
+  population). `curves.py` draws H_loc(tau) for any set of populations, with an inset of MSD if asked.
 - **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
   distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
   the path flown) above 0.1; results in `out/<run>/open_declared` and `out/<run>/open_min0.1`. `closure.py`
