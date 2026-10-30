@@ -1,0 +1,47 @@
+\section{How open the declared open flights are}\label{sec:opening}
+
+Why does the mean squared displacement bend down at long lags?
+
+\paragraph{Opening.} The \emph{opening} of a flight is the distance from its takeoff to its landing, its
+first and last fix, over the path flown: 1 for a straight line, near 0 for a flight that comes back to its
+takeoff.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_declared/opening.pdf}
+\caption{Opening of the declared open flights, takeoff to landing over the path flown. Left: every declared
+open flight and the flights of the datasets of Figure~\ref{fig:declared}. Right: takeoffs below and above
+\MountainM~m. Solid, the threshold \MinOpening; dotted, the stricter \Stricter{} that we do not use.}
+\label{fig:opening}
+\end{figure}
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/opening_table}
+\caption{Flights and median opening of the datasets of Figure~\ref{fig:declared}, by population; a flight of
+$\G$ and $\A$ counts in each population where it has a piece long enough.}
+\label{tab:opening}
+\end{table}
+
+\paragraph{The long lags rest on folded flights.} The declared open flights are far from straight lines: their
+median opening is \MedianEvery{} (Figure~\ref{fig:opening}, Table~\ref{tab:opening}). The longer the lag, the
+more folded the flights it rests on: the median opening is \MedianThousand{} for the dataset up to 1000~s,
+\MedianFixed{} up to \DeclTauFixed~s and \MedianLongest{} up to \DeclTauLongest~s, and the share of flights
+with an opening below \MinOpening{} grows from \BelowThousand\% to \BelowLongest\%. A flight that comes back near its takeoff moves away and then back, and its displacement
+stops growing as the lag nears its duration: the bend of Section~\ref{sec:declared} is the shape of the
+flights. In the longest dataset the flights of $\G$ are more open than those of $\Sl$ and $\A$ (median
+\MedianLongestG{} against \MedianLongestS{} and \MedianLongestA), so part of the straighter progress of $\G$
+at long lags is their shape.
+
+\paragraph{The threshold.} $H$ has a meaning where the mean squared displacement is a power law, a straight
+line in log--log, and we want it on flights that are open. A threshold on the opening drops the declared
+open flights that are not. A strict one, \Stricter, keeps only straight flights and raises $H$ by
+construction; it also keeps \TakeoffLowStrict\% of the flights that take off below \MountainM~m but only
+\TakeoffHighStrict\% of those above, where relief and airspace do not let a flight go straight
+(Figure~\ref{fig:opening}, right), so it would select the region as well as the shape. We set the
+threshold at \MinOpening: the lowest that drops the flights that come back near their takeoff, it keeps
+nearly the same share of the two, \TakeoffLowKeep\% and \TakeoffHighKeep\%. It keeps \Kept{} flights,
+\KeptShare\% of the declared open ones.
+
+\paragraph{What we keep.} From here on an \emph{open flight} is a declared open flight with an opening above
+\MinOpening.

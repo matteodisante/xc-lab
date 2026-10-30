@@ -875,3 +875,9 @@ def test_regions_keep_the_busiest_cells_by_flights_of_group_time():
     code = np.array([8, 8, 8, 7, 7, 7, 7, 7])
     kept = regions.choose(p, code)  # the solo flights do not count, and a flight counts once per cell
     assert list(kept.index) == [8, 7] and list(kept) == [3, 1]
+
+
+def test_the_panels_of_longlags_take_the_nearest_and_the_common_longest_lag():
+    import longlags
+    available = {k: {"lags": [1000, 4150, 11450], "flights": [500, 300, n]} for k, n in zip(longlags.POOLED, (900, 150, 99))}
+    assert longlags.panels(available) == {"fixed": 4150, "longest": 4150}

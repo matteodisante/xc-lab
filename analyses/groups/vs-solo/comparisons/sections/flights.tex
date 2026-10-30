@@ -1,0 +1,52 @@
+\section{Flights, populations and measures}\label{sec:flights}
+
+Which flights, which stretches of flight, and how are they measured?
+
+\paragraph{Declared open flights.} On the FFVL catalogue the pilot declares the type of the flight
+(Table~\ref{tab:labels}). A distance, free or with up to three turn points, is open; a triangle, a
+quadrilateral or an out-and-return is closed; a hike and fly is neither. We keep the declared open flights:
+\FlightsOpen{} of the \FlightsAll{} paraglider flights that depart and are logged every 10~s or finer
+(\FlightsClosed{} are closed, \FlightsNeither{} neither).
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/labels_table}
+\caption{The labels of the FFVL catalogue, their class and their flights (paragliders that depart, logged
+every 10~s or finer).}
+\label{tab:labels}
+\end{table}
+
+\paragraph{Groups.} The labels are those of the note \emph{Group flights in free flight}
+(\texttt{methods/group-identification}). Two pilots are in contact when one is on the path of the
+other within $\delta=2$~min, $\varepsilon_h=500$~m horizontally and $\varepsilon_z=300$~m vertically
+(headings compared only in glide) for at least $\tau^*=\tauStar$~min. The configurations of an instant
+are the connected components of the contact graph, and a group keeps the same members over a maximal
+interval. The groups are those of every flight of the archive, whoever the companions.
+
+\paragraph{Populations.} After its departure, the first fix 3~km from the takeoff, every instant of a
+flight is in a group or solo. Three populations:
+\begin{itemize}
+  \item $\Sl$, \emph{solo flights}: flights that never entered a group, the whole of their time after
+        the departure;
+  \item $\G$, \emph{group time}: the stretches in a group of the flights that entered one at least once;
+  \item $\A$, \emph{the same flights alone}: the solo stretches of those same flights, with the same pilots,
+        gliders, loggers and days as $\G$.
+\end{itemize}
+
+\paragraph{Measure.} A \emph{piece} is a stretch within one segment of the track, on a 10-s grid of its
+clock. For a flight $f$ and a population, the time-averaged mean squared displacement pools the origins of
+all its pieces in that population,
+\begin{equation}\label{eq:tamsd}
+  \overline{\delta^2_f}(\tau)=\frac{1}{N_f(\tau)}\sum_{t}\bigl\|\mathbf r(t+\tau)-\mathbf r(t)\bigr\|^2 ,
+\end{equation}
+with $t$ and $t+\tau$ in the same piece. The ensemble $\MSD(\tau)$ is its mean over the flights, one weight
+per flight. $\Hloc(\tau)$ is half the slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$
+decades of $\tau$: 1 for a straight line, $\tfrac12$ for a random walk. Bands are 5--95\% of bootstrap draws
+that resample the dependency blocks of the grouping.
+
+\paragraph{Datasets.} A lag $\tau$ needs pieces of at least $\tau/0.8$~s, so that the origins of every piece
+cover the lag in the same share of it. A dataset to the lag $T$ keeps, in each population, its pieces of at
+least $T/0.8$~s and measures them at every lag up to $T$: the population does not change along a curve, and
+each population of a figure has at least \DeclMinFlights{} flights at $T$. The pieces of at least 1250~s give
+the lags up to 1000~s; we add $T\approx4\cdot10^3$~s, the lag of the grid nearest to 4000~s, and the longest
+$T$ at which each population keeps \DeclMinFlights{} flights.

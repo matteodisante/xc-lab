@@ -15,7 +15,7 @@ Populations, after the departure and with loggers of at most H_MAX:
 - group, solo time: the solo stretches of the group flights, a control with the same pilots
   and days.
 
-    uv run python tamsd.py [--run NAME] [--recompute] [--open | --declared-open]    # from this folder; writes out/<run>/[open | open_declared]
+    uv run python tamsd.py [--run NAME] [--recompute] [--open | --declared-open]    # from this folder; writes out/<run>/[open_min<m> | open_declared]
 """
 
 import json
@@ -31,6 +31,7 @@ import pandas as pd
 
 from common.legacy import stream_flights
 from common.msd import tamsd_sums
+from openflights import MIN_OPENING, open_flights
 
 # The labels are a run of methods/group-identification on SSD_DISANTE, named by its grouping
 # parameters (see its PARAMETERS.md). Figures and numbers go to out/<run>/ with a copy of
@@ -38,8 +39,10 @@ from common.msd import tamsd_sums
 RUNS = Path("/Volumes/SSD_DISANTE/xc-lab/group-identification/runs")
 RUN = "d120_eh500_ez300_th45_g120_q0.1"  # the run the README quotes; --run NAME picks another
 LABELS = RUNS / (sys.argv[sys.argv.index("--run") + 1] if "--run" in sys.argv else RUN)
-# Only the flights that fly open (openflights.py): --open, straight open; --declared-open, declared open.
-OPEN = "open" if "--open" in sys.argv else "open_declared" if "--declared-open" in sys.argv else ""
+# Only the flights that fly open (openflights.py): --declared-open, declared open; --open, also an opening
+# above openflights.MIN_OPENING, named in the folders.
+OPEN = (f"open_min{MIN_OPENING:g}" if "--open" in sys.argv else "open_declared" if "--declared-open" in sys.argv
+        else "")
 SHARED = LABELS / "analyses"  # the caches that do not depend on the flights kept
 OUT = Path(__file__).with_name("out") / LABELS.name / OPEN
 CACHE = LABELS / ("analyses_" + OPEN if OPEN else "analyses")
@@ -63,8 +66,7 @@ def read_flights():
     """The flight table of the run; with --open or --declared-open, only the paragliders that fly open."""
     flights = pd.read_parquet(LABELS / "flights.parquet")
     if OPEN:
-        from openflights import open_flights
-        keep = open_flights(LABELS, SHARED / "flight_ends.parquet", FIXES["para"].parent, OPEN == "open")
+        keep = open_flights(LABELS, SHARED / "flight_ends.parquet", FIXES["para"].parent, "--open" in sys.argv)
         flights = flights[flights["flight"].isin(keep)]
     return flights
 

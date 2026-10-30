@@ -3,22 +3,19 @@
 Every number quoted in the text of the report is a macro of generated/macros.tex, so that the text
 follows the analyses.
 
-    uv run python vs-solo/code/tables.py [--open]    # from analyses/groups, after the scripts of the report
+    uv run python vs-solo/code/tables.py    # from analyses/groups, after the scripts of the report
 """
 
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
 from scipy.stats import binom
 
 HERE = Path(__file__).parents[1]
-OPEN_ONLY = "--open" in sys.argv  # the tables of comparisons/ on the open flights: out/<run>/open -> generated/open
-SUB = "open" if OPEN_ONLY else ""
 OUTS = HERE.parent / "out"
 MAIN, Q2 = "d120_eh500_ez300_th45_g120_q0.1", "d120_eh500_ez300_th45_g120_q0.2"
-GEN = HERE / "generated" / SUB
+GEN = HERE / "generated"
 STATS = {  # name in the JSON: (label, digits)
     "H_loc(100 s)": (r"$H_\mathrm{loc}(100~\mathrm{s})$", 3),
     "H_loc(1000 s)": (r"$H_\mathrm{loc}(1000~\mathrm{s})$", 3),
@@ -40,8 +37,8 @@ CONTRASTS = {"raw": r"$\G-\Sl$, pooled", "same site-day-hour": r"$\G-\Sl$, same 
 macros = {}
 
 
-def load(run, name, sub=SUB):
-    path = OUTS / run / sub / f"{name}.json"
+def load(run, name):
+    path = OUTS / run / f"{name}.json"
     return json.loads(path.read_text()) if path.exists() else None
 
 
@@ -123,10 +120,6 @@ def raw_tex():
     write("raw_table", "\n".join([r"\begin{tabular}{@{}l l l l@{}}", r"\toprule",
                                   " & " + " & ".join(lbl for _, lbl in pops) + r" \\", r"\midrule", *rows,
                                   r"\bottomrule", r"\end{tabular}"]))
-    no_hundred = [r for r in rows if r"(100~" not in r]
-    write("comparisons_raw_table", "\n".join([r"\begin{tabular}{@{}l l l l@{}}", r"\toprule",
-                                              " & " + " & ".join(lbl for _, lbl in pops) + r" \\", r"\midrule", *no_hundred,
-                                              r"\bottomrule", r"\end{tabular}"]))
     for k, name in (("solo", "S"), ("group", "G"), ("group_solo", "A")):
         macro(f"HlocThousand{name}", f"{at(t[k], 1000):.3f}")
         macro(f"HlocHundred{name}", f"{at(t[k], 100):.3f}")
@@ -137,24 +130,6 @@ def raw_tex():
         macro(f"Speed{name}", num(p[k]["glide speed (km/h)"]["value"], 1))
         macro(f"Ratio{name}", num(p[k]["glide ratio"]["value"], 1))
         macro(f"Xc{name}", num(p[k]["cross-country speed over 30 min (km/h)"]["value"], 1))
-
-
-def populations_tex():
-    """Sizes of the populations S, G and A behind the raw table, per statistic."""
-    t, b, p = load(MAIN, "tamsd")["para"], load(MAIN, "budget"), load(MAIN, "performance")
-    pops = (("solo", "S"), ("group", "G"), ("group_solo", "A"))
-    rows = [("flights, $H$ and $\\Hloc$", lambda k: t[k]["flights"]),
-            (r"pieces of at least 1250~s", lambda k: t[k]["pieces"]),
-            ("flights, time in climb and searches", lambda k: b[k]["flights"]),
-            ("flights, climb rate and glides", lambda k: p[k]["flights"])]
-    lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule",
-             r" & solo flights $\Sl$ & group time $\G$ & same flights alone $\A$ \\", r"\midrule"]
-    for label, get in rows:
-        lines.append(label + " & " + " & ".join(num(get(k), 0) for k, _ in pops) + r" \\")
-    write("populations_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-    for k, name in pops:
-        macro(f"PopFlights{name}", num(t[k]["flights"], 0))
-        macro(f"PopPieces{name}", num(t[k]["pieces"], 0))
 
 
 def decompose_tex(run=MAIN, name="decompose_table"):
@@ -500,124 +475,6 @@ def route_tex(main="route_sample10000"):
                      f"{band(a['baseline']['H_loc(1000 s)'], 3, True)} \\\\")
     write("route_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
 
-
-ISOLATED_LEVELS = (("all", ""), ("experienced", "Exp"), ("beginners", "Beg"))
-ISOLATED_PHASES = (  # name in the JSON: (label, digits)
-    ("time in glide (transition) (%)", ("time in glide (\\%)", 1)), ("time in search (%)", ("time in search (\\%)", 1)),
-    ("time in climb (%)", ("time in climb (\\%)", 1)), ("searches that end in a climb (%)", ("searches ending in a climb (\\%)", 1)),
-    ("climbs per hour", ("climbs per hour", 2)), ("climb rate (m/s)", ("climb rate (m/s)", 2)),
-    ("glide speed (km/h)", ("glide speed (km/h)", 1)), ("glide ratio", ("glide ratio", 1)),
-    ("height lost per km of glide (m/km)", ("height lost per km of glide (m/km)", 1)))
-
-
-def isolated_tex(sub=SUB):
-    """Macros and tables of isolated.py: group time against isolated solo flights on the same route."""
-    r = load(MAIN, "isolated", sub)
-    if r is None:
-        return
-    lines = [r"\begin{tabular}{@{}l r r c c r@{}}", r"\toprule",
-             r"wing level & pieces & matches & against site-day and hour & against isolated, same route & explained \\",
-             r"\midrule"]
-    for level, tag in ISOLATED_LEVELS:
-        c, e, s = r["levels"][level]["counts"], r["levels"][level]["msd"]["main"]["delta"]["at"], r["share explained"][level]
-        macro(f"IsoPieces{tag}", num(c["pieces with a match"], 0))
-        macro(f"IsoPiecesBefore{tag}", num(r["matches before isolation"][level]["pieces with a match"], 0))
-        macro(f"IsoMatches{tag}", num(c["matches"], 0))
-        macro(f"IsoSolo{tag}", num(c["solo flights"], 0))
-        macro(f"IsoPilotsGroup{tag}", num(c["pilots, group side"], 0))
-        macro(f"IsoPilotsControl{tag}", num(c["pilots, control side"], 0))
-        macro(f"IsoMedianMatches{tag}", num(c["median matches per piece"], 0))
-        macro(f"IsoBaseDHloc{tag}", signed(s["delta baseline"], 3))
-        macro(f"IsoExplained{tag}", num(s["share explained (%)"], 0))
-        for stat, ks in (("H_loc(1000 s)", "DHloc"), ("H_loc(100 s)", "DHlocHundred")):
-            macro(f"Iso{ks}{tag}", signed(e[stat]["value"], 3))
-            macro(f"Iso{ks}{tag}Band", f"[{signed(e[stat]['band'][0], 3)}, {signed(e[stat]['band'][1], 3)}]")
-        lines.append(f"{level} & {num(c['pieces with a match'], 0)} & {num(c['matches'], 0)} & {signed(s['delta baseline'], 3)} & "
-                     f"{band(e['H_loc(1000 s)'], 3, True)} & {num(s['share explained (%)'], 0)}\\% \\\\")
-    write("isolated_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-    long = r["levels"]["all"]["msd"].get("long")  # none when too few pieces last long enough
-    if long is not None:
-        k = long["lags"].index(1000)
-        macro("IsoLongTau", num(long["lags"][-1], 0))
-        macro("IsoLongPieces", num(r["levels"]["all"]["counts"]["pieces of the long series"], 0))
-        macro("IsoLongDHloc", signed(long["delta"]["H_loc"]["value"][k], 3))
-        macro("IsoLongDHlocBand", f"[{signed(long['delta']['H_loc']['band'][0][k], 3)}, {signed(long['delta']['H_loc']['band'][1][k], 3)}]")
-    c = r["levels"]["all"]["counts"]
-    macro("IsoPhasePieces", num(c["pieces with phases"], 0))
-    macro("IsoPhaseSegments", num(c["segments with phases"], 0))
-    lines = [r"\begin{tabular}{@{}l r r c@{}}", r"\toprule", r"all levels & group time & same route alone & difference \\", r"\midrule",
-             f"pieces, segments & {num(c['pieces with phases'], 0)} & {num(c['segments with phases'], 0)} & \\\\"]
-    for name, (label, digits) in ISOLATED_PHASES:
-        p = r["levels"]["all"]["phases"][name]
-        lines.append(f"{label} & {num(p['group']['value'], digits)} & {num(p['control']['value'], digits)} & "
-                     f"{band(p['delta'], digits, True)} \\\\")
-    write("isolated_phases_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-
-
-def regions_tex():
-    """Macros and table of regions.py: the zones with the most group flights."""
-    r = load(MAIN, "regions")
-    if r is None:
-        return
-    macro("RegionCell", num(r["cell_km"], 0))
-    macro("RegionMinFlights", num(r["min_flights"], 0))
-    macro("RegionZones", num(len(r["zones"]), 0))
-    macro("RegionOrdered", num(sum(at(z["populations"]["group"], 1000) > at(z["populations"]["group_solo"], 1000)
-                                   > at(z["populations"]["solo"], 1000) for z in r["zones"]), 0))
-    lines = [r"\begin{tabular}{@{}l r r r r c c c@{}}", r"\toprule",
-             r"zone & group flights & flights $\Sl$ & flights $\G$ & flights $\A$ & $\Hloc(1000~\mathrm{s})$ $\Sl$ & $\G$ & $\A$ \\",
-             r"\midrule"]
-    for z in r["zones"]:
-        pops = z["populations"]
-        cells = [f"{pops[k]['flights']:,}".replace(",", r"\,") if k in pops else "" for k in ("solo", "group", "group_solo")]
-        h = [f"{at(pops[k], 1000):.3f}" if k in pops and pops[k]["flights"] >= r["min_flights"] else "" for k in ("solo", "group", "group_solo")]
-        label = rf"{z['name']} ({z['lat']:.1f}$^\circ$N, {z['lon']:.1f}$^\circ$E)"
-        lines.append(f"{label} & {num(z['group flights'], 0)} & " + " & ".join(cells) + " & " + " & ".join(h) + r" \\")
-    write("regions_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-
-
-def longlags_tex():
-    """Table of longlags.py: per panel, the flights of each curve up to 1000 s and on its long series."""
-    r = load(MAIN, "longlags")
-    if r is None:
-        return
-    main = {**load(MAIN, "tamsd")["para"], **load(MAIN, "size_tamsd")["para"]}
-    sizes = {"n2": "2 pilots", "n3": "3 pilots", "n4": "4 pilots", "n5-6": "5--6 pilots", "n7+": "7+ pilots"}
-    names = {"solo": r"solo flights $\Sl$", "group": r"group time $\G$", "group_solo": r"same flights alone $\A$",
-             **{k: f"$\\G$, {v}" for k, v in sizes.items()}, **{f"{k}/alone": f"$\\A$, flights of {v}" for k, v in sizes.items()}}
-    titles = {"pooled": "pooled populations", "size": "group time by the size of the group", "alone": "the same flights alone, by size"}
-    macro("LongMinFlights", num(r["min_flights"], 0))
-    lines = [r"\begin{tabular}{@{}l r r@{}}", r"\toprule", r"population & flights up to 1000~s & flights of the long series \\"]
-    for name, panel in r["panels"].items():
-        macro(f"LongTau{name.capitalize()}", num(panel["tau_max"], 0))
-        lines += [r"\midrule", rf"\multicolumn{{3}}{{@{{}}l}}{{\emph{{{titles[name]}, lags up to {num(panel['tau_max'], 0)}~s}}}} \\"]
-        for k, c in panel["curves"].items():
-            lines.append(f"{names[k]} & {num(main[k]['flights'], 0)} & {num(c['flights'], 0)} \\\\")
-    write("longlags_table", "\n".join(lines + [r"\bottomrule", r"\end{tabular}"]))
-    def quoted(prefix, curves, lag, tags):
-        """H_loc at `lag` of the curves with their band, as macros prefix + tag."""
-        for k, tag in tags.items():
-            if k not in curves:
-                continue
-            c = curves[k]
-            i = c["lags"].index(lag)
-            macro(f"{prefix}{tag}", f"{c['H_loc'][i]:.3f}")
-            macro(f"{prefix}{tag}Band", f"[{c['H_loc_band'][0][i]:.3f}, {c['H_loc_band'][1][i]:.3f}]")
-    pooled = r["panels"]["pooled"]
-    lags = pooled["curves"]["solo"]["lags"]
-    mid = min(lags, key=lambda t: abs(t - pooled["tau_max"] / 2))  # the lag nearest to half the longest
-    macro("LongLagMid", num(mid, 0))
-    macro("LongLagEnd", num(pooled["tau_max"], 0))
-    for lag, name in ((mid, "Mid"), (pooled["tau_max"], "End")):
-        quoted("LongPooled", pooled["curves"], lag, {"solo": f"S{name}", "group": f"G{name}", "group_solo": f"A{name}"})
-    macro("LongLagSize", num(r["panels"]["size"]["tau_max"], 0))
-    quoted("LongSize", r["panels"]["size"]["curves"], r["panels"]["size"]["tau_max"],
-           {"solo": "S", "n2": "Two", "n3": "Three", "n4": "Four", "n5-6": "FiveSix", "n7+": "SevenPlus"})
-    macro("LongLagAlone", num(r["panels"]["alone"]["tau_max"], 0))
-    quoted("LongAlone", r["panels"]["alone"]["curves"], r["panels"]["alone"]["tau_max"],
-           {"solo": "S", "n2/alone": "Two", "n3/alone": "Three", "n4/alone": "Four", "n5-6/alone": "FiveSix", "n7+/alone": "SevenPlus"})
-
-
 def redundancy_tex():
     """Which statistics are drawn and why (redundancy.py)."""
     r = load(MAIN, "redundancy")
@@ -635,46 +492,10 @@ def redundancy_tex():
                                           r"\bottomrule", r"\end{tabular}"]))
 
 
-def open_main():
-    """The macros and tables of comparisons/, from the analyses run with --open."""
-    macro("tauStar", num(json.loads((OUTS / MAIN / "facts.json").read_text())["tau_star_s"] / 60, 1))  # the grouping, whichever the flights
-    closure = json.loads((OUTS / MAIN / "closure.json").read_text())  # closure.py, on every flight
-    macro("OpenAll", num(closure["flights"], 0))
-    macro("OpenAgree", num(closure["open"]["agreement (%)"], 0))
-    macro("OpenAgreeKm", num(closure["open"]["km"], 0))
-    fold = json.loads((OUTS / MAIN / "open_declared" / "folding.json").read_text())  # folding.py
-    long = f"{fold['long_h']} h or more"
-    macro("FoldMinOpening", f"{fold['min_opening']:.1f}")
-    macro("FoldLongH", num(fold["long_h"], 0))
-    macro("FoldDeclared", num(fold["flights"]["all"], 0))
-    macro("FoldDeclaredLong", num(fold["flights"][long], 0))
-    macro("FoldMedian", f"{fold['median opening']['all']:.2f}")
-    macro("FoldMedianLong", f"{fold['median opening'][long]:.2f}")
-    macro("FoldShare", num(fold["share at least the minimum (%)"]["all"], 0))
-    macro("FoldShareLong", num(fold["share at least the minimum (%)"][long], 0))
-    macro("FoldStraight", num(fold["straight open flights"], 0))
-    macro("FoldTau", num(fold["tau_max"], 0))
-    macro("FoldMedianGroup", f"{fold['median opening, group flights']:.2f}")
-    macro("FoldMedianSolo", f"{fold['median opening, never in a group']:.2f}")
-    for k, tag in (("solo", "S"), ("group", "G"), ("group_solo", "A")):
-        macro(f"FoldH{tag}", f"{fold['H_loc at tau_max'][k]:.3f}")
-        macro(f"FoldFlights{tag}", num(fold["flights of the long series"][k], 0))
-    raw_tex()
-    populations_tex()
-    isolated_tex("open_declared")  # the route on the declared open flights: too few straight ones match
-    regions_tex()
-    longlags_tex()
-    (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
-    print(f"{len(macros)} macros")
-
-
 def main():
-    GEN.mkdir(parents=True, exist_ok=True)
-    if OPEN_ONLY:
-        return open_main()
+    GEN.mkdir(exist_ok=True)
     facts_tex()
     raw_tex()
-    populations_tex()
     size_tex()
     decompose_size_tex()
     siteday_tex()
@@ -684,9 +505,6 @@ def main():
     prepost_tex(3000)
     prepost_tex(1260, "Short")
     route_tex()
-    isolated_tex()
-    regions_tex()
-    longlags_tex()
     redundancy_tex()
     d = decompose_tex()
     if d is not None:

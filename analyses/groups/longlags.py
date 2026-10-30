@@ -1,17 +1,17 @@
-"""Solo, group time and the same flights alone over lags longer than 1000 s, pooled and by the size of
-the group.
+"""Solo, group time and the same flights alone over lags longer than 1000 s.
 
 A piece of at least TAU_MAX / SUPPORT s gives the lags up to 1000 s of tamsd.py. A lag tau longer than
 that needs pieces of at least tau / SUPPORT, so a curve to the lag T is measured on the pieces of its
 population of at least T / SUPPORT s: the population does not change along the curve. The curves of one
-panel share T, the longest lag at which every population of the panel keeps MIN_FLIGHTS flights, so
-they are measured alike. Equal weight per flight and the bootstrap bands of tamsd.py.
+panel share T, so they are measured alike: the lag of LONG_LAGS nearest to FIXED_LAG ("fixed"), and the
+longest lag at which every population of the panel keeps MIN_FLIGHTS flights ("longest"). Equal weight per
+flight and the bootstrap bands of tamsd.py.
 
-Populations (paragliders, as tamsd.py and size.py): solo, group, group_solo; the group time by the number
-of pilots of the group, n2, n3, n4, n5-6, n7+; and "<size>/alone", the solo time of the flights that have
-that size.
+Populations (paragliders, as tamsd.py and size.py): solo, group, group_solo; the pieces of the group time by
+the number of pilots of the group (n2, ..., n7+, and "<size>/alone", the solo time of the flights that have
+that size) are measured too.
 
-    uv run python longlags.py [--run NAME] [--recompute]    # after tamsd.py and size.py; writes out/<run>/longlags.json and .pdf
+    uv run python longlags.py [--run NAME] [--recompute]    # after tamsd.py; writes out/<run>/longlags.json and .pdf
     uv run python longlags.py --redraw                       # the figure again, from the saved JSON
 """
 
@@ -29,7 +29,9 @@ from tamsd import CACHE, COLORS, LABELS, OUT, SEED, SIZES, SUPPORT, ensemble, lo
 # The lags of tamsd.py, then the same geometric step up to 30 000 s.
 STEP = tamsd.TAU_MAX ** (1 / 34)
 LONG_LAGS = np.unique(np.r_[tamsd.LAGS, np.round(tamsd.TAU_MAX * STEP ** np.arange(1, 17) / 10).astype(int) * 10])
-MIN_FLIGHTS = 100  # flights every population of a panel keeps at the longest lag
+MIN_FLIGHTS = 100  # flights every population of a panel keeps at its longest lag
+FIXED_LAG = 4000  # s: the nominal longest lag of the panel "fixed"
+POOLED = ("solo", "group", "group_solo")
 PIECES = CACHE / "long_pieces.npz"
 
 
@@ -85,31 +87,35 @@ def curve(p, mask, block, rng, tau):
             "H_loc_band": np.percentile(h, [5, 95], axis=0).tolist()}
 
 
-PANELS = {"pooled": ("solo", "group", "group_solo"), "size": ("solo", *SIZES),
-          "alone": ("solo", *(f"{k}/alone" for k in SIZES))}
+def panels(available):
+    """The longest lag of each panel: the lag of LONG_LAGS nearest to FIXED_LAG, and the longest one at which
+    every population of POOLED keeps MIN_FLIGHTS flights."""
+    return {"fixed": int(LONG_LAGS[np.argmin(np.abs(LONG_LAGS - FIXED_LAG))]),
+            "longest": int(min(longest(available[k]) for k in POOLED))}
 
 
 def figure(result, path):
-    """H_loc(tau) with an inset of MSD, one panel per entry of PANELS. Thin: every piece of tamsd.py, up
-    to 1000 s; dashed: the pieces long enough for the longest lag of the panel. Last panel: the flights
+    """H_loc(tau) of S, G and A with an inset of MSD, one panel per longest lag. Thin: every piece of tamsd.py,
+    up to 1000 s; dashed: the pieces long enough for the longest lag of the panel. Last panel: the flights
     that remain at each lag, against the minimum."""
-    main = {**json.loads((OUT / "tamsd.json").read_text())["para"], **json.loads((OUT / "size_tamsd.json").read_text())["para"]}
-    colors = {**COLORS, **dict(zip(SIZES, curves.RAMP))}
-    colors.update({f"{k}/alone": colors[k] for k in SIZES})
-    label = {"solo": "S", "group": "G", "group_solo": "A", **SIZES, **{f"{k}/alone": f"{v}, alone" for k, v in SIZES.items()}}
-    fig, axes = plt.subplots(2, 2, figsize=(7.4, 5.8), constrained_layout=True)
-    for ax, (name, panel) in zip(axes.flat, result["panels"].items()):
+    main = json.loads((OUT / "tamsd.json").read_text())["para"]
+    label = {"solo": "S", "group": "G", "group_solo": "A"}
+    fig, axes = plt.subplots(1, 3, figsize=(7.4, 2.9), constrained_layout=True)
+    for ax, panel in zip(axes, result["panels"].values()):
         drawn = []
-        for k in panel["curves"]:
-            drawn.append(curves.series(main[k], f"{label[k]} ({main[k]['flights']:,})", colors[k]))
-            drawn.append(curves.series(panel["curves"][k], None, colors[k], "--"))
+        for k in POOLED:
+            drawn.append(curves.series(main[k], f"{label[k]} ({main[k]['flights']:,})", COLORS[k]))
+            drawn.append(curves.series(panel["curves"][k], None, COLORS[k], "--"))
         curves.plot(ax, drawn, ylim=(0.45, 1.0))
-        ax.legend(frameon=False, fontsize=6.5, loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=3)
-    ax = axes[1, 1]
-    for k, v in result["available"].items():
-        ax.plot(v["lags"], v["flights"], color=colors[k], ls="--" if k.endswith("/alone") else "-", lw=1.1)
+        ax.set_title(f"up to {panel['tau_max']:,} s", fontsize=8)
+        ax.legend(frameon=False, fontsize=6, loc="lower right")
+    ax = axes[-1]
+    for k in POOLED:
+        v = result["available"][k]
+        ax.plot(v["lags"], v["flights"], color=COLORS[k], lw=1.1, label=label[k])
     ax.axhline(result["min_flights"], color="#555555", lw=0.8, ls=":")
     ax.set(xscale="log", yscale="log", xlabel=r"$\tau$ (s)", ylabel="flights with pieces of at least $\\tau/0.8$ s")
+    ax.legend(frameon=False, fontsize=6.5)
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     fig.savefig(path, bbox_inches="tight")
@@ -128,11 +134,9 @@ if __name__ == "__main__":
     rng = np.random.default_rng(SEED)
     masks = populations(p)
     result = {"min_flights": MIN_FLIGHTS, "available": {k: available(p, m) for k, m in masks.items()}, "panels": {}}
-    for name, members in PANELS.items():
-        dropped = [k for k in members if longest(result["available"][k]) < tamsd.TAU_MAX]  # too few flights even at 1000 s
-        members = [k for k in members if k not in dropped]
-        tau = min(longest(result["available"][k]) for k in members)
-        result["panels"][name] = {"tau_max": int(tau), "dropped": dropped, "curves": {k: curve(p, masks[k], block, rng, tau) for k in members}}
-        print(name, tau, "dropped", dropped, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
+    for name, tau in panels(result["available"]).items():
+        assert all(longest(result["available"][k]) >= tau for k in POOLED), f"fewer than {MIN_FLIGHTS} flights at {tau} s"
+        result["panels"][name] = {"tau_max": tau, "curves": {k: curve(p, masks[k], block, rng, tau) for k in POOLED}}
+        print(name, tau, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
     (OUT / "longlags.json").write_text(json.dumps(result, indent=1))
     figure(result, OUT / "longlags.pdf")

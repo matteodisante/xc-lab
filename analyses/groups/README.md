@@ -101,17 +101,16 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 - **`prepost.py`**: the same flight before, during and after a group (windows of 3000 s,
   `--window`), against two consecutive windows with no change. ΔH_loc(1000 s) +0.027 entering,
   +0.031 leaving, −0.003 after minus before: the effect follows the group in time.
-- **`longlags.py`**: S, G and A, and the group time by size with the same flights alone, over lags up to
-  hours: a curve to the lag T is measured on the pieces of at least T/0.8 s, the curves of a panel share the
-  longest T at which each keeps 100 flights (14 030 s pooled, 2 250 s by size, 9 350 s alone by size). On
-  the long pieces H_loc(5080 s) is 0.89 in G against 0.79 in S and 0.81 in A. `curves.py` draws
-  H_loc(tau) with an inset of MSD for any set of populations.
-- **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue,
-  `--open` only those of them whose landing is at least 0.5 of the path flown from the takeoff (17 687 of 66 845);
-  results in `out/<run>/open_declared` and `out/<run>/open`. `closure.py` checks the declared type against the
-  track (91% agreement), `folding.py` shows that declared open flights fold. On straight open flights S, G and
-  A progress almost alike (H_loc(1000 s) 0.940, 0.947, 0.941); the route test runs on the declared open ones
-  (3 224 pieces, 74% explained).
+- **`longlags.py`**: S, G and A over lags up to hours: a curve to the lag T is measured on the pieces of at
+  least T/0.8 s, the curves of a panel share T (about 4000 s, and the longest with 100 flights in each
+  population). `curves.py` draws H_loc(tau) with an inset of MSD for any set of populations.
+- **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
+  distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
+  the path flown) above 0.1; results in `out/<run>/open_declared` and `out/<run>/open_min0.1`. `closure.py`
+  checks the declared type against the track (91% agreement); `opening.py` gives the openings of the datasets
+  of `longlags.py` (the long lags rest on folded flights: median 0.32 on every declared open flight, 0.23 up
+  to 11 450 s) and by takeoff altitude (a threshold of 0.5 keeps 42% of the flights below 1000 m, 13% above;
+  0.1 keeps 88% and 80%). On the open flights H_loc(1000 s) is 0.915 in G, 0.897 in S, 0.894 in A.
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.
@@ -187,7 +186,8 @@ uv run python route.py --sample 10000    # after tamsd.py; one pass over the fix
                                          # matching, about 45 min and 2.6 GB: run one at a time
 uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants, about 10 min each
 uv run python isolated.py [--sample N]   # after route.py, performance.py and the archive index; about 25 min and 2 GB
-uv run python longlags.py [--recompute]  # after size.py; the pass over the fixes (about 4 min, 1.5 GB), then about 20 s
+uv run python longlags.py [--recompute]  # after tamsd.py; the pass over the fixes (about 4 min, 1.5 GB), then about 20 s
+uv run python opening.py --declared-open # after closure.py and longlags.py --declared-open; about 1 min
 uv run python regions.py; uv run python maps.py   # after tamsd.py; seconds
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
 uv run python describe.py [--run NAME]   # about 15 s
