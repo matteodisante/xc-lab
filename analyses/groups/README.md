@@ -102,15 +102,15 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   `--window`), against two consecutive windows with no change. ΔH_loc(1000 s) +0.027 entering,
   +0.031 leaving, −0.003 after minus before: the effect follows the group in time.
 - **`longlags.py`**: S, G and A over lags up to hours: a curve to the lag T is measured on the pieces of at
-  least T/0.8 s, the curves of a panel share T (about 4000 s, and the longest with 100 flights in each
-  population). `curves.py` draws H_loc(tau) for any set of populations, with an inset of MSD if asked.
+  least T/0.8 s, the curves of a panel share T (2250 s, and the longest with 100 flights in each
+  population); the legend gives the fitted H. `curves.py` draws H_loc(tau) for any set of populations, with an inset of MSD if asked.
 - **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
   distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
   the path flown) above 0.1; results in `out/<run>/open_declared` and `out/<run>/open_min0.1`. `closure.py`
   checks the declared type against the track (91% agreement); `opening.py` gives the openings of the datasets
   of `longlags.py` (the long lags rest on folded flights: median 0.32 on every declared open flight, 0.23 up
   to 11 450 s) and by takeoff altitude (a threshold of 0.5 keeps 42% of the flights below 1000 m, 13% above;
-  0.1 keeps 88% and 80%). On the open flights H_loc(1000 s) is 0.915 in G, 0.897 in S, 0.894 in A.
+  0.1 keeps 88% and 80%). On the open flights, to 2250 s, the fitted H is 0.923 in G, 0.916 in S, 0.920 in A.
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.

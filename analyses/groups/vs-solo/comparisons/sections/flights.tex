@@ -46,7 +46,7 @@ that resample the dependency blocks of the grouping.
 
 \paragraph{Datasets.} A lag $\tau$ needs pieces of at least $\tau/0.8$~s, so that the origins of every piece
 cover the lag in the same share of it. A dataset to the lag $T$ keeps, in each population, its pieces of at
-least $T/0.8$~s and measures them at every lag up to $T$: the population does not change along a curve, and
-each population of a figure has at least \DeclMinFlights{} flights at $T$. The pieces of at least 1250~s give
-the lags up to 1000~s; we add $T\approx4\cdot10^3$~s, the lag of the grid nearest to 4000~s, and the longest
-$T$ at which each population keeps \DeclMinFlights{} flights.
+least $T/0.8$~s and measures them at every lag up to $T$: the population does not change along a curve.
+We use two datasets, with $T$ a little above $2\cdot10^3$~s (\DeclTauFixed~s on the lag grid) and the longest
+$T$ at which each population keeps \DeclMinFlights{} flights (\DeclTauLongest~s). $H$ is half the slope of
+$\log\MSD$ against $\log\tau$ over all the lags of the curve.

@@ -6,9 +6,9 @@
   \item An opening above \MinOpening{} drops the declared open flights that come back near their takeoff
         and keeps nearly the same share of lowland and mountain flights; a stricter threshold would select
         the region.
-  \item On the open flights, raw, group time ($\G$, \OpenFlightsG{} flights) progresses straighter than solo
-        flights ($\Sl$, \OpenFlightsS) up to lags of hours, and the same flights alone ($\A$, \OpenFlightsA)
-        move like solo flights.
+  \item On the open flights, raw, group time ($\G$, \OpenFixedFlightsG{} flights) progresses straighter than solo
+        flights ($\Sl$, \OpenFixedFlightsS) up to lags of about \OpenTauFixed~s, and the same flights alone ($\A$, \OpenFixedFlightsA)
+        stay close to solo flights.
 \end{itemize}
 
 The comparison is raw: group and solo flights differ in route, season, hour and wing, which the next

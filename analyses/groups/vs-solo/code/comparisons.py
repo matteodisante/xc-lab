@@ -55,7 +55,7 @@ def opening_tex(o):
         macro(f"Takeoff{tag}Median", f"{b['quartiles'][1]:.2f}")
         macro(f"Takeoff{tag}Keep", num(b["above the threshold (%)"], 0))
         macro(f"Takeoff{tag}Strict", num(b["above the stricter threshold (%)"], 0))
-    tags = dict(zip(o["datasets"], ("Every", "Thousand", "Fixed", "Longest")))
+    tags = dict(zip(o["datasets"], ("Every", "Fixed", "Longest")))
     lines = [r"\begin{tabular}{@{}l r r r r r r r r@{}}", r"\toprule",
              r" & \multicolumn{4}{c}{flights} & \multicolumn{4}{c}{median opening} \\",
              r"\cmidrule(lr){2-5}\cmidrule(l){6-9}", r"dataset & all & $\Sl$ & $\G$ & $\A$ & all & $\Sl$ & $\G$ & $\A$ \\", r"\midrule"]
@@ -77,13 +77,9 @@ def opening_tex(o):
 def curves_tex(folder, prefix):
     """Macros of longlags.py on the flights of `folder`: the longest lag of each panel, H_loc there, the
     flights of each curve; and the table of the flights of the datasets."""
-    main, long = read(folder, "tamsd")["para"], read(folder, "longlags")
+    long = read(folder, "longlags")
     macro(f"{prefix}MinFlights", num(long["min_flights"], 0))
-    lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule", r"dataset & $\Sl$ & $\G$ & $\A$ \\", r"\midrule",
-             "lags up to 1000~s & " + " & ".join(num(main[k]["flights"], 0) for k, _ in POPS) + r" \\"]
-    for k, tag in POPS:
-        macro(f"{prefix}Flights{tag}", num(main[k]["flights"], 0))
-        macro(f"{prefix}HThousand{tag}", f"{main[k]['H_loc'][-1]:.3f}")
+    lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule", r"dataset & $\Sl$ & $\G$ & $\A$ \\", r"\midrule"]
     for name, panel in long["panels"].items():
         p = name.capitalize()
         macro(f"{prefix}Tau{p}", num(panel["tau_max"], 0))
@@ -91,6 +87,9 @@ def curves_tex(folder, prefix):
         for k, tag in POPS:
             c = panel["curves"][k]
             macro(f"{prefix}{p}Flights{tag}", num(c["flights"], 0))
+            k1000 = c["lags"].index(1000)
+            macro(f"{prefix}{p}HThousand{tag}", f"{c['H_loc'][k1000]:.3f}")
+            macro(f"{prefix}{p}Fit{tag}", f"{c['H']:.3f}")
             macro(f"{prefix}{p}H{tag}", f"{c['H_loc'][-1]:.3f}")
             macro(f"{prefix}{p}H{tag}Band", f"[{c['H_loc_band'][0][-1]:.3f}, {c['H_loc_band'][1][-1]:.3f}]")
     write(f"{prefix.lower()}_datasets_table", lines + [r"\bottomrule", r"\end{tabular}"])

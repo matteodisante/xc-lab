@@ -2,8 +2,8 @@
 
 The opening of a flight is its takeoff to landing distance over the path flown (openflights.opening). For
 the declared open paragliders (the flights of tamsd.py run with --declared-open) it is given on every flight,
-and on the flights of each dataset of longlags.py: those with a piece of S, G or A of at least TAU_MAX /
-SUPPORT s (lags up to 1000 s), and those long enough for the longest lag of each panel. The share of the
+and on the flights of each dataset of longlags.py: those with a piece of S, G or A of at least
+T / SUPPORT s for the longest lag T of each panel long enough for the longest lag of each panel. The share of the
 flights kept by a threshold on the opening is given for takeoffs below and above MOUNTAIN_M m, a proxy of
 lowland and mountain flying. The labels of the FFVL catalogue are counted with their class.
 
@@ -19,7 +19,7 @@ import pandas as pd
 import closure
 import longlags
 from openflights import DECLARED_OPEN, MIN_OPENING
-from tamsd import CACHE, FIXES, OUT, SUPPORT, TAU_MAX
+from tamsd import CACHE, FIXES, OUT
 
 REJECTED = 0.5  # a stricter threshold on the opening, shown against MIN_OPENING
 MOUNTAIN_M = 1000  # m: takeoff altitude above which a flight counts as a mountain flight
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     p = dict(np.load(CACHE / "long_pieces.npz"))
     masks = longlags.populations(p)
     panels = json.loads((OUT / "longlags.json").read_text())["panels"]
-    shortest = {"lags up to 1000 s": TAU_MAX, **{f"lags up to {v['tau_max']} s": v["tau_max"] for v in panels.values()}}
+    shortest = {f"lags up to {v['tau_max']} s": v["tau_max"] for v in panels.values()}
     sets = {"every declared open flight": {"all": open_.index.to_numpy()}}
     for name, tau in shortest.items():
         by_pop = {LABEL[k]: np.unique(p["flight"][longlags.long_enough(p, masks[k], tau)]) for k in LABEL}
@@ -62,7 +62,7 @@ if __name__ == "__main__":
                       for k in ("datasets", "by takeoff")}, indent=1))
     fig, (left, right) = plt.subplots(1, 2, figsize=(7.4, 2.9), constrained_layout=True)
     bins = np.linspace(0, 1, 41)
-    for (name, s), color in zip(sets.items(), ("#555555", "#2a78d6", "#eb6834", "#8c2f0f")):
+    for (name, s), color in zip(sets.items(), ("#555555", "#eb6834", "#8c2f0f")):
         r = open_["ratio"].reindex(s["all"]).dropna()
         left.hist(r.clip(0, 1), bins=bins, density=True, histtype="step", lw=1.2, color=color,
                   label=f"{name} ({len(r):,}), median {r.median():.2f}")

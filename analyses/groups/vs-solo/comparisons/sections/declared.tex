@@ -5,9 +5,9 @@ How do the three populations compare as they are, with no stratification?
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{open_declared/longlags.pdf}
-\caption{Declared open flights. $\Hloc(\tau)$ of $\Sl$, $\G$ and $\A$ for the datasets up to \DeclTauFixed~s (left) and \DeclTauLongest~s (centre): thin, the pieces
-of at least 1250~s, up to 1000~s, with their flights in the legend; dashed, the pieces of at least $T/0.8$~s;
-$H$ in the legend is half the slope of $\log\MSD$ against $\log\tau$ over all the lags of the curve; 5--95\% bands. Right: flights with pieces of at least $\tau/0.8$~s; dotted, \DeclMinFlights{} flights.
+\caption{Declared open flights. $\Hloc(\tau)$ of $\Sl$, $\G$ and $\A$ for the datasets up to \DeclTauFixed~s (left)
+and \DeclTauLongest~s (centre), each on the pieces of at least $T/0.8$~s, with their flights and the fitted $H$ in
+the legend; 5--95\% bands. Right: flights with pieces of at least $\tau/0.8$~s; dotted, \DeclMinFlights{} flights.
 Flights of each curve in Table~\ref{tab:declared}.}
 \label{fig:declared}
 \end{figure}
@@ -19,13 +19,13 @@ Flights of each curve in Table~\ref{tab:declared}.}
 \label{tab:declared}
 \end{table}
 
-Up to 1000~s group time is the straightest: $\Hloc(1000~\mathrm{s})$ is \DeclHThousandG{} in $\G$, against
-\DeclHThousandS{} in $\Sl$ and \DeclHThousandA{} in $\A$ (Figure~\ref{fig:declared}). On the dataset up to
-\DeclTauFixed~s the order is the same: at \DeclTauFixed~s, \DeclFixedHG{} \DeclFixedHGBand{} in $\G$,
-\DeclFixedHS{} in $\Sl$ and \DeclFixedHA{} in $\A$. On the dataset up to \DeclTauLongest~s the mean squared
-displacement of $\Sl$ and $\A$ bends down beyond about $5\cdot10^3$~s: at \DeclTauLongest~s $\Hloc$ is
-\DeclLongestHS{} in $\Sl$ and \DeclLongestHA{} in $\A$. That of $\G$ stays at \DeclLongestHG{}
-\DeclLongestHGBand, on \DeclLongestFlightsG{} flights only.
+On the dataset up to \DeclTauFixed~s group time is the straightest (Figure~\ref{fig:declared}):
+$\Hloc(1000~\mathrm{s})$ is \DeclFixedHThousandG{} in $\G$, against \DeclFixedHThousandS{} in $\Sl$ and
+\DeclFixedHThousandA{} in $\A$, and the fitted $H$ is \DeclFixedFitG, \DeclFixedFitS{} and \DeclFixedFitA. On the
+dataset up to \DeclTauLongest~s the mean squared displacement of $\Sl$ and $\A$ bends down at lags of hours:
+at \DeclTauLongest~s $\Hloc$ is \DeclLongestHS{} in $\Sl$ and \DeclLongestHA{} in $\A$. That of $\G$ stays at
+\DeclLongestHG{} \DeclLongestHGBand, on \DeclLongestFlightsG{} flights only; the fitted $H$ is \DeclLongestFitG,
+\DeclLongestFitS{} and \DeclLongestFitA.
 
 \paragraph{What we keep.} Raw, group time progresses straighter than solo flights and than the same flights
 alone, and at lags of hours the motion of solo flights and of the same flights alone bends away from a
