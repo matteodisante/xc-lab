@@ -956,3 +956,10 @@ def test_ensemble_with_given_counts_resamples_those_blocks():
     mean, draws = tamsd.ensemble(values, np.array([0, 0, 1]), None, np.array([[1, 0], [0, 2], [2, 1]]))
     assert mean[0] == pytest.approx(14 / 3)
     assert draws[:, 0] == pytest.approx([2.0, 10.0, (2 + 6 + 10) / 5])
+
+
+def test_runs_belong_to_the_piece_that_holds_their_middle():
+    import raw
+    table = pd.DataFrame({"flight": [1, 1, 1, 2], "t_mid": [5.0, 15.0, 25.0, 5.0]})
+    mask = raw.in_pieces(table, np.array([1, 1, 2]), np.array([0.0, 20.0, 100.0]), np.array([10.0, 30.0, 200.0]))
+    assert mask.tolist() == [True, False, True, False]

@@ -111,6 +111,12 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   of `longlags.py` (the long lags rest on folded flights: median 0.32 on every declared open flight, 0.23 up
   to 11 450 s) and by takeoff altitude (a threshold of 0.5 keeps 42% of the flights below 1000 m, 13% above;
   0.1 keeps 88% and 80%). On the open flights, to 2250 s, the fitted H is 0.923 in G, 0.916 in S, 0.920 in A.
+- **`raw.py`** (`--open`): point 1 of `comparisons_plan.md`. S, A, G as they are: MSD and H_loc figures of the
+  datasets `1000`, `2250` and `longest` (`raw_<dataset>_msd`, `raw_<dataset>_hloc`), the seven phase statistics
+  by the estimator that averages first (`budget.unit_rates`, `budget.mean_ratios`; unit = the flight, its runs
+  on its pieces of dataset `1000`) with the ratio of sums as a check, and the survival of climbs, searches that
+  end in a climb and glides (`survival.survival_curve`, with optional weights); all in `raw.json`, with one
+  set of bootstrap draws of the dependency blocks for every band.
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.
@@ -187,6 +193,7 @@ uv run python route.py --sample 10000    # after tamsd.py; one pass over the fix
 uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants, about 10 min each
 uv run python isolated.py [--sample N]   # after route.py, performance.py and the archive index; about 25 min and 2 GB
 uv run python longlags.py [--recompute]  # after tamsd.py; the pass over the fixes (about 4 min, 1.5 GB), then about 20 s
+uv run python raw.py --open             # after tamsd.py, longlags.py and performance.py with --open; a few minutes
 uv run python opening.py --declared-open # after closure.py and longlags.py --declared-open; about 1 min
 uv run python regions.py; uv run python maps.py   # after tamsd.py; seconds
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min
