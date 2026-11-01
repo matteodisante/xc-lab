@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 from phase_msd import PHASES, RUNS
-from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, save, stretches
+from tamsd import COLORS, LABELS, N_BOOT, OUT, POPULATIONS, SEED, read_flights, save, stretches
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "phases"))
 from durations import ccdf, fit, hill, log_resample, trim  # noqa: E402
@@ -100,7 +100,7 @@ def plot(data, fits, path, populations=POPULATIONS, colors=COLORS, min_tail=0):
 
 
 if __name__ == "__main__":
-    flights = pd.read_parquet(LABELS / "flights.parquet")
+    flights = read_flights()
     spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"),
                       pd.read_parquet(LABELS / "flight_summary.parquet"))
     numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]]

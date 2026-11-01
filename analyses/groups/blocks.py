@@ -17,7 +17,7 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
-from tamsd import CACHE, FIXES, LABELS, LAGS, OUT, SEED, summarize
+from tamsd import CACHE, FIXES, LABELS, LAGS, OUT, SEED, read_flights, summarize
 
 SITE_M = 3000.0  # the departure radius of the note: takeoffs this close on one day are one site
 EARTH_M = 6_371_000.0
@@ -71,7 +71,7 @@ def quoted(r):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]
     episode = block.reindex(flights["flight"]).to_numpy()
     variants = {"episodes": episode,

@@ -19,7 +19,7 @@ import pandas as pd
 import budget
 import performance
 from blocks import sites, with_takeoffs
-from tamsd import CACHE, LABELS, OUT, stretches
+from tamsd import CACHE, LABELS, OUT, read_flights, stretches
 
 MIN_FLIGHTS, LIMIT = 25, 0.5
 STATS = {**budget.STATS, **performance.STATS}
@@ -58,7 +58,7 @@ def eliminate(units, limit=LIMIT):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
     site = pd.Series(sites(flights["lat0"], flights["lon0"], flights["date"]), index=flights["flight"])

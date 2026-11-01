@@ -34,7 +34,7 @@ import budget
 import performance
 import size
 from blocks import merged, sites, with_takeoffs
-from tamsd import CACHE, LABELS, LAGS, OUT, SEED, SIZES, fit_h, local_h, read_pieces, save, stretches
+from tamsd import CACHE, LABELS, LAGS, OUT, SEED, SIZES, fit_h, local_h, read_flights, read_pieces, save, stretches
 
 N_BOOT = 200
 CONTRASTS = {  # name: (P, Q, stratum)
@@ -251,7 +251,7 @@ def block_counts(n_blocks, rng):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
     info, block, n_blocks = flight_table(flights, summary)

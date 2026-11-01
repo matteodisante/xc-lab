@@ -30,7 +30,7 @@ import pandas as pd
 
 import decompose
 from blocks import with_takeoffs
-from tamsd import CACHE, COLORS, LABELS, LAGS, OUT, SEED, fit_h, local_h, read_pieces, save
+from tamsd import CACHE, COLORS, LABELS, LAGS, OUT, SEED, fit_h, local_h, read_flights, read_pieces, save
 
 CELL_KM = 25
 EARTH_KM = 6371.0
@@ -178,7 +178,7 @@ def figure_differences(result, path):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     info, block, n_blocks = decompose.flight_table(flights, summary)
     pieces = read_pieces(CACHE / "pieces.npz")["para"]

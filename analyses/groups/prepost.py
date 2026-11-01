@@ -31,7 +31,7 @@ import budget
 import decompose
 import zones
 from blocks import with_takeoffs
-from tamsd import CACHE, COLORS, FIXES, LABELS, LAGS, OUT, SEED, read_pieces, save, save_pieces, stretches
+from tamsd import CACHE, COLORS, FIXES, LABELS, LAGS, OUT, SEED, read_flights, read_pieces, save, save_pieces, stretches
 
 WINDOW_S = 1260  # s, the shortest window: the 1250 s of a piece of the TA-MSD on the 10-s grid; --window SECONDS
 LONG_S = 3000  # s, the default of the command line: lags up to 1000 s keep 200 origins
@@ -189,7 +189,7 @@ def figure_profile(profile_, path):
 
 
 if __name__ == "__main__":
-    flights = with_takeoffs(pd.read_parquet(LABELS / "flights.parquet"))
+    flights = with_takeoffs(read_flights())
     membership = pd.read_parquet(LABELS / "membership.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
     width = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else LONG_S
