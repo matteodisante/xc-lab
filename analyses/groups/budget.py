@@ -62,6 +62,34 @@ def ratios(sums, stats=STATS):
     return {name: scale * sums[num] / sums[den] for name, (num, den, scale, _) in stats.items()}
 
 
+def unit_rates(rows, unit, time, stats=STATS):
+    """Average first, ratio after: per unit u of `time` (T_u, a Series by unit), the rates r_u = n_u / T_u
+    and q_u = d_u / T_u of every statistic of `stats` (name: numerator, denominator, scale, ...), with n_u and
+    d_u the columns summed over the `rows` of the unit (`unit`: the unit of each row; a unit with no row
+    gets 0). Returns the frames (r, q), one column per statistic."""
+    terms = sorted({c for num, den, *_ in stats.values() for c in (num, den)})
+    sums = rows[terms].groupby(np.asarray(unit)).sum().reindex(time.index, fill_value=0.0)
+    r = pd.DataFrame({name: sums[num] / time for name, (num, *_) in stats.items()})
+    q = pd.DataFrame({name: sums[den] / time for name, (_, den, *_) in stats.items()})
+    return r, q
+
+
+def mean_ratios(r, q, block, counts, stats=STATS):
+    """stat = scale * sum_u w_u r_u / sum_u w_u q_u for the frames of unit_rates: all weights 1 (the value, a
+    Series) and the weights of each draw, the count of the block of the unit (`block`: a code per unit, the
+    columns of `counts`, N_BOOT rows): the draws, an array (N_BOOT, statistics)."""
+    codes, n = np.asarray(block), counts.shape[1]
+    by_block = [np.zeros((n, len(stats))) for _ in range(2)]
+    for total, frame in zip(by_block, (r, q)):
+        np.add.at(total, codes, frame.to_numpy(float))
+    scale = np.array([s[2] for s in stats.values()], float)
+    value = pd.Series(scale * by_block[0].sum(axis=0) / by_block[1].sum(axis=0), index=list(stats))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        draws = [scale * (counts[a:a + 100] @ by_block[0]) / (counts[a:a + 100] @ by_block[1])
+                 for a in range(0, len(counts), 100)]
+    return value, np.concatenate(draws)
+
+
 def budget(runs, block, rng, stats=STATS, populations=POPULATIONS):
     """Per population of `populations` (default the three of tamsd.py) in `runs` (rows with
     flight, population and the terms of `stats`): flights, `stats` and their bands."""

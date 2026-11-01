@@ -880,4 +880,52 @@ def test_regions_keep_the_busiest_cells_by_flights_of_group_time():
 def test_the_panels_of_longlags_take_the_nearest_and_the_common_longest_lag():
     import longlags
     available = {k: {"lags": [1000, 4150, 11450], "flights": [500, 300, n]} for k, n in zip(longlags.POOLED, (900, 150, 99))}
-    assert longlags.panels(available) == {"fixed": 4150, "longest": 4150}
+    assert longlags.panels(available) == {"fixed": longlags.FIXED_LAG, "longest": 4150}
+
+
+def units_of_runs(climb_s, time_s, found, searches):
+    """Per unit: the terms of a time share and of the searches that end in a climb, and the phase time."""
+    rows = pd.DataFrame({"climb_s": climb_s, "s": time_s, "found": found, "searches": searches})
+    unit = np.arange(len(rows))
+    return rows, unit, pd.Series(time_s, index=unit, dtype=float)
+
+
+def test_average_first_gives_the_mean_of_the_shares():
+    stats = {k: budget.STATS[k] for k in ("time in climb (%)", "searches that end in a climb (%)")}
+    rows, unit, time = units_of_runs([10.0, 40.0, 150.0], [100.0, 200.0, 300.0], [1, 3, 0], [2, 4, 0])
+    r, q = budget.unit_rates(rows, unit, time, stats)
+    value, draws = budget.mean_ratios(r, q, np.arange(3), np.ones((4, 3)), stats)
+    assert value["time in climb (%)"] == pytest.approx(100 * np.mean([0.1, 0.2, 0.5]))
+    assert draws[:, 0] == pytest.approx(value["time in climb (%)"])
+    # the searches: sum (found_u / T_u) / sum (searches_u / T_u)
+    assert value["searches that end in a climb (%)"] == pytest.approx(100 * (1 / 100 + 3 / 200) / (2 / 100 + 4 / 200))
+
+
+def test_a_unit_with_one_search_weighs_as_its_searches_not_as_a_unit():
+    stats = {"searches that end in a climb (%)": budget.STATS["searches that end in a climb (%)"]}
+    # nine units with 10 searches, half found, and one unit with a single search that is found, all of 1000 s
+    found, searches = [5.0] * 9 + [1.0], [10.0] * 9 + [1.0]
+    rows, unit, time = units_of_runs([0.0] * 10, [1000.0] * 10, found, searches)
+    r, q = budget.unit_rates(rows, unit, time, stats)
+    value, _ = budget.mean_ratios(r, q, np.arange(10), np.ones((1, 10)), stats)
+    mean_of_shares = 100 * np.mean(np.array(found) / np.array(searches))
+    assert value.iloc[0] == pytest.approx(100 * 46 / 91)  # equal times: the ratio of sums
+    assert abs(value.iloc[0] - 50) < abs(mean_of_shares - 50) / 5
+    # the same units with time given by the number of searches: the share of each unit counts once
+    unit_share = budget.unit_rates(rows, unit, pd.Series(searches, index=unit), stats)
+    assert budget.mean_ratios(*unit_share, np.arange(10), np.ones((1, 10)), stats)[0].iloc[0] == pytest.approx(mean_of_shares)
+
+
+def test_rates_per_unit_and_the_bootstrap_of_whole_blocks():
+    stats = {"climbs per hour": budget.STATS["climbs per hour"], "climb rate (m/s)": ("gain_m", "climb_s", 1, 2)}
+    rows = pd.DataFrame({"climbs": [2.0, 1.0, 0.0], "hours": [0.5, 0.5, 1.0], "gain_m": [100.0, 30.0, 0.0],
+                         "climb_s": [200.0, 100.0, 0.0]})
+    time = pd.Series([1800.0, 1800.0, 3600.0, 60.0], index=[7, 8, 9, 10])  # unit 10 has no row
+    r, q = budget.unit_rates(rows, [7, 8, 9], time, stats)
+    assert r["climbs per hour"].tolist() == pytest.approx([2 / 1800, 1 / 1800, 0, 0])
+    assert q["climb rate (m/s)"].tolist() == pytest.approx([200 / 1800, 100 / 1800, 0, 0])
+    # units 7 and 8 in block 0, 9 and 10 in block 1; draws: block 0 twice, block 1 twice, block 1 only
+    value, draws = budget.mean_ratios(r, q, np.array([0, 0, 1, 1]), np.array([[2, 0], [1, 1], [0, 2]]), stats)
+    assert value["climbs per hour"] == pytest.approx(2.0)  # the mean of 4, 2 and 0 climbs per hour
+    assert draws[0, 0] == pytest.approx(3.0) and draws[1] == pytest.approx(value.to_numpy()) and draws[2, 0] == 0
+    assert value["climb rate (m/s)"] == pytest.approx(130 / 300)
