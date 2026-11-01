@@ -77,6 +77,27 @@ def survival(runs, block, rng, populations=POPULATIONS):
     return data, fits
 
 
+GRID = np.unique(np.round(np.geomspace(1, 1e5, 90)))  # s, the log grid of survival_curve
+
+
+def survival_curve(x, block, counts, weights=None, grid=GRID):
+    """P(X > t) on `grid` for the durations `x`, each with its weight (default 1): sum w [x > t] / sum w. Bands:
+    pointwise 5-95% of the same ratio when the weight of a run is also multiplied by the count of its block
+    (`block`: a code per run, the columns of `counts`, N_BOOT rows). No fit. Returns {"grid", "value", "band"}
+    (value and band NaN where the weights sum to 0)."""
+    x, codes = np.asarray(x, float), np.asarray(block)
+    w = np.ones(len(x)) if weights is None else np.asarray(weights, float)
+    above = np.zeros((counts.shape[1], len(grid) + 1))  # per block: weight of the runs with k grid points below x
+    np.add.at(above, (codes, np.searchsorted(grid, x, "left")), w)
+    above = np.cumsum(above[:, ::-1], axis=1)[:, ::-1][:, 1:]  # weight above grid[j]: runs with k > j
+    total = np.bincount(codes, w, minlength=counts.shape[1])
+    with np.errstate(divide="ignore", invalid="ignore"):
+        draws = np.concatenate([(counts[a:a + 100] @ above) / (counts[a:a + 100] @ total)[:, None]
+                                for a in range(0, len(counts), 100)])
+        value = above.sum(axis=0) / total.sum()
+    return {"grid": grid.tolist(), "value": value.tolist(), "band": np.nanpercentile(draws, [5, 95], axis=0).tolist()}
+
+
 def plot(data, fits, path, populations=POPULATIONS, colors=COLORS, min_tail=0):
     """The survival of every population, with its mu above the common threshold, shown and drawn
     only when at least `min_tail` runs lie above it."""

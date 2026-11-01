@@ -202,8 +202,14 @@ def local_h(lags, msd):
     return np.array(out)
 
 
-def ensemble(values, blocks, rng):
-    """Equal-weight mean over flights, and N_BOOT bootstrap means resampling whole blocks."""
+def ensemble(values, blocks, rng, counts=None):
+    """Equal-weight mean over flights, and N_BOOT bootstrap means resampling whole blocks. With `counts`
+    (N_BOOT rows, one column per block code in `blocks`) the draws are those counts, not drawn from rng."""
+    if counts is not None:
+        sums, n = np.zeros((counts.shape[1], values.shape[1])), np.bincount(blocks, minlength=counts.shape[1]).astype(float)
+        np.add.at(sums, blocks, values)
+        draws = [(counts[a:a + 50] @ sums) / (counts[a:a + 50] @ n)[:, None] for a in range(0, len(counts), 50)]
+        return values.mean(axis=0), np.concatenate(draws)
     ids, k = np.unique(blocks, return_inverse=True)
     sums, counts = np.zeros((len(ids), values.shape[1])), np.bincount(k, minlength=len(ids)).astype(float)
     np.add.at(sums, k, values)

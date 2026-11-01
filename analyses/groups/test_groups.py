@@ -929,3 +929,30 @@ def test_rates_per_unit_and_the_bootstrap_of_whole_blocks():
     assert value["climbs per hour"] == pytest.approx(2.0)  # the mean of 4, 2 and 0 climbs per hour
     assert draws[0, 0] == pytest.approx(3.0) and draws[1] == pytest.approx(value.to_numpy()) and draws[2, 0] == 0
     assert value["climb rate (m/s)"] == pytest.approx(130 / 300)
+
+
+def test_survival_curve_with_equal_weights_is_the_plain_ccdf():
+    x = np.array([3.0, 5.0, 5.0, 9.0, 40.0, 41.0, 100.0, 250.0])
+    block = np.arange(len(x)) % 3
+    grid = np.array([1.0, 5.0, 6.0, 41.0, 250.0, 1000.0])
+    got = survival.survival_curve(x, block, np.ones((5, 3)), grid=grid)
+    assert got["value"] == pytest.approx([(x > t).mean() for t in grid])
+    assert np.array(got["band"]) == pytest.approx(np.array([got["value"]] * 2))
+
+
+def test_survival_curve_with_weights_and_blocks():
+    x, w = np.array([1.0, 2.0, 3.0]), np.array([1.0, 1.0, 2.0])
+    grid = np.array([0.5, 1.5, 2.5, 3.0])
+    counts = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 1]])
+    got = survival.survival_curve(x, np.array([0, 1, 2]), counts, w, grid)
+    assert got["value"] == pytest.approx([1, 0.75, 0.5, 0])
+    # draws: only the run of x = 1; only x = 2; only x = 3; all: the band is the 5-95% over them at each point
+    draws = np.array([[1, 0, 0, 0], [1, 1, 0, 0], [1, 1, 1, 0], [1, 0.75, 0.5, 0]])
+    assert got["band"] == pytest.approx(np.percentile(draws, [5, 95], axis=0))
+
+
+def test_ensemble_with_given_counts_resamples_those_blocks():
+    values = np.array([[1.0], [3.0], [10.0]])
+    mean, draws = tamsd.ensemble(values, np.array([0, 0, 1]), None, np.array([[1, 0], [0, 2], [2, 1]]))
+    assert mean[0] == pytest.approx(14 / 3)
+    assert draws[:, 0] == pytest.approx([2.0, 10.0, (2 + 6 + 10) / 5])

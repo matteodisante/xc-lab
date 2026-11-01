@@ -5,6 +5,9 @@ A series is a dict of the form tamsd.summarize gives (lags, msd, H_loc, H_loc_ba
 label, a colour and a line style.
 """
 
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
 
 INSET = (0.08, 0.08, 0.36, 0.36)  # left, bottom, width, height of the inset, in axes fractions
@@ -14,6 +17,36 @@ RAMP = ("#f7c59f", "#f2a065", "#eb6834", "#c24a1d", "#8c2f0f")  # orange, light 
 def series(result, label, color, ls="-"):
     """A series from one population of a result of tamsd.summarize (or longlags.curve)."""
     return {**result, "label": label, "color": color, "ls": ls}
+
+
+def plot_msd(ax, curves):
+    """MSD against the lag of every series in `curves`, log-log, with the 5-95% band; the legend holds the
+    series that have a label."""
+    for c in curves:
+        lags = np.asarray(c["lags"])
+        ax.fill_between(lags, *c["msd_band"], color=c["color"], alpha=0.15, lw=0)
+        ax.plot(lags, c["msd"], color=c["color"], ls=c["ls"], lw=1.3, label=c.get("label"))
+    ax.set(xscale="log", yscale="log", xlabel=r"$\tau$ (s)", ylabel=r"MSD (m$^2$)")
+    ax.grid(color="#eeeeee", lw=0.5)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+
+
+def figures(curves, stem, title=None):
+    """Two figures of `curves`, `<stem>_msd` and `<stem>_hloc` (pdf and png): plot_msd, and plot without inset."""
+    low = min(np.min(c["H_loc_band"][0]) for c in curves)
+    high = max(np.max(c["H_loc_band"][1]) for c in curves)
+    zoom = (np.floor((low - 0.01) * 50) / 50, high + 0.04)
+    for suffix, draw in (("msd", plot_msd), ("hloc", lambda ax, c: plot(ax, c, zoom, inset=None))):
+        fig, ax = plt.subplots(figsize=(4.2, 3.3), constrained_layout=True)
+        draw(ax, curves)
+        ax.legend(frameon=False, fontsize=6.5, loc="upper left" if suffix == "msd" else "best")
+        if title:
+            ax.set_title(title, fontsize=8)
+        path = Path(f"{stem}_{suffix}.pdf")
+        fig.savefig(path, bbox_inches="tight")
+        fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
+        plt.close(fig)
 
 
 def plot(ax, curves, ylim=None, inset=INSET):

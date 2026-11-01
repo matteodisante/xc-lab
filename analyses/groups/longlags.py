@@ -71,16 +71,16 @@ def longest(avail):
     return max(ok) if ok else 0
 
 
-def curve(p, mask, block, rng, tau):
+def curve(p, mask, block, rng, tau, counts=None):
     """MSD, H_loc and bands of the population `mask` on its pieces long enough for the lag `tau`, over
-    the lags up to `tau`."""
+    the lags up to `tau`; `counts`: the bootstrap draws of tamsd.ensemble."""
     keep = long_enough(p, mask, tau)
     lags = LONG_LAGS[LONG_LAGS <= tau]
     flights, k = np.unique(p["flight"][keep], return_inverse=True)
     sums, origins = np.zeros((len(flights), len(lags))), np.zeros((len(flights), len(lags)))
     np.add.at(sums, k, p["sums"][keep][:, :len(lags)])
     np.add.at(origins, k, p["origins"][keep][:, :len(lags)])
-    mean, draws = ensemble(sums / origins, block.reindex(flights).to_numpy(), rng)
+    mean, draws = ensemble(sums / origins, block.reindex(flights).to_numpy(), rng, counts)
     h = np.array([local_h(lags, d) for d in draws])
     fitted = np.array([fit_h(lags, d) for d in draws])
     return {"flights": len(flights), "pieces": int(keep.sum()), "lags": lags.tolist(), "msd": mean.tolist(),
