@@ -5,7 +5,7 @@ that needs pieces of at least tau / SUPPORT, so a curve to the lag T is measured
 population of at least T / SUPPORT s: the population does not change along the curve. The curves of one
 panel share T, so they are measured alike: FIXED_LAG ("fixed"), and the
 longest lag at which every population of the panel keeps MIN_FLIGHTS flights ("longest"). Equal weight per
-flight and the bootstrap bands of tamsd.py.
+flight; the bands of twoway.py.
 
 Populations (paragliders, as tamsd.py and size.py): solo, group, group_solo; the pieces of the group time by
 the number of pilots of the group (n2, ..., n7+, and "<size>/alone", the solo time of the flights that have
@@ -24,6 +24,8 @@ import pandas as pd
 
 import curves
 import tamsd
+import twoway
+from blocks import with_takeoffs
 from tamsd import CACHE, COLORS, LABELS, OUT, SEED, SIZES, SUPPORT, ensemble, fit_h, local_h, stretches
 
 # The lags of tamsd.py, then the same geometric step up to 30 000 s.
@@ -132,13 +134,14 @@ if __name__ == "__main__":
         measure(tamsd.read_flights(), pd.read_parquet(LABELS / "membership.parquet"),
                 pd.read_parquet(LABELS / "flight_summary.parquet"))
     p = dict(np.load(PIECES))
-    block = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")["block"]
+    block, of_pilot, of_block = twoway.cells(with_takeoffs(tamsd.read_flights()), pd.read_parquet(LABELS / "flight_summary.parquet"))
     rng = np.random.default_rng(SEED)
+    counts = twoway.counts(of_pilot, of_block, rng)
     masks = populations(p)
     result = {"min_flights": MIN_FLIGHTS, "available": {k: available(p, m) for k, m in masks.items()}, "panels": {}}
     for name, tau in panels(result["available"]).items():
         assert all(longest(result["available"][k]) >= tau for k in POOLED), f"fewer than {MIN_FLIGHTS} flights at {tau} s"
-        result["panels"][name] = {"tau_max": tau, "curves": {k: curve(p, masks[k], block, rng, tau) for k in POOLED}}
+        result["panels"][name] = {"tau_max": tau, "curves": {k: curve(p, masks[k], block, rng, tau, counts, twoway.band) for k in POOLED}}
         print(name, tau, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
     (OUT / "longlags.json").write_text(json.dumps(result, indent=1))
     figure(result, OUT / "longlags.pdf")

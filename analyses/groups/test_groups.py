@@ -1049,11 +1049,13 @@ def test_prepost_open_numbers_of_the_report():
     d, k = r["differences"], "H_loc(1000 s)"
     assert r["lags"][-1] == 1840 and r["n_boot"] == 1000
     assert r["curves"]["stages"]["events"] == 1595 and d["g"]["events (MSD)"] == 1595
-    assert (d["D_in"]["events (MSD)"], d["D_out"]["events (MSD)"], d["post - pre"]["events (MSD)"]) == (3197, 6076, 1818)
-    assert [round(d[n][k]["value"], 3) for n in ("D_in", "D_out", "post - pre", "g", "d w")] == [0.018, 0.021, 0.001, 0.023, -0.002]
-    four_in, four_out = (d[f"{x} (four-window events)"] for x in ("D_in", "D_out"))
-    assert d["g"][k]["value"] == pytest.approx((four_in[k]["value"] + four_out[k]["value"]) / 2, abs=1e-12)
-    assert d["d w"][k]["value"] == pytest.approx((four_in[k]["value"] - four_out[k]["value"]) / 2, abs=1e-12)
+    assert (d["D_in"]["events (MSD)"], d["D_out"]["events (MSD)"], d["post - pre"]["events (MSD)"]) == (1595, 1595, 1818)
+    assert [round(d[n][k]["value"], 3) for n in ("D_in", "D_out", "post - pre", "g", "d w")] == [0.025, 0.027, 0.002, 0.026, -0.001]
+    assert d["g"][k]["value"] == pytest.approx((d["D_in"][k]["value"] + d["D_out"][k]["value"]) / 2, abs=1e-12)
+    assert d["d w"][k]["value"] == pytest.approx((d["D_in"][k]["value"] - d["D_out"][k]["value"]) / 2, abs=1e-12)
+    # H_loc(1000 s) has its window cut at 1000 s, as on dataset 1000 of the other points
+    stages = r["curves"]["stages"]
+    assert d["D_in"][k]["value"] == pytest.approx(stages["start"][k] - stages["pre"][k], abs=1e-12)
 
 
 def _utc(*stamps):

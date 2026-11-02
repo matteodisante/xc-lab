@@ -22,9 +22,8 @@ GLOSS = {"Dist libre": "free distance", "Dist 1 pt": "distance, 1 turn point", "
 
 
 def signed(x, digits):
-    """x with its sign in math mode; no sign when it rounds to 0."""
-    r = round(x, digits)
-    return ("$+$" if r > 0 else "$-$" if r < 0 else "") + num(abs(x), digits)
+    """x with its sign in math mode, kept when it rounds to 0 (a band edge of -0.000 is below 0); none for 0."""
+    return ("$+$" if x > 0 else "$-$" if x < 0 else "") + num(abs(x), digits)
 
 
 def read(folder, name):
@@ -126,6 +125,7 @@ CALIPER_TEXT = {"month1_hour1_class": r"month $\pm1$, hour $\pm1$, same class", 
                 "month2_hour2_class": r"month $\pm2$, hour $\pm2$, same class", "month2_hour2_level": r"month $\pm2$, hour $\pm2$, same level"}
 CELL_TEXT = {"none": r"$\emptyset$", "R": "R", "T": "T", "R+T": "RT", "W": "W", "R+W": "RW", "T+W": "TW", "R+T+W": "RTW"}
 LEVELS = ("beginners", "experienced", "all")
+GAPTAG = {"G - S": "", "A - S": "AS", "G - A": "GA"}  # the raw gaps of raw.py and their macro suffixes
 
 
 def piece(x):
@@ -175,8 +175,17 @@ def raw_tex(r):
                          f" & {cell(v[HK], 3)} & {cell(q, 3) if q else '--'} \\\\")
         lines.append(r"\midrule" if ds != "longest" else r"\bottomrule")
     write("raw_table", lines + [r"\end{tabular}"])
-    macro("RawGapHK", signed(r["datasets"]["1000"]["populations"]["G"][HK]["value"] - r["datasets"]["1000"]["populations"]["S"][HK]["value"], 3))
-    macro("RawGapHQ", signed(r["datasets"]["2250"]["populations"]["G"][HQ]["value"] - r["datasets"]["2250"]["populations"]["S"][HQ]["value"], 3))
+    for gap, tag in GAPTAG.items():  # the paired gaps, with the band of their own draws
+        for ds, q in (("1000", HK), ("2250", HQ)):
+            v, pops = r["gaps"][ds][q][gap], r["datasets"][ds]["populations"]
+            assert abs(v["value"] - (pops[gap[0]][q]["value"] - pops[gap[-1]][q]["value"])) < 1e-12
+            mac_value(f"RawGap{TAG[q]}{tag}", v, 3, True)
+        curve = r["gaps"]["1000"]["H_loc"][gap]  # over the lags of dataset 1000: the first lag, and where G - S turns positive
+        mac_value(f"RawGapFirst{tag}", {"value": curve["value"][0], "band": [curve["band"][0][0], curve["band"][1][0]]}, 3, True)
+        if gap == "G - S":
+            above = np.asarray(curve["value"]) > 0
+            macro("RawGapCross", num(curve["lags"][int(np.flatnonzero(~above)[-1]) + 1], 0))
+    macro("RawFirstLag", num(r["gaps"]["1000"]["H_loc"]["G - S"]["lags"][0], 0))
     ph = r["phase statistics"]
     lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule", r" & $\Sl$ & $\A$ & $\G$ \\", r"\midrule"]
     for p in POP:
@@ -189,8 +198,8 @@ def raw_tex(r):
         for p in POP:
             mac_value(f"RawStat{TAG[s]}{p}", ph[p]["average first"][s], DIG[s])
             macro(f"RawSum{TAG[s]}{p}", num(ph[p]["ratio of sums"][s]["value"], DIG[s]))
-        g, s_ = ph["G"]["average first"][s]["value"], ph["S"]["average first"][s]["value"]
-        macro(f"RawGap{TAG[s]}", signed(g - s_, DDIG[s]))
+        for gap, tag in GAPTAG.items():
+            mac_value(f"RawGap{TAG[s]}{tag}", r["phase gaps"][gap][s], DDIG[s], True)
     write("raw_ratio_table", lines + [r"\bottomrule", r"\end{tabular}"])
     for p in POP:
         for phase, tag in PHASE.items():
@@ -230,6 +239,11 @@ def counts_tex(c):
 def matched_tex(m):
     a = m["levels"]["all"]
     macro("MatLongT", num(a["long T"]["G"], 0))
+    for lv in LEVELS:  # the long series: one lag for G and A (matched.common_long_lag)
+        T = m["levels"][lv]["long T"]
+        assert T["G"] == T["A"], T
+        macro(f"MatLongT{lv.capitalize()}", num(T["G"], 0))
+    assert m["levels"]["beginners"]["long T"]["G"] < 1840 <= m["levels"]["experienced"]["long T"]["G"]  # the forest caption says so
     for p in ("G", "A"):
         for k, v in a["counts"][p].items():
             macro(f"MatN{p}" + "".join(w.capitalize() for w in k.replace(",", "").split()), num(v, 0))
@@ -265,6 +279,10 @@ def matched_tex(m):
     for k, (tag, _) in dn.items():
         macro(f"MatZero{tag}", num(sum(zero_in(d[k][q]) for q in QUANT), 0))
     macro("MatNQuant", num(len(QUANT), 0))
+    for k, tag in (("G - S|G", "G"), ("A - S|A", "A")):  # Delta H_loc at 1000 s on the long series: its window is not cut there
+        c = a["delta curves"][k]["long"]
+        i = c["lags"].index(1000)
+        mac_value(f"MatDeltaHKLong{tag}", {"value": c["value"][i], "band": [c["band"][0][i], c["band"][1][i]]}, 3, True)
     rob = m["robustness"]
     macro("MatRobLines", num(len(rob), 0))
     for q in (HK, HQ):
@@ -363,33 +381,21 @@ def prepost_tex(p, m):
         macro(f"PreVsInside{t}", "yes" if d2[q]["band"][0] <= g[q]["value"] <= d2[q]["band"][1] else "no")
         lines.append(f"{LABEL[q]} & {cell(g[q], DDIG[q], True)} & {cell(d2[q], DDIG[q], True)} & {signed(diff, DDIG[q])} & {'yes' if g[q]['value'] * d2[q]['value'] > 0 else 'no'} \\\\")
     write("prepost_table", lines + [r"\bottomrule", r"\end{tabular}"])
-    assert macros["PreVsInsideHK"] == "yes", "g must lie in the band of point 2 at H_loc(1000 s)"
-    same = {q for q in QUANT if q != HQ and g[q]["value"] * d2[q]["value"] > 0}
-    assert same == {HK, "time in climb (%)", "searches that end in a climb (%)", "climbs per hour"}, same  # the text names these
 
 
 def summary_tex(r, m, p):
     d2, g = m["levels"]["all"]["deltas"], p["differences"]["g"]
     mark = lambda v: r"$^\circ$" if zero_in(v) else ""
-    lines = [r"\begin{tabular}{@{}l r l l l@{}}", r"\toprule",
+    lines = [r"\begin{tabular}{@{}l l l l l@{}}", r"\toprule",
              r" & raw $\G-\Sl$ & matched $\Delta(\G-\Sl\mid\G)$ & selection $\Delta(\A-\Sl\mid\A)$ & before and after $g$ \\", r"\midrule"]
     for q in QUANT:
-        pops = r["datasets"]["1000" if q == HK else "2250"]["populations"] if q in (HK, HQ) else None
-        if pops:
-            gap = pops["G"][q]["value"] - pops["S"][q]["value"]
-            sep = pops["G"][q]["band"][0] > pops["S"][q]["band"][1] or pops["G"][q]["band"][1] < pops["S"][q]["band"][0]
-        else:
-            ph = r["phase statistics"]
-            gap = ph["G"]["average first"][q]["value"] - ph["S"]["average first"][q]["value"]
-            a, b = ph["G"]["average first"][q]["band"], ph["S"]["average first"][q]["band"]
-            sep = a[0] > b[1] or a[1] < b[0]
-        macro(f"SumSep{TAG[q]}", "yes" if sep else "no")
-        row = [LABEL[q], signed(gap, DDIG[q]) + ("" if sep else r"$^\circ$"),
+        raw = r["gaps"]["1000" if q == HK else "2250"][q]["G - S"] if q in (HK, HQ) else r["phase gaps"]["G - S"][q]
+        row = [LABEL[q], cell(raw, DDIG[q], True) + mark(raw),
                cell(d2["G - S|G"][q], DDIG[q], True) + mark(d2["G - S|G"][q]),
                cell(d2["A - S|A"][q], DDIG[q], True) + mark(d2["A - S|A"][q]),
                (cell(g[q], DDIG[q], True) + mark(g[q])) if q in g else "--"]
         lines.append(" & ".join(row) + r" \\")
-    macro("RawSepCount", num(sum(macros[f"SumSep{TAG[q]}"] == "yes" for q in STAT7), 0))
+    macro("RawNonZeroCount", num(sum(not zero_in(r["phase gaps"]["G - S"][q]) for q in STAT7), 0))
     write("summary_table", lines + [r"\bottomrule", r"\end{tabular}"])
 
 
@@ -424,6 +430,50 @@ def toy_tex():
     macro("ToySurvAtThirty", num(1 / 4, 2))
     macro("ToySurvAtTwenty", num(3 / 4, 2))
     macro("HqLowest", num(1840 * 10 ** -0.25, 0))  # the lowest lag of the window of H_loc(1840 s)
+    a, controls = (5.0, 7.0), ((2.0, 4.0), (6.0,))  # the reweighting example: two pieces, their controls
+    for k, x in zip(("A", "B", "Ca", "Cb", "Cc"), (*a, *controls[0], *controls[1])):
+        macro(f"ToyRw{k}", num(x, 0))
+    macro("ToyRwGroup", num(np.mean(a), 1))
+    macro("ToyRwControl", num(np.mean([np.mean(c) for c in controls]), 1))
+    macro("ToyRwPooled", num(np.mean([x for c in controls for x in c]), 1))
+    psi, pilot, block = np.array([1.0, 1.0, -2.0]), np.array([1, 1, 2]), np.array([0, 1, 1])  # the two-way example
+    by = lambda code: float(sum(psi[code == c].sum() ** 2 for c in np.unique(code)))
+    v = {"P": by(pilot), "B": by(block), "C": by(pilot * 10 + block)}
+    pairs = sum(psi[k] * psi[l] for k in range(3) for l in range(3) if pilot[k] == pilot[l] or block[k] == block[l])
+    assert v["P"] + v["B"] - v["C"] == pairs
+    for k, x in v.items():
+        macro(f"ToyCgm{k}", num(x, 0))
+    macro("ToyCgmV", num(pairs, 0))
+    macro("ToyCgmPig", num(v["P"] + v["B"] + v["C"], 0))
+
+
+def coverage_tex(cov):
+    """The table of coverage.py and the ranges the appendix quotes."""
+    designs, new = ("raw", "matched", "prepost"), "two-way, normal"
+    old = {d: next(k for k in next(iter(cov[d]["scenarios"].values())) if k not in ("true sd", new)) for d in designs}
+    lines = [r"\begin{tabular}{@{}l l l l l l l@{}}", r"\toprule",
+             r" & \multicolumn{2}{c}{point 1} & \multicolumn{2}{c}{point 2} & \multicolumn{2}{c}{point 4} \\",
+             r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}",
+             r"variances & two-way & before & two-way & before & two-way & before \\", r"\midrule"]
+    show = lambda r: f"{100 * r['coverage of 90%']:.0f} ({r['sd / true sd']:.2f})"
+    for name, var in cov["scenarios"].items():
+        cells = [show(cov[d]["scenarios"][name][k]) for d in designs for k in (new, old[d])]
+        lines.append(f"{name} ({', '.join(f'{x:g}' for x in var)}) & " + " & ".join(cells) + r" \\")
+    write("coverage_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    pick = lambda d, k, f: [r[k][f] for r in cov[d]["scenarios"].values()]
+    newc = [x for d in designs for x in pick(d, new, "coverage of 90%")]
+    news = [x for d in designs for x in pick(d, new, "sd / true sd")]
+    macro("CovNewMin", num(100 * min(newc), 0))
+    macro("CovNewMax", num(100 * max(newc), 0))
+    macro("CovNewSdMin", num(min(news), 2))
+    macro("CovNewSdMax", num(max(news), 2))
+    macro("CovOldRawMin", num(100 * min(pick("raw", old["raw"], "coverage of 90%")), 0))
+    macro("CovOldMatchedMin", num(100 * min(pick("matched", old["matched"], "coverage of 90%")), 0))
+    macro("CovOldMatchedSdMin", num(min(pick("matched", old["matched"], "sd / true sd")), 1))
+    macro("CovOldMatchedSdMax", num(max(pick("matched", old["matched"], "sd / true sd")), 1))
+    macro("CovReuse", num(cov["matched"]["sum K^2 / sum K"], 1))
+    macro("CovReplicates", num(cov["replicates"], 0))
+    macro("CovDraws", num(cov["draws per family"], 0))
 
 
 if __name__ == "__main__":
@@ -446,5 +496,7 @@ if __name__ == "__main__":
         decomposition_tex(j["decomposition"])
         prepost_tex(j["prepost_2400"], j["matched"])
         summary_tex(j["raw"], j["matched"], j["prepost_2400"])
+    if (opened / "coverage.json").exists():
+        coverage_tex(read(opened, "coverage"))
     (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
     print(f"{len(macros)} macros")

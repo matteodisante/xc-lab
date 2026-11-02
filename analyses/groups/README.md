@@ -32,7 +32,8 @@ measured pieces (`pieces.npz`, `phase_pieces.npz`, `size_*`) stay on
 **Conventions.** TA-MSD on a 10-s grid, lags 10–1000 s, a stretch enters only if it lasts
 1250 s in one segment; equal weight per flight. H: half the slope of log MSD over all lags;
 H_loc: the same within ±0.25 decades. Bands: 5–95% of bootstrap draws of the dependency blocks
-of the method (flights tied by episodes; a solo flight is a block alone).
+of the method (flights tied by episodes; a solo flight is a block alone), except in the comparisons
+(`raw.py`, `matched.py`, `decomposition.py`, `prepost.py --open`, `longlags.py`), which use `twoway.py`.
 
 ## Does flying in a group change the flight?
 
@@ -115,19 +116,26 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   datasets `1000`, `2250` and `longest` (`raw_<dataset>_msd`, `raw_<dataset>_hloc`), the seven phase statistics
   by the estimator that averages first (`budget.unit_rates`, `budget.mean_ratios`; unit = the flight, its runs
   on its pieces of dataset `1000`) with the ratio of sums as a check, and the survival of climbs, searches that
-  end in a climb and glides (`survival.survival_curve`, with optional weights); all in `raw.json`, with one
-  set of bootstrap draws of the dependency blocks for every band.
+  end in a climb and glides (`survival.survival_curve`, with optional weights); the gaps G - S, A - S and G - A
+  with the band of their own draws, at every lag (`raw_<dataset>_delta`) and for the statistics; all in `raw.json`.
 - **`prepost.py --open`** (point 4): windows of 2400 s, MSD and H_loc figures of pre, start, end, post and of the
   two control pairs, the seven statistics by the estimator that averages first (unit = the window), D_in, D_out,
-  post - pre and, on the events with the four windows, the drift-free g = (D_in + D_out) / 2 and d w = (D_in - D_out) / 2.
-  `--redraw` draws the forest plot again from the JSON (`prepost_2400.json`).
+  post - pre and, on the events with the four windows, D_in, D_out, the drift-free g = (D_in + D_out) / 2 and
+  d w = (D_in - D_out) / 2; H_loc(1000 s) with its window cut at 1000 s as in the other points; `prepost_2400_delta`
+  draws them over the lags. `--redraw` draws the forest plot again from the JSON (`prepost_2400.json`).
 - **`matched.py`** (`--open`, point 2): one match table on the route only (rho 500 m, cover 0.8, same direction), calipers
   as filters (month, hour, wing class or level), counts of pieces per caliper (`matched_counts.json`), then `--stats`:
   G against S|G and A against S|A with the seven statistics, survival with weights and the robustness lines.
-  Pilots x blocks bands, and the range over the years leaving one out (`matched.json`).
+  The range over the years leaving one out (`matched.json`); `matched_<dataset>_delta` draws the Deltas over the lags.
 - **`decomposition.py`** (`--open`, point 3): Delta(C) for the 8 subsets of {route, season and hour, wing} on the same
   pieces, controls without a route as windows of solo pieces, and the Shapley value of each factor
   (`decomposition.json`); the identity Delta(none) = Delta(F) + phi_R + phi_T + phi_W holds on every draw.
+- **`twoway.py`**: the bands of the comparisons. Three one-way bootstraps of pilots, blocks (episodes and site-days)
+  and cells (pilot x block), V = max(V_p + V_b - V_c, V_p, V_b) (Cameron, Gelbach and Miller 2011), band
+  estimate -+ 1.645 sqrt(V).
+- **`coverage.py`**: the check of those bands. Synthetic values with pilot, block, flight and unit effects and no
+  group effect on the designs of points 1, 2 and 4: the two-way band holds 0 in 88–99% of the replicates, the
+  bands used before in 59–100% (`coverage.json`).
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.
@@ -196,6 +204,7 @@ numbers quoted here, except those of `isolated.py` and `experienced/`, which no 
 ```
 # open flights, after tamsd, longlags, performance with --open: raw, prepost, matched (--stats), decomposition
 uv run python raw.py --open; uv run python prepost.py --open --window 2400; uv run python matched.py --open --stats; uv run python decomposition.py --open
+uv run python coverage.py --open        # after those; about 1 min, 1.4 GB
 uv run python tamsd.py [--run NAME]      # from this folder, needs SSD_DISANTE; --recompute: about 5 min
 uv run python episodes.py [--run NAME]   # after tamsd.py
 uv run python phase_msd.py [--run NAME]  # --recompute: about 6 min; the bootstrap of the slopes about 45 min

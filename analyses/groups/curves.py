@@ -12,6 +12,7 @@ import numpy as np
 
 INSET = (0.08, 0.08, 0.36, 0.36)  # left, bottom, width, height of the inset, in axes fractions
 RAMP = ("#f7c59f", "#f2a065", "#eb6834", "#c24a1d", "#8c2f0f")  # orange, light to dark: more pilots
+CROWDED = 6  # more curves than this: the legend goes beside the axes
 
 
 def series(result, label, color, ls="-"):
@@ -40,7 +41,10 @@ def figures(curves, stem, title=None):
     for suffix, draw in (("msd", plot_msd), ("hloc", lambda ax, c: plot(ax, c, zoom, inset=None))):
         fig, ax = plt.subplots(figsize=(4.2, 3.3), constrained_layout=True)
         draw(ax, curves)
-        ax.legend(frameon=False, fontsize=6.5, loc="upper left" if suffix == "msd" else "best")
+        if len(curves) > CROWDED:
+            ax.legend(frameon=False, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.0, 1.0))
+        else:
+            ax.legend(frameon=False, fontsize=6.5, loc="upper left" if suffix == "msd" else "best")
         if title:
             ax.set_title(title, fontsize=8)
         path = Path(f"{stem}_{suffix}.pdf")
@@ -86,8 +90,11 @@ def delta_figure(left, right, path, title=None):
         axes[1].plot(d["lags"], d["value"], color=d["color"], ls=d.get("ls", "-"), lw=d.get("lw", 1.4), label=d["label"])
     axes[1].axhline(0, color="#999999", lw=0.8)
     axes[1].set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$\Delta H_{\rm loc}(\tau)$")
-    for ax in axes:
-        ax.legend(frameon=False, fontsize=6.5, loc="best")
+    for ax, drawn in zip(axes, (left, right)):
+        if len(drawn) > CROWDED:
+            ax.legend(frameon=False, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.0, 1.0))
+        else:
+            ax.legend(frameon=False, fontsize=6.5, loc="best")
         ax.grid(color="#eeeeee", lw=0.5)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
