@@ -539,7 +539,7 @@ def draw_survival(surv, path):
     save(fig, path)
 
 
-def draw_forest(rows, path, title, stats=FOREST, per_row=3):
+def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None):
     """One panel per statistic of `stats`, one row per entry of `rows` = [(label, colour, {stat: quote}) or
     None for a gap]: a dot with the 5-95% band (thick) and, when the quote has them, the range over the years (thin)."""
     y, ys = 0.0, []
@@ -547,7 +547,7 @@ def draw_forest(rows, path, title, stats=FOREST, per_row=3):
         ys.append(y)
         y += 0.5 if r is None else 1.0
     n = -(-len(stats) // per_row)
-    fig, axes = plt.subplots(n, per_row, figsize=(3.0 * per_row + 2.6, n * (0.2 * y + 1.2)), squeeze=False)
+    fig, axes = plt.subplots(n, per_row, figsize=(width or 3.0 * per_row + 2.6, n * (0.2 * y + 1.2)), squeeze=False)
     for ax in axes.flat[len(stats):]:
         ax.axis("off")
     for ax, stat in zip(axes.flat, stats):
