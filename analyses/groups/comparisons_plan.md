@@ -28,12 +28,12 @@ windows) of at least T / `SUPPORT` s and measures them at every lag up to T: the
 change along a curve.
 
 - dataset `1000`: T = 1000 s (pieces of at least 1250 s), the pieces of `tamsd.py`;
-- dataset `2250`: T = 2250 s (at least 2812.5 s), `longlags.FIXED_LAG`;
+- dataset `2760`: T = 2760 s (at least 3450 s), `longlags.FIXED_LAG`;
 - point 1 also keeps the dataset `longest` of `longlags.py`;
 - point 4: windows of 2400 s, T = 1840 s (the largest lag of the grid within 0.8 x 2400 s).
 
-Quoted lags: H_loc(1000 s) on dataset `1000`, and H_loc(1840 s), the lag of the grid nearest 2000 s, on
-dataset `2250` (its +-0.25-decade window is cut at 2250 s, `tamsd.local_h`: say so in the captions).
+Quoted lags: H_loc(1000 s) on dataset `1000`, and H_loc(1840 s) on
+dataset `2760` (its +-0.25-decade window, 1035 to 3272 s, is cut at 2760 s, `tamsd.local_h`: say so in the captions).
 Point 4 quotes H_loc(1000 s) only.
 
 **MSD figures.** For every dataset of every point, two separate figures:
@@ -108,7 +108,7 @@ and the seven Delta, with bands and the min-max over the years where present.
 
 ## Point 1. Raw
 
-- `tamsd.py --open`, `longlags.py --open`: datasets `1000`, `2250`, `longest`, each with its MSD and
+- `tamsd.py --open`, `longlags.py --open`: datasets `1000`, `2760`, `longest`, each with its MSD and
   H_loc figures.
 - The seven statistics per population on the pieces of dataset `1000`, forest plot.
 - Survival of S, A, G.
@@ -130,15 +130,15 @@ Extend `isolated.py`; `route.py` keeps its own results.
    `/usr/bin/time -l`; if the full run would pass about 7 GB, split into tiles of 0.5 deg as in step 1 of
    `isolated_plan.md`.
 3. **Counts before any Delta.** A table of the pieces with at least one control, per level, on datasets
-   `1000` and `2250`, for the calipers in this order: (+-1 month, +-1 h, class), (+-1, +-1, level),
+   `1000` and `2760`, for the calipers in this order: (+-1 month, +-1 h, class), (+-1, +-1, level),
    (+-2, +-2, class), (+-2, +-2, level). The main caliper is the first with at least `MIN_PIECES` = 200
-   such pieces per level on dataset `2250`. Print the table, save it in the JSON, and go on with the rule.
+   such pieces per level on dataset `2760`. Print the table, save it in the JSON, and go on with the rule.
 4. **A matched too.** Build `route.TRACKS` with the pieces of A (`group_solo` of the flights with group
    time) as well, and match them as the pieces of G. Check that `route.py` selects by population, so
    that its results do not change. Report Delta(G - S | match), Delta(A - S | match) and their
    difference.
-5. **Lags.** Main series on dataset `1000`, long series on dataset `2250`: replace `LONG_CANDIDATES` and
-   `LAGS_EXTENDED` by `longlags.LONG_LAGS` and T = 2250 s; if a level keeps fewer than `MIN_PIECES`
+5. **Lags.** Main series on dataset `1000`, long series on dataset `2760`: replace `LONG_CANDIDATES` and
+   `LAGS_EXTENDED` by `longlags.LONG_LAGS` and T = 2760 s; if a level keeps fewer than `MIN_PIECES`
    pieces there, the largest lag of the grid where it keeps them, as `long_tau` does now.
 6. The seven statistics with the new estimator, survival with the weights, the figures of the shared
    rules.
@@ -182,7 +182,7 @@ Output: `decomposition.json` with the 8 Delta(C) and the phi per statistic, with
 
 - `decomposition.pdf`: per statistic, Delta(empty set) split into phi_W, phi_T, phi_R and the part left,
   Delta(F), each with its band;
-- MSD and H_loc figures of G and of the controls of the 8 cells, datasets `1000` and `2250`, colours by
+- MSD and H_loc figures of G and of the controls of the 8 cells, datasets `1000` and `2760`, colours by
   the number of conditions.
 
 The report gives Delta(empty set) beside the raw gap of point 1: they differ (pieces, pool, windows).

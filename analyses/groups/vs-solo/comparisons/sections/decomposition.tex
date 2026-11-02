@@ -14,15 +14,15 @@ The Shapley value $\varphi_k$ is the part of $\Delta(\emptyset)$ that comes from
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{open_min0.1/decomposition.pdf}
-\caption{The raw gap and its parts, level all, on \DecPiecesK{} pieces of $\G$ (\DecPiecesPhase{} with phase time for the seven statistics); $\Hk$ on dataset 1000, $\Hq$ on dataset 2250 (\DecPiecesQ{} pieces). From the top: $\Delta(\emptyset)$,
+\caption{The raw gap and its parts, level all, on \DecPiecesK{} pieces of $\G$ (\DecPiecesPhase{} with phase time for the seven statistics); $\Hk$ on dataset 1000, $\Hq$ on dataset 2760 (\DecPiecesQ{} pieces). From the top: $\Delta(\emptyset)$,
 $\varphi_W$, $\varphi_T$, $\varphi_R$, $\Delta(F)$. Thick bar: 90\% band, the same draws in every cell; thin: range over the years. Average first, ratio after, unit the piece.}
 \label{fig:decomposition}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{open_min0.1/decomposition_2250_delta.pdf}
-\caption{Dataset 2250 (\DecPiecesQ{} pieces of at least \RawShortestTwo~s). Left: $\Hloc(\tau)$ of $\G$ and of the controls of the cells $\emptyset$ and $F$. Right: $\Delta(C)$ of the 8 cells at every lag, the darker the more conditions, with the 90\% bands of $\Delta(\emptyset)$ and $\Delta(F)$.
+\includegraphics[width=\textwidth]{open_min0.1/decomposition_2760_delta.pdf}
+\caption{Dataset 2760 (\DecPiecesQ{} pieces of at least \RawShortestTwo~s). Left: $\Hloc(\tau)$ of $\G$ and of the controls of the cells $\emptyset$ and $F$. Right: $\Delta(C)$ of the 8 cells at every lag, the darker the more conditions, with the 90\% bands of $\Delta(\emptyset)$ and $\Delta(F)$.
 Dataset 1000, and $\MSD(\tau)$ and $\Hloc(\tau)$ of every cell with their bands, in Appendix~\ref{app:figures}.}
 \label{fig:decomposition-msd}
 \end{figure}
@@ -32,7 +32,7 @@ Dataset 1000, and $\MSD(\tau)$ and $\Hloc(\tau)$ of every cell with their bands,
 \setlength{\tabcolsep}{3pt}
 \input{../generated/comparisons/decomposition_table}
 \caption{Decomposition, level all: value of $\G$ on its \DecPiecesK{} pieces (\DecPiecesQ{} for $\Hq$, \DecPiecesPhase{} for the phase statistics), the raw gap $\G-\Sl$ of Section~\ref{sec:raw},
-the controls and $\Delta$ of the cells $\emptyset$ and $F$, and $\varphi_R$, $\varphi_T$, $\varphi_W$. Dataset 1000 ($\Hk$, statistics), 2250 ($\Hq$); average first, ratio after, unit the piece.
+the controls and $\Delta$ of the cells $\emptyset$ and $F$, and $\varphi_R$, $\varphi_T$, $\varphi_W$. Dataset 1000 ($\Hk$, statistics), 2760 ($\Hq$); average first, ratio after, unit the piece.
 The eight cells in Appendix~\ref{app:figures}.}
 \label{tab:decomposition}
 \end{table}
@@ -49,7 +49,7 @@ At $\Hq$, $\Delta(\emptyset)$ is \DecNoneHQ{} \DecNoneHQBand{} and $\varphi_R$ i
   \item \emph{The pieces of $\G$.} Only the pieces with a route match in the cell $F$ enter, \DecPiecesK{} of the \RawPiecesOneG{} pieces of dataset 1000. Their $\Hk$, time in climb and glide speed are lower than those of all of $\G$: $\Hk$ is \DecGroupHK{} on them and
   \RawHKOneG{} on all of $\G$; time in climb is \DecGroupClimb\% against \RawStatClimbG\%, glide speed \DecGroupGlide{} against \RawStatGlideG~km/h.
   \item \emph{The controls without R.} Their windows are as long as the piece and come from solo pieces at least that long, so from long flights. These climb more and glide faster than the solo flights of Section~\ref{sec:raw}:
-  time in climb \DecCtlClimbNone\% in the controls of $\emptyset$ against \RawStatClimbS\% in $\Sl$ (\RawSumClimbS\% with the ratio of sums, in which a flight weighs by its phase time), glide speed \DecCtlGlideNone{} against \RawStatGlideS~km/h. $\Hk$ of $\Sl$ rises with the length of the pieces, mostly beyond 2250~s: \RawHKOneS{} on dataset 1000, \RawHKTwoS{} on 2250 and \RawHKLongS{} on the longest; it is \DecCtlHKNone{} in the controls of $\emptyset$.
+  time in climb \DecCtlClimbNone\% in the controls of $\emptyset$ against \RawStatClimbS\% in $\Sl$ (\RawSumClimbS\% with the ratio of sums, in which a flight weighs by its phase time), glide speed \DecCtlGlideNone{} against \RawStatGlideS~km/h. $\Hk$ of $\Sl$ rises with the length of the pieces, mostly beyond 2760~s: \RawHKOneS{} on dataset 1000, \RawHKTwoS{} on 2760 and \RawHKLongS{} on the longest; it is \DecCtlHKNone{} in the controls of $\emptyset$.
   \item \emph{The unit.} The unit is the piece, not the flight: the \DecPiecesK{} pieces come from \MatNGFlightsGSide{} flights, and the controls of a piece are averaged before the sum over pieces.
 \end{enumerate}
 The controls with R have \DecCtlClimbR\% of time in climb: a route fixes the flight from the start to the end of the piece, in the same direction, so $\varphi_R$ carries that constraint together with the route.

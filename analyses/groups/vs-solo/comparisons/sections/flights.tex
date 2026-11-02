@@ -51,11 +51,13 @@ least $T/0.8$~s and measures them at every lag up to $T$: the population does no
 (Appendix~\ref{app:datasets}). Three datasets:
 \begin{itemize}
   \item \emph{1000}: $T=\RawTauOne$~s, pieces of at least \RawShortestOne~s;
-  \item \emph{2250}: $T=\RawTauTwo$~s, pieces of at least \RawShortestTwo~s;
+  \item \emph{2760}: $T=\RawTauTwo$~s, pieces of at least \RawShortestTwo~s;
   \item \emph{longest}: $T=\RawTauLong$~s, the longest lag at which each population keeps \DeclMinFlights{} flights, pieces of at least \RawShortestLong~s.
 \end{itemize}
-The quoted values are $\Hk$ on dataset 1000 and $\Hq$ on dataset 2250, the lag of the grid nearest to 2000~s. The
-window of $\Hq$, $\pm0.25$ decades, is cut at 2250~s: it uses the lags from \HqLowest{} to 2250~s only.
+The quoted values are $\Hk$ on dataset 1000 and $\Hq$ on dataset 2760. The lag of $\Hq$ is 1840~s, and its window of $\pm0.25$ decades
+runs from \HqLowest{} to \HqHighest~s. A longer dataset would complete the window, but it keeps fewer pieces, since a piece must last $T/0.8$~s: 2760~s is the
+longest lag of the grid at which the comparison on the same route, season, hour and wing (Section~\ref{sec:matched}) still keeps \MatMin{} pieces of $\G$ per level.
+On dataset 2760 the window is therefore cut at 2760~s and uses the lags from \HqLowest{} to 2760~s only (Appendix~\ref{app:hloc}); that of $\Hk$ is cut at 1000~s.
 
 \paragraph{Phase statistics.} Flights logged at 1~Hz carry the phases of Vilpellet's method: climbs, searches and glides.
 Phases exist on 1-Hz flights only, so the phase statistics rest on fewer flights than the MSD

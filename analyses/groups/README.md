@@ -103,7 +103,7 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   `--window`), against two consecutive windows with no change. ΔH_loc(1000 s) +0.027 entering,
   +0.031 leaving, −0.003 after minus before: the effect follows the group in time.
 - **`longlags.py`**: S, G and A over lags up to hours: a curve to the lag T is measured on the pieces of at
-  least T/0.8 s, the curves of a panel share T (2250 s, and the longest with 100 flights in each
+  least T/0.8 s, the curves of a panel share T (2760 s, and the longest with 100 flights in each
   population); the legend gives the fitted H. `curves.py` draws H_loc(tau) for any set of populations, with an inset of MSD if asked.
 - **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
   distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
@@ -111,9 +111,9 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   checks the declared type against the track (91% agreement); `opening.py` gives the openings of the datasets
   of `longlags.py` (the long lags rest on folded flights: median 0.32 on every declared open flight, 0.23 up
   to 11 450 s) and by takeoff altitude (a threshold of 0.5 keeps 42% of the flights below 1000 m, 13% above;
-  0.1 keeps 88% and 80%). On the open flights, to 2250 s, the fitted H is 0.923 in G, 0.916 in S, 0.920 in A.
+  0.1 keeps 88% and 80%). On the open flights, to 2760 s, the fitted H is 0.924 in G, 0.915 in S, 0.920 in A.
 - **`raw.py`** (`--open`): point 1 of `comparisons_plan.md`. S, A, G as they are: MSD and H_loc figures of the
-  datasets `1000`, `2250` and `longest` (`raw_<dataset>_msd`, `raw_<dataset>_hloc`), the seven phase statistics
+  datasets `1000`, `2760` and `longest` (`raw_<dataset>_msd`, `raw_<dataset>_hloc`), the seven phase statistics
   by the estimator that averages first (`budget.unit_rates`, `budget.mean_ratios`; unit = the flight, its runs
   on its pieces of dataset `1000`) with the ratio of sums as a check, and the survival of climbs, searches that
   end in a climb and glides (`survival.survival_curve`, with optional weights); the gaps G - S, A - S and G - A
@@ -145,12 +145,12 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 **The four comparisons on open flights**, report `vs-solo/comparisons/group_vs_solo_comparisons.pdf @ 2c6db88`
 (23 pages, 13 of them core). Bands of `twoway.py`, checked by `coverage.py`. Raw: H_loc(1000 s) G - S +0.018
 [+0.015, +0.021], negative at the short lags (-0.006 at 10 s); the gaps of the seven statistics exclude 0. Same
-route, season, hour and wing (caliper month ±1, hour ±1, same class, 1754 pieces of G): Delta H_loc(1000 s) +0.007
-[-0.000, +0.015], H_loc(1840 s) +0.018 [+0.004, +0.032], H_loc at 1000 s on the pieces of dataset 2250 +0.026
-[+0.015, +0.037]; more time in climb (+2.9), slower and steeper glides; the selection term includes 0 for 8 of
-9 quantities. Decomposition: the route carries most of Delta(none) for time in climb, glide speed, height lost
+route, season, hour and wing (caliper month ±2, hour ±2, same class, 2717 pieces of G on dataset 1000, 700 on
+dataset 2760): Delta H_loc(1000 s) +0.010 [+0.004, +0.017], H_loc(1840 s) +0.021 [+0.008, +0.034], H_loc at 1000 s
+on the pieces of dataset 2760 +0.024 [+0.014, +0.034]; more time in climb (+3.0), slower and steeper glides; the
+selection term includes 0 for 5 of 9 quantities. Decomposition: the route carries most of Delta(none) for time in climb, glide speed, height lost
 per km and H_loc(1840 s). Before and after: g = +0.026 [+0.020, +0.032] at H_loc(1000 s), above the band of the
-same-route gap on dataset 1000 and close to it on dataset 2250; time in search, climb rate, glide speed and
+same-route gap on dataset 1000 and close to it on dataset 2760; time in search, climb rate, glide speed and
 height lost per km have opposite signs in the two comparisons.
 
 ## What are the groups?

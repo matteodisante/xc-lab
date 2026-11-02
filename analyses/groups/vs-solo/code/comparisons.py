@@ -115,7 +115,7 @@ LABEL = {HK: r"$\Hloc(1000~\mathrm{s})$", HQ: r"$\Hloc(1840~\mathrm{s})$", "time
 DIG = {HK: 3, HQ: 3, FITK: 3, FITT: 3, "time in climb (%)": 1, "time in search (%)": 1, "searches that end in a climb (%)": 1,
        "climbs per hour": 2, "climb rate (m/s)": 2, "glide speed (km/h)": 1, "height lost per km of glide (m/km)": 0}
 DDIG = {**DIG, "climb rate (m/s)": 3, "climbs per hour": 2}  # digits of a difference
-DS = {"1000": "One", "2250": "Two", "longest": "Long"}  # dataset tags of the macros: to 1000 s, to 2250 s, the longest lag
+DS = {"1000": "One", "2760": "Two", "longest": "Long"}  # dataset tags of the macros: to 1000 s, to 2760 s, the longest lag
 POP = ("S", "A", "G")
 POPTEX = {"S": r"$\Sl$", "A": r"$\A$", "G": r"$\G$"}
 PHASE = {"climb": "Climb", "search": "Search", "transition": "Glide"}
@@ -176,7 +176,7 @@ def raw_tex(r):
         lines.append(r"\midrule" if ds != "longest" else r"\bottomrule")
     write("raw_table", lines + [r"\end{tabular}"])
     for gap, tag in GAPTAG.items():  # the paired gaps, with the band of their own draws
-        for ds, q in (("1000", HK), ("2250", HQ)):
+        for ds, q in (("1000", HK), ("2760", HQ)):
             v, pops = r["gaps"][ds][q][gap], r["datasets"][ds]["populations"]
             assert abs(v["value"] - (pops[gap[0]][q]["value"] - pops[gap[-1]][q]["value"])) < 1e-12
             mac_value(f"RawGap{TAG[q]}{tag}", v, 3, True)
@@ -217,22 +217,22 @@ def counts_tex(c):
     macro("MatMonth", num(m["month within"], 0))
     macro("MatHour", num(m["hour within"], 0))
     macro("MatChosenText", CALIPER_TEXT[m["name"]])
-    macro("MatMinBeg", num(m["G pieces on dataset 2250"]["beginners"], 0))
-    macro("MatMinExp", num(m["G pieces on dataset 2250"]["experienced"], 0))
+    macro("MatMinBeg", num(m["G pieces on dataset 2760"]["beginners"], 0))
+    macro("MatMinExp", num(m["G pieces on dataset 2760"]["experienced"], 0))
     for p in ("G", "A"):
         macro(f"MatWithMatch{p}", num(c["pieces with a match"][p], 0))
     lines = [r"\begin{tabular}{@{}l r r r r r r r r@{}}", r"\toprule",
-             r" & \multicolumn{3}{c}{$\G$, dataset to 1000~s} & \multicolumn{3}{c}{$\G$, dataset to 2250~s} & \multicolumn{2}{c}{$\A$, all} \\",
+             r" & \multicolumn{3}{c}{$\G$, dataset to 1000~s} & \multicolumn{3}{c}{$\G$, dataset to 2760~s} & \multicolumn{2}{c}{$\A$, all} \\",
              r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(l){8-9}",
-             r"caliper & beg. & exp. & all & beg. & exp. & all & 1000 & 2250 \\", r"\midrule"]
+             r"caliper & beg. & exp. & all & beg. & exp. & all & 1000 & 2760 \\", r"\midrule"]
     q = c["query pieces"]
-    lines.append("pieces without a condition & " + " & ".join(num(q["G"][ds][lv], 0) for ds in ("1000", "2250") for lv in LEVELS)
-                 + f" & {num(q['A']['1000']['all'], 0)} & {num(q['A']['2250']['all'], 0)} \\\\")
+    lines.append("pieces without a condition & " + " & ".join(num(q["G"][ds][lv], 0) for ds in ("1000", "2760") for lv in LEVELS)
+                 + f" & {num(q['A']['1000']['all'], 0)} & {num(q['A']['2760']['all'], 0)} \\\\")
     for name in c["calipers"]:
         g, a = c["pieces with a control"]["G"], c["pieces with a control"]["A"]
         mark = r"$\ast$ " if name == m["name"] else ""
-        lines.append(f"{mark}{CALIPER_TEXT[name]} & " + " & ".join(num(g[ds][name][lv]["pieces"], 0) for ds in ("1000", "2250") for lv in LEVELS)
-                     + f" & {num(a['1000'][name]['all']['pieces'], 0)} & {num(a['2250'][name]['all']['pieces'], 0)} \\\\")
+        lines.append(f"{mark}{CALIPER_TEXT[name]} & " + " & ".join(num(g[ds][name][lv]["pieces"], 0) for ds in ("1000", "2760") for lv in LEVELS)
+                     + f" & {num(a['1000'][name]['all']['pieces'], 0)} & {num(a['2760'][name]['all']['pieces'], 0)} \\\\")
     write("matched_counts_table", lines + [r"\bottomrule", r"\end{tabular}"])
 
 
@@ -243,7 +243,7 @@ def matched_tex(m):
         T = m["levels"][lv]["long T"]
         assert T["G"] == T["A"], T
         macro(f"MatLongT{lv.capitalize()}", num(T["G"], 0))
-    assert m["levels"]["beginners"]["long T"]["G"] < 1840 <= m["levels"]["experienced"]["long T"]["G"]  # the forest caption says so
+    assert m["levels"]["beginners"]["long T"]["G"] == 1840 < m["levels"]["experienced"]["long T"]["G"]  # the forest caption says so
     for p in ("G", "A"):
         for k, v in a["counts"][p].items():
             macro(f"MatN{p}" + "".join(w.capitalize() for w in k.replace(",", "").split()), num(v, 0))
@@ -298,7 +298,7 @@ def matched_tex(m):
 
 def decomposition_tex(dec):
     macro("DecPiecesK", num(dec["pieces"]["1000"], 0))
-    macro("DecPiecesQ", num(dec["pieces"]["2250"], 0))
+    macro("DecPiecesQ", num(dec["pieces"]["2760"], 0))
     macro("DecPiecesPhase", num(dec["pieces"]["phase"], 0))
     macro("DecK", num(dec["K"], 0))
     a = dec["levels"]["all"]
@@ -390,7 +390,7 @@ def summary_tex(r, m, p):
     lines = [r"\begin{tabular}{@{}l l l l l@{}}", r"\toprule",
              r" & raw $\G-\Sl$ & matched $\Delta(\G-\Sl\mid\G)$ & selection $\Delta(\A-\Sl\mid\A)$ & before and after $g$ \\", r"\midrule"]
     for q in QUANT:
-        raw = r["gaps"]["1000" if q == HK else "2250"][q]["G - S"] if q in (HK, HQ) else r["phase gaps"]["G - S"][q]
+        raw = r["gaps"]["1000" if q == HK else "2760"][q]["G - S"] if q in (HK, HQ) else r["phase gaps"]["G - S"][q]
         row = [LABEL[q], cell(raw, DDIG[q], True) + mark(raw),
                cell(d2["G - S|G"][q], DDIG[q], True) + mark(d2["G - S|G"][q]),
                cell(d2["A - S|A"][q], DDIG[q], True) + mark(d2["A - S|A"][q]),
@@ -430,7 +430,8 @@ def toy_tex():
     macro("ToySurvDurations", "10, 30, 30, 100")
     macro("ToySurvAtThirty", num(1 / 4, 2))
     macro("ToySurvAtTwenty", num(3 / 4, 2))
-    macro("HqLowest", num(1840 * 10 ** -0.25, 0))  # the lowest lag of the window of H_loc(1840 s)
+    macro("HqLowest", num(1840 * 10 ** -0.25, 0))  # the lowest and the highest lag of the window of H_loc(1840 s)
+    macro("HqHighest", num(1840 * 10 ** 0.25, 0))
     a, controls = (5.0, 7.0), ((2.0, 4.0), (6.0,))  # the reweighting example: two pieces, their controls
     for k, x in zip(("A", "B", "Ca", "Cb", "Cc"), (*a, *controls[0], *controls[1])):
         macro(f"ToyRw{k}", num(x, 0))

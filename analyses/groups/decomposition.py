@@ -17,7 +17,7 @@ only the conditions of C:
 
 Every cell uses the same pieces (those with a control in F on the dataset, and a window in every cell without R;
 for the phase statistics also those with phase time and a phased control in every cell), the same pool and the same
-draws of twoway.py (matched.Context). Quantities: H_loc(1000 s) on dataset `1000`, H_loc(1840 s) on `2250`, the fitted H of
+draws of twoway.py (matched.Context). Quantities: H_loc(1000 s) on dataset `1000`, H_loc(1840 s) on `2760`, the fitted H of
 both, the seven phase statistics (dataset `1000`). The Shapley value of each factor, for every draw and year:
 
     phi_k = sum over C in F without k of |C|! (2 - |C|)! / 3!  [Delta(C) - Delta(C with k)]
@@ -49,7 +49,7 @@ FULL = R | T | W
 SHAPLEY = {0: 1 / 3, 1: 1 / 6, 2: 1 / 3}  # |C|! (2 - |C|)! / 3!
 TOL = 1e-9  # the identity holds to this on every draw
 NEAR_ZERO = 1e-6  # |Delta(none)| below this has no shares
-QUANTITIES = (("H_loc(1000 s)", "1000"), ("H_loc(1840 s)", "2250"), ("H (10 s to 1000 s)", "1000"), ("H (10 s to T)", "2250"),
+QUANTITIES = (("H_loc(1000 s)", "1000"), ("H_loc(1840 s)", "2760"), ("H (10 s to 1000 s)", "1000"), ("H (10 s to T)", "2760"),
               *((n, "phase") for n in NAMES))
 FOREST = matched.FOREST
 RAMP = ("#b9d3f0", "#7fb0e8", "#2a78d6", "#123f7a")  # controls: light to dark with the number of conditions
@@ -177,15 +177,15 @@ def counts_of(tracks, rows):
 
 
 def decompose(ctx, M, sets, pick):
-    """For each cell the series of the quantities of QUANTITIES: `sets` maps "1000", "2250", "phase" to the pieces
+    """For each cell the series of the quantities of QUANTITIES: `sets` maps "1000", "2760", "phase" to the pieces
     kept, `pick(cell, set name)` gives the rows of the cell for those pieces. Returns {cell: (e, counts)} with e the
     dict of matched.draws."""
     out = {}
     for cell in range(8):
         rows = {name: pick(cell, name) for name in sets}
         e = {"main": matched.msd_series(ctx, M, rows["1000"], 1000, True) if len(rows["1000"]) else None,
-             "long_T": 2250,
-             "long": matched.msd_series(ctx, M, rows["2250"], 2250, True) if len(rows["2250"]) else None,
+             "long_T": 2760,
+             "long": matched.msd_series(ctx, M, rows["2760"], 2760, True) if len(rows["2760"]) else None,
              "phases": matched.phase_series(ctx, M, rows["phase"], True) if len(rows["phase"]) else None}
         out[cell] = (e, {name: counts_of(ctx.tracks, r) for name, r in rows.items()})
     return out
@@ -233,8 +233,8 @@ def _plain(quote):
 
 
 def draw_curves(cells, folder, tag, tracks):
-    """MSD and H_loc figures of G and of the controls of the 8 cells (level "all"), datasets `1000` and `2250`."""
-    for key, name in (("main", "1000"), ("long", "2250")):
+    """MSD and H_loc figures of G and of the controls of the 8 cells (level "all"), datasets `1000` and `2760`."""
+    for key, name in (("main", "1000"), ("long", "2760")):
         drawn = []
         for c in range(8):
             ser = cells[c][0][key]
@@ -345,7 +345,7 @@ def check_point2(ctx, M, table, chosen, kept, cells):
     """The cell F against matched.py's main selection on the same pieces: the largest absolute difference of
     the draws of Delta H_loc and Delta H (0 when the cell is exact)."""
     out = {}
-    for ds, T_, key in (("1000", 1000, "main"), ("2250", 2250, "long")):
+    for ds, T_, key in (("1000", 1000, "main"), ("2760", 2760, "long")):
         sel = matched.select(table, ds, chosen)
         sel = sel[sel["piece"].isin(kept[ds])]
         ref = matched.msd_series(ctx, M, sel, T_, False)["boot"]["delta"]

@@ -32,7 +32,7 @@ from tamsd import CACHE, COLORS, LABELS, OUT, SEED, SIZES, SUPPORT, ensemble, fi
 STEP = tamsd.TAU_MAX ** (1 / 34)
 LONG_LAGS = np.unique(np.r_[tamsd.LAGS, np.round(tamsd.TAU_MAX * STEP ** np.arange(1, 17) / 10).astype(int) * 10])
 MIN_FLIGHTS = 100  # flights every population of a panel keeps at its longest lag
-FIXED_LAG = 2250  # s: the longest lag of the panel "fixed", a lag of LONG_LAGS
+FIXED_LAG = 2760  # s: the longest lag of the panel "fixed", a lag of LONG_LAGS
 POOLED = ("solo", "group", "group_solo")
 PIECES = CACHE / "long_pieces.npz"
 

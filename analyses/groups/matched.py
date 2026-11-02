@@ -25,7 +25,7 @@ the piece (isolated.engine: weight w_g of the piece, per piece the mean over its
 logarithm, the slopes and the ratios taken after the means:
 
     MSD      dataset `1000` (lags to 1000 s, pieces and segments of at least 1250 s) and the long series
-             (lags to the largest of LONG_LAGS up to 2250 s that keeps MIN_PIECES pieces in the level and
+             (lags to the largest of LONG_LAGS up to 2760 s that keeps MIN_PIECES pieces in the level and
              side, pieces and segments of at least T / SUPPORT); H_loc(1000 s), H_loc(1840 s), fitted H;
     phases   the seven statistics of raw.STATISTICS on the pieces and segments of dataset `1000` that have
              phase time: r = n / T and q = d / T per unit, the control side the mean of r and of q over the
@@ -63,7 +63,7 @@ from isolated import MIN_PIECES, WORKERS, levels, sphere, wing_class
 
 MIN_COVER = 0.7  # the lowest cover of the robustness; the table keeps every match from here
 MAIN_COVER, COVERS = 0.8, (0.7, 0.8, 0.9)
-DATASETS = {"1000": 1000.0, "2250": 2250.0}  # name: lag T; pieces and segments last at least T / SUPPORT
+DATASETS = {"1000": 1000.0, "2760": 2760.0}  # name: lag T; pieces and segments last at least T / SUPPORT
 LEVEL_NAMES = ("beginners", "experienced", "all")
 # name: (month within, hour within, same wing "class" or "level"); the order is that of the choice
 CALIPERS = {"month1_hour1_class": (1, 1, "class"), "month1_hour1_level": (1, 1, "level"),
@@ -211,7 +211,7 @@ def counts(table, queries):
     the chosen caliper, and its counts with isolation on and at covers MIN_COVER and 0.9."""
     grid = {side: {d: {c: tally(select(table[table["side"] == side], d, c)) for c in CALIPERS} for d in DATASETS}
             for side in ("G", "A")}
-    pieces = {c: {lv: grid["G"]["2250"][c][lv]["pieces"] for lv in LEVEL_NAMES} for c in CALIPERS}
+    pieces = {c: {lv: grid["G"]["2760"][c][lv]["pieces"] for lv in LEVEL_NAMES} for c in CALIPERS}
     name = choose_caliper(pieces)
     meets = name is not None
     name = name or list(CALIPERS)[-1]  # none reaches MIN_PIECES: the loosest, flagged
@@ -223,7 +223,7 @@ def counts(table, queries):
             "calipers": {c: dict(zip(("month within", "hour within", "same"), v)) for c, v in CALIPERS.items()},
             "query pieces": queries, "pieces with a control": grid,
             "chosen caliper": {"name": name, "month within": month, "hour within": hour, "same": by,
-                               "meets min pieces": meets, "G pieces on dataset 2250": pieces[name]},
+                               "meets min pieces": meets, "G pieces on dataset 2760": pieces[name]},
             "chosen caliper, robustness": robust}
 
 
@@ -244,7 +244,7 @@ def show(result):
 
 # ---- the statistics (--stats)
 
-LONG_T = 2250  # s: the longest lag of the long series
+LONG_T = 2760  # s: the longest lag of the long series
 LAGS = longlags.LONG_LAGS[longlags.LONG_LAGS <= LONG_T]
 QUOTED = (1000, 1840)  # s: the lags of the quoted H_loc, on the main and on the long series
 NAMES = list(raw.STATISTICS)
@@ -521,7 +521,7 @@ def delta_curve(ser):
 
 def draw_msd(est, folder, tag):
     """The MSD and the H_loc figure of G, S|G, A and S|A (level "all") of both series, fitted H in the legend."""
-    for key, name in (("main", "1000"), ("long", "2250")):
+    for key, name in (("main", "1000"), ("long", "2760")):
         drawn = []
         for side, label, which in (("G", "G", "group"), ("G", "S|G", "control"), ("A", "A", "group"), ("A", "S|A", "control")):
             ser = est[side]["all"][key]

@@ -11,20 +11,20 @@ A caliper then keeps the matches of the same season (month), the same hour and t
 \begin{table}
 \centering\small
 \input{../generated/comparisons/matched_counts_table}
-\caption{Pieces of $\G$ (dataset 1000 and 2250) and of $\A$: all of them (first row), and those with at least one control at cover \MatCover{} under each caliper, by level (beg. beginners, exp. experienced, wings A and B against C, D and CCC; a wing of another class has no level and leaves);
+\caption{Pieces of $\G$ (dataset 1000 and 2760) and of $\A$: all of them (first row), and those with at least one control at cover \MatCover{} under each caliper, by level (beg. beginners, exp. experienced, wings A and B against C, D and CCC; a wing of another class has no level and leaves);
 $\ast$ the chosen caliper. Month and hour are those of the middle of the piece and of the segment.}
 \label{tab:calipers}
 \end{table}
 
-\paragraph{The caliper.} The calipers are tried in the order of Table~\ref{tab:calipers}, and the chosen one is the first with at least \MatMin{} pieces of $\G$ per level on dataset 2250: month
-$\pm\MatMonth$, hour $\pm\MatHour$, the same wing class (\MatMinBeg{} pieces for beginners, \MatMinExp{} for experienced). It leaves \MatNGPieces{} pieces of $\G$ on dataset 1000, from \MatNGFlightsGSide{} flights and \MatNGPilotsGSide{} pilots, and \MatNAPieces{} of $\A$.
+\paragraph{The caliper.} The calipers are tried in the order of Table~\ref{tab:calipers}, and the chosen one is the first with at least \MatMin{} pieces of $\G$ per level on dataset 2760: month
+$\pm\MatMonth$, hour $\pm\MatHour$, the same wing class (\MatMinBeg{} pieces for beginners, \MatMinExp{} for experienced); the narrower calipers, tried first, leave fewer than \MatMin{} pieces of $\G$ in a level on this dataset. It leaves \MatNGPieces{} pieces of $\G$ on dataset 1000, from \MatNGFlightsGSide{} flights and \MatNGPilotsGSide{} pilots, and \MatNAPieces{} of $\A$.
 Isolation (nobody within 10~km) is off in the main result.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{open_min0.1/matched_1000_delta.pdf}\\[2pt]
-\includegraphics[width=\textwidth]{open_min0.1/matched_2250_delta.pdf}
-\caption{Same route, season, hour and wing (caliper \MatChosenText), datasets 1000 (top, pieces of at least \RawShortestOne~s) and 2250 (bottom, \RawShortestTwo~s). Left: $\Hloc(\tau)$ of $\G$ (\MatSidePiecesG{} pieces on dataset 1000),
+\includegraphics[width=\textwidth]{open_min0.1/matched_2760_delta.pdf}
+\caption{Same route, season, hour and wing (caliper \MatChosenText), datasets 1000 (top, pieces of at least \RawShortestOne~s) and 2760 (bottom, \RawShortestTwo~s). Left: $\Hloc(\tau)$ of $\G$ (\MatSidePiecesG{} pieces on dataset 1000),
 its controls $\SG$ (\MatSidePiecesSG{} segments), $\A$ (\MatSidePiecesA{} pieces) and $\SAA$ (\MatSidePiecesSA); each side averaged over units reweighted to the piece (Appendix~\ref{app:reweight}). Right: $\Delta(\G-\SG)$ and $\Delta(\A-\SAA)$ at every lag, 90\% bands.
 $\MSD(\tau)$ and $\Hloc(\tau)$ with their bands in Appendix~\ref{app:figures}.}
 \label{fig:matched-msd}
@@ -33,15 +33,15 @@ $\MSD(\tau)$ and $\Hloc(\tau)$ with their bands in Appendix~\ref{app:figures}.}
 \begin{table}
 \centering\small
 \input{../generated/comparisons/matched_table}
-\caption{Same route, season, hour and wing, level all: pieces (or control segments), fitted $H$ (dataset 1000, 10 to 1000~s), $\Hk$ (dataset 1000) and $\Hq$ (dataset 2250, \MatNGPiecesOfTheLongSeries{} pieces of $\G$);
+\caption{Same route, season, hour and wing, level all: pieces (or control segments), fitted $H$ (dataset 1000, 10 to 1000~s), $\Hk$ (dataset 1000) and $\Hq$ (dataset 2760, \MatNGPiecesOfTheLongSeries{} pieces of $\G$);
 differences of the sides with 90\% bands. Ensemble mean over units reweighted to the piece.}
 \label{tab:matched}
 \end{table}
 
 \paragraph{The MSD.} Against its controls, $\G$ has $\Hk$ of \MatSideHKG{} and $\SG$ of \MatSideHKSG{}: $\Delta(\G-\SG)$ is \MatDeltaHKG{} \MatDeltaHKGBand{} (Table~\ref{tab:matched}, Figure~\ref{fig:matched-msd}),
-against the raw gap \RawGapHK{} of Section~\ref{sec:raw}; its band reaches 0. On dataset 2250, $\Hq$ gives \MatDeltaHQG{} \MatDeltaHQGBand, and $\Hloc$ at 1000~s, where the window of these longer pieces is not cut, \MatDeltaHKLongG{} \MatDeltaHKLongGBand: both bands exclude 0.
+against the raw gap \RawGapHK{} of Section~\ref{sec:raw}; its band excludes 0. On dataset 2760, $\Hq$ gives \MatDeltaHQG{} \MatDeltaHQGBand, and $\Hloc$ at 1000~s, where the window of these longer pieces is not cut, \MatDeltaHKLongG{} \MatDeltaHKLongGBand: both bands exclude 0.
 Over the lags $\Delta(\G-\SG)$ is negative at the short ones and positive at the long ones, as the raw gap: the fitted $H$ over 10 to 1000~s is lower in $\G$ than in its controls (\MatDeltaFitKG{} \MatDeltaFitKGBand),
-the fitted $H$ over 10 to 2250~s higher (\MatDeltaFitTG{} \MatDeltaFitTGBand).
+the fitted $H$ over 10 to 2760~s higher (\MatDeltaFitTG{} \MatDeltaFitTGBand).
 The band of $\Delta(\G-\SG)$ includes 0 for \MatZeroG{} of the \MatNQuant{} quantities of Figure~\ref{fig:matched-forest}.
 
 \paragraph{Selection.} $\A$ against $\SAA$ flies the same route alone: same pilots, gliders and days as $\G$, no group. $\Delta(\A-\SAA)$ measures selection. Its $\Hk$ is \MatDeltaHKA{} \MatDeltaHKABand{} and the band includes 0 for \MatZeroA{} of the \MatNQuant{} quantities;
@@ -52,7 +52,7 @@ the difference $(\G-\SG)-(\A-\SAA)$ is \MatDeltaHKD{} \MatDeltaHKDBand{} at $\Hk
 \includegraphics[width=\textwidth]{open_min0.1/matched_forest.pdf}
 \caption{Same route, season, hour and wing: $\Delta(\G-\SG)$, $\Delta(\A-\SAA)$ and their difference, by level of the wing (beginners, experienced, all). Dot: value; thick bar: 90\% band;
 thin bar: range over the years, leaving one year out. $\Hk$ and the seven statistics on dataset 1000 (phase statistics on the pieces with phases: \MatNGPiecesWithPhases{} pieces of $\G$ at level all), $\Hq$ on the long series, whose lag is the largest at which $\G$ and $\A$ both keep \MatMin{} pieces at the level
-(2250~s for all, \MatLongTExperienced~s for experienced; beginners stop below 1840~s and have no $\Hq$); average first, ratio after, unit the piece.}
+(\MatLongT~s for all, \MatLongTExperienced~s for experienced, \MatLongTBeginners~s for beginners, where the window of $\Hq$ is cut: it has no lag above 1840~s); average first, ratio after, unit the piece.}
 \label{fig:matched-forest}
 \end{figure}
 
@@ -80,6 +80,6 @@ The lines keep between \MatRobPiecesLow{} and \MatRobPiecesHigh{} pieces on data
 \paragraph{Robustness.} Over the \MatRobLines{} lines of Figure~\ref{fig:matched-robust}, $\Delta\Hk$ stays between \MatRobLowHK{} and \MatRobHighHK{}, with a band that includes 0 in \MatRobZeroHK{} of them, and $\Delta\Hq$, on the \MatRobLinesHQ{} lines whose long series reaches 1840~s, between
 \MatRobLowHQ{} and \MatRobHighHQ, with a band that includes 0 in \MatRobZeroHQ.
 
-\paragraph{What we keep.} On the same route, season, hour and wing group time still progresses straighter than solo flight at the long lags: $\Hq$ \MatDeltaHQG{} \MatDeltaHQGBand, $\Hloc$ at 1000~s on dataset 2250 \MatDeltaHKLongG{} \MatDeltaHKLongGBand, while on the shorter pieces of dataset 1000 $\Hk$ gives \MatDeltaHKG{} \MatDeltaHKGBand, against \RawGapHK{} raw.
+\paragraph{What we keep.} On the same route, season, hour and wing group time still progresses straighter than solo flight at the long lags: $\Hq$ \MatDeltaHQG{} \MatDeltaHQGBand, $\Hloc$ at 1000~s on dataset 2760 \MatDeltaHKLongG{} \MatDeltaHKLongGBand, while on the shorter pieces of dataset 1000 $\Hk$ gives \MatDeltaHKG{} \MatDeltaHKGBand, against \RawGapHK{} raw.
 It is less straight at the short lags, climbs more often and glides slower and steeper than its controls. The selection term $\Delta(\A-\SAA)$ is \MatDeltaHKA{} \MatDeltaHKABand{} at $\Hk$ and its bands include 0 for \MatZeroA{} of the \MatNQuant{} quantities:
 the pilots who fly in groups, flying alone on the same routes, do not differ from their controls by more than the bands allow.

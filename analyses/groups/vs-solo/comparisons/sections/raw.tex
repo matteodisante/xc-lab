@@ -26,18 +26,26 @@ pieces of dataset 1000, every run weighing 1; runs in the legend; 90\% bands at 
 \label{fig:raw-survival}
 \end{figure}
 
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{open_min0.1/raw_durations.pdf}
+\caption{Open flights: histogram of the duration of the pieces of $\Sl$, $\A$ and $\G$ (pieces of at least \RawShortestOne~s, those of dataset 1000), as the share of the
+pieces of each population; pieces and median in the legend. Dashed lines: the shortest piece of datasets 1000, 2760 and longest.}
+\label{fig:raw-durations}
+\end{figure}
+
 \begin{table}
 \centering\small
 \input{../generated/comparisons/raw_table}
 \caption{Open flights, raw: flights and pieces of each population and dataset, fitted $H$ (10~s to the end of the lags), $\Hk$ and $\Hq$, with 90\% bands.
-$\Hk$ on dataset 1000 is measured at the lag 1000~s; $\Hq$ needs a dataset of at least 2250~s, and its window is cut at 2250~s.
+$\Hk$ on dataset 1000 is measured at the lag 1000~s; $\Hq$ is measured on dataset 2760, and its window is cut at 2760~s.
 Ensemble mean over flights, one weight per flight.}
 \label{tab:raw}
 \end{table}
 
 \paragraph{The MSD.} On dataset 1000, $\Hk$ is \RawHKOneG{} \RawHKOneGBand{} in $\G$, \RawHKOneS{} \RawHKOneSBand{} in $\Sl$ and \RawHKOneA{} \RawHKOneABand{} in $\A$ (Table~\ref{tab:raw}).
 The gap $\G-\Sl$ is \RawGapHK{} \RawGapHKBand, $\G-\A$ is \RawGapHKGA{} \RawGapHKGABand{} and $\A-\Sl$ is \RawGapHKAS{} \RawGapHKASBand. Over the lags (Figure~\ref{fig:raw-delta}) $\G-\Sl$ is negative at the short ones,
-\RawGapFirst{} \RawGapFirstBand{} at \RawFirstLag~s, and positive from \RawGapCross~s on; $\A-\Sl$ is positive at the short lags (\RawGapFirstAS{} \RawGapFirstASBand{} at \RawFirstLag~s) and near 0 at the long ones. On dataset 2250, $\Hq$ is \RawHQTwoG{} in $\G$ and \RawHQTwoS{} in $\Sl$,
+\RawGapFirst{} \RawGapFirstBand{} at \RawFirstLag~s, and positive from \RawGapCross~s on; $\A-\Sl$ is positive at the short lags (\RawGapFirstAS{} \RawGapFirstASBand{} at \RawFirstLag~s) and near 0 at the long ones. On dataset 2760, $\Hq$ is \RawHQTwoG{} in $\G$ and \RawHQTwoS{} in $\Sl$,
 a gap of \RawGapHQ{} \RawGapHQBand. On the longest dataset $\G$ keeps \RawFlightsLongG{} flights only: $\Hk$ is \RawHKLongG{} \RawHKLongGBand{} in $\G$ and \RawHKLongS{} in $\Sl$, and at the longest lags $\Hloc$ of $\Sl$ and $\A$ falls while that of $\G$ does not (Figure~\ref{fig:raw-more}, Appendix~\ref{app:figures}).
 
 \paragraph{The phases.} $\G$ spends more time in climb than $\Sl$ (\RawStatClimbG\% against \RawStatClimbS\%), finds a climb after a search more often
@@ -46,6 +54,9 @@ less height per km of glide (\RawStatSinkG{} against \RawStatSinkS~m/km); its ti
 The gaps $\G-\Sl$ of the seven statistics have bands that exclude 0: \RawGapClimb{} \RawGapClimbBand{} points of time in climb, \RawGapGlide{} \RawGapGlideBand~km/h of glide speed, \RawGapSink{} \RawGapSinkBand~m/km of height lost.
 For all statistics but the climb rate $\A$ lies nearer to $\Sl$ than to $\G$. The survival functions
 of the three populations (Figure~\ref{fig:raw-survival}) overlap for climbs and for searches; for glides the tail of $\Sl$ falls below those of $\A$ and $\G$ at the longest durations, where few runs remain.
+
+\paragraph{The pieces.} The pieces of $\G$ are shorter than those of $\Sl$ and $\A$ (Figure~\ref{fig:raw-durations}): a group lasts at least $\tau^*=\tauStar$~min, so $\G$ has almost no piece below that and a mode just above it,
+while $\Sl$ and $\A$ spread over the whole range. The longer the dataset, the fewer pieces of $\G$ it keeps.
 
 \paragraph{The estimator matters.} The ratio of sums weights a flight by its phase time. It gives \RawSumClimbS\% of time in climb in $\Sl$ against \RawStatClimbS\% for the average first,
 and \RawSumGlideS{} against \RawStatGlideS~km/h of glide speed (Appendix~\ref{app:phases}, Table~\ref{tab:ratio}).

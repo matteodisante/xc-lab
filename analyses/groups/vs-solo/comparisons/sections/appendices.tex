@@ -16,14 +16,14 @@ $H=\tfrac12\,\mathrm{slope}$. $\Hloc(\tau)$ is the same fit over the lags $\lamb
 
 \emph{Example.} With the two lags of one and two steps and the MSD above, the slope of the log--log line is $\log_2(\ToyMsdTwo/\ToyMsdOne)$, so $H=\ToyH$.
 
-\emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to $1840\times10^{0.25}$~s; dataset 2250 stops at 2250~s, so the window is cut on the upper side and uses the lags from \HqLowest{} to 2250~s only.
+\emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to \HqHighest~s; dataset 2760 stops at 2760~s, so the window is cut on the upper side and uses the lags from \HqLowest{} to 2760~s only.
 Its band includes this truncation, since every draw is cut the same way. The window of $\Hk$ on dataset 1000 is cut in the same way at 1000~s.
 
 \section{Datasets and the \texorpdfstring{$\tau/0.8$}{tau/0.8} rule}\label{app:datasets}
 
 A piece of $n$ grid points lasts $\ell=10\,(n-1)$~s and gives, at lag $\tau$, $n-\tau/10=(\ell-\tau)/10+1$ pairs of origins. Requiring $\ell\ge\tau/0.8$ gives origins over at least $0.2\,\ell$ of the piece, the same share of it at the longest lag the piece serves, whatever the piece.
 A curve to the lag $T$ would mix populations if each lag kept the pieces long enough for itself (the long lags would rest on fewer, longer pieces). A dataset to $T$ keeps the pieces of at least $T/0.8$~s and measures them
-at every lag up to $T$, so the same pieces carry the whole curve. Datasets 1000 and 2250 have $T=\RawTauOne$ and \RawTauTwo~s (pieces of at least \RawShortestOne{} and \RawShortestTwo~s); the longest has $T=\RawTauLong$~s (\RawShortestLong~s),
+at every lag up to $T$, so the same pieces carry the whole curve. Datasets 1000 and 2760 have $T=\RawTauOne$ and \RawTauTwo~s (pieces of at least \RawShortestOne{} and \RawShortestTwo~s); the longest has $T=\RawTauLong$~s (\RawShortestLong~s),
 the largest lag of the grid at which each population keeps \DeclMinFlights{} flights. The windows of Section~\ref{sec:prepost} have \PreWindow~s, so $T$ is the largest lag of the grid up to $0.8\times\PreWindow$~s, \PreMaxLag~s.
 
 \section{The phase statistics: average first against the ratio of sums}\label{app:phases}
@@ -63,7 +63,7 @@ A query piece (of $\G$ or $\A$) is a path on the 10-s grid. A segment of a pool 
   \item the segment lasts at least as long as the dataset needs.
 \end{itemize}
 A query keeps one match per pool flight, the most covered. A caliper is then a filter on the match table: the month of the middles within $m$ (circular), the local hour of the middles within $h$ (circular), and the same wing class (A, B, C, D, CCC of the catalogue; a flight with no class is dropped)
-or the same level (beginners A and B, experienced C, D and CCC). The calipers are tried in the order of Table~\ref{tab:calipers}; the chosen one is the first with at least \MatMin{} pieces per level on dataset 2250. The robustness lines change one rule at a time: another caliper, isolation (at every point of the segment, no other flight within 10~km at the same minute),
+or the same level (beginners A and B, experienced C, D and CCC). The calipers are tried in the order of Table~\ref{tab:calipers}; the chosen one is the first with at least \MatMin{} pieces per level on dataset 2760. The robustness lines change one rule at a time: another caliper, isolation (at every point of the segment, no other flight within 10~km at the same minute),
 $\rho$ of 300 or 1000~m, cover 0.7 or 0.9.
 
 \emph{Cells without R (Section~\ref{sec:decomposition}).} The control is a window of a pool piece, with as many grid points as the piece of $\G$, on another date. With T: the pool piece is within the month caliper and the window is placed at random among the positions whose middle is within the hour caliper (local time across midnight); without T: at random.
@@ -166,25 +166,25 @@ Each of $D_\text{in}$, $D_\text{out}$, $g$ and $d_w$ is computed on the events t
 \begin{figure}[h]
 \centering
 \pair{open_min0.1/raw_1000_msd.pdf}{open_min0.1/raw_1000_hloc.pdf}{0.49}\\[4pt]
-\pair{open_min0.1/raw_2250_msd.pdf}{open_min0.1/raw_2250_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/raw_2760_msd.pdf}{open_min0.1/raw_2760_hloc.pdf}{0.49}\\[4pt]
 \pair{open_min0.1/raw_longest_msd.pdf}{open_min0.1/raw_longest_hloc.pdf}{0.49}
-\caption{Raw, open flights, datasets 1000 (top: $\Sl$ \RawFlightsOneS{} flights, $\A$ \RawFlightsOneA, $\G$ \RawFlightsOneG), 2250 (middle: \RawFlightsTwoS, \RawFlightsTwoA{} and \RawFlightsTwoG) and longest (bottom: \RawFlightsLongS, \RawFlightsLongA{} and \RawFlightsLongG{} flights): $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over flights, fitted $H$ in the legend, 90\% bands.}
+\caption{Raw, open flights, datasets 1000 (top: $\Sl$ \RawFlightsOneS{} flights, $\A$ \RawFlightsOneA, $\G$ \RawFlightsOneG), 2760 (middle: \RawFlightsTwoS, \RawFlightsTwoA{} and \RawFlightsTwoG) and longest (bottom: \RawFlightsLongS, \RawFlightsLongA{} and \RawFlightsLongG{} flights): $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over flights, fitted $H$ in the legend, 90\% bands.}
 \label{fig:raw-more}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{open_min0.1/raw_2250_delta.pdf}\\[2pt]
+\includegraphics[width=\textwidth]{open_min0.1/raw_2760_delta.pdf}\\[2pt]
 \includegraphics[width=\textwidth]{open_min0.1/raw_longest_delta.pdf}
-\caption{Raw, datasets 2250 (top) and longest (bottom): $\Hloc(\tau)$ of $\Sl$, $\A$ and $\G$, and the differences at every lag with 90\% bands, as Figure~\ref{fig:raw-delta}.}
+\caption{Raw, datasets 2760 (top) and longest (bottom): $\Hloc(\tau)$ of $\Sl$, $\A$ and $\G$, and the differences at every lag with 90\% bands, as Figure~\ref{fig:raw-delta}.}
 \label{fig:raw-delta-more}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \pair{open_min0.1/matched_1000_msd.pdf}{open_min0.1/matched_1000_hloc.pdf}{0.49}\\[4pt]
-\pair{open_min0.1/matched_2250_msd.pdf}{open_min0.1/matched_2250_hloc.pdf}{0.49}
-\caption{Same route, season, hour and wing, datasets 1000 (top) and 2250 (bottom, \MatNGPiecesOfTheLongSeries{} pieces of $\G$); $\G$, $\SG$, $\A$, $\SAA$ with the pieces or the controls in the legend. $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over units reweighted to the piece, fitted $H$ in the legend, 90\% bands.}
+\pair{open_min0.1/matched_2760_msd.pdf}{open_min0.1/matched_2760_hloc.pdf}{0.49}
+\caption{Same route, season, hour and wing, datasets 1000 (top) and 2760 (bottom, \MatNGPiecesOfTheLongSeries{} pieces of $\G$); $\G$, $\SG$, $\A$, $\SAA$ with the pieces or the controls in the legend. $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over units reweighted to the piece, fitted $H$ in the legend, 90\% bands.}
 \label{fig:matched-more}
 \end{figure}
 
@@ -192,8 +192,8 @@ Each of $D_\text{in}$, $D_\text{out}$, $g$ and $d_w$ is computed on the events t
 \centering
 \includegraphics[width=\textwidth]{open_min0.1/decomposition_1000_delta.pdf}\\[2pt]
 \pair{open_min0.1/decomposition_1000_msd.pdf}{open_min0.1/decomposition_1000_hloc.pdf}{0.49}\\[4pt]
-\pair{open_min0.1/decomposition_2250_msd.pdf}{open_min0.1/decomposition_2250_hloc.pdf}{0.49}
-\caption{Decomposition. Top: dataset 1000 (\DecPiecesK{} pieces), as Figure~\ref{fig:decomposition-msd}. Middle and bottom: $\G$ and the controls of the 8 cells, datasets 1000 and 2250 (\DecPiecesQ{} pieces), the number of controls in the legend, the darker the more conditions;
+\pair{open_min0.1/decomposition_2760_msd.pdf}{open_min0.1/decomposition_2760_hloc.pdf}{0.49}
+\caption{Decomposition. Top: dataset 1000 (\DecPiecesK{} pieces), as Figure~\ref{fig:decomposition-msd}. Middle and bottom: $\G$ and the controls of the 8 cells, datasets 1000 and 2760 (\DecPiecesQ{} pieces), the number of controls in the legend, the darker the more conditions;
 $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over pieces, fitted $H$ in the legend, 90\% bands.}
 \label{fig:decomposition-more}
 \end{figure}
@@ -212,7 +212,7 @@ $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over pieces, fitted $H$ in the leg
 \setlength{\tabcolsep}{3pt}
 \input{../generated/comparisons/decomposition_controls_table}
 \caption{Decomposition, level all, on \DecPiecesK{} pieces of $\G$ (\DecPiecesQ{} for $\Hq$, \DecPiecesPhase{} for the phase statistics): value of $\G$ and of the controls of each cell; the cells are named by the conditions they hold ($\emptyset$ none, R route, T season and hour, W wing).
-Dataset 1000 for $\Hk$ and the statistics, 2250 for $\Hq$; average first, ratio after, unit the piece.}
+Dataset 1000 for $\Hk$ and the statistics, 2760 for $\Hq$; average first, ratio after, unit the piece.}
 \label{tab:decomposition-controls}
 \end{table}
 

@@ -1,6 +1,6 @@
 """Point 1 of comparisons_plan.md: S, A and G as they are, on the open flights.
 
-Three datasets of MSD pieces (longlags.py): `1000` (pieces of at least 1250 s, lags to 1000 s), `2250`
+Three datasets of MSD pieces (longlags.py): `1000` (pieces of at least 1250 s, lags to 1000 s), `2760`
 (longlags.FIXED_LAG) and `longest` (the longest lag at which each population keeps longlags.MIN_FLIGHTS
 flights). For each, the MSD and the H_loc figures with the fitted H (10 s to the end of the lags) in the
 legend. On the pieces of dataset `1000`, unit = the flight: the seven phase statistics with the estimator
@@ -143,6 +143,32 @@ def plot_survival(result, path):
     save(fig, path)
 
 
+def duration_shares(p, pop, edges):
+    """Share of the pieces of population `pop` (all of those in `p`) that fall in each bin of `edges` (s)."""
+    count, _ = np.histogram(p["duration"][p["population"] == pop], edges)
+    return count / count.sum()
+
+
+def plot_durations(p, thresholds, path):
+    """Histogram of the duration of the pieces of S, A, G, as shares of the pieces of each, on log bins; a
+    dashed line at the shortest piece of each dataset (`thresholds`, s)."""
+    top = max(p["duration"][p["population"] == pop].max() for pop in POPS)
+    edges = np.geomspace(p["duration"].min(), top, 31)
+    fig, ax = plt.subplots(figsize=(6, 3.5), constrained_layout=True)
+    for pop in POPS:
+        mine = p["duration"][p["population"] == pop]
+        ax.stairs(duration_shares(p, pop, edges), edges, color=COLORS[pop], lw=1.4,
+                  label=f"{NAMES[pop]} ({len(mine):,} pieces, median {np.median(mine):,.0f} s)")
+    for t in thresholds:
+        ax.axvline(t, color="#888888", lw=0.8, ls="--")
+    ax.set(xscale="log", xlabel="duration of the piece (s)", ylabel="share of the pieces")
+    ax.set_xticks(ticks := [1250, 2000, 3000, 5000, 10000, 20000, 40000], [f"{t:,}" for t in ticks])
+    ax.minorticks_off()
+    ax.legend(frameon=False, fontsize=7)
+    ax.grid(color="#eeeeee", lw=0.5)
+    save(fig, path)
+
+
 def gap_at(gaps, lag):
     """Each gap of `gaps` (dataset_curves) at `lag`, value and band, or None when the curves stop before it."""
     lags = next(iter(gaps.values()))["lags"]
@@ -164,7 +190,7 @@ def dataset_curves(p, block, counts, rng):
     """The curves of S, A, G of the three datasets and the differences GAPS of H_loc at every lag, with their
     bands (the populations share the draws): {name: {tau_max, curves: {pop: curve}, gaps: {name: quote}}}."""
     avail = {k: longlags.available(p, m) for k, m in longlags.populations(p).items() if k in longlags.POOLED}
-    taus = {"1000": tamsd.TAU_MAX, "2250": longlags.panels(avail)["fixed"], "longest": longlags.panels(avail)["longest"]}
+    taus = {"1000": tamsd.TAU_MAX, "2760": longlags.panels(avail)["fixed"], "longest": longlags.panels(avail)["longest"]}
     masks = longlags.populations(p)
     out = {}
     for name, tau in taus.items():
@@ -201,6 +227,7 @@ if __name__ == "__main__":
     p = dict(np.load(longlags.PIECES))
     datasets = dataset_curves(p, code, counts, rng)
     draw_datasets(datasets, OUT)
+    plot_durations(p, [d["tau_max"] / tamsd.SUPPORT for d in datasets.values()], OUT / "raw_durations.pdf")
     tables = isolated.run_terms(flights)
     defs = stat_defs()
     stats, surv = {}, {}

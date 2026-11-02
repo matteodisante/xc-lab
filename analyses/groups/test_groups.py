@@ -971,6 +971,14 @@ def test_runs_belong_to_the_piece_that_holds_their_middle():
     assert mask.tolist() == [True, False, True, False]
 
 
+def test_duration_shares_count_the_pieces_of_one_population_in_each_bin():
+    import raw
+    p = {"duration": np.array([1300.0, 1500.0, 2500.0, 9000.0, 1400.0]),
+         "population": np.array(["group", "group", "group", "group", "solo"])}
+    assert raw.duration_shares(p, "group", np.array([1250.0, 2000.0, 3000.0, 10000.0])).tolist() == [0.5, 0.25, 0.25]
+    assert raw.duration_shares(p, "solo", np.array([1250.0, 2000.0])).tolist() == [1.0]
+
+
 def synthetic_windows(n_events=30, g=0.04, d=0.015, with_post=True):
     """Windows pre, start, end, post of n events, one flight each: H of a window = base + g in the group + d x its
     position in time (pre 0, start 1, end 2 + stay, post 3 + stay), MSD = lag^(2H)."""
@@ -1079,14 +1087,14 @@ def test_matched_caliper_filter_and_the_main_caliper_rule():
                       "class_piece": ["B", "B", "A", "C", None], "class_solo": ["B", "B", "A", "D", None],
                       "level_piece": ["beginners", "beginners", "beginners", "experienced", None],
                       "level_solo": ["beginners", "beginners", "beginners", "experienced", None],
-                      "dur_piece": [2000, 2000, 3000, 3000, 3000], "dur_solo": [1300, 1300, 3000, 3000, 3000],
+                      "dur_piece": [2000, 2000, 4500, 4500, 4500], "dur_solo": [1300, 1300, 4500, 4500, 4500],
                       "isolated": [True, True, False, True, True]})
     pick = lambda *a, **k: matched.select(t, *a, **k)["solo"].tolist()
     assert pick("1000", "month1_hour1_class") == [0]  # cover 0.75, month 2, class C/D, hour 1.01 and no class leave
     assert pick("1000", "month1_hour1_level") == [0, 3]  # the level rescues C against D
     assert pick("1000", "month2_hour2_class", cover=0.7) == [0, 1, 2]
-    assert pick("2250", "month2_hour2_class") == [2]  # the segment of 1300 s is too short; piece 2 is not isolated either
-    assert pick("2250", "month2_hour2_level", isolation=True) == [3]
+    assert pick("2760", "month2_hour2_class") == [2]  # the segment of 1300 s is too short; piece 2 is not isolated either
+    assert pick("2760", "month2_hour2_level", isolation=True) == [3]
     assert pick("1000", "month1_hour1_class", cover=0.9) == [0]
     assert matched.tally(matched.select(t, "1000", "month2_hour2_level"))["all"] == {"pieces": 3, "median controls": 1.0}
     assert matched.tally(matched.select(t, "1000", "month2_hour2_level"))["beginners"]["pieces"] == 2
@@ -1187,10 +1195,10 @@ def test_matched_long_series_stops_at_the_largest_lag_that_keeps_enough_pieces(m
     monkeypatch.setattr(matched, "MIN_PIECES", 2)
     t = pd.DataFrame({"side": "G", "piece": [0, 1, 2, 3], "solo": range(4), "cover": 0.9, "dmonth": 0, "dhour": 0.0,
                       "class_piece": "B", "class_solo": "B", "level_piece": "beginners", "level_solo": "beginners",
-                      "dur_piece": [2000, 2000, 3000, 3000], "dur_solo": [3000, 1300, 3000, 3000], "isolated": True})
+                      "dur_piece": [2000, 2000, 5000, 5000], "dur_solo": [5000, 1300, 5000, 5000], "isolated": True})
     line = {"caliper": "month1_hour1_class"}
-    assert matched.long_lag(t, line, "all") == 2250  # pieces 2 and 3 last 3000 >= 2250 / 0.8
-    t["dur_piece"] = [2000, 2000, 3000, 1500]
+    assert matched.long_lag(t, line, "all") == 2760  # pieces 2 and 3 last 5000 >= 2760 / 0.8
+    t["dur_piece"] = [2000, 2000, 5000, 1500]
     assert matched.long_lag(t, line, "all") == 1500  # at 1500 s (pieces and segments of 1875 s) pieces 0 and 2 count
     t["dur_piece"] = 1000  # no piece reaches the 1250 s the lag of 1000 s needs
     assert matched.long_lag(t, line, "all") is None
@@ -1272,7 +1280,7 @@ def test_decomposition_every_cell_of_a_quantity_has_the_same_pieces(monkeypatch)
     calls = []
     monkeypatch.setattr(matched, "msd_series", lambda ctx, M, rows, T, years: calls.append(sorted(rows["piece"].unique())) or {"pieces": 0})
     monkeypatch.setattr(matched, "phase_series", lambda ctx, M, rows, years: {"pieces": 0})
-    kept = {"1000": np.array([1, 2]), "2250": np.array([2]), "phase": np.array([1])}
+    kept = {"1000": np.array([1, 2]), "2760": np.array([2]), "phase": np.array([1])}
     frame = pd.DataFrame({"piece": [0, 1, 1, 2, 3], "solo": range(5)})
     ctx = type("C", (), {"tracks": {"flight": np.arange(5)}})()
     decomposition.decompose(ctx, None, kept, lambda cell, name: frame[frame["piece"].isin(kept[name])])
@@ -1307,7 +1315,7 @@ def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
     assert m["RawSumSinkS"] == num(s["ratio of sums"]["height lost per km of glide (m/km)"]["value"], 0)
     d = j["matched"]["levels"]["all"]["deltas"]["G - S|G"]["H_loc(1000 s)"]
     assert m["MatDeltaHKG"] == signed(d["value"], 3) and m["MatDeltaHKGBand"].startswith("[")
-    assert m["MatMinBeg"] == num(j["matched_counts"]["chosen caliper"]["G pieces on dataset 2250"]["beginners"], 0)
+    assert m["MatMinBeg"] == num(j["matched_counts"]["chosen caliper"]["G pieces on dataset 2760"]["beginners"], 0)
     dec = j["decomposition"]["levels"]["all"]["time in climb (%)"]
     assert m["DecPhiClimbR"] == signed(dec["phi"]["R"]["value"], 1)
     assert m["DecCtlClimbNone"] == num(dec["cells"]["none"]["control"], 1)
