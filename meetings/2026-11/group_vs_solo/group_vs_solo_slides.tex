@@ -1,0 +1,523 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathpazo}
+\usefonttheme{serif}
+\usepackage{amsmath,amssymb,booktabs,array,tabularx,graphicx,microtype}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing,patterns,fit,backgrounds}
+
+% Figures come from the run of analyses/groups; the TikZ figures are in tikz/.
+\graphicspath{{../../../analyses/groups/out/d120_eh500_ez300_th45_g120_q0.1/}}
+
+% Colours of the report: S, G and A; neutrals for text, grids and fills.
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{aqua}{HTML}{1BAF7A}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{muted}{HTML}{9A9893}
+\definecolor{light}{HTML}{E6E5E1}
+\definecolor{steel}{RGB}{74,96,121}
+\definecolor{steellight}{RGB}{192,206,220}
+
+\tikzset{
+  >={Stealth[length=1.8mm]},
+  every picture/.style={line cap=round, line join=round},
+  lbl/.style={font=\footnotesize},
+  note/.style={font=\footnotesize, text=ink2},
+}
+
+\newcommand{\Sl}{\mathrm{S}}
+\newcommand{\G}{\mathrm{G}}
+\newcommand{\A}{\mathrm{A}}
+\newcommand{\SG}{\Sl\!\mid\!\G}
+\newcommand{\SAA}{\Sl\!\mid\!\A}
+\newcommand{\Hloc}{H_{\mathrm{loc}}}
+\newcommand{\MSD}{\mathrm{MSD}}
+
+% Theme: steel-blue title bar, white pages, as in the earlier decks.
+\setbeamercolor{structure}{fg=steel}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{frametitle}{fg=white,bg=steel}
+\setbeamercolor{alerted text}{fg=blueI}
+\setbeamercolor{takeaway}{fg=steel,bg=steellight!30}
+\setbeamercolor{defbox}{fg=ink,bg=steellight!28}
+\setbeamersize{text margin left=7mm,text margin right=7mm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\textcolor{steel}{\small$\bullet$}}
+\setbeamertemplate{itemize subitem}{\textcolor{steel}{\textendash}}
+\setbeamertemplate{itemize/enumerate body begin}{\setlength{\itemsep}{0.3em}}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=9mm,dp=3mm,center]{frametitle}
+    \large\insertframetitle\strut
+  \end{beamercolorbox}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east,text=white,inner sep=0pt,xshift=-2.3mm,yshift=-4.2mm]
+      at(current page.north east){\small\insertframenumber};
+  \end{tikzpicture}}
+\newcounter{talkpart}\setcounter{talkpart}{0}
+\newcommand{\threaditem}[2]{\ifnum\value{talkpart}=#1\textcolor{steel}{\textbf{#2}}\else\textcolor{muted}{#2}\fi}
+\setbeamertemplate{footline}{%
+  \hspace{7mm}\textcolor{muted}{\fontsize{6.5}{8}\selectfont November 2026}\hfill
+  \ifnum\value{talkpart}>0{\fontsize{7}{8.5}\selectfont
+    \threaditem{1}{1 Raw}\quad\threaditem{2}{2 Same route and factors}\quad\threaditem{3}{3 Same flight}}\fi
+  \hspace{7mm}\vspace{2mm}}
+
+\newcommand{\source}[1]{\par\vspace{1mm}{\fontsize{7}{8.3}\selectfont\color{ink2}#1\par}}
+\newcommand{\takeaway}[1]{\par\vfill
+  \begin{beamercolorbox}[wd=\linewidth,sep=5pt]{takeaway}\small #1\end{beamercolorbox}}
+% A definition: its name in bold, then the statement, on a pale band.
+\newcommand{\defn}[2]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=5pt]{defbox}\small\textcolor{steel}{\textbf{#1.}}\enspace #2\end{beamercolorbox}}
+% A TikZ figure, scaled to fit the given height and the line width.
+\newcommand{\tikzfig}[2][0.8\textheight]{%
+  \begin{center}\adjustbox{max width=\linewidth,max height=#1}{\input{tikz/#2}}\end{center}}
+% A figure of the run at full width, at most the given height.
+\newcommand{\fig}[2][0.5\textheight]{%
+  \begin{center}\includegraphics[width=\linewidth,height=#1,keepaspectratio]{#2}\end{center}}
+% A dense figure on a page of its own, with a small title.
+\newcommand{\plainfig}[3][fig]{%
+\begin{frame}[plain,label=#1]
+\vspace{-1mm}{\small\textcolor{steel}{\textbf{#2}}}\par\vspace{1mm}
+\begin{center}\includegraphics[height=0.86\paperheight,width=\linewidth,keepaspectratio]{#3}\end{center}
+\end{frame}}
+% Small links from a slide of the talk to the appendix slides that detail it.
+\newcommand{\applink}[2]{\hyperlink{#1}{\textcolor{blueI}{$\to$ #2}}}
+\newcommand{\appref}[1]{\par\vspace{0.5mm}{\hfill\fontsize{7}{8}\selectfont #1\par}}
+% A big number with its caption, in a column.
+\newcommand{\bignum}[3]{{\centering{\Huge\textcolor{#1}{#2}}\par\smallskip\small #3\par}}
+% A full-page divider that opens one part of the talk.
+\newcommand{\partframe}[2]{%
+\begin{frame}[plain,noframenumbering]
+\begin{tikzpicture}[remember picture,overlay]
+ \fill[steel](current page.south west)rectangle(current page.north east);
+ \node[text=white,align=center,text width=.82\paperwidth]at([yshift=4mm]current page.center)
+   {{\Large\bfseries #1}\\[3mm]{\normalsize\color{steellight}#2}};
+\end{tikzpicture}
+\end{frame}}
+
+\hypersetup{pdftitle={Group time against solo flight},pdfauthor={Matteo Di Sante},
+  colorlinks=true,urlcolor=blueI,linkcolor=blueI}
+
+\begin{document}
+
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+ \fill[steel](current page.south west)rectangle(current page.north east);
+ \fill[steellight](current page.south west)rectangle([yshift=20mm]current page.south east);
+ \node[text=white,align=center,text width=.9\paperwidth]at([yshift=8mm]current page.center)
+   {{\LARGE\bfseries Does a paraglider move differently in a group?}\\[4mm]
+   {\small Group time against solo flight, on open flights}};
+ \node[text=steel,align=center]at([yshift=10mm]current page.south)
+   {{\normalsize November 2026}\\[1.5mm]};
+\end{tikzpicture}
+\end{frame}
+
+%% ------------------------------------------------------------------ main
+
+\begin{frame}{Three questions}
+\begin{itemize}\setlength{\itemsep}{1.1em}
+  \item[\textcolor{steel}{\Large\textbf{1}}] \large Do flights in a group move differently from solo flights?
+  \item[\textcolor{steel}{\Large\textbf{2}}] \large Is it the group, or the route, season, hour and wing that go with it?
+  \item[\textcolor{steel}{\Large\textbf{3}}] \large Does the same flight change when it enters a group, and when it leaves?
+\end{itemize}
+\takeaway{One thread: how straight a flight is, and how it climbs and glides.}
+\source{FFVL archive, paragliders.}
+\end{frame}
+
+\begin{frame}{Three populations of flight time}
+\tikzfig[0.72\textheight]{populations}
+\begin{itemize}
+  \item[\textcolor{blueI}{$\bullet$}] $\Sl$: flights that never entered a group.
+  \item[\textcolor{orangeJ}{$\bullet$}] $\G$: group time of the flights that entered one.
+  \item[\textcolor{aqua}{$\bullet$}] $\A$: the solo stretches of those same flights, same pilots, wings, loggers and days.
+\end{itemize}
+\takeaway{$\A$ separates the group from who flies in groups: same pilots, no group. A \emph{piece} is an uninterrupted stretch of one population.}
+\end{frame}
+
+\begin{frame}{Which flights: the open ones}
+\fig[0.48\textheight]{open_declared/opening.pdf}
+\defn{Opening}{distance takeoff to landing over the path flown: 1 straight, $\approx0$ back at the takeoff. We keep opening $\ge0.1$: 55\,879 of the 66\,845 declared-open flights (84\%).}
+\takeaway{The longer the lag, the more folded the flights (median opening 0.32, then 0.23): that is why solo MSD bends at long lags.}
+\end{frame}
+
+%% Question 1
+\setcounter{talkpart}{1}
+\partframe{Question 1}{Do flights in a group move differently from solo flights?}
+
+\begin{frame}{Raw: group time is straighter at the long lags}
+\fig[0.44\textheight]{open_min0.1/raw_1000_delta.pdf}
+\begin{itemize}
+  \item $\Hloc(\tau)$: how straight the flight is at the time lag $\tau$; 1 for a straight line, $\tfrac12$ for a random walk.
+  \item $\Hloc(1000~\mathrm{s})$: $\G$ 0.915, $\Sl$ 0.897, $\A$ 0.894.
+  \item $\G-\Sl=+0.018\ [+0.015,+0.021]$; $-0.006$ at 10~s, positive from 170~s.
+\end{itemize}
+\source{Open flights, pieces of at least 1250~s (dataset 1000): 11\,077 flights in $\G$, 8\,991 in $\A$, 43\,977 in $\Sl$. 90\% bands: bootstrap of pilots and blocks.}
+\appref{\applink{app-hloc}{how we compute $\Hloc$}\quad\applink{app-bands}{how the bands are built}\quad\applink{app-rawlong}{longer lags}}
+\end{frame}
+
+\begin{frame}{The gain starts after about one leg of the flight}
+\begin{columns}[T,onlytextwidth]
+\column{.3\textwidth}\bignum{steel}{170~s}{$\G-\Sl$ turns positive\\{\scriptsize band above 0 from 210~s}}
+\column{.3\textwidth}\bignum{blueI}{$\approx200$~s}{median glide, in $\G$ and in $\Sl$}
+\column{.3\textwidth}\bignum{aqua}{$\approx155$~s}{median climb}
+\end{columns}
+\begin{itemize}
+  \item Within the first leg group time is a little less straight ($-0.006$ at 10~s); beyond it, straighter.
+  \item The same flight gains earlier: $g>0$ from 50~s.
+  \item Glides last as long in $\G$; $\G$ finds the next climb more often: 46.6\% of its searches against 40.5\%.
+\end{itemize}
+\takeaway{Why it pays after a first leg is open: waiting to form at the start, a better search for thermals, known thermals, or zones and weather.}
+\end{frame}
+
+\begin{frame}{Raw: group time also flies differently}
+{\small Phases (Vilpellet): \emph{climbs} (gaining height), \emph{glides} (straight, losing height), \emph{searches} (looking for the next climb). pp: percentage points.}
+\fig[0.60\textheight]{open_min0.1/slide_raw_phases.pdf}
+\takeaway{$\G$ climbs more, finds the next climb more often, glides faster and loses less height; $\A$ stays close to $\Sl$. Each flight counts once; the bands of $\G-\Sl$ exclude 0 for all seven statistics.}
+\appref{\applink{app-estimator}{how each flight counts}\quad\applink{app-rawstats}{the seven statistics}}
+\end{frame}
+
+%% Question 2
+\setcounter{talkpart}{2}
+\partframe{Question 2}{Is it the group, or what goes with it?}
+
+\begin{frame}{The raw gap mixes everything}
+\begin{columns}[T,onlytextwidth]
+\Large
+\column{.5\textwidth}
+Group time differs from solo time in
+\begin{itemize}
+  \item the \textbf{route} flown,
+  \item the \textbf{season} and the \textbf{hour},
+  \item the \textbf{wing},
+  \item the pilots who fly in groups.
+\end{itemize}
+\column{.46\textwidth}
+We take them apart
+\begin{enumerate}
+  \item fix them, and see what is left;
+  \item split the gap among them.
+\end{enumerate}
+\end{columns}
+\takeaway{Same route, season, hour and wing: does the group still make a difference?}
+\end{frame}
+
+\begin{frame}{Same route, season, hour and wing}
+\tikzfig[0.72\textheight]{matching}
+\begin{itemize}
+  \item Each piece of $\G$ is compared with solo segments on its route.
+  \item Controls must match within tolerances, the \emph{calipers}: the first of four sets that keeps 200 pieces per wing level is month $\pm2$, hour $\pm2$, same class: 2\,717 pieces of $\G$, 2\,474 flights, 1\,378 pilots.
+  \item $\A$ against its own controls $\SAA$ measures who flies in groups.
+\end{itemize}
+\appref{\applink{app-matching}{what is a control}\quad\applink{app-longT}{why the long dataset stops at 2760~s}}
+\end{frame}
+
+\begin{frame}{On the same route the gap shrinks, but stays}
+\fig[0.56\textheight]{open_min0.1/matched_1000_delta.pdf}
+\begin{itemize}
+  \item $\G-\SG=+0.010\ [+0.004,+0.017]$ at 1000~s, against $+0.018$ raw.
+  \item Selection $\A-\SAA$: $+0.006\ [-0.003,+0.016]$.
+\end{itemize}
+\source{Pieces of at least 1250~s; left: $\Hloc$ of $\G$, its controls $\SG$, $\A$ and $\SAA$; right: the differences with 90\% bands.}
+\appref{\applink{app-forest}{the nine quantities}\quad\applink{app-robust}{robustness}}
+\end{frame}
+
+\begin{frame}{On longer pieces it grows with the lag}
+\fig[0.56\textheight]{open_min0.1/matched_2760_delta.pdf}
+\begin{itemize}
+  \item A lag $\tau$ needs pieces of at least $\tau/0.8$: for 1840~s, pieces of at least 3450~s.
+  \item $\G-\SG=+0.021\ [+0.008,+0.034]$ at 1840~s; at 1000~s on the same pieces $+0.024\ [+0.014,+0.034]$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{But part of the gap is who flies in groups}
+\fig[0.72\textheight]{open_min0.1/slide_selection.pdf}
+\takeaway{$\A-\SAA$: the same pilots alone against their controls. At 1840~s they already show the gap: on the same route the group effect is not separable from who flies. We need the same flight: question 3.}
+\end{frame}
+
+\begin{frame}{On the same route the group climbs more and glides slower}
+\begin{columns}[T,onlytextwidth]
+\column{.24\textwidth}\bignum{orangeJ}{$+3.0$ pp}{more time in climb\\{\scriptsize $[+1.4,+4.5]$ percentage points}}
+\column{.24\textwidth}\bignum{orangeJ}{$+0.73$}{more climbs per hour}
+\column{.24\textwidth}\bignum{steel}{$-0.9$}{km/h of glide speed}
+\column{.24\textwidth}\bignum{steel}{$+6$}{m more height lost per km}
+\end{columns}
+\vspace{4mm}
+\takeaway{Same route, season, hour and wing: group time climbs more, glides slower and steeper. At 1000~s the same pilots alone do not differ from their controls (5 of the 9 quantities include 0: two $\Hloc$ and seven phase statistics, five of them here). The raw faster glide of $\G$ ($+2.1$~km/h) changes sign on the same route.}
+\end{frame}
+
+\begin{frame}{How much does each factor explain?}
+\fig[0.56\textheight]{open_min0.1/decomposition_main.pdf}
+\defn{Shapley split}{route $R$, season and hour $T$, wing $W$: $\Delta(\emptyset)=\Delta(F)+\varphi_R+\varphi_T+\varphi_W$. $\Delta(\emptyset)$ (``none'') has controls from any route, $\Delta(F)$ all fixed.}
+\appref{\applink{app-decall}{all nine quantities}\quad\applink{app-deccells}{the eight cells and their curves}}
+\end{frame}
+
+\begin{frame}{The route is almost all of it}
+\fig[0.56\textheight]{open_min0.1/slide_factors.pdf}
+\takeaway{The route carries most of what the factors explain (98\% at $\Hloc(1840~\mathrm{s})$, 96\% for time in climb, 84\% for glide speed); season and hour almost nothing, the wing little. Fixing the route is enough.}
+\end{frame}
+
+%% Question 3
+\setcounter{talkpart}{3}
+\partframe{Question 3}{Does the same flight change when it enters a group, and when it leaves?}
+
+\begin{frame}{The same flight, before, during and after}
+\tikzfig[0.72\textheight]{windows}
+\[
+  D_\text{in}=\text{start}-\text{pre},\quad D_\text{out}=\text{end}-\text{post},\quad
+  g=\tfrac12(D_\text{in}+D_\text{out}),\quad d\,w=\tfrac12(D_\text{in}-D_\text{out})
+\]
+\begin{itemize}
+  \item Same pilot, glider, logger and day: it removes who flies and when.
+  \item $g$: what the group does; $d\,w$: the drift of the flight over time. An \emph{event}: one group stay with the four windows.
+  \item Controls: the same differences on windows with no group.
+\end{itemize}
+\source{Windows of $W=2400$~s, lags up to 1840~s; open flights.}
+\end{frame}
+
+\begin{frame}{With windows of 2400~s the flight is straighter in the group}
+\fig[0.56\textheight]{open_min0.1/prepost_2400_delta.pdf}
+\begin{itemize}
+  \item $g=+0.026\ [+0.020,+0.032]$ at $\Hloc(1000~\mathrm{s})$; $D_\text{in}=+0.025$, $D_\text{out}=+0.027$.
+  \item Time in climb $+2.8\ [+2.0,+3.6]$ pp; the control pairs stay near 0.
+\end{itemize}
+\source{1\,595 events with the four windows.}
+\appref{\applink{app-prepostforest}{all the differences}}
+\end{frame}
+
+\begin{frame}{$g$ is stable from 1800~s; at 1260~s it vanishes}
+\fig[0.48\textheight]{open_min0.1/prepost_windows.pdf}
+\begin{itemize}
+  \item $g$ at $\Hloc(1000~\mathrm{s})$: $-0.001$ (1260~s), $+0.023$ (1800), $+0.026$ (2400), $+0.025$ (3000).
+  \item At 1260~s the lag 1000~s is at the limit of the $\tau/0.8$ rule: only 260~s of the window can start a 1000-s displacement.
+  \item Time in climb: $+2.5$ to $+3.8$ pp at every length.
+\end{itemize}
+\source{Events with the four windows: 3\,549, 2\,567, 1\,595 and 695.}
+\end{frame}
+
+\begin{frame}{Same route and same flight: some agree, some do not}
+\fig[0.64\textheight]{open_min0.1/slide_agreement.pdf}
+\takeaway{Inside its group a pilot glides faster and flatter than before and after; on the same route group time glides slower and steeper. We give no reason.}
+\end{frame}
+
+%% Take-home
+\setcounter{talkpart}{0}
+\begin{frame}{Take-home}
+\renewcommand{\arraystretch}{1.9}
+\begin{tabularx}{\linewidth}{@{}c X r@{}}
+\textcolor{steel}{\Huge\textbf{1}} & \large In a group the flight is straighter at the long lags
+  & \shortstack[r]{{\Huge\textcolor{blueI}{$+0.018$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, raw}} \\
+\textcolor{steel}{\Huge\textbf{2}} & \large On the same route the gap halves; at long lags the pilots who fly in groups show part of it
+  & \shortstack[r]{{\Huge\textcolor{orangeJ}{$+0.010$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, same route}} \\
+\textcolor{steel}{\Huge\textbf{3}} & \large The same flight, which removes who flies, is straighter inside its group
+  & \shortstack[r]{{\Huge\textcolor{aqua}{$+0.026$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, $g$}} \\
+\end{tabularx}
+\takeaway{Open: glide speed and height lost point the other way in 3 than in 2.}
+\end{frame}
+
+%% ------------------------------------------------------------------ appendix
+
+\partframe{Appendix}{Details, and answers to questions}
+
+\begin{frame}[label=app-hloc]{How we compute $\Hloc$ in practice}
+\tikzfig[0.40\textheight]{straightness}
+\begin{itemize}
+  \item Per flight, the time-averaged MSD on the 10-s grid of its pieces; the ensemble MSD is the mean over flights, one weight per flight.
+  \item $\MSD(\tau)\sim\tau^{2H}$ on a geometric grid of lags; $\Hloc(\tau)=\tfrac12\times$ least-squares slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$ decades of $\tau$ (from $\tau/1.78$ to $1.78\,\tau$); with fewer than 3 lags, the 3 nearest.
+  \item $H$: the same fit over all lags, from 10~s to the end of the dataset.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=app-hlocedge]{$\Hloc$ at the edge of the lags: a one-sided estimate}
+\tikzfig[0.32\textheight]{edge}
+\begin{itemize}
+  \item At the longest lags $T$ of a dataset the window is cut on its upper side: the slope uses only lags below $T$, so it is centred at a shorter lag than $\tau$ and is asymmetric.
+  \item Example: $\Hloc(1840~\mathrm{s})$ on the dataset to $T=2760$~s uses 1035 to 2760~s instead of 1035 to 3272~s; $\Hloc(1000~\mathrm{s})$ on the dataset to 1000~s uses 562 to 1000~s, but 562 to 1778~s on the dataset to 2760~s: complete.
+  \item All curves of a dataset share $T$, hence the same cut: differences between populations are like for like, and every bootstrap draw is cut the same way, so the bands include it.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label=app-estimator]{The phase statistics: how each flight counts}
+Example, glide speed = distance of glides / time in glides, for two flights:
+\begin{center}\small
+\begin{tabular}{@{}c r r r r@{}}
+\toprule
+flight & glide distance & glide time & flight time & glide speed \\
+\midrule
+1 & 20~km & 0.5~h & 1~h & 40~km/h \\
+2 & 60~km & 2~h & 4~h & 30~km/h \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}
+\defn{Ratio of sums}{$\dfrac{20+60}{0.5+2}=32$~km/h. Flight 2 weighs four times flight 1: it glides four times longer. The longest flights dominate.}
+\column{.48\textwidth}
+\defn{Ours: average over flights, then ratio}{$\dfrac{\mathrm{mean}(20/1,\;60/4)}{\mathrm{mean}(0.5/1,\;2/4)}=\dfrac{17.5}{0.5}=35$~km/h. A flight weighs by its share of time gliding, not by its length.}
+\end{columns}
+\vspace{1mm}
+\begin{itemize}
+  \item With a unit $u$: $r_u=n_u/T_u$, $q_u=d_u/T_u$, stat $=\sum_u w_u r_u\big/\sum_u w_u q_u$; $n_u$, $d_u$ summed over its runs, $T_u$ its flight time.
+  \item The MSD also gives one weight per flight. On the data: time in climb of $\Sl$ 32.9\% (ours), 34.2\% (ratio of sums).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=app-datasets]{Datasets and the $\tau/0.8$ rule}
+\begin{columns}[T,onlytextwidth]
+\column{.5\textwidth}
+\fig[0.72\textheight]{open_min0.1/raw_durations.pdf}
+\column{.46\textwidth}
+A piece of $\ell$~s gives $(\ell-\tau)/10+1$ pairs of origins. Requiring $\ell\ge\tau/0.8$ gives the same share of origins at the longest lag.
+\begin{itemize}
+  \item Dataset to $T$: pieces of at least $T/0.8$~s, at every lag up to $T$.
+  \item 1000: pieces of 1250~s; 2760: 3450~s; longest (11\,450~s): 14\,312~s.
+  \item Pieces of $\G$ are shorter: a group lasts at least $\tau^*=38.1$~min.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label=app-longT]{Why the long dataset stops at 2760~s}
+\begin{columns}[T,onlytextwidth]
+\column{.56\textwidth}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l r r r@{}}
+\toprule
+caliper (month, hour, wing) & $T=2250$ & 2760 & 3380 \\
+\midrule
+$\pm1$, $\pm1$, class & 311/395 & 166/231 & 74/111 \\
+$\pm1$, $\pm1$, level & 327/656 & 176/372 & 79/189 \\
+$\pm2$, $\pm2$, class & 513/725 & \textbf{279/421} & 129/228 \\
+$\pm2$, $\pm2$, level & 537/1095 & 294/650 & 139/370 \\
+\bottomrule
+\end{tabular}
+
+{\scriptsize pieces of $\G$ with a control, beginners/experienced; the rule asks for 200 in each level.}
+\column{.4\textwidth}
+\begin{itemize}
+  \item $\Hloc(1840~\mathrm{s})$ uses the lags within $\pm0.25$ decades: 1035 to 3272~s.
+  \item At $T=2760$ the window is cut at 2760~s; at 3380~s no caliper reaches 200 pieces per level.
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label=app-matching]{Matching: what is a control}
+\begin{itemize}
+  \item Candidates: open flights with no contact of any length, on another date.
+  \item Coverage: at least 80\% of the points of the piece, one every 30~s, have a pool track point within 500~m, with the same direction.
+  \item Calipers, tried in order: month $\pm1$ or $\pm2$, hour $\pm1$ or $\pm2$, wing class or level; the chosen one is the first with 200 pieces of $\G$ per level.
+  \item Each unit is reweighted to the piece, so a piece with many controls counts once.
+\end{itemize}
+\source{Isolation (nobody within 10~km) is off in the main result and is one of the robustness lines.}
+\end{frame}
+
+\plainfig[app-forest]{Same route: the nine quantities, by wing level}{open_min0.1/matched_forest.pdf}
+
+\plainfig[app-robust]{Same route, 9 lines (calipers, isolation, cover, route radius): $\Delta\Hloc(1000~\mathrm{s})$ from $+0.007$ to $+0.012$, $\Delta\Hloc(1840~\mathrm{s})$ from $+0.017$ to $+0.034$}{open_min0.1/matched_robustness.pdf}
+
+\plainfig[app-decall]{The decomposition: all nine quantities}{open_min0.1/decomposition.pdf}
+
+\plainfig[app-rawstats]{Raw: the seven phase statistics}{open_min0.1/raw_statistics.pdf}
+
+\begin{frame}[label=app-deccells]{The controls of the decomposition}
+\fig[0.56\textheight]{open_min0.1/decomposition_2760_delta.pdf}
+\begin{itemize}
+  \item Eight cells: each factor fixed or not; $\varphi_R,\varphi_T,\varphi_W$ their Shapley values.
+  \item Controls without the route: windows of solo pieces at least as long as the piece, so from long flights; they climb more and glide faster than $\Sl$.
+\end{itemize}
+\source{Cell $\emptyset$: no factor; $F$: route, season and hour, wing.}
+\end{frame}
+
+\begin{frame}[label=app-bands]{Where the uncertainty comes from}
+\tikzfig[0.24\textheight]{bootstrap}
+\begin{itemize}
+  \item The archive is one sample: other seasons would bring other pilots and other days, and every number would change.
+  \item Flights are not independent: those of one pilot share skill, wing and habits; those of one block share the day and the group.
+  \item Pilots and blocks cross: a pilot flies in many blocks, a block holds many pilots.
+\end{itemize}
+\defn{Block}{flights tied by an \emph{episode} of the group identification (groups linked in time through a shared member), or by a \emph{site-day} (takeoffs within 3~km on one day); chained into connected components.}
+\source{A cell is one pilot in one block, about one flight.}
+\end{frame}
+
+\begin{frame}[label=app-bandcalc]{The band: three bootstraps, one formula}
+\begin{itemize}
+  \item Draw the pilots with replacement; each unit weighs the count of its pilot; recompute the statistic. Its variance over the draws is $V_P$.
+  \item Same for the blocks ($V_B$) and for the cells ($V_C$): 1\,000 draws each.
+\end{itemize}
+\defn{Variance and band}{units of one pilot or one block covary, so
+\[
+  V=\max\bigl(V_P+V_B-V_C,\ V_P,\ V_B\bigr),\qquad \text{band}=\hat\theta\pm1.645\sqrt V\quad(90\%).
+\]
+$V_C$ is subtracted once: the pairs of one cell are in both $V_P$ and $V_B$.}
+\vspace{1mm}
+\begin{itemize}
+  \item All the numbers of a section use the same draws: a difference has the band of its own draws.
+  \item Pieces and their controls are drawn together, control flights included: a control that serves many pieces moves them all at once.
+\end{itemize}
+\source{Cameron, Gelbach and Miller, J. Bus. Econ. Stat. 29, 238 (2011).}
+\end{frame}
+
+\begin{frame}[label=app-coverage]{Does the band hold? A check by simulation}
+\begin{columns}[T,onlytextwidth]
+\column{.4\textwidth}
+\begin{itemize}
+  \item On the real designs, replace every value by pilot $+$ block $+$ flight $+$ unit effects: no group effect.
+  \item A 90\% band must hold 0 in 90\% of the replicates.
+  \item The two-way band does so in 88--99\%; the bands used before did not (59\% when pilots matter).
+\end{itemize}
+\column{.56\textwidth}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l r r r r r r@{}}
+\toprule
+ & \multicolumn{2}{c}{raw} & \multicolumn{2}{c}{same route} & \multicolumn{2}{c}{same flight} \\
+ & new & old & new & old & new & old \\
+\midrule
+unit only & 91 & 90 & 99 & 100 & 90 & 88 \\
+flight only & 92 & 91 & 89 & 100 & 90 & 90 \\
+half flight, half unit & 88 & 85 & 92 & 100 & 88 & 88 \\
+pilot strong & 88 & \textcolor{orangeJ}{59} & 88 & 100 & 89 & 81 \\
+block strong & 88 & 84 & 88 & 99 & 89 & 88 \\
+\bottomrule
+\end{tabular}
+
+{\scriptsize \% of replicates whose 90\% band holds 0.}
+\end{columns}
+\takeaway{Left out of the band: the rules of the matching (varied in the robustness lines) and the dependence on one year (planned).}
+\end{frame}
+
+\plainfig[app-prepostforest]{Before and after, windows of 2400~s: all the differences}{open_min0.1/prepost_2400_forest.pdf}
+
+\begin{frame}{Raw: the durations of the phases}
+\fig[0.72\textheight]{open_min0.1/raw_survival.pdf}
+\begin{itemize}
+  \item Survival $P(\tau_\text{phase}>\tau)$ of climbs, searches that end in a climb and glides.
+  \item The three populations overlap for climbs and searches; the tail of $\Sl$ falls below for glides.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=app-rawlong]{Raw at longer lags: dataset to 2760~s}
+\fig[0.72\textheight]{open_min0.1/raw_2760_delta.pdf}
+\source{Pieces of at least 3450~s.}
+\end{frame}
+
+\begin{frame}{Raw at the longest lags: dataset to 11\,450~s}
+\fig[0.72\textheight]{open_min0.1/raw_longest_delta.pdf}
+\begin{itemize}
+  \item $\Hloc$ of $\Sl$ and $\A$ falls at the longest lags, that of $\G$ does not.
+  \item $\G$ keeps few flights there: pieces of at least 14\,312~s.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Variability by year}
+\begin{itemize}
+  \item The bands are the only uncertainty drawn.
+  \item The estimates with one year left out are stored for every result.
+  \item Planned: a study of how the effects change from one year to another.
+\end{itemize}
+\end{frame}
+
+\end{document}

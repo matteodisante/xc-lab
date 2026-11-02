@@ -1,0 +1,10 @@
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \fill[blueI!14]   (0,-10) rectangle (70,-20);
+  \fill[orangeJ!14] (28,0) rectangle (42,-40);
+  \foreach \r in {1,...,4}{\foreach \c in {1,...,5}{\draw[light] ({(\c-1)*14},{-(\r-1)*10}) rectangle +(14,-10);}}
+  \foreach \r/\c in {1/1,1/3,2/2,2/3,2/5,3/1,3/4,4/2,4/5}{\fill[ink2] ({(\c-0.5)*14},{-(\r-0.5)*10}) circle (1.4);}
+  \foreach \r in {1,...,4}{\node[note,anchor=east] at (-2,{-(\r-0.5)*10}) {pilot \r};}
+  \foreach \c/\l in {1/a,2/b,3/c,4/d,5/e}{\node[note] at ({(\c-0.5)*14},3.5) {block \l};}
+  \node[blueI,font=\footnotesize,anchor=west,align=left] at (74,-15) {same pilot:\\skill, wing, habits};
+  \node[orangeJ,font=\footnotesize,anchor=west,align=left] at (74,-3) {same block:\\same day, same group};
+\end{tikzpicture}

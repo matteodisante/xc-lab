@@ -1,0 +1,17 @@
+\begin{tikzpicture}[x=1mm,y=1mm]
+  % time runs to the right; departure on the left
+  \draw[->,muted] (0,-4) -- (118,-4) node[right,note]{time};
+  % a flight that never enters a group
+  \node[anchor=east,lbl] at (-2,14) {a flight with no group};
+  \fill[blueI] (0,11) rectangle (110,17);
+  \node[white,font=\footnotesize] at (55,14) {S};
+  % a flight that enters a group
+  \node[anchor=east,lbl] at (-2,0) {a flight with groups};
+  \fill[aqua]    (0,-3) rectangle (22,3);
+  \fill[orangeJ] (22,-3) rectangle (48,3);
+  \fill[aqua]    (48,-3) rectangle (62,3);
+  \fill[orangeJ] (62,-3) rectangle (84,3);
+  \fill[aqua]    (84,-3) rectangle (110,3);
+  \foreach \x/\t in {11/A,35/G,55/A,73/G,97/A}{\node[white,font=\footnotesize] at (\x,0) {\t};}
+  \draw[muted] (0,-8) -- (0,20) node[above,note]{departure};
+\end{tikzpicture}

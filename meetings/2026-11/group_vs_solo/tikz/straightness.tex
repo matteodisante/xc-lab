@@ -1,0 +1,14 @@
+\begin{tikzpicture}[x=1mm,y=1mm]
+  % two idealised tracks
+  \node[note,anchor=west] at (0,46) {a straight line};
+  \draw[->,steel,line width=1.2pt] (0,38) -- (40,38);
+  \node[note,anchor=west] at (0,24) {a random walk};
+  \draw[steel,line width=1.2pt] (0,12) -- (6,15) -- (9,9) -- (16,13) -- (19,6) -- (26,10) -- (30,4) -- (37,8) -- (40,3);
+  % the same two on log-log axes
+  \draw[->] (58,0) -- (58,46) node[above,note]{$\MSD(\tau)$, log};
+  \draw[->] (58,0) -- (104,0) node[right,note]{$\tau$, log};
+  \draw[orangeJ,line width=1.4pt] (60,3) -- (82,44);
+  \draw[blueI,line width=1.4pt]   (60,3) -- (102,23);
+  \node[orangeJ,font=\footnotesize,anchor=west,align=left] at (84,40) {$\MSD\propto\tau^2$\\$H=1$};
+  \node[blueI,font=\footnotesize,anchor=north,align=center] at (96,19) {$\MSD\propto\tau$\\$H=\tfrac12$};
+\end{tikzpicture}
