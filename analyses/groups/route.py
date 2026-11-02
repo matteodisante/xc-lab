@@ -68,6 +68,14 @@ def eligible(flights, summary, raw):
     return f.loc[ok & (f["n_entries"] > 0), "flight"].to_numpy(), f.loc[alone, "flight"].to_numpy()
 
 
+def track_spans(spans, group, alone):
+    """The stretches kept in TRACKS: group time and the solo time of the flights with group time, and
+    the solo stretches of the flights with no contact. Only populations "group" and "solo" are matched
+    here; "group_solo" (A) is carried for the queries of matched.py."""
+    pop, flight = spans["population"], spans["flight"]
+    return spans[(pop.isin(["group", "group_solo"]) & flight.isin(group)) | ((pop == "solo") & flight.isin(alone))]
+
+
 def site_frames(lat0, lon0):
     """Site of every takeoff (degrees) and the east and north offsets, in m, of its origin from the
     centre of its site."""
@@ -248,8 +256,7 @@ if __name__ == "__main__":
     spans = None
     if not TRACKS.exists():  # the stretches are needed only to build the cache
         spans = stretches(flights, pd.read_parquet(LABELS / "membership.parquet"), summary)
-        spans = spans[((spans["population"] == "group") & spans["flight"].isin(group))
-                      | ((spans["population"] == "solo") & spans["flight"].isin(alone))]
+        spans = track_spans(spans, group, alone)
     tracks = read_tracks(flights, spans)
     tag = ("" if sample is None else f"_sample{sample}") \
         + ("" if (RHO, COVER) == (RHO_DEFAULT, COVER_DEFAULT) else f"_rho{RHO:g}_cover{COVER:g}")
