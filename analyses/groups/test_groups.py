@@ -13,6 +13,7 @@ import budget  # noqa: E402
 import decompose  # noqa: E402
 import describe  # noqa: E402
 import longlags  # noqa: E402
+import matched  # noqa: E402
 import mechanisms  # noqa: E402
 import prepost  # noqa: E402
 import performance  # noqa: E402
@@ -1049,3 +1050,49 @@ def test_prepost_open_numbers_of_the_report():
     four_in, four_out = (d[f"{x} (four-window events)"] for x in ("D_in", "D_out"))
     assert d["g"][k]["value"] == pytest.approx((four_in[k]["value"] + four_out[k]["value"]) / 2, abs=1e-12)
     assert d["d w"][k]["value"] == pytest.approx((four_in[k]["value"] - four_out[k]["value"]) / 2, abs=1e-12)
+
+
+def _utc(*stamps):
+    return pd.to_datetime(list(stamps), utc=True).as_unit("s").asi8.astype(float)
+
+
+def test_matched_gaps_are_circular_and_in_local_time():
+    # 23:30 and 00:30 Paris (winter, UTC+1) are one hour apart across midnight; summer is UTC+2
+    a, b = _utc("2024-01-10 22:30", "2024-07-10 21:30"), _utc("2024-01-10 23:30", "2024-07-10 22:45")
+    assert np.allclose(matched.time_of_day(a), [23.5, 23.5]) and np.allclose(matched.time_of_day(b), [0.5, 0.75])
+    assert np.allclose(matched.hour_gap(a, b), [1.0, 1.25])
+    assert np.allclose(matched.hour_gap(_utc("2024-03-01 08:00"), _utc("2024-03-01 11:30")), 3.5)
+    m = matched.month_gap(_utc("2024-12-15", "2024-01-15", "2024-02-15", "2024-07-15"),
+                          _utc("2024-01-15", "2024-12-15", "2024-12-15", "2024-01-15"))
+    assert m.tolist() == [1, 1, 2, 6]
+
+
+def test_matched_caliper_filter_and_the_main_caliper_rule():
+    t = pd.DataFrame({"side": "G", "piece": [0, 0, 1, 2, 3], "solo": range(5), "cover": [0.9, 0.75, 0.85, 0.8, 0.8],
+                      "dmonth": [0, 0, 2, 1, 1], "dhour": [0.5, 0.5, 1.5, 1.0, 1.01],
+                      "class_piece": ["B", "B", "A", "C", None], "class_solo": ["B", "B", "A", "D", None],
+                      "level_piece": ["beginners", "beginners", "beginners", "experienced", None],
+                      "level_solo": ["beginners", "beginners", "beginners", "experienced", None],
+                      "dur_piece": [2000, 2000, 3000, 3000, 3000], "dur_solo": [1300, 1300, 3000, 3000, 3000],
+                      "isolated": [True, True, False, True, True]})
+    pick = lambda *a, **k: matched.select(t, *a, **k)["solo"].tolist()
+    assert pick("1000", "month1_hour1_class") == [0]  # cover 0.75, month 2, class C/D, hour 1.01 and no class leave
+    assert pick("1000", "month1_hour1_level") == [0, 3]  # the level rescues C against D
+    assert pick("1000", "month2_hour2_class", cover=0.7) == [0, 1, 2]
+    assert pick("2250", "month2_hour2_class") == [2]  # the segment of 1300 s is too short; piece 2 is not isolated either
+    assert pick("2250", "month2_hour2_level", isolation=True) == [3]
+    assert pick("1000", "month1_hour1_class", cover=0.9) == [0]
+    assert matched.tally(matched.select(t, "1000", "month2_hour2_level"))["all"] == {"pieces": 3, "median controls": 1.0}
+    assert matched.tally(matched.select(t, "1000", "month2_hour2_level"))["beginners"]["pieces"] == 2
+    pieces = {"a": {"beginners": 250, "experienced": 199}, "b": {"beginners": 200, "experienced": 200},
+              "c": {"beginners": 900, "experienced": 900}}
+    assert matched.choose_caliper(pieces) == "b"
+    assert matched.choose_caliper({"a": pieces["a"]}) is None
+
+
+def test_matched_isolation_of_a_segment_from_the_flags_of_its_points():
+    flags = np.array([True, True, False, True, True])  # points at grid indices 0, 3, 6, 9, 12
+    assert not matched.segment_isolated(flags, 0, 12, 3)
+    assert matched.segment_isolated(flags, 7, 12, 3)  # points 9 and 12
+    assert not matched.segment_isolated(flags, 4, 7, 3)  # point 6 only
+    assert matched.segment_isolated(flags, 0, 4, 3)  # points 0 and 3
