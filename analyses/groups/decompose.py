@@ -172,9 +172,9 @@ def decompose(pieces, runs, terms, info, block, counts, contrasts=CONTRASTS):
 
 
 def forest(result, path, stats=DRAWN, contrasts=CONTRASTS, labels=LABEL, colors=COLORS,
-           title="Paragliders: the differences between group and solo flights taken apart", per_row=None):
+           title="Paragliders: the differences between group and solo flights taken apart", per_row=None, nticks=None):
     """One panel per statistic, in rows of `per_row` (all in one row by default): every contrast as
-    a dot with its band, zero dotted."""
+    a dot with its band, zero dotted; `nticks` caps the ticks of each x axis."""
     ncols = per_row or len(stats)
     nrows = -(-len(stats) // ncols)
     fig, axes = plt.subplots(nrows, ncols, figsize=(2.5 * ncols + 2.8, nrows * (0.42 * len(contrasts) + 1.3) + 0.3),
@@ -193,6 +193,8 @@ def forest(result, path, stats=DRAWN, contrasts=CONTRASTS, labels=LABEL, colors=
         ax.set_yticks(range(len(contrasts)), [labels[c] for c in contrasts] if ax in axes[:, 0] else [])
         ax.set_title("Δ " + stat.replace("(%)", "(points)"), fontsize=8.5)
         ax.tick_params(labelsize=7.5)
+        if nticks:
+            ax.xaxis.set_major_locator(plt.MaxNLocator(nticks))
         ax.grid(axis="x", color="#e6e6e6", lw=0.6)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)

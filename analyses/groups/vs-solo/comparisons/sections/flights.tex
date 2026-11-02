@@ -41,12 +41,60 @@ all its pieces in that population,
 \end{equation}
 with $t$ and $t+\tau$ in the same piece. The ensemble $\MSD(\tau)$ is its mean over the flights, one weight
 per flight. $\Hloc(\tau)$ is half the slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$
-decades of $\tau$: 1 for a straight line, $\tfrac12$ for a random walk. Bands are 5--95\% of bootstrap draws
-that resample the dependency blocks of the grouping.
+decades of $\tau$: 1 for a straight line, $\tfrac12$ for a random walk. $H$ is half the slope over all the
+lags of a curve, from 10~s to its end. Bands are 5--95\% of \NBoot{} bootstrap draws
+that resample the dependency blocks of the grouping (Appendix~\ref{app:bootstrap}).
 
 \paragraph{Datasets.} A lag $\tau$ needs pieces of at least $\tau/0.8$~s, so that the origins of every piece
 cover the lag in the same share of it. A dataset to the lag $T$ keeps, in each population, its pieces of at
-least $T/0.8$~s and measures them at every lag up to $T$: the population does not change along a curve.
-We use two datasets, with $T$ a little above $2\cdot10^3$~s (\DeclTauFixed~s on the lag grid) and the longest
-$T$ at which each population keeps \DeclMinFlights{} flights (\DeclTauLongest~s). $H$ is half the slope of
-$\log\MSD$ against $\log\tau$ over all the lags of the curve.
+least $T/0.8$~s and measures them at every lag up to $T$: the population does not change along a curve
+(Appendix~\ref{app:datasets}). Three datasets:
+\begin{itemize}
+  \item \emph{1000}: $T=\RawTauOne$~s, pieces of at least \RawShortestOne~s;
+  \item \emph{2250}: $T=\RawTauTwo$~s, pieces of at least \RawShortestTwo~s;
+  \item \emph{longest}: $T=\RawTauLong$~s, the longest lag at which each population keeps \DeclMinFlights{} flights, pieces of at least \RawShortestLong~s.
+\end{itemize}
+The quoted values are $\Hk$ on dataset 1000 and $\Hq$ on dataset 2250, the lag of the grid nearest to 2000~s. The
+window of $\Hq$, $\pm0.25$ decades, is cut at 2250~s: it uses the lags from \HqLowest{} to 2250~s only.
+
+\paragraph{Phase statistics.} Flights logged at 1~Hz carry the phases of Vilpellet's method: climbs, searches and glides.
+Phases exist on 1-Hz flights only, so the phase statistics rest on fewer flights than the MSD
+(\RawPhaseFlightsS{} in $\Sl$, \RawPhaseFlightsA{} in $\A$ and \RawPhaseFlightsG{} in $\G$ against \RawFlightsOneS, \RawFlightsOneA{} and \RawFlightsOneG{} on dataset 1000).
+A run belongs to the unit that holds its middle. Seven statistics, each a ratio $n/d$ of two terms summed over the runs of a unit
+(Table~\ref{tab:stats}); the phase time $T_u$ of a unit $u$ is the sum of the durations of its runs.
+
+\begin{table}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l l l l l@{}}
+\toprule
+statistic & numerator $n$ & denominator $d$ & runs counted & $r_u$, $q_u$ \\
+\midrule
+time in climb (\%) & time in climbs & phase time & climbs & $n_u/T_u$, constant \\
+time in search (\%) & time in searches & phase time & searches, found and vain & $n_u/T_u$, constant \\
+searches ending in a climb (\%) & searches followed by a climb & searches & searches & $n_u/T_u$, $d_u/T_u$ \\
+climbs per hour & climbs & phase time (h) & climbs & $n_u/T_u$, constant \\
+climb rate (m/s) & height gained in climbs & time in climbs & climbs & $n_u/T_u$, $d_u/T_u$ \\
+glide speed (km/h) & straight-line distance of glides & time in glides & glides & $n_u/T_u$, $d_u/T_u$ \\
+height lost per km of glide (m/km) & height lost in glides & distance of glides & glides & $n_u/T_u$, $d_u/T_u$ \\
+\bottomrule
+\end{tabular}
+\caption{The seven phase statistics. Unit $u$ of the average: the flight in Section~\ref{sec:raw} (its runs on its pieces of dataset 1000
+in the population), the piece or control segment in Sections~\ref{sec:matched} and \ref{sec:decomposition}, the window in Section~\ref{sec:prepost}.}
+\label{tab:stats}
+\end{table}
+
+\paragraph{Estimator: average first, ratio after.} With $w_u$ the weight of a unit (1 for the value, the bootstrap count for a draw),
+\begin{equation}\label{eq:estimator}
+  r_u=\frac{n_u}{T_u},\qquad q_u=\frac{d_u}{T_u},\qquad
+  \text{stat}=\frac{\sum_u w_u\, r_u}{\sum_u w_u\, q_u}.
+\end{equation}
+For the two time shares and the climbs per hour $q_u$ is constant, and the statistic is the mean of the unit's share or rate. For the
+other four it does not divide by the few events of one unit: a unit with one search gives 0\% or 100\%.
+This is the estimator of the MSD, one weight per unit. The ratio of sums, $\sum n_u/\sum d_u$, weights a unit by its phase time
+(Appendix~\ref{app:phases}).
+
+\paragraph{Survival of the phase durations.} For climbs, searches that end in a climb and glides, the survival function
+$P(\tau_\text{phase}>\tau)$ of the number of fixes of a run (1~Hz, so seconds), with the duration trimmed as in the
+note on phases. Every run weighs 1; its band is pointwise 5--95\% of the draws of the unit's bootstrap
+(Appendix~\ref{app:survival}).

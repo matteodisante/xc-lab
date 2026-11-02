@@ -1,0 +1,161 @@
+\section{TA-MSD and ensemble MSD}\label{app:tamsd}
+
+For a flight $f$ and a population, the pieces on the 10-s grid give the positions $\mathbf r_i$ ($i$ the grid index, $\tau=k\cdot10$~s). The time-averaged MSD pools the origins of all its pieces,
+\[
+  \overline{\delta^2_f}(k)=\frac{1}{N_f(k)}\sum_{\text{pieces}}\sum_{i}\bigl\|\mathbf r_{i+k}-\mathbf r_i\bigr\|^2,
+\]
+$N_f(k)$ the number of pairs $(i,i+k)$ inside a piece. The ensemble MSD is the mean over the flights with a piece in the population, one weight per flight:
+$\MSD(\tau)=\frac1F\sum_f\overline{\delta^2_f}(\tau)$. The sums are computed with the fast Fourier transform and equal the direct sums.
+
+\emph{Example.} Positions on a line $\mathbf r=\ToyPos$ (a single piece): at the lag of one step, $\MSD=\ToyMsdOne$, from the squared steps; at two steps, $\MSD=\ToyMsdTwo$, from $(\mathbf r_2-\mathbf r_0)^2$ and $(\mathbf r_3-\mathbf r_1)^2$.
+
+\section{Fitted \texorpdfstring{$H$}{H} and \texorpdfstring{$H_\mathrm{loc}$}{H\_loc}}\label{app:hloc}
+
+$H$ is half the slope of $\log_{10}\MSD$ against $\log_{10}\tau$, least squares with one weight per lag, over all the lags of a curve (10~s to the end of its dataset):
+$H=\tfrac12\,\mathrm{slope}$. $\Hloc(\tau)$ is the same fit over the lags $\lambda$ with $|\log_{10}\lambda-\log_{10}\tau|\le0.25$; when fewer than 3 lags lie there, the 3 nearest. A straight line gives 1, a random walk $\tfrac12$.
+
+\emph{Example.} With the two lags of one and two steps and the MSD above, the slope of the log--log line is $\log_2(\ToyMsdTwo/\ToyMsdOne)$, so $H=\ToyH$.
+
+\emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to $1840\times10^{0.25}$~s; dataset 2250 stops at 2250~s, so the window is one-sided and uses the lags from \HqLowest{} to 2250~s only.
+Its band includes this truncation, since every draw is cut the same way. The window of $\Hk$ on dataset 1000 is cut in the same way at 1000~s.
+
+\section{Datasets and the \texorpdfstring{$\tau/0.8$}{tau/0.8} rule}\label{app:datasets}
+
+A piece of duration $\ell$ gives, at lag $\tau$, $(\ell-\tau)/10+1$ pairs of origins. Requiring $\ell\ge\tau/0.8$ gives origins over at least $0.2\,\ell$ of the piece, the same share of it at the longest lag the piece serves, whatever the piece.
+A curve to the lag $T$ would mix populations if each lag kept the pieces long enough for itself (the long lags would rest on fewer, longer pieces). A dataset to $T$ keeps the pieces of at least $T/0.8$~s and measures them
+at every lag up to $T$, so the same pieces carry the whole curve. Datasets 1000 and 2250 have $T=\RawTauOne$ and \RawTauTwo~s (pieces of at least \RawShortestOne{} and \RawShortestTwo~s); the longest has $T=\RawTauLong$~s (\RawShortestLong~s),
+the largest lag of the grid at which each population keeps \DeclMinFlights{} flights. The windows of Section~\ref{sec:prepost} have \PreWindow~s, so $T$ is the largest lag of the grid up to $0.8\times\PreWindow$~s, \PreMaxLag~s.
+
+\section{The phase statistics: average first against the ratio of sums}\label{app:phases}
+
+For a unit $u$ (flight, piece, control segment or window) the terms $n_u$, $d_u$ are the sums of the numerator and of the denominator over the runs whose middle lies in $u$, and $T_u$ is the sum of the durations of its runs.
+The ratio of sums is $\sum_u n_u/\sum_u d_u$: a unit weighs by its $d_u$, hence by its phase time. The estimator used here is
+\[
+  \text{stat}=\frac{\sum_u w_u\,n_u/T_u}{\sum_u w_u\,d_u/T_u}.
+\]
+For the time shares and the climbs per hour the denominator $d_u/T_u$ is the same constant for every unit, so the statistic is the mean over units of a share or a rate. For the others it is a ratio of means of rates per unit of phase time.
+
+\emph{Example.} Three units, searches that end in a climb out of all searches, $(n,d,T)=(\ToyNa,\ToyDa,\ToyTa)$, $(\ToyNb,\ToyDb,\ToyTb)$, $(\ToyNc,\ToyDc,\ToyTc)$. The ratio of sums is $\ToySumN/\ToySumD=\ToyRatio\%$; the mean of the unit shares
+$n/d$ is \ToyMeanShare\%; the estimator is $\sum n/T\,/\sum d/T=\ToyAvgFirst\%$.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/raw_ratio_table}
+\caption{Open flights, raw, pieces of dataset 1000, unit the flight: each statistic as \emph{average first, ratio after} / \emph{ratio of sums}, for $\Sl$, $\A$ and $\G$, with the flights and the phase time (h) they rest on.}
+\label{tab:ratio}
+\end{table}
+
+\section{Survival function and its weighted version}\label{app:survival}
+
+For the durations $x_j$ of the counted runs with weights $w_j$, $P(\tau_\text{phase}>t)=\sum_j w_j[x_j>t]\big/\sum_j w_j$, on a logarithmic grid of $t$. The duration is the number of fixes of the run (1~Hz), trimmed at the 0.0001 and 99.9999 percentiles; a search counts only if the next run of the flight is a climb.
+In Section~\ref{sec:raw} every run weighs 1. In Section~\ref{sec:matched} a run of a piece weighs 1 and a run of a control segment weighs $1/m_g$, with $m_g$ the number of controls of its piece $g$, so that the control side has the composition of the pieces.
+A draw of the bootstrap multiplies the weight of a run by the weight of its unit; the band is the pointwise 5--95\% of the draws.
+
+\emph{Example.} Durations \ToySurvDurations~s with weight 1: $P(\tau>20)=\ToySurvAtTwenty$ and $P(\tau>30)=\ToySurvAtThirty$.
+
+\section{Route matching and calipers}\label{app:route}
+
+A query piece (of $\G$ or $\A$) is a path on the 10-s grid. A segment of a pool piece (an open flight with no contact of any length, on another date) matches it when
+\begin{itemize}
+  \item \emph{coverage}: at least \MatCover{} of the points of the query, one every 30~s, have a point of the pool track within $\rho=\MatRho$~m;
+  \item \emph{direction and segment}: the points of the pool track nearest to the first and to the last point of the query are within $\rho$ of them, and the first comes before the last: the pool flight flew the route the same way; the segment is the stretch between those points;
+  \item the segment lasts at least as long as the dataset needs.
+\end{itemize}
+A query keeps one match per pool flight, the most covered. A caliper is then a filter on the match table: the month of the middles within $m$ (circular), the local hour of the middles within $h$ (circular), and the same wing class (A, B, C, D, CCC of the catalogue; a flight with no class is dropped)
+or the same level (beginners A and B, experienced C, D and CCC). The calipers are tried in the order of Table~\ref{tab:calipers}; the chosen one is the first with at least \MatMin{} pieces per level on dataset 2250. The robustness lines change one rule at a time: another caliper, isolation (at every point of the segment, no other flight within 10~km at the same minute),
+$\rho$ of 300 or 1000~m, cover 0.7 or 0.9.
+
+\emph{Cells without R (Section~\ref{sec:decomposition}).} The control is a window of a pool piece, with as many grid points as the piece of $\G$, on another date. With T: the pool piece is within the month caliper and the window is placed at random among the positions whose middle is within the hour caliper (local time across midnight); without T: at random.
+With W: the pool piece has the wing class of the piece. At most \DecK{} windows per piece, one per pool flight, drawn with a fixed seed. The same draws serve every cell.
+
+\section{Reweighting to the piece}\label{app:reweight}
+
+Piece $g$ of $\G$ has terms $a_g$ (its MSD sums, or its phase terms) and controls $s$ with terms $b_s$. With $w_g$ the weight of the piece (from the bootstrap) and $w_s$ that of a control,
+\[
+  \text{group}=\sum_g w_g\,a_g,\qquad
+  \text{control}=\sum_g w_g\,\frac{\sum_{s\in g}w_s\,b_s}{\sum_{s\in g}w_s},\qquad
+  \text{total}=\sum_g w_g,
+\]
+over the pieces with positive weight and at least one control of positive weight. Each piece counts once on both sides, whatever the number of its controls: the control side has the composition of the pieces. The MSD at each lag is the mean $\text{group}/\text{total}$ (resp. control/total), the logarithm and the slopes are taken after the means,
+and the phase statistics are the ratios $\sum_g w_g\bar r_g/\sum_g w_g\bar q_g$ with $\bar r_g$, $\bar q_g$ the means of $r$ and $q$ over the controls of the piece.
+
+\section{Bootstrap of dependency blocks, and of pilots \texorpdfstring{$\times$}{x} blocks}\label{app:bootstrap}
+
+\emph{Blocks.} Flights that share an episode of the grouping are not independent, and neither are flights of the same site on the same day. Both tie flights into a block (a solo flight alone is a block). A draw takes $B$ blocks with replacement ($B$ the number of blocks, \NBoot{} draws,
+fixed seed) and gives each unit the count of its block as its weight. Each statistic and curve is recomputed on every draw, with the same draws for every quantity of a section; the band is the 5th and 95th percentile of the draws.
+\emph{Pilots $\times$ blocks} (Sections~\ref{sec:matched} and \ref{sec:decomposition}). The pieces and the controls come from the same pilots, so two independent draws are made, of the pilots and of the blocks, and a flight weighs the product of the count of its pilot and the count of its block. A control flown by a pilot of the pieces is thus resampled with them.
+
+\section{Leaving one year out}\label{app:years}
+
+For each year of the archive the estimate is repeated with weight 0 on the flights of that year (the same form as a bootstrap weight). The thin bars of Figures~\ref{fig:matched-forest} and \ref{fig:decomposition} are the minimum and the maximum of these estimates:
+a result that depends on one year shows as a wide thin bar.
+
+\section{The Shapley decomposition}\label{app:shapley}
+
+Let $\Delta(C)$, $C\subseteq F=\{R,T,W\}$, be the gap of $\G$ against the controls that satisfy only the conditions of $C$. The part of the raw gap that comes from the factor $k$ is
+\[
+  \varphi_k=\sum_{C\subseteq F\setminus\{k\}}\frac{|C|!\,(2-|C|)!}{3!}\,\bigl[\Delta(C)-\Delta(C\cup\{k\})\bigr],
+\]
+with weights $\tfrac13$ for $|C|=0$, $\tfrac16$ for $|C|=1$ (two such sets) and $\tfrac13$ for $|C|=2$: they add to 1. They are the shares of the $3!=6$ orders of the factors in which $k$ comes after exactly the factors of $C$. Along one order $\Delta(\emptyset)-\Delta(F)$
+is a sum of the three differences of consecutive cells, one per factor. Averaging over the six orders, $\sum_k\varphi_k=\Delta(\emptyset)-\Delta(F)$ exactly:
+\[
+  \Delta(\emptyset)=\Delta(F)+\varphi_R+\varphi_T+\varphi_W .
+\]
+Every order has the same weight, so the order in which the factors are added does not matter. The identity holds on every bootstrap draw (the maximum gap is 0 to the precision of the run), so the bands of the $\varphi$ and of $\Delta(F)$ come from the same draws.
+
+\emph{Additive example.} If $\Delta(C)=g+\sum_{k\notin C}a_k$, then $\Delta(C)-\Delta(C\cup\{k\})=a_k$ for every $C$, and $\varphi_k=a_k$. With $g=\ToyShapleyF$, $a_R=\ToyShapleyR$, $a_T=\ToyShapleyT$, $a_W=\ToyShapleyW$:
+$\Delta(F)=\ToyShapleyF$, $\Delta(\emptyset)=\ToyShapleyNone$, and $\varphi_R=\ToyShapleyR$, $\varphi_T=\ToyShapleyT$, $\varphi_W=\ToyShapleyW$. The shares $\varphi_k/\Delta(\emptyset)$ are meaningful only when $\Delta(\emptyset)$ is away from 0.
+
+\section{The drift-free estimator}\label{app:drift}
+
+Let a quantity $x$ drift linearly in time by $\delta$ per window, and let the group add $\gamma$ inside the stretch. With four adjacent windows, pre then start at the entry, end then post at the exit,
+\[
+  D_\text{in}=x_\text{start}-x_\text{pre}=\gamma+\delta,\qquad D_\text{out}=x_\text{end}-x_\text{post}=\gamma-\delta,
+\]
+because the end window comes before the post window. So $g=(D_\text{in}+D_\text{out})/2=\gamma$ and $d_w=(D_\text{in}-D_\text{out})/2=\delta$. The assumptions are a drift linear in time and a group effect that is the same on entry and on exit.
+Each of $D_\text{in}$, $D_\text{out}$, $g$ and $d_w$ is computed on the events that have the four windows, with the same bootstrap draws.
+
+\emph{Example.} $D_\text{in}=\ToyDin$ and $D_\text{out}=\ToyDout$ give $g=\ToyG$ and $d_w=\ToyDw$.
+
+\section{Figures of the other datasets and cells}\label{app:figures}
+
+\begin{figure}[h]
+\centering
+\pair{open_min0.1/raw_2250_msd.pdf}{open_min0.1/raw_2250_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/raw_longest_msd.pdf}{open_min0.1/raw_longest_hloc.pdf}{0.49}
+\caption{Raw, open flights, datasets 2250 (top: $\Sl$ \RawFlightsTwoS{} flights, $\A$ \RawFlightsTwoA, $\G$ \RawFlightsTwoG) and longest (bottom: \RawFlightsLongS, \RawFlightsLongA{} and \RawFlightsLongG{} flights): $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over flights.}
+\label{fig:raw-more}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\pair{open_min0.1/matched_2250_msd.pdf}{open_min0.1/matched_2250_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/decomposition_2250_msd.pdf}{open_min0.1/decomposition_2250_hloc.pdf}{0.49}
+\caption{Top: same route, season, hour and wing, dataset 2250 (pieces of at least \RawShortestTwo~s, \MatNGPiecesOfTheLongSeries{} pieces of $\G$). Bottom: $\G$ and the controls of the 8 cells, dataset 2250 (\DecPiecesQ{} pieces). $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over pieces.}
+\label{fig:matched-more}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\pair{open_min0.1/prepost_2400_controls_A_msd.pdf}{open_min0.1/prepost_2400_controls_A_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/prepost_2400_controls_S_msd.pdf}{open_min0.1/prepost_2400_controls_S_hloc.pdf}{0.49}
+\caption{The control pairs of Section~\ref{sec:prepost}: two consecutive windows of \PreWindow~s in the solo time of the flights of $\A$ (top, \PreEventsMSDCA{} events) and in solo flights (bottom, \PreEventsMSDCS{} events); $\MSD(\tau)$ and $\Hloc(\tau)$.}
+\label{fig:prepost-controls}
+\end{figure}
+
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/decomposition_controls_table}
+\caption{Decomposition, level all, on \MatNGPieces{} pieces of $\G$ (\MatNGPiecesWithPhases{} for the phase statistics): value of $\G$ and of the controls of each cell; the cells are named by the conditions they hold ($\emptyset$ none, R route, T season and hour, W wing).
+Dataset 1000 for $\Hk$ and the statistics, 2250 for $\Hq$; average first, ratio after, unit the piece.}
+\label{tab:decomposition-controls}
+\end{table}
+
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/decomposition_deltas_table}
+\caption{Decomposition, level all: $\Delta(C)=\G-{}$controls of the cell $C$ for the 8 cells (same pieces and units as Table~\ref{tab:decomposition-controls}); $^\ast$: the 5--95\% band excludes 0.}
+\label{tab:decomposition-deltas}
+\end{table}

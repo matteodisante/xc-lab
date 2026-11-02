@@ -1,13 +1,10 @@
 \begin{abstract}
 \noindent
-We compare paraglider group time with solo flights and with the solo time of the same flights, on the
-flights the pilots declare open on the FFVL catalogue, with no stratification. At lags of hours the mean
-squared displacement of solo flights bends down: the longest lags rest on declared open flights that fold
-back on themselves, whose takeoff to landing distance is a small part of the path flown. We keep the
-declared open flights with an opening above \MinOpening, the lowest threshold that drops those coming back
-near their takeoff while keeping nearly the same share of lowland and mountain flights (\TakeoffLowKeep\%
-and \TakeoffHighKeep\%; a threshold of \Stricter{} would keep \TakeoffLowStrict\% and \TakeoffHighStrict\%). On
-these open flights group time progresses straighter than solo flights, $\Hloc(1000~\mathrm{s})$ of
-\OpenFixedHThousandG{} against \OpenFixedHThousandS, the same flights alone stay close to solo flights, and the
-bend at long lags is weaker.
+We compare paraglider group time with solo flight on open flights, four ways: raw; against solo flights on the
+same route, season, hour and wing; by how much each of those factors accounts for the raw gap; and against the
+same flight before and after its group time. Raw, group time progresses straighter than solo flight:
+$\Hk$ is \RawHKOneG{} in $\G$ and \RawHKOneS{} in $\Sl$. On the same route, season, hour and wing the gap is
+\MatDeltaHKG{} \MatDeltaHKGBand, a band that includes 0; so do the bands of \MatZeroG{} of the \MatNQuant{} quantities. Taking the factors apart,
+the route carries the largest part of the difference of time in climb, glide speed and height lost per km of glide. Around the group, the
+drift-free effect $g$ of $\Hk$ is \PreGHK{} \PreGHKBand. Time in search, climb rate, glide speed and height lost per km of glide have opposite signs in the matched and in the before-and-after comparison.
 \end{abstract}

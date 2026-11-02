@@ -1,0 +1,52 @@
+\section{Point 4: before, during, after}\label{sec:prepost}
+
+Does the same flight move differently inside its group time than just before and after it?
+
+\paragraph{Windows.} For each stretch of group time of a flight, four windows of \PreWindow~s of the flight clock: \emph{pre}, the \PreWindow~s before the stretch, if a solo stretch of the same flight at least that long precedes it;
+\emph{start} and \emph{end}, its first and last \PreWindow~s, if it lasts that long; \emph{post}, the \PreWindow~s after it, if a solo stretch at least that long follows. A window is the unit. The MSD is measured on the
+\PreLags{} lags of the grid up to \PreMaxLag~s, the largest within $0.8\times\PreWindow$~s, with \PreOrigins{} origins at the longest. The windows of one stretch are one event (\PreEvents{} events with the four windows). The controls are two
+consecutive windows of \PreWindow~s drawn at random in the solo time of the flights of $\A$ (\PreEventsMSDCA{} events) and in solo flights (\PreEventsMSDCS{} events).
+
+\begin{figure}
+\centering
+\pair{open_min0.1/prepost_2400_stages_msd.pdf}{open_min0.1/prepost_2400_stages_hloc.pdf}{0.49}
+\caption{The four windows of the \PreEvents{} events with the four windows (\PreWindowsPre{} windows each), $\MSD(\tau)$ (left) and $\Hloc(\tau)$ (right), lags to \PreMaxLag~s; ensemble mean over windows;
+5--95\% bands of the draws of dependency blocks. $\Hloc(1000~\mathrm{s})$: pre \PreHKPre, start \PreHKStart, end \PreHKEnd, post \PreHKPost.}
+\label{fig:prepost-stages}
+\end{figure}
+
+\paragraph{The MSD.} In the windows inside the group $\Hk$ is \PreHKStart{} (start) and \PreHKEnd{} (end), against \PreHKPre{} before and \PreHKPost{} after (Figure~\ref{fig:prepost-stages}). The entry difference
+$D_\text{in}=\text{start}-\text{pre}$ is \PreInHK{} \PreInHKBand{} and the exit difference $D_\text{out}=\text{end}-\text{post}$ is \PreOutHK{} \PreOutHKBand{}, while after minus before is \PrePPHK{} \PrePPHKBand{}.
+The control pairs give \PreCAHK{} \PreCAHKBand{} (same flights alone) and \PreCSHK{} \PreCSHKBand{} (solo flights).
+
+\paragraph{The drift-free effect.} If the quantity drifts linearly in time (the day advances, the pilot tires) the entry difference is the group effect plus the drift over one window, and the exit difference the group effect minus it. So
+\[
+  g=\frac{D_\text{in}+D_\text{out}}{2}\quad\text{(the group effect)},\qquad d_w=\frac{D_\text{in}-D_\text{out}}{2}\quad\text{(the drift over one window)},
+\]
+on the events that have the four windows (\PreEventsMSDG{} for the MSD, \PreEventsPhaseG{} with phase time; Appendix~\ref{app:drift}). At $\Hk$, $g$ is \PreGHK{} \PreGHKBand{} and $d_w$ is \PreDwHK{} \PreDwHKBand.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/prepost_2400_forest.pdf}
+\caption{Before, during and after: $\Delta\Hk$ and the seven statistics for $D_\text{in}$, $D_\text{out}$, post minus pre, $g$, $d_w$ and the two control pairs; windows of \PreWindow~s, $\Hk$ on the MSD of the windows
+(\PreEventsMSDG{} events for $g$), statistics on \PreEventsPhaseG{} events for $g$ (\PreEventsPhaseIn{} for $D_\text{in}$, \PreEventsPhaseOut{} for $D_\text{out}$); average first, ratio after, unit the window; 5--95\% bands of the draws of dependency blocks.}
+\label{fig:prepost-forest}
+\end{figure}
+
+\paragraph{The phases.} Time in climb rises on entry and on exit ($D_\text{in}$ \PreInClimb, $D_\text{out}$ \PreOutClimb), and $g$ is \PreGClimb{} \PreGClimbBand{} points; the control pairs give \PreCSClimb{} (solo flights) and \PreCAClimb{} (same flights alone). For the glide speed $g$ is \PreGGlide{} \PreGGlideBand~km/h and for
+the height lost per km of glide \PreGSink{} \PreGSinkBand~m/km; for the climbs per hour it is \PreGCph{} \PreGCphBand.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/prepost_table}
+\caption{The drift-free effect $g$ of this section (windows of \PreWindow~s, average first, unit the window) beside $\Delta(\G-\SG)$ of Section~\ref{sec:matched} (pieces, dataset 1000, same route,
+season, hour and wing, level all), at the same lag, with 5--95\% bands; $g-\Delta$ and whether the two have the same sign.}
+\label{tab:prepost}
+\end{table}
+
+\paragraph{Against the same route.} At $\Hk$, $g$ (\PreGHK) lies inside the band of $\Delta(\G-\SG)$ (\MatDeltaHKG{} \MatDeltaHKGBand), \PreVsGapHK{} above its point value. Time in climb, searches ending in a climb and climbs per hour have the same sign in the two
+comparisons (\PreGClimb{} against \MatDeltaClimbG, \PreGFound{} against \MatDeltaFoundG, \PreGCph{} against \MatDeltaCphG). Time in search (\PreGSearch{} against \MatDeltaSearchG), climb rate (\PreGRate{} against \MatDeltaRateG),
+glide speed (\PreGGlide{} against \MatDeltaGlideG) and height lost per km of glide (\PreGSink{} against \MatDeltaSinkG) have opposite signs. The bands of $g$ exclude 0 for those four and the bands of $\Delta(\G-\SG)$ include it (Table~\ref{tab:prepost}).
+
+\paragraph{What we keep.} Around the group the pilot's $\Hk$ rises on entry (\PreInHK) and on exit (\PreOutHK) while the control pairs stay near 0, so $g$ is \PreGHK{} \PreGHKBand, with $d_w$ \PreDwHK{} \PreDwHKBand. $g$ lies in the band of the
+same-route $\Delta(\G-\SG)$. The two comparisons agree in sign for time in climb, searches ending in a climb and climbs per hour, and disagree for time in search, climb rate, glide speed and height lost per km of glide.

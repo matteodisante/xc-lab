@@ -1272,3 +1272,45 @@ def test_decomposition_every_cell_of_a_quantity_has_the_same_pieces(monkeypatch)
     ctx = type("C", (), {"tracks": {"flight": np.arange(5)}})()
     decomposition.decompose(ctx, None, kept, lambda cell, name: frame[frame["piece"].isin(kept[name])])
     assert all(c in ([1, 2], [2]) for c in calls) and len(calls) == 16
+
+
+# The numbers of the comparisons report: the macros of vs-solo/code/comparisons.py equal the JSON of the analyses.
+OPEN_OUT = Path(__file__).parent / "out" / tamsd.LABELS.name / "open_min0.1"
+_JSONS = ("raw", "matched_counts", "matched", "decomposition", "prepost_2400")
+
+
+@pytest.mark.skipif(not all((OPEN_OUT / f"{n}.json").exists() for n in _JSONS), reason="run raw, matched, decomposition and prepost with --open first")
+def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
+    sys.path.insert(0, str(Path(__file__).parent / "vs-solo" / "code"))
+    import comparisons
+
+    monkeypatch.setattr(comparisons, "GEN", tmp_path)
+    j = {n: json.loads((OPEN_OUT / f"{n}.json").read_text()) for n in _JSONS}
+    comparisons.macros.clear()
+    comparisons.raw_tex(j["raw"])
+    comparisons.counts_tex(j["matched_counts"])
+    comparisons.matched_tex(j["matched"])
+    comparisons.decomposition_tex(j["decomposition"])
+    comparisons.prepost_tex(j["prepost_2400"], j["matched"])
+    m, num, signed = comparisons.macros, comparisons.num, comparisons.signed
+    g = j["raw"]["datasets"]["1000"]["populations"]["G"]
+    assert m["RawFlightsOneG"] == num(g["flights"], 0)
+    assert m["RawHKOneG"] == num(g["H_loc(1000 s)"]["value"], 3)
+    assert m["RawHKOneGBand"] == f"[{num(g['H_loc(1000 s)']['band'][0], 3)}, {num(g['H_loc(1000 s)']['band'][1], 3)}]"
+    s = j["raw"]["phase statistics"]["S"]
+    assert m["RawStatClimbS"] == num(s["average first"]["time in climb (%)"]["value"], 1)
+    assert m["RawSumSinkS"] == num(s["ratio of sums"]["height lost per km of glide (m/km)"]["value"], 0)
+    d = j["matched"]["levels"]["all"]["deltas"]["G - S|G"]["H_loc(1000 s)"]
+    assert m["MatDeltaHKG"] == signed(d["value"], 3) and m["MatDeltaHKGBand"].startswith("[")
+    assert m["MatMinBeg"] == num(j["matched_counts"]["chosen caliper"]["G pieces on dataset 2250"]["beginners"], 0)
+    dec = j["decomposition"]["levels"]["all"]["time in climb (%)"]
+    assert m["DecPhiClimbR"] == signed(dec["phi"]["R"]["value"], 1)
+    assert m["DecCtlClimbNone"] == num(dec["cells"]["none"]["control"], 1)
+    p = j["prepost_2400"]["differences"]["g"]["H_loc(1000 s)"]
+    assert m["PreGHK"] == signed(p["value"], 3)
+    gap = p["value"] - d["value"]
+    assert m["PreVsGapHK"] == signed(gap, 3)
+    # the identity behind the decomposition holds in the stored values
+    for q, x in j["decomposition"]["levels"]["all"].items():
+        total = x["delta_F"]["value"] + sum(x["phi"][k]["value"] for k in "RTW")
+        assert total == pytest.approx(x["delta_none"]["value"], abs=1e-9)

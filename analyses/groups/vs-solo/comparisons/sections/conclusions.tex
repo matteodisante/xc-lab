@@ -1,15 +1,24 @@
 \section{What we keep}\label{sec:conclusions}
 
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/summary_table}
+\caption{The four comparisons side by side. Raw: $\G-\Sl$ on the flights of Section~\ref{sec:raw} (dataset 1000 for $\Hk$, 2250 for $\Hq$, average first, unit the flight); same route, selection: pieces, level all, with
+5--95\% bands; before and after: $g$ on windows. $^\circ$: the band includes 0 (raw: the bands of $\G$ and $\Sl$ overlap). $g$ has no value at $\Hq$: the windows are too short.}
+\label{tab:summary}
+\end{table}
+
 \begin{itemize}
-  \item Many flights declared open fold back on themselves, and the longest lags rest on those: the mean
-        squared displacement then bends with the shape of the flights, not with the group.
-  \item An opening above \MinOpening{} drops the declared open flights that come back near their takeoff
-        and keeps nearly the same share of lowland and mountain flights; a stricter threshold would select
-        the region.
-  \item On the open flights, raw, group time ($\G$, \OpenFixedFlightsG{} flights) progresses straighter than solo
-        flights ($\Sl$, \OpenFixedFlightsS) up to lags of about \OpenTauFixed~s, and the same flights alone ($\A$, \OpenFixedFlightsA)
-        stay close to solo flights.
+  \item Many flights declared open fold back on themselves, and the longest lags rest on those. An opening above \MinOpening{} drops the ones that come back near their takeoff and keeps nearly the same share of lowland and mountain flights.
+  \item \textbf{Raw.} On the open flights group time progresses straighter than solo flight: $\Hk$ \RawHKOneG{} in $\G$, \RawHKOneS{} in $\Sl$, \RawHKOneA{} in $\A$, and it has more time in climb (\RawStatClimbG\% against \RawStatClimbS\%) and a faster glide
+  (\RawStatGlideG{} against \RawStatGlideS~km/h). The bands of $\G$ and $\Sl$ do not overlap for $\Hk$, nor for \RawSepCount{} of the 7 statistics.
+  \item \textbf{Same route, season, hour and wing.} The gap of $\Hk$ is \MatDeltaHKG{} \MatDeltaHKGBand, of $\Hq$ \MatDeltaHQG{} \MatDeltaHQGBand. The bands include 0 for \MatZeroG{} of the \MatNQuant{} quantities, and those of the selection term
+  $\Delta(\A-\SAA)$ for \MatZeroA{} of them. The data do not separate group time from its controls on the same route.
+  \item \textbf{Decomposition.} The route carries the largest part of $\Delta(\emptyset)$ for time in climb, glide speed and height lost per km of glide; season and hour carry almost none, and the wing a small part. $\Delta(\emptyset)$ differs from the raw gap
+  because of the pieces, the controls without a route and the unit. At $\Hk$ it is near 0 and no share is given.
+  \item \textbf{Before and after.} The drift-free effect $g$ of $\Hk$ is \PreGHK{} \PreGHKBand, inside the band of the same-route gap, \PreVsGapHK{} above its point value. Time in climb, searches ending in a climb and climbs per hour
+  agree in sign with the same-route gap. Time in search, climb rate, glide speed and height lost per km of glide have the opposite sign; we give no reason for it.
 \end{itemize}
 
-The comparison is raw: group and solo flights differ in route, season, hour and wing, which the next
-comparisons fix.
+\noindent Where a band includes 0 (Table~\ref{tab:summary}, $^\circ$) the comparison does not tell the sign.

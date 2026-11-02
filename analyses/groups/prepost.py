@@ -31,6 +31,7 @@ post - pre and the controls, and, on the events that have all four windows, the 
 with 5-95% bands of N_BOOT draws of decompose.block_counts, the same for every quantity.
 
     uv run python prepost.py --open [--window SECONDS] [--sample N] [--recompute]    # after tamsd.py and performance.py --open
+    uv run python prepost.py --open --redraw [--window SECONDS]    # the forest plot again from the JSON
 """
 
 import json
@@ -60,6 +61,7 @@ COMPARISONS = {  # name: (P, Q); the difference is P - Q
 STAGES = ("pre", "start", "end", "post")
 OPEN_WINDOW_S = 2400  # s, the window of the open flights: lags up to 1840 s keep 56 origins
 QUOTED_LAG = 1000  # s, the quoted H_loc
+FOREST_TICKS = 5  # at most, on each axis of the forest plot
 OPEN_COMPARISONS = {"D_in": ("start", "pre"), "D_out": ("end", "post"), "post - pre": ("post", "pre"),
                     "ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"), "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}
 FOUR = ("g", "d w")  # the drift-free effects, on the events that have the four STAGES
@@ -357,7 +359,7 @@ def forest(result, path, width):
     """The forest plot of Delta H_loc(1000 s) and the seven Delta for D_in, D_out, post - pre, g, d w and the controls."""
     diffs = result["differences"]
     decompose.forest(diffs, path, (f"H_loc({QUOTED_LAG} s)", *raw.STATISTICS), list(FOREST), FOREST_LABELS, FOREST,
-                     f"Open paragliders, windows of {width} s: before, during and after a group", per_row=4)
+                     f"Open paragliders, windows of {width} s: before, during and after a group", per_row=4, nticks=FOREST_TICKS)
     plt.close("all")
 
 
@@ -397,6 +399,12 @@ def run_open(flights, membership, summary, width, sample=None, recompute=False):
 
 
 if __name__ == "__main__":
+    if "--redraw" in sys.argv:  # the forest plot from the JSON, nothing recomputed
+        w = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else OPEN_WINDOW_S
+        tamsd.folders()
+        tag = f"_sample{sys.argv[sys.argv.index('--sample') + 1]}" if "--sample" in sys.argv else ""
+        forest(json.loads((OUT / f"prepost_{w}{tag}.json").read_text()), OUT / f"prepost_{w}{tag}_forest.pdf", w)
+        sys.exit()
     flights = with_takeoffs(read_flights())
     membership = pd.read_parquet(LABELS / "membership.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")

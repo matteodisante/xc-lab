@@ -1,6 +1,350 @@
 \newcommand{\BelowEvery}{16}
 \newcommand{\BelowFixed}{18}
 \newcommand{\BelowLongest}{26}
+\newcommand{\DecControlFlightsF}{922}
+\newcommand{\DecControlFlightsNone}{19\,755}
+\newcommand{\DecControlsF}{3\,444}
+\newcommand{\DecControlsNone}{88\,150}
+\newcommand{\DecControlsR}{32\,158}
+\newcommand{\DecCtlClimbF}{26.3}
+\newcommand{\DecCtlClimbNone}{38.8}
+\newcommand{\DecCtlClimbR}{26.9}
+\newcommand{\DecCtlClimbRT}{26.6}
+\newcommand{\DecCtlClimbRW}{26.6}
+\newcommand{\DecCtlClimbT}{39.0}
+\newcommand{\DecCtlClimbTW}{37.8}
+\newcommand{\DecCtlClimbW}{37.7}
+\newcommand{\DecCtlCphF}{6.98}
+\newcommand{\DecCtlCphNone}{6.94}
+\newcommand{\DecCtlCphR}{7.08}
+\newcommand{\DecCtlCphRT}{7.05}
+\newcommand{\DecCtlCphRW}{7.05}
+\newcommand{\DecCtlCphT}{7.16}
+\newcommand{\DecCtlCphTW}{7.11}
+\newcommand{\DecCtlCphW}{6.91}
+\newcommand{\DecCtlFoundF}{46.8}
+\newcommand{\DecCtlFoundNone}{45.6}
+\newcommand{\DecCtlFoundR}{47.3}
+\newcommand{\DecCtlFoundRT}{46.9}
+\newcommand{\DecCtlFoundRW}{46.5}
+\newcommand{\DecCtlFoundT}{47.3}
+\newcommand{\DecCtlFoundTW}{45.8}
+\newcommand{\DecCtlFoundW}{44.5}
+\newcommand{\DecCtlGlideF}{30.9}
+\newcommand{\DecCtlGlideNone}{35.2}
+\newcommand{\DecCtlGlideR}{30.9}
+\newcommand{\DecCtlGlideRT}{31.0}
+\newcommand{\DecCtlGlideRW}{30.6}
+\newcommand{\DecCtlGlideT}{35.7}
+\newcommand{\DecCtlGlideTW}{33.5}
+\newcommand{\DecCtlGlideW}{33.5}
+\newcommand{\DecCtlHKF}{0.899}
+\newcommand{\DecCtlHKNone}{0.908}
+\newcommand{\DecCtlHKR}{0.896}
+\newcommand{\DecCtlHKRT}{0.899}
+\newcommand{\DecCtlHKRW}{0.898}
+\newcommand{\DecCtlHKT}{0.909}
+\newcommand{\DecCtlHKTW}{0.899}
+\newcommand{\DecCtlHKW}{0.901}
+\newcommand{\DecCtlHQF}{0.875}
+\newcommand{\DecCtlHQNone}{0.925}
+\newcommand{\DecCtlHQR}{0.870}
+\newcommand{\DecCtlHQRT}{0.873}
+\newcommand{\DecCtlHQRW}{0.875}
+\newcommand{\DecCtlHQT}{0.927}
+\newcommand{\DecCtlHQTW}{0.915}
+\newcommand{\DecCtlHQW}{0.917}
+\newcommand{\DecCtlRateF}{1.22}
+\newcommand{\DecCtlRateNone}{1.09}
+\newcommand{\DecCtlRateR}{1.21}
+\newcommand{\DecCtlRateRT}{1.22}
+\newcommand{\DecCtlRateRW}{1.21}
+\newcommand{\DecCtlRateT}{1.14}
+\newcommand{\DecCtlRateTW}{1.14}
+\newcommand{\DecCtlRateW}{1.10}
+\newcommand{\DecCtlSearchF}{14.2}
+\newcommand{\DecCtlSearchNone}{9.7}
+\newcommand{\DecCtlSearchR}{13.6}
+\newcommand{\DecCtlSearchRT}{13.9}
+\newcommand{\DecCtlSearchRW}{14.0}
+\newcommand{\DecCtlSearchT}{9.7}
+\newcommand{\DecCtlSearchTW}{10.6}
+\newcommand{\DecCtlSearchW}{10.5}
+\newcommand{\DecCtlSinkF}{64}
+\newcommand{\DecCtlSinkNone}{95}
+\newcommand{\DecCtlSinkR}{63}
+\newcommand{\DecCtlSinkRT}{63}
+\newcommand{\DecCtlSinkRW}{63}
+\newcommand{\DecCtlSinkT}{94}
+\newcommand{\DecCtlSinkTW}{99}
+\newcommand{\DecCtlSinkW}{99}
+\newcommand{\DecDeltaClimbF}{$+$2.9}
+\newcommand{\DecDeltaClimbFBand}{[$-$0.1, $+$5.6]}
+\newcommand{\DecDeltaClimbNone}{$-$9.5}
+\newcommand{\DecDeltaClimbNoneBand}{[$-$11.1, $-$8.0]}
+\newcommand{\DecDeltaClimbR}{$+$2.3}
+\newcommand{\DecDeltaClimbRBand}{[0.0, $+$4.4]}
+\newcommand{\DecDeltaClimbRT}{$+$2.6}
+\newcommand{\DecDeltaClimbRTBand}{[0.0, $+$4.9]}
+\newcommand{\DecDeltaClimbRW}{$+$2.6}
+\newcommand{\DecDeltaClimbRWBand}{[$+$0.3, $+$4.8]}
+\newcommand{\DecDeltaClimbT}{$-$9.8}
+\newcommand{\DecDeltaClimbTBand}{[$-$11.4, $-$8.3]}
+\newcommand{\DecDeltaClimbTW}{$-$8.6}
+\newcommand{\DecDeltaClimbTWBand}{[$-$10.1, $-$7.1]}
+\newcommand{\DecDeltaClimbW}{$-$8.5}
+\newcommand{\DecDeltaClimbWBand}{[$-$10.0, $-$7.0]}
+\newcommand{\DecDeltaCphF}{$+$0.64}
+\newcommand{\DecDeltaCphFBand}{[$-$0.08, $+$1.30]}
+\newcommand{\DecDeltaCphNone}{$+$0.69}
+\newcommand{\DecDeltaCphNoneBand}{[$+$0.39, $+$1.00]}
+\newcommand{\DecDeltaCphR}{$+$0.55}
+\newcommand{\DecDeltaCphRBand}{[$+$0.04, $+$1.08]}
+\newcommand{\DecDeltaCphRT}{$+$0.58}
+\newcommand{\DecDeltaCphRTBand}{[$-$0.03, $+$1.23]}
+\newcommand{\DecDeltaCphRW}{$+$0.58}
+\newcommand{\DecDeltaCphRWBand}{[$+$0.04, $+$1.19]}
+\newcommand{\DecDeltaCphT}{$+$0.47}
+\newcommand{\DecDeltaCphTBand}{[$+$0.17, $+$0.78]}
+\newcommand{\DecDeltaCphTW}{$+$0.52}
+\newcommand{\DecDeltaCphTWBand}{[$+$0.22, $+$0.84]}
+\newcommand{\DecDeltaCphW}{$+$0.72}
+\newcommand{\DecDeltaCphWBand}{[$+$0.43, $+$1.05]}
+\newcommand{\DecDeltaFoundF}{$+$2.7}
+\newcommand{\DecDeltaFoundFBand}{[$-$3.2, $+$7.7]}
+\newcommand{\DecDeltaFoundNone}{$+$3.9}
+\newcommand{\DecDeltaFoundNoneBand}{[$+$1.3, $+$6.7]}
+\newcommand{\DecDeltaFoundR}{$+$2.2}
+\newcommand{\DecDeltaFoundRBand}{[$-$1.9, $+$6.2]}
+\newcommand{\DecDeltaFoundRT}{$+$2.5}
+\newcommand{\DecDeltaFoundRTBand}{[$-$2.4, $+$7.3]}
+\newcommand{\DecDeltaFoundRW}{$+$3.0}
+\newcommand{\DecDeltaFoundRWBand}{[$-$2.0, $+$7.0]}
+\newcommand{\DecDeltaFoundT}{$+$2.2}
+\newcommand{\DecDeltaFoundTBand}{[$-$0.4, $+$5.0]}
+\newcommand{\DecDeltaFoundTW}{$+$3.7}
+\newcommand{\DecDeltaFoundTWBand}{[$+$1.1, $+$6.3]}
+\newcommand{\DecDeltaFoundW}{$+$5.0}
+\newcommand{\DecDeltaFoundWBand}{[$+$2.4, $+$7.8]}
+\newcommand{\DecDeltaGlideF}{$-$1.4}
+\newcommand{\DecDeltaGlideFBand}{[$-$2.8, $+$0.4]}
+\newcommand{\DecDeltaGlideNone}{$-$5.7}
+\newcommand{\DecDeltaGlideNoneBand}{[$-$6.5, $-$4.8]}
+\newcommand{\DecDeltaGlideR}{$-$1.3}
+\newcommand{\DecDeltaGlideRBand}{[$-$2.5, $-$0.1]}
+\newcommand{\DecDeltaGlideRT}{$-$1.5}
+\newcommand{\DecDeltaGlideRTBand}{[$-$3.0, $-$0.3]}
+\newcommand{\DecDeltaGlideRW}{$-$1.1}
+\newcommand{\DecDeltaGlideRWBand}{[$-$2.3, $+$0.4]}
+\newcommand{\DecDeltaGlideT}{$-$6.2}
+\newcommand{\DecDeltaGlideTBand}{[$-$7.1, $-$5.2]}
+\newcommand{\DecDeltaGlideTW}{$-$4.0}
+\newcommand{\DecDeltaGlideTWBand}{[$-$4.7, $-$3.1]}
+\newcommand{\DecDeltaGlideW}{$-$4.0}
+\newcommand{\DecDeltaGlideWBand}{[$-$4.8, $-$3.2]}
+\newcommand{\DecDeltaHKF}{$+$0.008}
+\newcommand{\DecDeltaHKFBand}{[$-$0.003, $+$0.025]}
+\newcommand{\DecDeltaHKNone}{$-$0.001}
+\newcommand{\DecDeltaHKNoneBand}{[$-$0.011, $+$0.007]}
+\newcommand{\DecDeltaHKR}{$+$0.011}
+\newcommand{\DecDeltaHKRBand}{[$+$0.001, $+$0.020]}
+\newcommand{\DecDeltaHKRT}{$+$0.007}
+\newcommand{\DecDeltaHKRTBand}{[$-$0.003, $+$0.021]}
+\newcommand{\DecDeltaHKRW}{$+$0.008}
+\newcommand{\DecDeltaHKRWBand}{[$-$0.001, $+$0.021]}
+\newcommand{\DecDeltaHKT}{$-$0.003}
+\newcommand{\DecDeltaHKTBand}{[$-$0.012, $+$0.007]}
+\newcommand{\DecDeltaHKTW}{$+$0.007}
+\newcommand{\DecDeltaHKTWBand}{[$-$0.002, $+$0.016]}
+\newcommand{\DecDeltaHKW}{$+$0.005}
+\newcommand{\DecDeltaHKWBand}{[$-$0.004, $+$0.014]}
+\newcommand{\DecDeltaHQF}{$+$0.018}
+\newcommand{\DecDeltaHQFBand}{[$-$0.002, $+$0.048]}
+\newcommand{\DecDeltaHQNone}{$-$0.032}
+\newcommand{\DecDeltaHQNoneBand}{[$-$0.049, $-$0.016]}
+\newcommand{\DecDeltaHQR}{$+$0.023}
+\newcommand{\DecDeltaHQRBand}{[$+$0.008, $+$0.044]}
+\newcommand{\DecDeltaHQRT}{$+$0.020}
+\newcommand{\DecDeltaHQRTBand}{[$+$0.001, $+$0.048]}
+\newcommand{\DecDeltaHQRW}{$+$0.018}
+\newcommand{\DecDeltaHQRWBand}{[$+$0.002, $+$0.043]}
+\newcommand{\DecDeltaHQT}{$-$0.035}
+\newcommand{\DecDeltaHQTBand}{[$-$0.053, $-$0.019]}
+\newcommand{\DecDeltaHQTW}{$-$0.022}
+\newcommand{\DecDeltaHQTWBand}{[$-$0.039, $-$0.006]}
+\newcommand{\DecDeltaHQW}{$-$0.024}
+\newcommand{\DecDeltaHQWBand}{[$-$0.041, $-$0.009]}
+\newcommand{\DecDeltaRateF}{$-$0.054}
+\newcommand{\DecDeltaRateFBand}{[$-$0.162, $+$0.037]}
+\newcommand{\DecDeltaRateNone}{$+$0.071}
+\newcommand{\DecDeltaRateNoneBand}{[$+$0.026, $+$0.118]}
+\newcommand{\DecDeltaRateR}{$-$0.043}
+\newcommand{\DecDeltaRateRBand}{[$-$0.112, $+$0.016]}
+\newcommand{\DecDeltaRateRT}{$-$0.056}
+\newcommand{\DecDeltaRateRTBand}{[$-$0.157, $+$0.023]}
+\newcommand{\DecDeltaRateRW}{$-$0.044}
+\newcommand{\DecDeltaRateRWBand}{[$-$0.130, $+$0.017]}
+\newcommand{\DecDeltaRateT}{$+$0.023}
+\newcommand{\DecDeltaRateTBand}{[$-$0.022, $+$0.071]}
+\newcommand{\DecDeltaRateTW}{$+$0.022}
+\newcommand{\DecDeltaRateTWBand}{[$-$0.024, $+$0.070]}
+\newcommand{\DecDeltaRateW}{$+$0.067}
+\newcommand{\DecDeltaRateWBand}{[$+$0.023, $+$0.114]}
+\newcommand{\DecDeltaSearchF}{$+$1.1}
+\newcommand{\DecDeltaSearchFBand}{[$-$1.1, $+$4.4]}
+\newcommand{\DecDeltaSearchNone}{$+$5.6}
+\newcommand{\DecDeltaSearchNoneBand}{[$+$4.1, $+$7.1]}
+\newcommand{\DecDeltaSearchR}{$+$1.7}
+\newcommand{\DecDeltaSearchRBand}{[0.0, $+$3.9]}
+\newcommand{\DecDeltaSearchRT}{$+$1.4}
+\newcommand{\DecDeltaSearchRTBand}{[$-$0.7, $+$4.2]}
+\newcommand{\DecDeltaSearchRW}{$+$1.3}
+\newcommand{\DecDeltaSearchRWBand}{[$-$0.4, $+$4.0]}
+\newcommand{\DecDeltaSearchT}{$+$5.6}
+\newcommand{\DecDeltaSearchTBand}{[$+$4.1, $+$7.2]}
+\newcommand{\DecDeltaSearchTW}{$+$4.7}
+\newcommand{\DecDeltaSearchTWBand}{[$+$3.2, $+$6.2]}
+\newcommand{\DecDeltaSearchW}{$+$4.8}
+\newcommand{\DecDeltaSearchWBand}{[$+$3.3, $+$6.3]}
+\newcommand{\DecDeltaSinkF}{$+$5}
+\newcommand{\DecDeltaSinkFBand}{[$-$2, $+$12]}
+\newcommand{\DecDeltaSinkNone}{$-$26}
+\newcommand{\DecDeltaSinkNoneBand}{[$-$31, $-$23]}
+\newcommand{\DecDeltaSinkR}{$+$6}
+\newcommand{\DecDeltaSinkRBand}{[0, $+$11]}
+\newcommand{\DecDeltaSinkRT}{$+$6}
+\newcommand{\DecDeltaSinkRTBand}{[0, $+$12]}
+\newcommand{\DecDeltaSinkRW}{$+$6}
+\newcommand{\DecDeltaSinkRWBand}{[0, $+$11]}
+\newcommand{\DecDeltaSinkT}{$-$26}
+\newcommand{\DecDeltaSinkTBand}{[$-$30, $-$22]}
+\newcommand{\DecDeltaSinkTW}{$-$30}
+\newcommand{\DecDeltaSinkTWBand}{[$-$34, $-$26]}
+\newcommand{\DecDeltaSinkW}{$-$31}
+\newcommand{\DecDeltaSinkWBand}{[$-$34, $-$27]}
+\newcommand{\DecGroupClimb}{29.2}
+\newcommand{\DecGroupCph}{7.63}
+\newcommand{\DecGroupFound}{49.5}
+\newcommand{\DecGroupGlide}{29.5}
+\newcommand{\DecGroupHK}{0.906}
+\newcommand{\DecGroupHQ}{0.893}
+\newcommand{\DecGroupRate}{1.16}
+\newcommand{\DecGroupSearch}{15.3}
+\newcommand{\DecGroupSink}{69}
+\newcommand{\DecK}{50}
+\newcommand{\DecNoneClimb}{$-$9.5}
+\newcommand{\DecNoneClimbBand}{[$-$11.1, $-$8.0]}
+\newcommand{\DecNoneCph}{$+$0.69}
+\newcommand{\DecNoneCphBand}{[$+$0.39, $+$1.00]}
+\newcommand{\DecNoneFound}{$+$3.9}
+\newcommand{\DecNoneFoundBand}{[$+$1.3, $+$6.7]}
+\newcommand{\DecNoneGlide}{$-$5.7}
+\newcommand{\DecNoneGlideBand}{[$-$6.5, $-$4.8]}
+\newcommand{\DecNoneHK}{$-$0.001}
+\newcommand{\DecNoneHKBand}{[$-$0.011, $+$0.007]}
+\newcommand{\DecNoneHQ}{$-$0.032}
+\newcommand{\DecNoneHQBand}{[$-$0.049, $-$0.016]}
+\newcommand{\DecNoneRate}{$+$0.071}
+\newcommand{\DecNoneRateBand}{[$+$0.026, $+$0.118]}
+\newcommand{\DecNoneSearch}{$+$5.6}
+\newcommand{\DecNoneSearchBand}{[$+$4.1, $+$7.1]}
+\newcommand{\DecNoneSink}{$-$26}
+\newcommand{\DecNoneSinkBand}{[$-$31, $-$23]}
+\newcommand{\DecPhaseControlsF}{1\,347}
+\newcommand{\DecPhaseControlsNone}{28\,276}
+\newcommand{\DecPhiClimbR}{$-$11.7}
+\newcommand{\DecPhiClimbRBand}{[$-$13.7, $-$9.7]}
+\newcommand{\DecPhiClimbT}{0.0}
+\newcommand{\DecPhiClimbTBand}{[$-$1.0, $+$0.9]}
+\newcommand{\DecPhiClimbW}{$-$0.7}
+\newcommand{\DecPhiClimbWBand}{[$-$1.4, 0.0]}
+\newcommand{\DecPhiCphR}{$+$0.01}
+\newcommand{\DecPhiCphRBand}{[$-$0.46, $+$0.48]}
+\newcommand{\DecPhiCphT}{$+$0.08}
+\newcommand{\DecPhiCphTBand}{[$-$0.12, $+$0.33]}
+\newcommand{\DecPhiCphW}{$-$0.05}
+\newcommand{\DecPhiCphWBand}{[$-$0.21, $+$0.14]}
+\newcommand{\DecPhiFoundR}{$+$1.2}
+\newcommand{\DecPhiFoundRBand}{[$-$1.9, $+$4.8]}
+\newcommand{\DecPhiFoundT}{$+$0.8}
+\newcommand{\DecPhiFoundTBand}{[$-$1.0, $+$2.8]}
+\newcommand{\DecPhiFoundW}{$-$0.8}
+\newcommand{\DecPhiFoundWBand}{[$-$2.1, $+$0.8]}
+\newcommand{\DecPhiGlideR}{$-$3.6}
+\newcommand{\DecPhiGlideRBand}{[$-$4.8, $-$2.4]}
+\newcommand{\DecPhiGlideT}{$+$0.3}
+\newcommand{\DecPhiGlideTBand}{[$-$0.2, $+$0.9]}
+\newcommand{\DecPhiGlideW}{$-$1.0}
+\newcommand{\DecPhiGlideWBand}{[$-$1.6, $-$0.7]}
+\newcommand{\DecPhiHKR}{$-$0.006}
+\newcommand{\DecPhiHKRBand}{[$-$0.018, $+$0.003]}
+\newcommand{\DecPhiHKT}{$+$0.001}
+\newcommand{\DecPhiHKTBand}{[$-$0.004, $+$0.004]}
+\newcommand{\DecPhiHKW}{$-$0.004}
+\newcommand{\DecPhiHKWBand}{[$-$0.008, 0.000]}
+\newcommand{\DecPhiHQR}{$-$0.048}
+\newcommand{\DecPhiHQRBand}{[$-$0.074, $-$0.031]}
+\newcommand{\DecPhiHQT}{$+$0.001}
+\newcommand{\DecPhiHQTBand}{[$-$0.007, $+$0.008]}
+\newcommand{\DecPhiHQW}{$-$0.003}
+\newcommand{\DecPhiHQWBand}{[$-$0.011, $+$0.004]}
+\newcommand{\DecPhiRateR}{$+$0.095}
+\newcommand{\DecPhiRateRBand}{[$+$0.037, $+$0.174]}
+\newcommand{\DecPhiRateT}{$+$0.029}
+\newcommand{\DecPhiRateTBand}{[$-$0.005, $+$0.061]}
+\newcommand{\DecPhiRateW}{$+$0.001}
+\newcommand{\DecPhiRateWBand}{[$-$0.022, $+$0.024]}
+\newcommand{\DecPhiSearchR}{$+$3.8}
+\newcommand{\DecPhiSearchRBand}{[$+$1.4, $+$5.3]}
+\newcommand{\DecPhiSearchT}{$+$0.1}
+\newcommand{\DecPhiSearchTBand}{[$-$0.7, $+$1.0]}
+\newcommand{\DecPhiSearchW}{$+$0.6}
+\newcommand{\DecPhiSearchWBand}{[$-$0.2, $+$1.1]}
+\newcommand{\DecPhiSinkR}{$-$34}
+\newcommand{\DecPhiSinkRBand}{[$-$39, $-$28]}
+\newcommand{\DecPhiSinkT}{0}
+\newcommand{\DecPhiSinkTBand}{[$-$2, $+$2]}
+\newcommand{\DecPhiSinkW}{$+$2}
+\newcommand{\DecPhiSinkWBand}{[$+$1, $+$4]}
+\newcommand{\DecPiecesK}{1\,763}
+\newcommand{\DecPiecesPhase}{868}
+\newcommand{\DecPiecesQ}{708}
+\newcommand{\DecShareClimbF}{$-$30}
+\newcommand{\DecShareClimbR}{122}
+\newcommand{\DecShareClimbT}{0}
+\newcommand{\DecShareClimbW}{7}
+\newcommand{\DecShareCphF}{93}
+\newcommand{\DecShareCphR}{2}
+\newcommand{\DecShareCphT}{12}
+\newcommand{\DecShareCphW}{$-$7}
+\newcommand{\DecShareFoundF}{69}
+\newcommand{\DecShareFoundR}{30}
+\newcommand{\DecShareFoundT}{21}
+\newcommand{\DecShareFoundW}{$-$21}
+\newcommand{\DecShareGlideF}{24}
+\newcommand{\DecShareGlideR}{63}
+\newcommand{\DecShareGlideT}{$-$5}
+\newcommand{\DecShareGlideW}{18}
+\newcommand{\DecShareHKF}{$-$511}
+\newcommand{\DecShareHKR}{422}
+\newcommand{\DecShareHKT}{$-$49}
+\newcommand{\DecShareHKW}{238}
+\newcommand{\DecShareHQF}{$-$56}
+\newcommand{\DecShareHQR}{149}
+\newcommand{\DecShareHQT}{$-$3}
+\newcommand{\DecShareHQW}{10}
+\newcommand{\DecShareRateF}{$-$76}
+\newcommand{\DecShareRateR}{134}
+\newcommand{\DecShareRateT}{41}
+\newcommand{\DecShareRateW}{1}
+\newcommand{\DecShareSearchF}{20}
+\newcommand{\DecShareSearchR}{68}
+\newcommand{\DecShareSearchT}{2}
+\newcommand{\DecShareSearchW}{10}
+\newcommand{\DecShareSinkF}{$-$19}
+\newcommand{\DecShareSinkR}{127}
+\newcommand{\DecShareSinkT}{1}
+\newcommand{\DecShareSinkW}{$-$9}
 \newcommand{\DeclFixedFitA}{0.915}
 \newcommand{\DeclFixedFitG}{0.920}
 \newcommand{\DeclFixedFitS}{0.909}
@@ -41,8 +385,266 @@
 \newcommand{\FlightsLongest}{6\,785}
 \newcommand{\FlightsNeither}{269}
 \newcommand{\FlightsOpen}{66\,845}
+\newcommand{\HqLowest}{1\,035}
 \newcommand{\Kept}{55\,879}
 \newcommand{\KeptShare}{84}
+\newcommand{\MatChosenText}{month $\pm1$, hour $\pm1$, same class}
+\newcommand{\MatCover}{0.8}
+\newcommand{\MatDeltaClimbA}{$+$0.7}
+\newcommand{\MatDeltaClimbABand}{[$-$3.2, $+$4.8]}
+\newcommand{\MatDeltaClimbAYears}{[$+$0.2, $+$1.2]}
+\newcommand{\MatDeltaClimbD}{$+$2.2}
+\newcommand{\MatDeltaClimbDBand}{[$-$2.5, $+$6.4]}
+\newcommand{\MatDeltaClimbDYears}{[$+$1.6, $+$2.7]}
+\newcommand{\MatDeltaClimbG}{$+$2.9}
+\newcommand{\MatDeltaClimbGBand}{[$-$0.1, $+$5.6]}
+\newcommand{\MatDeltaClimbGYears}{[$+$2.6, $+$3.5]}
+\newcommand{\MatDeltaCphA}{$+$0.38}
+\newcommand{\MatDeltaCphABand}{[$-$0.66, $+$1.46]}
+\newcommand{\MatDeltaCphAYears}{[$+$0.24, $+$0.60]}
+\newcommand{\MatDeltaCphD}{$+$0.26}
+\newcommand{\MatDeltaCphDBand}{[$-$0.93, $+$1.43]}
+\newcommand{\MatDeltaCphDYears}{[$+$0.02, $+$0.40]}
+\newcommand{\MatDeltaCphG}{$+$0.64}
+\newcommand{\MatDeltaCphGBand}{[$-$0.08, $+$1.30]}
+\newcommand{\MatDeltaCphGYears}{[$+$0.53, $+$0.81]}
+\newcommand{\MatDeltaFitKA}{$-$0.002}
+\newcommand{\MatDeltaFitKABand}{[$-$0.010, $+$0.008]}
+\newcommand{\MatDeltaFitKAYears}{[$-$0.003, 0.000]}
+\newcommand{\MatDeltaFitKD}{$-$0.004}
+\newcommand{\MatDeltaFitKDBand}{[$-$0.015, $+$0.006]}
+\newcommand{\MatDeltaFitKDYears}{[$-$0.005, $-$0.003]}
+\newcommand{\MatDeltaFitKG}{$-$0.005}
+\newcommand{\MatDeltaFitKGBand}{[$-$0.012, $-$0.001]}
+\newcommand{\MatDeltaFitKGYears}{[$-$0.006, $-$0.005]}
+\newcommand{\MatDeltaFitTA}{$+$0.003}
+\newcommand{\MatDeltaFitTABand}{[$-$0.009, $+$0.017]}
+\newcommand{\MatDeltaFitTAYears}{[$+$0.001, $+$0.005]}
+\newcommand{\MatDeltaFitTD}{$+$0.007}
+\newcommand{\MatDeltaFitTDBand}{[$-$0.009, $+$0.021]}
+\newcommand{\MatDeltaFitTDYears}{[$+$0.005, $+$0.009]}
+\newcommand{\MatDeltaFitTG}{$+$0.010}
+\newcommand{\MatDeltaFitTGBand}{[$+$0.002, $+$0.020]}
+\newcommand{\MatDeltaFitTGYears}{[$+$0.009, $+$0.011]}
+\newcommand{\MatDeltaFoundA}{$+$2.1}
+\newcommand{\MatDeltaFoundABand}{[$-$5.8, $+$11.5]}
+\newcommand{\MatDeltaFoundAYears}{[$+$0.8, $+$3.2]}
+\newcommand{\MatDeltaFoundD}{$+$0.6}
+\newcommand{\MatDeltaFoundDBand}{[$-$9.9, $+$9.5]}
+\newcommand{\MatDeltaFoundDYears}{[$-$1.0, $+$2.1]}
+\newcommand{\MatDeltaFoundG}{$+$2.7}
+\newcommand{\MatDeltaFoundGBand}{[$-$3.2, $+$7.7]}
+\newcommand{\MatDeltaFoundGYears}{[$+$1.6, $+$3.5]}
+\newcommand{\MatDeltaGlideA}{$-$1.0}
+\newcommand{\MatDeltaGlideABand}{[$-$2.9, $+$0.9]}
+\newcommand{\MatDeltaGlideAYears}{[$-$1.2, $-$0.5]}
+\newcommand{\MatDeltaGlideD}{$-$0.4}
+\newcommand{\MatDeltaGlideDBand}{[$-$2.7, $+$1.9]}
+\newcommand{\MatDeltaGlideDYears}{[$-$0.7, 0.0]}
+\newcommand{\MatDeltaGlideG}{$-$1.4}
+\newcommand{\MatDeltaGlideGBand}{[$-$2.8, $+$0.4]}
+\newcommand{\MatDeltaGlideGYears}{[$-$1.8, $-$1.1]}
+\newcommand{\MatDeltaHKA}{$+$0.003}
+\newcommand{\MatDeltaHKABand}{[$-$0.014, $+$0.032]}
+\newcommand{\MatDeltaHKAYears}{[0.000, $+$0.007]}
+\newcommand{\MatDeltaHKD}{$+$0.005}
+\newcommand{\MatDeltaHKDBand}{[$-$0.023, $+$0.027]}
+\newcommand{\MatDeltaHKDYears}{[$+$0.001, $+$0.009]}
+\newcommand{\MatDeltaHKG}{$+$0.008}
+\newcommand{\MatDeltaHKGBand}{[$-$0.003, $+$0.025]}
+\newcommand{\MatDeltaHKGYears}{[$+$0.006, $+$0.010]}
+\newcommand{\MatDeltaHQA}{$+$0.019}
+\newcommand{\MatDeltaHQABand}{[$-$0.027, $+$0.070]}
+\newcommand{\MatDeltaHQAYears}{[$+$0.011, $+$0.024]}
+\newcommand{\MatDeltaHQD}{$-$0.001}
+\newcommand{\MatDeltaHQDBand}{[$-$0.055, $+$0.051]}
+\newcommand{\MatDeltaHQDYears}{[$-$0.006, $+$0.007]}
+\newcommand{\MatDeltaHQG}{$+$0.018}
+\newcommand{\MatDeltaHQGBand}{[$-$0.002, $+$0.048]}
+\newcommand{\MatDeltaHQGYears}{[$+$0.014, $+$0.023]}
+\newcommand{\MatDeltaRateA}{$-$0.077}
+\newcommand{\MatDeltaRateABand}{[$-$0.213, $+$0.038]}
+\newcommand{\MatDeltaRateAYears}{[$-$0.097, $-$0.045]}
+\newcommand{\MatDeltaRateD}{$+$0.023}
+\newcommand{\MatDeltaRateDBand}{[$-$0.115, $+$0.168]}
+\newcommand{\MatDeltaRateDYears}{[$-$0.003, $+$0.055]}
+\newcommand{\MatDeltaRateG}{$-$0.054}
+\newcommand{\MatDeltaRateGBand}{[$-$0.162, $+$0.037]}
+\newcommand{\MatDeltaRateGYears}{[$-$0.066, $-$0.042]}
+\newcommand{\MatDeltaSearchA}{$+$1.2}
+\newcommand{\MatDeltaSearchABand}{[$-$2.6, $+$4.7]}
+\newcommand{\MatDeltaSearchAYears}{[$+$0.7, $+$1.7]}
+\newcommand{\MatDeltaSearchD}{$-$0.1}
+\newcommand{\MatDeltaSearchDBand}{[$-$3.5, $+$4.8]}
+\newcommand{\MatDeltaSearchDYears}{[$-$0.4, $+$0.3]}
+\newcommand{\MatDeltaSearchG}{$+$1.1}
+\newcommand{\MatDeltaSearchGBand}{[$-$1.1, $+$4.4]}
+\newcommand{\MatDeltaSearchGYears}{[$+$0.6, $+$1.6]}
+\newcommand{\MatDeltaSinkA}{$+$4}
+\newcommand{\MatDeltaSinkABand}{[$-$8, $+$15]}
+\newcommand{\MatDeltaSinkAYears}{[$+$2, $+$6]}
+\newcommand{\MatDeltaSinkD}{$+$1}
+\newcommand{\MatDeltaSinkDBand}{[$-$11, $+$13]}
+\newcommand{\MatDeltaSinkDYears}{[$-$1, $+$2]}
+\newcommand{\MatDeltaSinkG}{$+$5}
+\newcommand{\MatDeltaSinkGBand}{[$-$2, $+$12]}
+\newcommand{\MatDeltaSinkGYears}{[$+$3, $+$6]}
+\newcommand{\MatHour}{1}
+\newcommand{\MatLevelAllAHK}{$+$0.003}
+\newcommand{\MatLevelAllDHK}{$+$0.005}
+\newcommand{\MatLevelAllGHK}{$+$0.008}
+\newcommand{\MatLevelBeginnersAHK}{$-$0.004}
+\newcommand{\MatLevelBeginnersDHK}{$+$0.011}
+\newcommand{\MatLevelBeginnersGHK}{$+$0.007}
+\newcommand{\MatLevelExperiencedAHK}{$+$0.007}
+\newcommand{\MatLevelExperiencedDHK}{$+$0.001}
+\newcommand{\MatLevelExperiencedGHK}{$+$0.008}
+\newcommand{\MatLongT}{2\,250}
+\newcommand{\MatMatches}{96\,462}
+\newcommand{\MatMin}{200}
+\newcommand{\MatMinBeg}{311}
+\newcommand{\MatMinExp}{395}
+\newcommand{\MatMonth}{1}
+\newcommand{\MatNAControls}{1\,827}
+\newcommand{\MatNAControlsWithPhases}{689}
+\newcommand{\MatNAFlightsASide}{960}
+\newcommand{\MatNAPieces}{994}
+\newcommand{\MatNAPiecesOfTheLongSeries}{277}
+\newcommand{\MatNAPiecesWithPhases}{452}
+\newcommand{\MatNAPilotsASide}{706}
+\newcommand{\MatNAPilotsControlSide}{526}
+\newcommand{\MatNAPoolFlights}{729}
+\newcommand{\MatNGControls}{3\,444}
+\newcommand{\MatNGControlsWithPhases}{1\,347}
+\newcommand{\MatNGFlightsGSide}{1\,648}
+\newcommand{\MatNGPieces}{1\,763}
+\newcommand{\MatNGPiecesOfTheLongSeries}{708}
+\newcommand{\MatNGPiecesWithPhases}{868}
+\newcommand{\MatNGPilotsControlSide}{642}
+\newcommand{\MatNGPilotsGSide}{1\,040}
+\newcommand{\MatNGPoolFlights}{922}
+\newcommand{\MatNQuant}{9}
+\newcommand{\MatPool}{4\,518}
+\newcommand{\MatRho}{500}
+\newcommand{\MatRobHighHK}{$+$0.012}
+\newcommand{\MatRobHighHQ}{$+$0.031}
+\newcommand{\MatRobIsolationPieces}{994}
+\newcommand{\MatRobLines}{9}
+\newcommand{\MatRobLowHK}{$+$0.007}
+\newcommand{\MatRobLowHQ}{$+$0.016}
+\newcommand{\MatRobPiecesHigh}{3\,432}
+\newcommand{\MatRobPiecesLow}{802}
+\newcommand{\MatRobZeroHK}{7}
+\newcommand{\MatRobZeroHQ}{6}
+\newcommand{\MatRunsClimbA}{2\,687}
+\newcommand{\MatRunsClimbG}{6\,176}
+\newcommand{\MatRunsClimbSA}{3\,589}
+\newcommand{\MatRunsClimbSG}{7\,869}
+\newcommand{\MatRunsGlideA}{2\,947}
+\newcommand{\MatRunsGlideG}{6\,563}
+\newcommand{\MatRunsGlideSA}{4\,091}
+\newcommand{\MatRunsGlideSG}{8\,690}
+\newcommand{\MatRunsSearchA}{1\,182}
+\newcommand{\MatRunsSearchG}{2\,665}
+\newcommand{\MatRunsSearchSA}{1\,568}
+\newcommand{\MatRunsSearchSG}{3\,486}
+\newcommand{\MatSideClimbA}{27.2}
+\newcommand{\MatSideClimbABand}{[24.6, 30.5]}
+\newcommand{\MatSideClimbG}{29.2}
+\newcommand{\MatSideClimbGBand}{[26.9, 31.1]}
+\newcommand{\MatSideClimbSA}{26.5}
+\newcommand{\MatSideClimbSABand}{[23.2, 30.4]}
+\newcommand{\MatSideClimbSG}{26.3}
+\newcommand{\MatSideClimbSGBand}{[23.7, 28.6]}
+\newcommand{\MatSideCphA}{7.28}
+\newcommand{\MatSideCphABand}{[6.67, 8.09]}
+\newcommand{\MatSideCphG}{7.63}
+\newcommand{\MatSideCphGBand}{[7.23, 8.07]}
+\newcommand{\MatSideCphSA}{6.89}
+\newcommand{\MatSideCphSABand}{[6.12, 7.83]}
+\newcommand{\MatSideCphSG}{6.98}
+\newcommand{\MatSideCphSGBand}{[6.45, 7.62]}
+\newcommand{\MatSideFitKA}{0.898}
+\newcommand{\MatSideFitKABand}{[0.888, 0.906]}
+\newcommand{\MatSideFitKG}{0.908}
+\newcommand{\MatSideFitKGBand}{[0.900, 0.913]}
+\newcommand{\MatSideFitKSA}{0.899}
+\newcommand{\MatSideFitKSABand}{[0.888, 0.908]}
+\newcommand{\MatSideFitKSG}{0.914}
+\newcommand{\MatSideFitKSGBand}{[0.906, 0.920]}
+\newcommand{\MatSideFitTA}{0.901}
+\newcommand{\MatSideFitTABand}{[0.887, 0.917]}
+\newcommand{\MatSideFitTG}{0.911}
+\newcommand{\MatSideFitTGBand}{[0.901, 0.921]}
+\newcommand{\MatSideFitTSA}{0.898}
+\newcommand{\MatSideFitTSABand}{[0.882, 0.913]}
+\newcommand{\MatSideFitTSG}{0.901}
+\newcommand{\MatSideFitTSGBand}{[0.889, 0.911]}
+\newcommand{\MatSideFoundA}{46.8}
+\newcommand{\MatSideFoundABand}{[41.0, 51.9]}
+\newcommand{\MatSideFoundG}{49.5}
+\newcommand{\MatSideFoundGBand}{[45.3, 52.6]}
+\newcommand{\MatSideFoundSA}{44.7}
+\newcommand{\MatSideFoundSABand}{[37.4, 50.7]}
+\newcommand{\MatSideFoundSG}{46.8}
+\newcommand{\MatSideFoundSGBand}{[42.2, 51.0]}
+\newcommand{\MatSideGlideA}{28.9}
+\newcommand{\MatSideGlideABand}{[27.1, 30.5]}
+\newcommand{\MatSideGlideG}{29.5}
+\newcommand{\MatSideGlideGBand}{[28.3, 30.4]}
+\newcommand{\MatSideGlideSA}{29.9}
+\newcommand{\MatSideGlideSABand}{[28.0, 31.6]}
+\newcommand{\MatSideGlideSG}{30.9}
+\newcommand{\MatSideGlideSGBand}{[29.3, 32.1]}
+\newcommand{\MatSideHKA}{0.869}
+\newcommand{\MatSideHKABand}{[0.850, 0.891]}
+\newcommand{\MatSideHKG}{0.906}
+\newcommand{\MatSideHKGBand}{[0.896, 0.919]}
+\newcommand{\MatSideHKSA}{0.866}
+\newcommand{\MatSideHKSABand}{[0.837, 0.885]}
+\newcommand{\MatSideHKSG}{0.899}
+\newcommand{\MatSideHKSGBand}{[0.882, 0.911]}
+\newcommand{\MatSideHQA}{0.862}
+\newcommand{\MatSideHQABand}{[0.811, 0.909]}
+\newcommand{\MatSideHQG}{0.893}
+\newcommand{\MatSideHQGBand}{[0.868, 0.916]}
+\newcommand{\MatSideHQSA}{0.843}
+\newcommand{\MatSideHQSABand}{[0.778, 0.897]}
+\newcommand{\MatSideHQSG}{0.875}
+\newcommand{\MatSideHQSGBand}{[0.840, 0.900]}
+\newcommand{\MatSidePiecesA}{994}
+\newcommand{\MatSidePiecesG}{1\,763}
+\newcommand{\MatSidePiecesSA}{1\,827}
+\newcommand{\MatSidePiecesSG}{3\,444}
+\newcommand{\MatSideRateA}{1.13}
+\newcommand{\MatSideRateABand}{[1.04, 1.21]}
+\newcommand{\MatSideRateG}{1.16}
+\newcommand{\MatSideRateGBand}{[1.10, 1.22]}
+\newcommand{\MatSideRateSA}{1.20}
+\newcommand{\MatSideRateSABand}{[1.10, 1.33]}
+\newcommand{\MatSideRateSG}{1.22}
+\newcommand{\MatSideRateSGBand}{[1.14, 1.32]}
+\newcommand{\MatSideSearchA}{15.8}
+\newcommand{\MatSideSearchABand}{[13.2, 19.2]}
+\newcommand{\MatSideSearchG}{15.3}
+\newcommand{\MatSideSearchGBand}{[13.8, 18.4]}
+\newcommand{\MatSideSearchSA}{14.6}
+\newcommand{\MatSideSearchSABand}{[11.8, 18.6]}
+\newcommand{\MatSideSearchSG}{14.2}
+\newcommand{\MatSideSearchSGBand}{[11.9, 17.0]}
+\newcommand{\MatSideSinkA}{69}
+\newcommand{\MatSideSinkABand}{[61, 81]}
+\newcommand{\MatSideSinkG}{69}
+\newcommand{\MatSideSinkGBand}{[63, 75]}
+\newcommand{\MatSideSinkSA}{66}
+\newcommand{\MatSideSinkSABand}{[56, 78]}
+\newcommand{\MatSideSinkSG}{64}
+\newcommand{\MatSideSinkSGBand}{[57, 72]}
+\newcommand{\MatWithMatchA}{3\,851}
+\newcommand{\MatWithMatchG}{6\,018}
+\newcommand{\MatZeroA}{9}
+\newcommand{\MatZeroD}{9}
+\newcommand{\MatZeroG}{9}
 \newcommand{\MedianEvery}{0.32}
 \newcommand{\MedianFixed}{0.30}
 \newcommand{\MedianFixedA}{0.23}
@@ -54,6 +656,7 @@
 \newcommand{\MedianLongestS}{0.23}
 \newcommand{\MinOpening}{0.1}
 \newcommand{\MountainM}{1\,000}
+\newcommand{\NBoot}{1\,000}
 \newcommand{\OpenFixedFitA}{0.920}
 \newcommand{\OpenFixedFitG}{0.923}
 \newcommand{\OpenFixedFitS}{0.916}
@@ -87,8 +690,351 @@
 \newcommand{\OpenMinFlights}{100}
 \newcommand{\OpenTauFixed}{2\,250}
 \newcommand{\OpenTauLongest}{11\,450}
+\newcommand{\PreCAClimb}{$-$1.3}
+\newcommand{\PreCAClimbBand}{[$-$1.8, $-$0.8]}
+\newcommand{\PreCACph}{$-$0.36}
+\newcommand{\PreCACphBand}{[$-$0.46, $-$0.25]}
+\newcommand{\PreCAFound}{$-$2.5}
+\newcommand{\PreCAFoundBand}{[$-$3.6, $-$1.3]}
+\newcommand{\PreCAGlide}{$-$0.2}
+\newcommand{\PreCAGlideBand}{[$-$0.5, $+$0.1]}
+\newcommand{\PreCAHK}{$-$0.001}
+\newcommand{\PreCAHKBand}{[$-$0.005, $+$0.003]}
+\newcommand{\PreCARate}{$+$0.006}
+\newcommand{\PreCARateBand}{[$-$0.009, $+$0.021]}
+\newcommand{\PreCASearch}{$-$0.1}
+\newcommand{\PreCASearchBand}{[$-$0.5, $+$0.2]}
+\newcommand{\PreCASink}{$+$2}
+\newcommand{\PreCASinkBand}{[$+$1, $+$3]}
+\newcommand{\PreCSClimb}{$-$1.1}
+\newcommand{\PreCSClimbBand}{[$-$1.3, $-$0.9]}
+\newcommand{\PreCSCph}{$-$0.44}
+\newcommand{\PreCSCphBand}{[$-$0.49, $-$0.39]}
+\newcommand{\PreCSFound}{$-$1.7}
+\newcommand{\PreCSFoundBand}{[$-$2.2, $-$1.2]}
+\newcommand{\PreCSGlide}{$+$0.3}
+\newcommand{\PreCSGlideBand}{[$+$0.2, $+$0.4]}
+\newcommand{\PreCSHK}{$+$0.001}
+\newcommand{\PreCSHKBand}{[0.000, $+$0.003]}
+\newcommand{\PreCSRate}{$-$0.011}
+\newcommand{\PreCSRateBand}{[$-$0.017, $-$0.005]}
+\newcommand{\PreCSSearch}{$-$0.4}
+\newcommand{\PreCSSearchBand}{[$-$0.5, $-$0.2]}
+\newcommand{\PreCSSink}{$+$3}
+\newcommand{\PreCSSinkBand}{[$+$2, $+$3]}
+\newcommand{\PreDwClimb}{$-$0.8}
+\newcommand{\PreDwClimbBand}{[$-$1.4, $-$0.3]}
+\newcommand{\PreDwCph}{$-$0.21}
+\newcommand{\PreDwCphBand}{[$-$0.33, $-$0.11]}
+\newcommand{\PreDwFound}{$-$0.6}
+\newcommand{\PreDwFoundBand}{[$-$1.7, $+$0.6]}
+\newcommand{\PreDwGlide}{$-$0.2}
+\newcommand{\PreDwGlideBand}{[$-$0.4, $+$0.1]}
+\newcommand{\PreDwHK}{$-$0.002}
+\newcommand{\PreDwHKBand}{[$-$0.006, $+$0.002]}
+\newcommand{\PreDwRate}{$+$0.015}
+\newcommand{\PreDwRateBand}{[0.000, $+$0.031]}
+\newcommand{\PreDwSearch}{$+$0.5}
+\newcommand{\PreDwSearchBand}{[$+$0.1, $+$0.8]}
+\newcommand{\PreDwSink}{$+$4}
+\newcommand{\PreDwSinkBand}{[$+$2, $+$5]}
+\newcommand{\PreEvents}{1\,595}
+\newcommand{\PreEventsMSDCA}{5\,205}
+\newcommand{\PreEventsMSDCS}{26\,175}
+\newcommand{\PreEventsMSDDw}{1\,595}
+\newcommand{\PreEventsMSDG}{1\,595}
+\newcommand{\PreEventsMSDIn}{3\,197}
+\newcommand{\PreEventsMSDOut}{6\,076}
+\newcommand{\PreEventsMSDPP}{1\,818}
+\newcommand{\PreEventsPhaseCA}{3\,678}
+\newcommand{\PreEventsPhaseCS}{17\,651}
+\newcommand{\PreEventsPhaseDw}{1\,150}
+\newcommand{\PreEventsPhaseG}{1\,150}
+\newcommand{\PreEventsPhaseIn}{2\,264}
+\newcommand{\PreEventsPhaseOut}{4\,334}
+\newcommand{\PreEventsPhasePP}{1\,298}
+\newcommand{\PreFitEnd}{0.934}
+\newcommand{\PreFitPost}{0.925}
+\newcommand{\PreFitPre}{0.922}
+\newcommand{\PreFitStart}{0.931}
+\newcommand{\PreFlightsPhaseCA}{3\,289}
+\newcommand{\PreFlightsPhaseCS}{17\,651}
+\newcommand{\PreFlightsPhaseDw}{1\,113}
+\newcommand{\PreFlightsPhaseG}{1\,113}
+\newcommand{\PreFlightsPhaseIn}{2\,161}
+\newcommand{\PreFlightsPhaseOut}{4\,080}
+\newcommand{\PreFlightsPhasePP}{1\,252}
+\newcommand{\PreGClimb}{$+$2.8}
+\newcommand{\PreGClimbBand}{[$+$2.1, $+$3.5]}
+\newcommand{\PreGCph}{$+$0.36}
+\newcommand{\PreGCphBand}{[$+$0.23, $+$0.51]}
+\newcommand{\PreGFound}{$+$2.7}
+\newcommand{\PreGFoundBand}{[$+$1.2, $+$4.4]}
+\newcommand{\PreGGlide}{$+$1.3}
+\newcommand{\PreGGlideBand}{[$+$0.9, $+$1.6]}
+\newcommand{\PreGHK}{$+$0.023}
+\newcommand{\PreGHKBand}{[$+$0.018, $+$0.029]}
+\newcommand{\PreGRate}{$+$0.041}
+\newcommand{\PreGRateBand}{[$+$0.021, $+$0.062]}
+\newcommand{\PreGSearch}{$-$0.9}
+\newcommand{\PreGSearchBand}{[$-$1.3, $-$0.4]}
+\newcommand{\PreGSink}{$-$5}
+\newcommand{\PreGSinkBand}{[$-$7, $-$4]}
+\newcommand{\PreHKEnd}{0.927}
+\newcommand{\PreHKPost}{0.901}
+\newcommand{\PreHKPre}{0.902}
+\newcommand{\PreHKStart}{0.923}
+\newcommand{\PreInClimb}{$+$1.3}
+\newcommand{\PreInClimbBand}{[$+$0.6, $+$2.0]}
+\newcommand{\PreInCph}{$-$0.01}
+\newcommand{\PreInCphBand}{[$-$0.15, $+$0.13]}
+\newcommand{\PreInFound}{$-$0.1}
+\newcommand{\PreInFoundBand}{[$-$1.6, $+$1.4]}
+\newcommand{\PreInGlide}{$+$0.7}
+\newcommand{\PreInGlideBand}{[$+$0.4, $+$1.1]}
+\newcommand{\PreInHK}{$+$0.018}
+\newcommand{\PreInHKBand}{[$+$0.013, $+$0.023]}
+\newcommand{\PreInRate}{$+$0.023}
+\newcommand{\PreInRateBand}{[$+$0.006, $+$0.040]}
+\newcommand{\PreInSearch}{$-$0.5}
+\newcommand{\PreInSearchBand}{[$-$1.0, $-$0.1]}
+\newcommand{\PreInSink}{$-$2}
+\newcommand{\PreInSinkBand}{[$-$4, $-$1]}
+\newcommand{\PreLags}{24}
+\newcommand{\PreMaxLag}{1\,840}
+\newcommand{\PreOrigins}{56}
+\newcommand{\PreOutClimb}{$+$1.4}
+\newcommand{\PreOutClimbBand}{[$+$0.9, $+$1.8]}
+\newcommand{\PreOutCph}{$+$0.48}
+\newcommand{\PreOutCphBand}{[$+$0.38, $+$0.58]}
+\newcommand{\PreOutFound}{$-$0.2}
+\newcommand{\PreOutFoundBand}{[$-$1.2, $+$0.7]}
+\newcommand{\PreOutGlide}{$+$0.5}
+\newcommand{\PreOutGlideBand}{[$+$0.3, $+$0.8]}
+\newcommand{\PreOutHK}{$+$0.021}
+\newcommand{\PreOutHKBand}{[$+$0.018, $+$0.025]}
+\newcommand{\PreOutRate}{$+$0.001}
+\newcommand{\PreOutRateBand}{[$-$0.011, $+$0.014]}
+\newcommand{\PreOutSearch}{$-$0.6}
+\newcommand{\PreOutSearchBand}{[$-$0.9, $-$0.3]}
+\newcommand{\PreOutSink}{$-$8}
+\newcommand{\PreOutSinkBand}{[$-$9, $-$7]}
+\newcommand{\PrePPClimb}{$-$2.2}
+\newcommand{\PrePPClimbBand}{[$-$2.9, $-$1.5]}
+\newcommand{\PrePPCph}{$-$0.61}
+\newcommand{\PrePPCphBand}{[$-$0.77, $-$0.44]}
+\newcommand{\PrePPFound}{$-$2.5}
+\newcommand{\PrePPFoundBand}{[$-$4.3, $-$0.7]}
+\newcommand{\PrePPGlide}{$-$0.2}
+\newcommand{\PrePPGlideBand}{[$-$0.6, $+$0.3]}
+\newcommand{\PrePPHK}{$+$0.001}
+\newcommand{\PrePPHKBand}{[$-$0.005, $+$0.007]}
+\newcommand{\PrePPRate}{$+$0.023}
+\newcommand{\PrePPRateBand}{[$-$0.003, $+$0.048]}
+\newcommand{\PrePPSearch}{$+$0.3}
+\newcommand{\PrePPSearchBand}{[$-$0.4, $+$0.9]}
+\newcommand{\PrePPSink}{$+$9}
+\newcommand{\PrePPSinkBand}{[$+$6, $+$11]}
+\newcommand{\PreVsGapClimb}{$-$0.1}
+\newcommand{\PreVsGapCph}{$-$0.28}
+\newcommand{\PreVsGapFound}{0.0}
+\newcommand{\PreVsGapGlide}{$+$2.6}
+\newcommand{\PreVsGapHK}{$+$0.016}
+\newcommand{\PreVsGapRate}{$+$0.095}
+\newcommand{\PreVsGapSearch}{$-$2.0}
+\newcommand{\PreVsGapSink}{$-$10}
+\newcommand{\PreVsInsideClimb}{yes}
+\newcommand{\PreVsInsideCph}{yes}
+\newcommand{\PreVsInsideFound}{yes}
+\newcommand{\PreVsInsideGlide}{no}
+\newcommand{\PreVsInsideHK}{yes}
+\newcommand{\PreVsInsideRate}{no}
+\newcommand{\PreVsInsideSearch}{yes}
+\newcommand{\PreVsInsideSink}{no}
+\newcommand{\PreVsSignClimb}{yes}
+\newcommand{\PreVsSignCph}{yes}
+\newcommand{\PreVsSignFound}{yes}
+\newcommand{\PreVsSignGlide}{no}
+\newcommand{\PreVsSignHK}{yes}
+\newcommand{\PreVsSignRate}{no}
+\newcommand{\PreVsSignSearch}{no}
+\newcommand{\PreVsSignSink}{no}
+\newcommand{\PreWindow}{2\,400}
+\newcommand{\PreWindowsEnd}{1\,595}
+\newcommand{\PreWindowsPost}{1\,595}
+\newcommand{\PreWindowsPre}{1\,595}
+\newcommand{\PreWindowsStart}{1\,595}
+\newcommand{\RawFitLongA}{0.929}
+\newcommand{\RawFitLongABand}{[0.926, 0.934]}
+\newcommand{\RawFitLongG}{0.943}
+\newcommand{\RawFitLongGBand}{[0.928, 0.954]}
+\newcommand{\RawFitLongS}{0.923}
+\newcommand{\RawFitLongSBand}{[0.922, 0.924]}
+\newcommand{\RawFitOneA}{0.923}
+\newcommand{\RawFitOneABand}{[0.922, 0.924]}
+\newcommand{\RawFitOneG}{0.924}
+\newcommand{\RawFitOneGBand}{[0.922, 0.925]}
+\newcommand{\RawFitOneS}{0.921}
+\newcommand{\RawFitOneSBand}{[0.921, 0.922]}
+\newcommand{\RawFitTwoA}{0.920}
+\newcommand{\RawFitTwoABand}{[0.919, 0.921]}
+\newcommand{\RawFitTwoG}{0.923}
+\newcommand{\RawFitTwoGBand}{[0.922, 0.925]}
+\newcommand{\RawFitTwoS}{0.916}
+\newcommand{\RawFitTwoSBand}{[0.915, 0.916]}
+\newcommand{\RawFlightsLongA}{602}
+\newcommand{\RawFlightsLongG}{115}
+\newcommand{\RawFlightsLongS}{4\,309}
+\newcommand{\RawFlightsOneA}{8\,991}
+\newcommand{\RawFlightsOneG}{11\,077}
+\newcommand{\RawFlightsOneS}{43\,977}
+\newcommand{\RawFlightsTwoA}{6\,966}
+\newcommand{\RawFlightsTwoG}{8\,405}
+\newcommand{\RawFlightsTwoS}{36\,975}
+\newcommand{\RawGapClimb}{$+$3.3}
+\newcommand{\RawGapCph}{$+$0.72}
+\newcommand{\RawGapFound}{$+$6.0}
+\newcommand{\RawGapGlide}{$+$2.1}
+\newcommand{\RawGapHK}{$+$0.018}
+\newcommand{\RawGapHQ}{$+$0.017}
+\newcommand{\RawGapRate}{$+$0.044}
+\newcommand{\RawGapSearch}{$-$0.9}
+\newcommand{\RawGapSink}{$-$18}
+\newcommand{\RawHKLongA}{0.917}
+\newcommand{\RawHKLongABand}{[0.912, 0.922]}
+\newcommand{\RawHKLongG}{0.936}
+\newcommand{\RawHKLongGBand}{[0.919, 0.950]}
+\newcommand{\RawHKLongS}{0.912}
+\newcommand{\RawHKLongSBand}{[0.911, 0.914]}
+\newcommand{\RawHKOneA}{0.894}
+\newcommand{\RawHKOneABand}{[0.892, 0.897]}
+\newcommand{\RawHKOneG}{0.915}
+\newcommand{\RawHKOneGBand}{[0.913, 0.918]}
+\newcommand{\RawHKOneS}{0.897}
+\newcommand{\RawHKOneSBand}{[0.897, 0.898]}
+\newcommand{\RawHKTwoA}{0.897}
+\newcommand{\RawHKTwoABand}{[0.895, 0.900]}
+\newcommand{\RawHKTwoG}{0.918}
+\newcommand{\RawHKTwoGBand}{[0.915, 0.920]}
+\newcommand{\RawHKTwoS}{0.898}
+\newcommand{\RawHKTwoSBand}{[0.897, 0.899]}
+\newcommand{\RawHQLongA}{0.926}
+\newcommand{\RawHQLongABand}{[0.921, 0.932]}
+\newcommand{\RawHQLongG}{0.948}
+\newcommand{\RawHQLongGBand}{[0.931, 0.962]}
+\newcommand{\RawHQLongS}{0.922}
+\newcommand{\RawHQLongSBand}{[0.920, 0.923]}
+\newcommand{\RawHQTwoA}{0.902}
+\newcommand{\RawHQTwoABand}{[0.899, 0.905]}
+\newcommand{\RawHQTwoG}{0.923}
+\newcommand{\RawHQTwoGBand}{[0.920, 0.926]}
+\newcommand{\RawHQTwoS}{0.906}
+\newcommand{\RawHQTwoSBand}{[0.905, 0.907]}
+\newcommand{\RawPhaseFlightsA}{6\,397}
+\newcommand{\RawPhaseFlightsG}{7\,896}
+\newcommand{\RawPhaseFlightsS}{27\,665}
+\newcommand{\RawPhaseHoursA}{13\,898}
+\newcommand{\RawPhaseHoursG}{12\,338}
+\newcommand{\RawPhaseHoursS}{60\,882}
+\newcommand{\RawPiecesLongA}{602}
+\newcommand{\RawPiecesLongG}{115}
+\newcommand{\RawPiecesLongS}{4\,311}
+\newcommand{\RawPiecesOneA}{13\,464}
+\newcommand{\RawPiecesOneG}{14\,401}
+\newcommand{\RawPiecesOneS}{46\,239}
+\newcommand{\RawPiecesTwoA}{8\,779}
+\newcommand{\RawPiecesTwoG}{10\,134}
+\newcommand{\RawPiecesTwoS}{37\,865}
+\newcommand{\RawRunsClimbA}{87\,378}
+\newcommand{\RawRunsClimbG}{87\,000}
+\newcommand{\RawRunsClimbS}{397\,341}
+\newcommand{\RawRunsGlideA}{93\,424}
+\newcommand{\RawRunsGlideG}{86\,766}
+\newcommand{\RawRunsGlideS}{428\,324}
+\newcommand{\RawRunsSearchA}{29\,692}
+\newcommand{\RawRunsSearchG}{28\,476}
+\newcommand{\RawRunsSearchS}{132\,029}
+\newcommand{\RawSepCount}{7}
+\newcommand{\RawShortestLong}{14\,312.5}
+\newcommand{\RawShortestOne}{1\,250}
+\newcommand{\RawShortestTwo}{2\,812.5}
+\newcommand{\RawStatClimbA}{31.6}
+\newcommand{\RawStatClimbABand}{[31.3, 31.9]}
+\newcommand{\RawStatClimbG}{36.3}
+\newcommand{\RawStatClimbGBand}{[35.9, 36.6]}
+\newcommand{\RawStatClimbS}{32.9}
+\newcommand{\RawStatClimbSBand}{[32.8, 33.0]}
+\newcommand{\RawStatCphA}{6.36}
+\newcommand{\RawStatCphABand}{[6.31, 6.41]}
+\newcommand{\RawStatCphG}{7.24}
+\newcommand{\RawStatCphGBand}{[7.20, 7.30]}
+\newcommand{\RawStatCphS}{6.53}
+\newcommand{\RawStatCphSBand}{[6.51, 6.54]}
+\newcommand{\RawStatFoundA}{42.1}
+\newcommand{\RawStatFoundABand}{[41.7, 42.4]}
+\newcommand{\RawStatFoundG}{46.6}
+\newcommand{\RawStatFoundGBand}{[46.1, 47.0]}
+\newcommand{\RawStatFoundS}{40.5}
+\newcommand{\RawStatFoundSBand}{[40.3, 40.7]}
+\newcommand{\RawStatGlideA}{33.9}
+\newcommand{\RawStatGlideABand}{[33.7, 34.1]}
+\newcommand{\RawStatGlideG}{35.2}
+\newcommand{\RawStatGlideGBand}{[35.0, 35.5]}
+\newcommand{\RawStatGlideS}{33.2}
+\newcommand{\RawStatGlideSBand}{[33.1, 33.2]}
+\newcommand{\RawStatRateA}{1.15}
+\newcommand{\RawStatRateABand}{[1.14, 1.16]}
+\newcommand{\RawStatRateG}{1.14}
+\newcommand{\RawStatRateGBand}{[1.13, 1.15]}
+\newcommand{\RawStatRateS}{1.10}
+\newcommand{\RawStatRateSBand}{[1.10, 1.10]}
+\newcommand{\RawStatSearchA}{11.6}
+\newcommand{\RawStatSearchABand}{[11.4, 11.9]}
+\newcommand{\RawStatSearchG}{10.5}
+\newcommand{\RawStatSearchGBand}{[10.3, 10.8]}
+\newcommand{\RawStatSearchS}{11.4}
+\newcommand{\RawStatSearchSBand}{[11.3, 11.5]}
+\newcommand{\RawStatSinkA}{94}
+\newcommand{\RawStatSinkABand}{[94, 95]}
+\newcommand{\RawStatSinkG}{82}
+\newcommand{\RawStatSinkGBand}{[82, 83]}
+\newcommand{\RawStatSinkS}{100}
+\newcommand{\RawStatSinkSBand}{[100, 101]}
+\newcommand{\RawSumClimbA}{32.0}
+\newcommand{\RawSumClimbG}{36.4}
+\newcommand{\RawSumClimbS}{34.2}
+\newcommand{\RawSumCphA}{6.35}
+\newcommand{\RawSumCphG}{7.12}
+\newcommand{\RawSumCphS}{6.59}
+\newcommand{\RawSumFoundA}{44.8}
+\newcommand{\RawSumFoundG}{47.2}
+\newcommand{\RawSumFoundS}{43.1}
+\newcommand{\RawSumGlideA}{34.9}
+\newcommand{\RawSumGlideG}{36.1}
+\newcommand{\RawSumGlideS}{34.2}
+\newcommand{\RawSumRateA}{1.23}
+\newcommand{\RawSumRateG}{1.16}
+\newcommand{\RawSumRateS}{1.16}
+\newcommand{\RawSumSearchA}{10.3}
+\newcommand{\RawSumSearchG}{9.9}
+\newcommand{\RawSumSearchS}{10.3}
+\newcommand{\RawSumSinkA}{89}
+\newcommand{\RawSumSinkG}{82}
+\newcommand{\RawSumSinkS}{96}
+\newcommand{\RawTauLong}{11\,450}
+\newcommand{\RawTauOne}{1\,000}
+\newcommand{\RawTauTwo}{2\,250}
 \newcommand{\StrictShare}{26}
 \newcommand{\Stricter}{0.5}
+\newcommand{\SumSepClimb}{yes}
+\newcommand{\SumSepCph}{yes}
+\newcommand{\SumSepFound}{yes}
+\newcommand{\SumSepGlide}{yes}
+\newcommand{\SumSepHK}{yes}
+\newcommand{\SumSepHQ}{yes}
+\newcommand{\SumSepRate}{yes}
+\newcommand{\SumSepSearch}{yes}
+\newcommand{\SumSepSink}{yes}
 \newcommand{\TakeoffHighFlights}{35\,698}
 \newcommand{\TakeoffHighKeep}{80}
 \newcommand{\TakeoffHighMedian}{0.24}
@@ -97,4 +1043,34 @@
 \newcommand{\TakeoffLowKeep}{88}
 \newcommand{\TakeoffLowMedian}{0.45}
 \newcommand{\TakeoffLowStrict}{42}
+\newcommand{\ToyAvgFirst}{12.6}
+\newcommand{\ToyDa}{10}
+\newcommand{\ToyDb}{20}
+\newcommand{\ToyDc}{30}
+\newcommand{\ToyDin}{3}
+\newcommand{\ToyDout}{1}
+\newcommand{\ToyDw}{1}
+\newcommand{\ToyG}{2}
+\newcommand{\ToyH}{0.54}
+\newcommand{\ToyMeanShare}{13.9}
+\newcommand{\ToyMsdOne}{15.33}
+\newcommand{\ToyMsdTwo}{32.5}
+\newcommand{\ToyNa}{1}
+\newcommand{\ToyNb}{5}
+\newcommand{\ToyNc}{2}
+\newcommand{\ToyPos}{0, 3, 4, 10}
+\newcommand{\ToyRatio}{13.3}
+\newcommand{\ToyShapleyF}{0.01}
+\newcommand{\ToyShapleyNone}{0.46}
+\newcommand{\ToyShapleyR}{0.30}
+\newcommand{\ToyShapleyT}{0.05}
+\newcommand{\ToyShapleyW}{0.10}
+\newcommand{\ToySumD}{60}
+\newcommand{\ToySumN}{8}
+\newcommand{\ToySurvAtThirty}{0.25}
+\newcommand{\ToySurvAtTwenty}{0.75}
+\newcommand{\ToySurvDurations}{10, 30, 30, 100}
+\newcommand{\ToyTa}{100}
+\newcommand{\ToyTb}{400}
+\newcommand{\ToyTc}{500}
 \newcommand{\tauStar}{38.1}

@@ -1,0 +1,55 @@
+\section{Point 1: raw}\label{sec:raw}
+
+How do $\Sl$, $\A$ and $\G$ compare as they are, on the open flights, with no stratification?
+
+\begin{figure}
+\centering
+\pair{open_min0.1/raw_1000_msd.pdf}{open_min0.1/raw_1000_hloc.pdf}{0.49}
+\caption{Open flights, dataset 1000 (pieces of at least \RawShortestOne~s, lags to \RawTauOne~s). Left: ensemble $\MSD(\tau)$, one weight per flight;
+right: $\Hloc(\tau)$; $\Sl$ (\RawFlightsOneS{} flights), $\A$ (\RawFlightsOneA) and $\G$ (\RawFlightsOneG), fitted $H$ in the legend; 5--95\% bands of the draws of dependency blocks.}
+\label{fig:raw-msd}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/raw_statistics.pdf}
+\caption{Open flights: the seven phase statistics of $\Sl$ (\RawPhaseFlightsS{} flights), $\A$ (\RawPhaseFlightsA) and $\G$ (\RawPhaseFlightsG), on the
+pieces of dataset 1000; average first, ratio after, unit the flight; 5--95\% bands.}
+\label{fig:raw-stats}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/raw_survival.pdf}
+\caption{Open flights: survival $P(\tau_\text{phase}>\tau)$ of the duration of glides, of searches that end in a climb and of climbs, on the
+pieces of dataset 1000, every run weighing 1; runs in the legend; pointwise 5--95\% bands.}
+\label{fig:raw-survival}
+\end{figure}
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/raw_table}
+\caption{Open flights, raw: flights and pieces of each population and dataset, fitted $H$ (10~s to the end of the lags), $\Hk$ and $\Hq$, with 5--95\% bands.
+$\Hk$ on dataset 1000 is measured at the lag 1000~s; $\Hq$ needs a dataset of at least 2250~s, and its window is cut at 2250~s.
+Ensemble mean over flights, one weight per flight.}
+\label{tab:raw}
+\end{table}
+
+\paragraph{The MSD.} On dataset 1000, $\Hk$ is \RawHKOneG{} \RawHKOneGBand{} in $\G$, \RawHKOneS{} \RawHKOneSBand{} in $\Sl$ and \RawHKOneA{} \RawHKOneABand{} in $\A$
+(Table~\ref{tab:raw}, Figure~\ref{fig:raw-msd}): the gap $\G-\Sl$ is \RawGapHK, and the bands of $\G$ and $\Sl$ do not overlap. The three curves
+agree at short lags; at 1000~s $\G$ stays high while $\Sl$ and $\A$ have fallen. The same flights alone follow $\Sl$. On dataset 2250, $\Hq$ is \RawHQTwoG{} in $\G$ and \RawHQTwoS{} in $\Sl$,
+a gap of \RawGapHQ. On the longest dataset the three curves rise and $\G$ keeps \RawFlightsLongG{} flights only: $\Hk$ is
+\RawHKLongG{} \RawHKLongGBand{} in $\G$ and \RawHKLongS{} in $\Sl$ (Figure~\ref{fig:raw-more}, Appendix~\ref{app:figures}).
+
+\paragraph{The phases.} $\G$ spends more time in climb than $\Sl$ (\RawStatClimbG\% against \RawStatClimbS\%), finds a climb after a search more often
+(\RawStatFoundG\% against \RawStatFoundS\%), makes more climbs per hour (\RawStatCphG{} against \RawStatCphS), glides faster (\RawStatGlideG{} against \RawStatGlideS~km/h) and loses
+less height per km of glide (\RawStatSinkG{} against \RawStatSinkS~m/km); its time in search is lower (\RawStatSearchG\% against \RawStatSearchS\%). The climb rate is \RawStatRateG{} against \RawStatRateS~m/s.
+For all statistics but the climb rate $\A$ lies nearer to $\Sl$ than to $\G$. The survival functions
+of the three populations (Figure~\ref{fig:raw-survival}) overlap for climbs and for searches; for glides the tail of $\Sl$ falls below those of $\A$ and $\G$ at the longest durations, where few runs remain.
+
+\paragraph{The estimator matters.} The ratio of sums weights a flight by its phase time. It gives \RawSumClimbS\% of time in climb in $\Sl$ against \RawStatClimbS\% for the average first,
+and \RawSumGlideS{} against \RawStatGlideS~km/h of glide speed (Appendix~\ref{app:phases}, Table~\ref{tab:ratio}).
+
+\paragraph{What we keep.} Raw, on the open flights, group time progresses straighter than solo flight ($\Hk$: \RawHKOneG{} against \RawHKOneS) and gains more height per unit of time:
+more time in climb, more climbs per hour, a glide that is faster and loses less height. The same flights alone stay close to $\Sl$. This gap
+mixes the route, the season, the hour, the wing and the flights themselves, which the next two sections take apart.

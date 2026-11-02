@@ -31,13 +31,19 @@
 \newcommand{\Sl}{\mathrm{S}}
 \newcommand{\MSD}{\mathrm{MSD}}
 \newcommand{\Hloc}{H_\mathrm{loc}}
+\newcommand{\Hk}{\Hloc(1000~\mathrm{s})}
+\newcommand{\Hq}{\Hloc(1840~\mathrm{s})}
+\newcommand{\SG}{\Sl\mid\G}
+\newcommand{\SAA}{\Sl\mid\A}
+% Two figures side by side: \pair{file left}{file right}{width of each}.
+\newcommand{\pair}[3]{\includegraphics[width=#3\textwidth]{#1}\hfill\includegraphics[width=#3\textwidth]{#2}}
 \setlist{itemsep=1pt, topsep=2pt, parsep=0pt, leftmargin=1.3em}
 \setlength{\parskip}{2pt}
 \captionsetup{font=footnotesize}
 \input{../generated/comparisons/macros}
 
 \title{\textbf{Group and solo flight: comparisons}\\[2pt]
-  \large Group time, solo flights and the same flights alone, on open flights}
+  \large Group time against solo flight, raw, on the same route, by factor and around the group, on open flights}
 \author{Matteo Di Sante}
 \date{\today \;\textbullet\; analysis: \texttt{xc-lab/analyses/groups} \;\textbullet\;
   grouping run \texttt{d120\_eh500\_ez300\_th45\_g120\_q0.1}}
@@ -51,7 +57,13 @@
 \input{sections/flights}
 \input{sections/declared}
 \input{sections/opening}
-\input{sections/open}
+\input{sections/raw}
+\input{sections/matched}
+\input{sections/decomposition}
+\input{sections/prepost}
 \input{sections/conclusions}
+
+\appendix
+\input{sections/appendices}
 
 \end{document}
