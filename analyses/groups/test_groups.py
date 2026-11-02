@@ -1327,6 +1327,17 @@ def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
     for q, x in j["decomposition"]["levels"]["all"].items():
         total = x["delta_F"]["value"] + sum(x["phi"][k]["value"] for k in "RTW")
         assert total == pytest.approx(x["delta_none"]["value"], abs=1e-9)
+    assert 0 < float(m["RawGapCross"].replace("\\,", "")) <= float(m["RawGapSig"].replace("\\,", ""))
+    st = j["prepost_2400"]["curves"]["stages"]
+    g = 0.5 * ((np.array(st["start"]["H_loc"]) - np.array(st["pre"]["H_loc"])) + (np.array(st["end"]["H_loc"]) - np.array(st["post"]["H_loc"])))
+    assert g[-1] > 0 and m["PreGCross"] == num(j["prepost_2400"]["lags"][int(np.flatnonzero(g <= 0)[-1]) + 1], 0)
+    # g against the length of the window
+    runs = {w: json.loads((OPEN_OUT / f"prepost_{w}.json").read_text()) for w in comparisons.WINDOWS}
+    comparisons.windows_tex(runs)
+    for w, tag in comparisons.WINDOWS.items():
+        g = runs[w]["differences"]["g"]
+        assert m[f"PreWin{tag}HK"] == signed(g["H_loc(1000 s)"]["value"], 3)
+        assert m[f"PreWin{tag}Events"] == num(g["events (MSD)"], 0)
 
 
 def test_twoway_variance_is_pilots_plus_blocks_minus_cells_at_least_the_larger_one_way():

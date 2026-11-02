@@ -86,15 +86,16 @@ in the population), the piece or control segment in Sections~\ref{sec:matched} a
 \label{tab:stats}
 \end{table}
 
-\paragraph{Estimator: average first, ratio after.} With $w_u$ the weight of a unit (1 for the value, the bootstrap count for a draw),
+\paragraph{Estimator: each unit counts once.} With $w_u$ the weight of a unit (1 for the value, the bootstrap count for a draw),
 \begin{equation}\label{eq:estimator}
   r_u=\frac{n_u}{T_u},\qquad q_u=\frac{d_u}{T_u},\qquad
   \text{stat}=\frac{\sum_u w_u\, r_u}{\sum_u w_u\, q_u}.
 \end{equation}
 For the two time shares and the climbs per hour $q_u$ is constant, and the statistic is the mean of the unit's share or rate. For the
 other four it does not divide by the few events of one unit: a unit with one search gives 0\% or 100\%.
-This is the estimator of the MSD, one weight per unit. The ratio of sums, $\sum n_u/\sum d_u$, weights a unit by its phase time
-(Appendix~\ref{app:phases}).
+In words: per unit, the numerator and the denominator are divided by its phase time, the two are averaged over the units and the statistic is the ratio of the averages.
+A unit weighs by its share of phase time in the denominator, not by its length: no long flight dominates, as in the MSD, which has one weight per unit. The ratio of sums, $\sum n_u/\sum d_u$, weights a unit by its phase time
+(Appendix~\ref{app:phases}, with an example).
 
 \paragraph{Survival of the phase durations.} For climbs, searches that end in a climb and glides, the survival function
 $P(\tau_\text{phase}>\tau)$ of the number of fixes of a run (1~Hz, so seconds), with the duration trimmed as in the

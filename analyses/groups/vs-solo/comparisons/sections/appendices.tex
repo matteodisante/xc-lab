@@ -26,7 +26,7 @@ A curve to the lag $T$ would mix populations if each lag kept the pieces long en
 at every lag up to $T$, so the same pieces carry the whole curve. Datasets 1000 and 2760 have $T=\RawTauOne$ and \RawTauTwo~s (pieces of at least \RawShortestOne{} and \RawShortestTwo~s); the longest has $T=\RawTauLong$~s (\RawShortestLong~s),
 the largest lag of the grid at which each population keeps \DeclMinFlights{} flights. The windows of Section~\ref{sec:prepost} have \PreWindow~s, so $T$ is the largest lag of the grid up to $0.8\times\PreWindow$~s, \PreMaxLag~s.
 
-\section{The phase statistics: average first against the ratio of sums}\label{app:phases}
+\section{The phase statistics: each unit counts once}\label{app:phases}
 
 For a unit $u$ (flight, piece, control segment or window) the terms $n_u$, $d_u$ are the sums of the numerator and of the denominator over the runs whose middle lies in $u$, and $T_u$ is the sum of the durations of its runs.
 The ratio of sums is $\sum_u n_u/\sum_u d_u$: a unit weighs by its $d_u$, hence by its phase time. The estimator used here is
@@ -44,6 +44,9 @@ $n/d$ is \ToyMeanShare\%; the estimator is $\sum n/T\,/\sum d/T=\ToyAvgFirst\%$.
 \caption{Open flights, raw, pieces of dataset 1000, unit the flight: each statistic as \emph{average first, ratio after} / \emph{ratio of sums}, for $\Sl$, $\A$ and $\G$, with the flights and the phase time (h) they rest on.}
 \label{tab:ratio}
 \end{table}
+
+\emph{Example.} Two flights glide $20$~km in $0.5$~h of $1$~h of phase time (speed 40~km/h) and $60$~km in $2$~h of $4$~h (30~km/h). The ratio of sums is $(20+60)/(0.5+2)=32$~km/h: the second flight weighs four times the first, since it glides four times longer.
+The estimator used here is $\mathrm{mean}(20/1,\,60/4)/\mathrm{mean}(0.5/1,\,2/4)=17.5/0.5=35$~km/h: each flight weighs by its share of time gliding, here the same.
 
 \section{Survival function and its weighted version}\label{app:survival}
 
@@ -127,12 +130,12 @@ Variances of the pilot, block, flight and unit effects in the first column.}
 \label{tab:coverage}
 \end{table}
 
-\emph{What the band leaves out.} The rules of the matching ($\rho$, cover, calipers), which the robustness lines of Section~\ref{sec:matched} vary instead; the random windows of the cells without R (Section~\ref{sec:decomposition}), drawn once; and the dependence on one year, which Appendix~\ref{app:years} shows.
+\emph{What the band leaves out.} The rules of the matching ($\rho$, cover, calipers), which the robustness lines of Section~\ref{sec:matched} vary instead; the random windows of the cells without R (Section~\ref{sec:decomposition}), drawn once; and the dependence on one year, which Appendix~\ref{app:years} leaves for a study of its own.
 
-\section{Leaving one year out}\label{app:years}
+\section{Variability by year}\label{app:years}
 
-For each year of the archive the estimate is repeated with weight 0 on the flights of that year (the same form as a bootstrap weight). The thin bars of Figures~\ref{fig:matched-forest} and \ref{fig:decomposition} are the minimum and the maximum of these estimates:
-a result that depends on one year shows as a wide thin bar.
+The bands of the report are the only uncertainty drawn. For each year of the archive the analyses also repeat the estimate with weight 0 on the flights of that year (the same form as a bootstrap weight) and keep it in their JSON.
+\emph{To do:} a study of these estimates, to see whether the effects change from one year to another and whether one year drives a result.
 
 \section{The Shapley decomposition}\label{app:shapley}
 

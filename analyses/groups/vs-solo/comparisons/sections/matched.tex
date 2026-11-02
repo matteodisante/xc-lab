@@ -34,24 +34,25 @@ $\MSD(\tau)$ and $\Hloc(\tau)$ with their bands in Appendix~\ref{app:figures}.}
 \centering\small
 \input{../generated/comparisons/matched_table}
 \caption{Same route, season, hour and wing, level all: pieces (or control segments), fitted $H$ (dataset 1000, 10 to 1000~s), $\Hk$ (dataset 1000) and $\Hq$ (dataset 2760, \MatNGPiecesOfTheLongSeries{} pieces of $\G$);
-differences of the sides with 90\% bands. Ensemble mean over units reweighted to the piece.}
+differences of the sides with 90\% bands. The last two rows give $\Delta\Hloc(1000~\mathrm{s})$ on the pieces of dataset 2760, whose window is not cut at 1000~s. Ensemble mean over units reweighted to the piece.}
 \label{tab:matched}
 \end{table}
 
 \paragraph{The MSD.} Against its controls, $\G$ has $\Hk$ of \MatSideHKG{} and $\SG$ of \MatSideHKSG{}: $\Delta(\G-\SG)$ is \MatDeltaHKG{} \MatDeltaHKGBand{} (Table~\ref{tab:matched}, Figure~\ref{fig:matched-msd}),
-against the raw gap \RawGapHK{} of Section~\ref{sec:raw}; its band excludes 0. On dataset 2760, $\Hq$ gives \MatDeltaHQG{} \MatDeltaHQGBand, and $\Hloc$ at 1000~s, where the window of these longer pieces is not cut, \MatDeltaHKLongG{} \MatDeltaHKLongGBand: both bands exclude 0.
+against the raw gap \RawGapHK{} of Section~\ref{sec:raw}; its band excludes 0. On dataset 2760, $\Hq$ gives \MatDeltaHQG{} \MatDeltaHQGBand, and $\Hloc$ at 1000~s, where the window of these longer pieces is not cut, \MatDeltaHKLongG{} \MatDeltaHKLongGBand{} (last rows of Table~\ref{tab:matched}): both bands exclude 0.
 Over the lags $\Delta(\G-\SG)$ is negative at the short ones and positive at the long ones, as the raw gap: the fitted $H$ over 10 to 1000~s is lower in $\G$ than in its controls (\MatDeltaFitKG{} \MatDeltaFitKGBand),
 the fitted $H$ over 10 to 2760~s higher (\MatDeltaFitTG{} \MatDeltaFitTGBand).
 The band of $\Delta(\G-\SG)$ includes 0 for \MatZeroG{} of the \MatNQuant{} quantities of Figure~\ref{fig:matched-forest}.
 
 \paragraph{Selection.} $\A$ against $\SAA$ flies the same route alone: same pilots, gliders and days as $\G$, no group. $\Delta(\A-\SAA)$ measures selection. Its $\Hk$ is \MatDeltaHKA{} \MatDeltaHKABand{} and the band includes 0 for \MatZeroA{} of the \MatNQuant{} quantities;
 the difference $(\G-\SG)-(\A-\SAA)$ is \MatDeltaHKD{} \MatDeltaHKDBand{} at $\Hk$ and includes 0 for \MatZeroD{} of them.
+At $\Hq$ selection is not small: $\A-\SAA$ is \MatDeltaHQA{} \MatDeltaHQABand, with a band that excludes 0, and the difference is \MatDeltaHQD{} \MatDeltaHQDBand: on the same route the gap of $\G$ at long lags cannot be told from the gap of the same pilots alone.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{open_min0.1/matched_forest.pdf}
-\caption{Same route, season, hour and wing: $\Delta(\G-\SG)$, $\Delta(\A-\SAA)$ and their difference, by level of the wing (beginners, experienced, all). Dot: value; thick bar: 90\% band;
-thin bar: range over the years, leaving one year out. $\Hk$ and the seven statistics on dataset 1000 (phase statistics on the pieces with phases: \MatNGPiecesWithPhases{} pieces of $\G$ at level all), $\Hq$ on the long series, whose lag is the largest at which $\G$ and $\A$ both keep \MatMin{} pieces at the level
+\caption{Same route, season, hour and wing: $\Delta(\G-\SG)$, $\Delta(\A-\SAA)$ and their difference, by level of the wing (beginners, experienced, all). Dot: value; bar: 90\% band.
+$\Hk$ and the seven statistics on dataset 1000 (phase statistics on the pieces with phases: \MatNGPiecesWithPhases{} pieces of $\G$ at level all), $\Hq$ on the long series, whose lag is the largest at which $\G$ and $\A$ both keep \MatMin{} pieces at the level
 (\MatLongT~s for all, \MatLongTExperienced~s for experienced, \MatLongTBeginners~s for beginners, where the window of $\Hq$ is cut: it has no lag above 1840~s); average first, ratio after, unit the piece.}
 \label{fig:matched-forest}
 \end{figure}
@@ -82,4 +83,4 @@ The lines keep between \MatRobPiecesLow{} and \MatRobPiecesHigh{} pieces on data
 
 \paragraph{What we keep.} On the same route, season, hour and wing group time still progresses straighter than solo flight at the long lags: $\Hq$ \MatDeltaHQG{} \MatDeltaHQGBand, $\Hloc$ at 1000~s on dataset 2760 \MatDeltaHKLongG{} \MatDeltaHKLongGBand, while on the shorter pieces of dataset 1000 $\Hk$ gives \MatDeltaHKG{} \MatDeltaHKGBand, against \RawGapHK{} raw.
 It is less straight at the short lags, climbs more often and glides slower and steeper than its controls. The selection term $\Delta(\A-\SAA)$ is \MatDeltaHKA{} \MatDeltaHKABand{} at $\Hk$ and its bands include 0 for \MatZeroA{} of the \MatNQuant{} quantities:
-the pilots who fly in groups, flying alone on the same routes, do not differ from their controls by more than the bands allow.
+at $\Hk$ the pilots who fly in groups, flying alone on the same routes, do not differ from their controls by more than the bands allow, but at $\Hq$ they do, by as much as $\G$. To separate the group from who flies, the same flight is needed (Section~\ref{sec:prepost}).

@@ -214,8 +214,12 @@ def draw_datasets(datasets, folder):
         curves.figures(drawn, folder / f"raw_{name}", f"dataset {name}: pieces of at least {d['tau_max'] / tamsd.SUPPORT:g} s")
         left = [{**d["curves"][pop], "label": short, "color": COLORS[pop]} for pop, short in POPS.items()]
         right = [{**d["gaps"][gap], "label": gap, "color": GAP_COLORS[gap]} for gap in GAPS]
+        g = d["gaps"]["G - S"]
+        below = np.flatnonzero(np.asarray(g["value"]) <= 0)
+        turn = below[-1] + 1 if len(below) and below[-1] + 1 < len(g["lags"]) else None  # the lag from which G - S stays above 0
         curves.delta_figure(left, right, folder / f"raw_{name}_delta",
-                            f"dataset {name}: pieces of at least {d['tau_max'] / tamsd.SUPPORT:g} s")
+                            f"dataset {name}: pieces of at least {d['tau_max'] / tamsd.SUPPORT:g} s",
+                            vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
 
 
 if __name__ == "__main__":

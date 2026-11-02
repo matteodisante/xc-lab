@@ -77,9 +77,10 @@ def plot(ax, curves, ylim=None, inset=INSET):
     return small
 
 
-def delta_figure(left, right, path, title=None):
+def delta_figure(left, right, path, title=None, vline=None):
     """A comparison over every lag (`path`.pdf and .png): left, H_loc(tau) of the series `left` (no bands); right,
-    the differences `right` (dicts: lags, value, label, color, and optionally band, ls) with their bands, and 0."""
+    the differences `right` (dicts: lags, value, label, color, and optionally band, ls) with their bands, and 0;
+    `vline` = (lag, label): a dashed vertical line at the lag in both panels."""
     fig, axes = plt.subplots(1, 2, figsize=(8.4, 2.7), constrained_layout=True)
     for c in left:
         axes[0].plot(c["lags"], c["H_loc"], color=c["color"], ls=c.get("ls", "-"), lw=1.4, label=c["label"])
@@ -90,6 +91,11 @@ def delta_figure(left, right, path, title=None):
         axes[1].plot(d["lags"], d["value"], color=d["color"], ls=d.get("ls", "-"), lw=d.get("lw", 1.4), label=d["label"])
     axes[1].axhline(0, color="#999999", lw=0.8)
     axes[1].set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$\Delta H_{\rm loc}(\tau)$")
+    if vline:
+        for ax in axes:
+            ax.axvline(vline[0], color="#555555", lw=0.8, ls="--")
+        axes[1].annotate(vline[1], (vline[0], 1), xycoords=("data", "axes fraction"), xytext=(3, -9), textcoords="offset points",
+                         fontsize=6.5, color="#555555")
     for ax, drawn in zip(axes, (left, right)):
         if len(drawn) > CROWDED:
             ax.legend(frameon=False, fontsize=6.5, loc="upper left", bbox_to_anchor=(1.0, 1.0))

@@ -217,14 +217,15 @@ def report(cells):
     return out
 
 
-def draw_decomposition(result, path):
-    """One panel per quantity of FOREST: Delta(none), phi_W, phi_T, phi_R, Delta(F), each with its band."""
+def draw_decomposition(result, path, stats=None, width=8.2):
+    """One panel per quantity of `stats` (FOREST by default): Delta(none), phi_W, phi_T, phi_R, Delta(F), each with
+    its band."""
     rows = []
     for label, get in (("Δ(none)", lambda q: q["delta_none"]), ("φ_W", lambda q: q["phi"]["W"]), ("φ_T", lambda q: q["phi"]["T"]),
                        ("φ_R", lambda q: q["phi"]["R"]), ("Δ(F)", lambda q: q["delta_F"])):
         rows.append((label, ROW_COLORS[label], {m: _plain(get(q)) for m, q in result.items() if m in FOREST}))
-    matched.draw_forest(rows, path, "Open paragliders: the raw gap of group time and its parts", stats=[m for m in FOREST if m in result],
-                        width=8.2)
+    matched.draw_forest(rows, path, "Open paragliders: the raw gap of group time and its parts", stats=stats or [m for m in FOREST if m in result],
+                        width=width)
 
 
 def _plain(quote):

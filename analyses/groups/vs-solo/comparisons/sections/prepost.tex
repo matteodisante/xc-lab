@@ -50,5 +50,14 @@ comparisons (\PreGClimb{} against \MatDeltaClimbG, \PreGFound{} against \MatDelt
 glide speed (\PreGGlide{} against \MatDeltaGlideG) and height lost per km of glide (\PreGSink{} against \MatDeltaSinkG) have opposite signs (Table~\ref{tab:prepost}); for the climb rate, the glide speed and the height lost both bands exclude 0.
 Inside its group a pilot glides faster and flatter than just before and after, while group time glides slower and steeper than solo flights on the same route.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{open_min0.1/prepost_windows.pdf}
+\caption{$D_\text{in}$, $D_\text{out}$ and $g$ of $\Hk$ (left) and $g$ of the time in climb (right) against the length of the window, 90\% bands. Events with the four windows: \PreWinAEvents{} at \PreWinALen~s, \PreWinBEvents{} at \PreWinBLen, \PreWinCEvents{} at \PreWinCLen{} and \PreWinDEvents{} at \PreWinDLen~s.}
+\label{fig:prepost-windows}
+\end{figure}
+
+\paragraph{The length of the window.} $g$ of $\Hk$ is \PreWinBHK{} \PreWinBHKBand{} at \PreWinBLen~s, \PreWinCHK{} \PreWinCHKBand{} at \PreWinCLen~s and \PreWinDHK{} \PreWinDHKBand{} at \PreWinDLen~s (Figure~\ref{fig:prepost-windows}). At \PreWinALen~s it is \PreWinAHK{} \PreWinAHKBand: the lag 1000~s is at the limit of the $\tau/0.8$ rule, and only 260~s of the window can start a displacement of 1000~s. $g$ of the time in climb stays between \PreWinBClimb{} and \PreWinAClimb{} points at every length.
+
 \paragraph{What we keep.} The same flight is straighter inside its group than just before and just after it ($D_\text{in}$ \PreInHK, $D_\text{out}$ \PreOutHK) while the control pairs stay near 0, so $g$ is \PreGHK{} \PreGHKBand, with $d_w$ \PreDwHK{} \PreDwHKBand. $g$ is close to the
 same-route gap at 1000~s on the longer pieces of dataset 2760 and above that on dataset 1000. The two comparisons agree in sign for time in climb, searches ending in a climb and climbs per hour, and disagree for time in search, climb rate, glide speed and height lost per km of glide.

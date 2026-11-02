@@ -559,9 +559,9 @@ def draw_survival(surv, path):
     save(fig, path)
 
 
-def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None):
+def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None, prefix="Δ ", zero=True):
     """One panel per statistic of `stats`, one row per entry of `rows` = [(label, colour, {stat: quote}) or
-    None for a gap]: a dot with the 5-95% band (thick) and, when the quote has them, the range over the years (thin)."""
+    None for a gap]: a dot with its 5-95% band."""
     y, ys = 0.0, []
     for r in rows:
         ys.append(y)
@@ -576,13 +576,12 @@ def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None):
                 continue
             v = r[2][stat]
             lo, hi = v["band"]
-            if "years" in v:
-                ax.plot(v["years"], [y0, y0], color=r[1], lw=0.8, alpha=0.8, marker="|", ms=7)
             ax.errorbar(v["value"], y0, xerr=[[v["value"] - lo], [hi - v["value"]]], fmt="o", ms=5, color=r[1], elinewidth=1.8, capsize=2)
-        ax.axvline(0, color="#999999", lw=0.8, ls=":")
+        if zero:
+            ax.axvline(0, color="#999999", lw=0.8, ls=":")
         ax.set_ylim(y - 0.4, -0.6)
         ax.set_yticks([y0 for r, y0 in zip(rows, ys) if r], [r[0] for r in rows if r] if ax in axes[:, 0] else [])
-        ax.set_title("Δ " + stat.replace("(%)", "(points)"), fontsize=8.5)
+        ax.set_title(prefix + stat.replace("(%)", "(pp)"), fontsize=8.5)
         ax.tick_params(labelsize=7)
         ax.grid(axis="x", color="#e6e6e6", lw=0.6)
         for side in ("top", "right"):

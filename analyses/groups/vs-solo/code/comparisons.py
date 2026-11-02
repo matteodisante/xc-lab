@@ -154,6 +154,9 @@ def mac_value(name, v, d, sign=False):
 
 
 def raw_tex(r):
+    for tag in ("S", "G"):
+        macro(f"RawGlideMedian{tag}", num(phase_median(r["survival"][tag]["transition"]), 0))
+        macro(f"RawClimbMedian{tag}", num(phase_median(r["survival"][tag]["climb"]), 0))
     lines = [r"\begin{tabular}{@{}l l r r l l l@{}}", r"\toprule",
              r"dataset & & flights & pieces & fitted $H$ & $\Hloc(1000~\mathrm{s})$ & $\Hloc(1840~\mathrm{s})$ \\", r"\midrule"]
     for ds, d in r["datasets"].items():
@@ -185,6 +188,8 @@ def raw_tex(r):
         if gap == "G - S":
             above = np.asarray(curve["value"]) > 0
             macro("RawGapCross", num(curve["lags"][int(np.flatnonzero(~above)[-1]) + 1], 0))
+            sure = np.asarray(curve["band"][0]) > 0  # the lag from which the whole band is above 0
+            macro("RawGapSig", num(curve["lags"][int(np.flatnonzero(~sure)[-1]) + 1], 0))
     macro("RawFirstLag", num(r["gaps"]["1000"]["H_loc"]["G - S"]["lags"][0], 0))
     ph = r["phase statistics"]
     lines = [r"\begin{tabular}{@{}l r r r@{}}", r"\toprule", r" & $\Sl$ & $\A$ & $\G$ \\", r"\midrule"]
@@ -268,6 +273,13 @@ def matched_tex(m):
             mac_value(f"MatDelta{TAG[q]}{tag}", d[k][q], DDIG[q], True)
             macro(f"MatDelta{TAG[q]}{tag}Years", bracket(d[k][q]["years"], DDIG[q], True))
         lines.append(f"{text} & & {cell(d[k][FITK], 3, True)} & {cell(d[k][HK], 3, True)} & {cell(d[k][HQ], 3, True)} \\\\")
+    lines.append(r"\midrule")
+    for k, (tag, text) in list(dn.items())[:2]:  # Delta H_loc at 1000 s on the long series: its window is not cut there
+        c = a["delta curves"][k]["long"]
+        i = c["lags"].index(1000)
+        long = {"value": c["value"][i], "band": [c["band"][0][i], c["band"][1][i]]}
+        mac_value(f"MatDeltaHKLong{tag}", long, 3, True)
+        lines.append(f"{text}, dataset {a['long T']['G']} & & & {cell(long, 3, True)} & \\\\")
     write("matched_table", lines + [r"\bottomrule", r"\end{tabular}"])
     for lv in LEVELS:  # the three levels, for the forest plot's text
         for k, (tag, _) in dn.items():
@@ -279,10 +291,6 @@ def matched_tex(m):
     for k, (tag, _) in dn.items():
         macro(f"MatZero{tag}", num(sum(zero_in(d[k][q]) for q in QUANT), 0))
     macro("MatNQuant", num(len(QUANT), 0))
-    for k, tag in (("G - S|G", "G"), ("A - S|A", "A")):  # Delta H_loc at 1000 s on the long series: its window is not cut there
-        c = a["delta curves"][k]["long"]
-        i = c["lags"].index(1000)
-        mac_value(f"MatDeltaHKLong{tag}", {"value": c["value"][i], "band": [c["band"][0][i], c["band"][1][i]]}, 3, True)
     rob = m["robustness"]
     macro("MatRobLines", num(len(rob), 0))
     for q in (HK, HQ):
@@ -347,8 +355,30 @@ def cell_d(v, d):
     return signed(v["value"], d) + ("" if zero_in(v) else r"$^\ast$")
 
 
+WINDOWS = {1260: "A", 1800: "B", 2400: "C", 3000: "D"}  # window length (s): tag of its macros
+
+
+def windows_tex(runs):
+    """Macros of g at H_loc(1000 s) and in time in climb, and the events, for each window length of WINDOWS
+    (`runs`: {window: prepost JSON})."""
+    for w, tag in WINDOWS.items():
+        g = runs[w]["differences"]["g"]
+        macro(f"PreWin{tag}Len", num(w, 0))
+        macro(f"PreWin{tag}Events", num(g["events (MSD)"], 0))
+        mac_value(f"PreWin{tag}HK", g[HK], 3, True)
+        mac_value(f"PreWin{tag}Climb", g["time in climb (%)"], 1, True)
+
+
+def phase_median(s):
+    """The duration (s, on the grid of the survival) at which the survival of a phase falls below 1/2."""
+    return s["grid"][int(np.argmax(np.asarray(s["value"]) < 0.5))]
+
+
 def prepost_tex(p, m):
     lag = p["lags"].index(1000)
+    st = p["curves"]["stages"]  # the lag from which g = ((start - pre) + (end - post)) / 2 of H_loc(tau) stays above 0
+    g = 0.5 * ((np.array(st["start"]["H_loc"]) - np.array(st["pre"]["H_loc"])) + (np.array(st["end"]["H_loc"]) - np.array(st["post"]["H_loc"])))
+    macro("PreGCross", num(p["lags"][int(np.flatnonzero(g <= 0)[-1]) + 1], 0))
     for stage, c in p["curves"]["stages"].items():
         if stage == "events":
             continue
@@ -497,6 +527,9 @@ if __name__ == "__main__":
         matched_tex(j["matched"])
         decomposition_tex(j["decomposition"])
         prepost_tex(j["prepost_2400"], j["matched"])
+        runs = {w: json.loads((opened / f"prepost_{w}.json").read_text()) for w in WINDOWS if (opened / f"prepost_{w}.json").exists()}
+        if len(runs) == len(WINDOWS):
+            windows_tex(runs)
         summary_tex(j["raw"], j["matched"], j["prepost_2400"])
     if (opened / "coverage.json").exists():
         coverage_tex(read(opened, "coverage"))
