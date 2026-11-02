@@ -142,14 +142,16 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 - **`mechanisms.py`**: phase at entry and exit, leader minus follower in groups of two, habitual
   leaders, hours (the last three serve the structure note too).
 
-**The four comparisons on open flights**, report `vs-solo/comparisons/group_vs_solo_comparisons.pdf @ 634cd88`
-(19 pages, 13 of them core). Raw: H_loc(1000 s) 0.915 (G), 0.897 (S), 0.894 (A), the bands of G and S apart for it and for
-the seven phase statistics. Same route, season, hour and wing (caliper month ±1, hour ±1, same class, 1763 pieces
-of G): Delta H_loc(1000 s) +0.008 [-0.003, +0.025], and the bands of all nine quantities include 0, so do
-those of the selection term. Decomposition: the route carries most of Delta(none) for time in climb, glide
-speed and height lost per km. Before and after: g = +0.023 [+0.018, +0.029] at H_loc(1000 s), inside the band of
-the same-route gap; time in search, climb rate, glide speed and height lost per km have opposite signs in the
-two comparisons.
+**The four comparisons on open flights**, report `vs-solo/comparisons/group_vs_solo_comparisons.pdf @ 2c6db88`
+(23 pages, 13 of them core). Bands of `twoway.py`, checked by `coverage.py`. Raw: H_loc(1000 s) G - S +0.018
+[+0.015, +0.021], negative at the short lags (-0.006 at 10 s); the gaps of the seven statistics exclude 0. Same
+route, season, hour and wing (caliper month ±1, hour ±1, same class, 1754 pieces of G): Delta H_loc(1000 s) +0.007
+[-0.000, +0.015], H_loc(1840 s) +0.018 [+0.004, +0.032], H_loc at 1000 s on the pieces of dataset 2250 +0.026
+[+0.015, +0.037]; more time in climb (+2.9), slower and steeper glides; the selection term includes 0 for 8 of
+9 quantities. Decomposition: the route carries most of Delta(none) for time in climb, glide speed, height lost
+per km and H_loc(1840 s). Before and after: g = +0.026 [+0.020, +0.032] at H_loc(1000 s), above the band of the
+same-route gap on dataset 1000 and close to it on dataset 2250; time in search, climb rate, glide speed and
+height lost per km have opposite signs in the two comparisons.
 
 ## What are the groups?
 

@@ -286,7 +286,8 @@ def matched_tex(m):
     rob = m["robustness"]
     macro("MatRobLines", num(len(rob), 0))
     for q in (HK, HQ):
-        v = [x["quotes"][q] for x in rob.values()]
+        v = [x["quotes"][q] for x in rob.values() if q in x["quotes"]]  # a line whose long series stops below the lag has none
+        macro(f"MatRobLines{TAG[q]}", num(len(v), 0))
         macro(f"MatRobLow{TAG[q]}", signed(min(x["value"] for x in v), 3))
         macro(f"MatRobHigh{TAG[q]}", signed(max(x["value"] for x in v), 3))
         macro(f"MatRobZero{TAG[q]}", num(sum(zero_in(x) for x in v), 0))
