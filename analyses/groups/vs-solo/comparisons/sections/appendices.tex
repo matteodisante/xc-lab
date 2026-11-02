@@ -16,12 +16,12 @@ $H=\tfrac12\,\mathrm{slope}$. $\Hloc(\tau)$ is the same fit over the lags $\lamb
 
 \emph{Example.} With the two lags of one and two steps and the MSD above, the slope of the log--log line is $\log_2(\ToyMsdTwo/\ToyMsdOne)$, so $H=\ToyH$.
 
-\emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to $1840\times10^{0.25}$~s; dataset 2250 stops at 2250~s, so the window is one-sided and uses the lags from \HqLowest{} to 2250~s only.
+\emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to $1840\times10^{0.25}$~s; dataset 2250 stops at 2250~s, so the window is cut on the upper side and uses the lags from \HqLowest{} to 2250~s only.
 Its band includes this truncation, since every draw is cut the same way. The window of $\Hk$ on dataset 1000 is cut in the same way at 1000~s.
 
 \section{Datasets and the \texorpdfstring{$\tau/0.8$}{tau/0.8} rule}\label{app:datasets}
 
-A piece of duration $\ell$ gives, at lag $\tau$, $(\ell-\tau)/10+1$ pairs of origins. Requiring $\ell\ge\tau/0.8$ gives origins over at least $0.2\,\ell$ of the piece, the same share of it at the longest lag the piece serves, whatever the piece.
+A piece of $n$ grid points lasts $\ell=10\,(n-1)$~s and gives, at lag $\tau$, $n-\tau/10=(\ell-\tau)/10+1$ pairs of origins. Requiring $\ell\ge\tau/0.8$ gives origins over at least $0.2\,\ell$ of the piece, the same share of it at the longest lag the piece serves, whatever the piece.
 A curve to the lag $T$ would mix populations if each lag kept the pieces long enough for itself (the long lags would rest on fewer, longer pieces). A dataset to $T$ keeps the pieces of at least $T/0.8$~s and measures them
 at every lag up to $T$, so the same pieces carry the whole curve. Datasets 1000 and 2250 have $T=\RawTauOne$ and \RawTauTwo~s (pieces of at least \RawShortestOne{} and \RawShortestTwo~s); the longest has $T=\RawTauLong$~s (\RawShortestLong~s),
 the largest lag of the grid at which each population keeps \DeclMinFlights{} flights. The windows of Section~\ref{sec:prepost} have \PreWindow~s, so $T$ is the largest lag of the grid up to $0.8\times\PreWindow$~s, \PreMaxLag~s.
@@ -48,8 +48,9 @@ $n/d$ is \ToyMeanShare\%; the estimator is $\sum n/T\,/\sum d/T=\ToyAvgFirst\%$.
 \section{Survival function and its weighted version}\label{app:survival}
 
 For the durations $x_j$ of the counted runs with weights $w_j$, $P(\tau_\text{phase}>t)=\sum_j w_j[x_j>t]\big/\sum_j w_j$, on a logarithmic grid of $t$. The duration is the number of fixes of the run (1~Hz), trimmed at the 0.0001 and 99.9999 percentiles; a search counts only if the next run of the flight is a climb.
+A run cut by the start or the end of its flight or of its phase segment counts as a complete run with the duration it has, so the survival is a little low at the longest durations; the edges of the units do not cut runs, since a run belongs whole to the unit that holds its middle.
 In Section~\ref{sec:raw} every run weighs 1. In Section~\ref{sec:matched} a run of a piece weighs 1 and a run of a control segment weighs $1/m_g$, with $m_g$ the number of controls of its piece $g$, so that the control side has the composition of the pieces.
-A draw of the bootstrap multiplies the weight of a run by the weight of its unit; the band is the pointwise 5--95\% of the draws.
+A draw of the bootstrap multiplies the weight of a run by the weight of its unit; the band holds at each $t$ separately (Appendix~\ref{app:bootstrap}).
 
 \emph{Example.} Durations \ToySurvDurations~s with weight 1: $P(\tau>20)=\ToySurvAtTwenty$ and $P(\tau>30)=\ToySurvAtThirty$.
 
@@ -66,7 +67,7 @@ or the same level (beginners A and B, experienced C, D and CCC). The calipers ar
 $\rho$ of 300 or 1000~m, cover 0.7 or 0.9.
 
 \emph{Cells without R (Section~\ref{sec:decomposition}).} The control is a window of a pool piece, with as many grid points as the piece of $\G$, on another date. With T: the pool piece is within the month caliper and the window is placed at random among the positions whose middle is within the hour caliper (local time across midnight); without T: at random.
-With W: the pool piece has the wing class of the piece. At most \DecK{} windows per piece, one per pool flight, drawn with a fixed seed. The same draws serve every cell.
+With W: the pool piece has the wing class of the piece. At most \DecK{} windows per piece, one per pool flight, drawn with a fixed seed for each piece and cell; the bootstrap draws are the same in every cell.
 
 \section{Reweighting to the piece}\label{app:reweight}
 
@@ -79,11 +80,54 @@ Piece $g$ of $\G$ has terms $a_g$ (its MSD sums, or its phase terms) and control
 over the pieces with positive weight and at least one control of positive weight. Each piece counts once on both sides, whatever the number of its controls: the control side has the composition of the pieces. The MSD at each lag is the mean $\text{group}/\text{total}$ (resp. control/total), the logarithm and the slopes are taken after the means,
 and the phase statistics are the ratios $\sum_g w_g\bar r_g/\sum_g w_g\bar q_g$ with $\bar r_g$, $\bar q_g$ the means of $r$ and $q$ over the controls of the piece.
 
-\section{Bootstrap of dependency blocks, and of pilots \texorpdfstring{$\times$}{x} blocks}\label{app:bootstrap}
+\emph{Example.} Two pieces with terms $a=\ToyRwA$ and $\ToyRwB$, the first with the controls $\ToyRwCa$ and $\ToyRwCb$, the second with the control $\ToyRwCc$, all weights 1. The group side is \ToyRwGroup; the control side is the mean over the pieces of the means of their controls, \ToyRwControl,
+against \ToyRwPooled{} for the plain mean of the three controls, in which the piece with two controls would weigh twice.
 
-\emph{Blocks.} Flights that share an episode of the grouping are not independent, and neither are flights of the same site on the same day. Both tie flights into a block (a solo flight alone is a block). A draw takes $B$ blocks with replacement ($B$ the number of blocks, \NBoot{} draws,
-fixed seed) and gives each unit the count of its block as its weight. Each statistic and curve is recomputed on every draw, with the same draws for every quantity of a section; the band is the 5th and 95th percentile of the draws.
-\emph{Pilots $\times$ blocks} (Sections~\ref{sec:matched} and \ref{sec:decomposition}). The pieces and the controls come from the same pilots, so two independent draws are made, of the pilots and of the blocks, and a flight weighs the product of the count of its pilot and the count of its block. A control flown by a pilot of the pieces is thus resampled with them.
+\section{The bands: a two-way bootstrap of pilots and blocks}\label{app:bootstrap}
+
+\emph{What is random.} The archive holds the flights of some pilots on some days; other seasons would bring other pilots and other days, and every number of this report would change. The flights are not independent of each other.
+Two flights of one pilot share the pilot: skill, wing, habits. Two flights of one block share the day and the group: a block joins, into connected components, the flights tied by an episode of the grouping or by a site-day (takeoffs within 3~km on the same day, chained).
+Pilots and blocks are crossed, since a pilot flies in many blocks and a block holds many pilots, so neither contains the other and neither alone describes the dependence.
+
+\emph{The variance.} To first order an estimate is a sum over the units of the data, $\hat\theta-\theta\approx\sum_k\psi_k$: for a mean over $n$ units $\psi_k=(y_k-\bar y)/n$, and a ratio, a slope or a difference of two populations reduce to this form after linearisation.
+Two terms are correlated when their units share a pilot or a block, so
+\[
+  V=\sum_{k,l}\psi_k\psi_l\,\mathbb 1[p_k=p_l\ \text{or}\ b_k=b_l]=V_P+V_B-V_C ,
+\]
+where $V_P$ sums the pairs with the same pilot, $V_B$ those with the same block, and $V_C$ those with the same pilot and the same block (the same cell), which $V_P$ and $V_B$ both count (Cameron, Gelbach and Miller, \emph{J.\ Bus.\ Econ.\ Stat.}\ 29, 238, 2011).
+Each term is the variance of a one-way cluster bootstrap. Drawing the pilots with replacement and giving every unit the count of its pilot as weight, the estimate varies over the draws with variance $V_P$; drawing the blocks gives $V_B$, drawing the cells gives $V_C$.
+
+\emph{In practice.} Three bootstraps of \NBoot{} draws each, with a fixed seed: of the pilots, of the blocks and of the cells. In a draw every unit, of the group or solo, weighs the count of its pilot (block, cell), and every statistic is recomputed as on the data: the weighted means first, then the ratios, the logarithms and the slopes.
+All the quantities of a section use the same draws, so a difference of two quantities has the band of its own draws. With $V_P$, $V_B$, $V_C$ the variances of an estimate over the three sets of draws,
+\[
+  V=\max\bigl(V_P+V_B-V_C,\;V_P,\;V_B\bigr),\qquad\text{band}=\hat\theta\pm1.645\sqrt V,
+\]
+a 90\% band. When the units of one pilot or of one block covary positively, the true $V$ is at least each one-way variance; the maximum keeps the estimate there when noise makes the sum smaller. A band that excludes 0 is a two-sided test at 10\%: among many quantities without an effect, one in ten excludes 0 by chance.
+The bands of the curves ($\MSD$, $\Hloc(\tau)$, survival) hold at each lag separately; the survival band is cut to $[0,1]$.
+
+\emph{Example.} Three flights with terms $\psi=+1$ (pilot 1, block a), $+1$ (pilot 1, block b) and $-2$ (pilot 2, block b). By pilot the sums are $2$ and $-2$, so $V_P=\ToyCgmP$; by block $1$ and $-1$, $V_B=\ToyCgmB$; by cell $1$, $1$, $-2$, $V_C=\ToyCgmC$. Then $V=\ToyCgmV$:
+the sum of $\psi_k\psi_l$ over the pairs that share a pilot or a block, the three squares (6), the pair of pilot 1 twice ($+2$) and the pair of block b twice ($-4$).
+
+\emph{Why not the product of the counts.} Weighting a unit by the count of its pilot times the count of its block (the pigeonhole bootstrap, Owen, \emph{Ann.\ Appl.\ Stat.}\ 1, 386, 2007; the bands of points 2 and 3 in an earlier version of this report) gives two units the weight covariance $\mathbb 1[p_k=p_l]+\mathbb 1[b_k=b_l]+\mathbb 1[p_k=p_l]\,\mathbb 1[b_k=b_l]$.
+Its variance is then $V_P+V_B+V_C$, the pairs of a cell counted three times instead of once; in the example, $\ToyCgmPig$ against $\ToyCgmV$. A cell is about one flight, since a pilot flies about once a day, so $V_C$ is about the variance of single flights, and the band of the product is too wide.
+
+\emph{The matched comparisons} (Sections~\ref{sec:matched} and \ref{sec:decomposition}). The pieces and their controls are flights of the same data and are drawn together: in a draw a piece enters with the controls drawn with it, each with its count as weight (Appendix~\ref{app:reweight}), and it leaves the draw when none of them is drawn, as it would leave a new sample matched by the same rules.
+Control flights are shared: \MatNGPoolFlights{} control flights serve the \MatNGPieces{} pieces, and $\sum_sK_s^2/\sum_sK_s=\CovReuse$, with $K_s=\sum_{g\ni s}1/m_g$ the weight a control flight $s$ carries over the pieces $g$ it serves. A control flight that is high or low moves every piece it serves at once.
+Drawing the control flights keeps this; carrying each piece with fixed controls would treat the pieces that share one as independent and give too narrow a band (Abadie and Imbens, \emph{Econometrica} 76, 1537, 2008).
+
+\emph{The check by simulation.} The script \texttt{coverage.py} keeps the designs of points 1, 2 and 4 (the same flights, pilots, blocks, pieces, controls and events) and replaces the value of every unit by $y=a_\text{pilot}+b_\text{block}+c_\text{flight}+e_\text{unit}$, independent normal effects, with no group effect. It does so under five mixes of the four variances (Table~\ref{tab:coverage}), \CovReplicates{} times each, with \CovDraws{} draws per bootstrap.
+The standard deviation of the estimate over the replicates is the one the band must reproduce, and a 90\% band must hold 0 in 90\% of the replicates. The two-way band holds 0 in \CovNewMin--\CovNewMax\% of them, with a standard deviation \CovNewSdMin{} to \CovNewSdMax{} times the true one; its largest value, \CovNewSdMax, is in point 2 when nothing ties the segments of one control flight, a case where the band is wide, which is the safe side.
+The bands used before are off: in point 1, blocks of episodes only hold 0 in \CovOldRawMin\% of the replicates when pilots matter; in point 2, the product of the counts holds it in \CovOldMatchedMin--100\%, with a standard deviation \CovOldMatchedSdMin{} to \CovOldMatchedSdMax{} times the true one.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/coverage_table}
+\caption{Share of the replicates (\%) whose 90\% band holds 0, and in parentheses the mean standard deviation of the band over the true one, for the two-way band of this report and the band used before in each point: blocks of episodes only (point 1), the product of the counts of pilots and blocks (point 2), blocks of episodes and site-days (point 4); all three before used the 5--95\% of the draws.
+Variances of the pilot, block, flight and unit effects in the first column.}
+\label{tab:coverage}
+\end{table}
+
+\emph{What the band leaves out.} The rules of the matching ($\rho$, cover, calipers), which the robustness lines of Section~\ref{sec:matched} vary instead; the random windows of the cells without R (Section~\ref{sec:decomposition}), drawn once; and the dependence on one year, which Appendix~\ref{app:years} shows.
 
 \section{Leaving one year out}\label{app:years}
 
@@ -121,25 +165,45 @@ Each of $D_\text{in}$, $D_\text{out}$, $g$ and $d_w$ is computed on the events t
 
 \begin{figure}[h]
 \centering
+\pair{open_min0.1/raw_1000_msd.pdf}{open_min0.1/raw_1000_hloc.pdf}{0.49}\\[4pt]
 \pair{open_min0.1/raw_2250_msd.pdf}{open_min0.1/raw_2250_hloc.pdf}{0.49}\\[4pt]
 \pair{open_min0.1/raw_longest_msd.pdf}{open_min0.1/raw_longest_hloc.pdf}{0.49}
-\caption{Raw, open flights, datasets 2250 (top: $\Sl$ \RawFlightsTwoS{} flights, $\A$ \RawFlightsTwoA, $\G$ \RawFlightsTwoG) and longest (bottom: \RawFlightsLongS, \RawFlightsLongA{} and \RawFlightsLongG{} flights): $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over flights.}
+\caption{Raw, open flights, datasets 1000 (top: $\Sl$ \RawFlightsOneS{} flights, $\A$ \RawFlightsOneA, $\G$ \RawFlightsOneG), 2250 (middle: \RawFlightsTwoS, \RawFlightsTwoA{} and \RawFlightsTwoG) and longest (bottom: \RawFlightsLongS, \RawFlightsLongA{} and \RawFlightsLongG{} flights): $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over flights, fitted $H$ in the legend, 90\% bands.}
 \label{fig:raw-more}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\pair{open_min0.1/matched_2250_msd.pdf}{open_min0.1/matched_2250_hloc.pdf}{0.49}\\[4pt]
-\pair{open_min0.1/decomposition_2250_msd.pdf}{open_min0.1/decomposition_2250_hloc.pdf}{0.49}
-\caption{Top: same route, season, hour and wing, dataset 2250 (pieces of at least \RawShortestTwo~s, \MatNGPiecesOfTheLongSeries{} pieces of $\G$). Bottom: $\G$ and the controls of the 8 cells, dataset 2250 (\DecPiecesQ{} pieces). $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over pieces.}
+\includegraphics[width=\textwidth]{open_min0.1/raw_2250_delta.pdf}\\[2pt]
+\includegraphics[width=\textwidth]{open_min0.1/raw_longest_delta.pdf}
+\caption{Raw, datasets 2250 (top) and longest (bottom): $\Hloc(\tau)$ of $\Sl$, $\A$ and $\G$, and the differences at every lag with 90\% bands, as Figure~\ref{fig:raw-delta}.}
+\label{fig:raw-delta-more}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\pair{open_min0.1/matched_1000_msd.pdf}{open_min0.1/matched_1000_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/matched_2250_msd.pdf}{open_min0.1/matched_2250_hloc.pdf}{0.49}
+\caption{Same route, season, hour and wing, datasets 1000 (top) and 2250 (bottom, \MatNGPiecesOfTheLongSeries{} pieces of $\G$); $\G$, $\SG$, $\A$, $\SAA$ with the pieces or the controls in the legend. $\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over units reweighted to the piece, fitted $H$ in the legend, 90\% bands.}
 \label{fig:matched-more}
 \end{figure}
 
 \begin{figure}[h]
 \centering
+\includegraphics[width=\textwidth]{open_min0.1/decomposition_1000_delta.pdf}\\[2pt]
+\pair{open_min0.1/decomposition_1000_msd.pdf}{open_min0.1/decomposition_1000_hloc.pdf}{0.49}\\[4pt]
+\pair{open_min0.1/decomposition_2250_msd.pdf}{open_min0.1/decomposition_2250_hloc.pdf}{0.49}
+\caption{Decomposition. Top: dataset 1000 (\DecPiecesK{} pieces), as Figure~\ref{fig:decomposition-msd}. Middle and bottom: $\G$ and the controls of the 8 cells, datasets 1000 and 2250 (\DecPiecesQ{} pieces), the number of controls in the legend, the darker the more conditions;
+$\MSD(\tau)$ and $\Hloc(\tau)$, ensemble mean over pieces, fitted $H$ in the legend, 90\% bands.}
+\label{fig:decomposition-more}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\pair{open_min0.1/prepost_2400_stages_msd.pdf}{open_min0.1/prepost_2400_stages_hloc.pdf}{0.49}\\[4pt]
 \pair{open_min0.1/prepost_2400_controls_A_msd.pdf}{open_min0.1/prepost_2400_controls_A_hloc.pdf}{0.49}\\[4pt]
 \pair{open_min0.1/prepost_2400_controls_S_msd.pdf}{open_min0.1/prepost_2400_controls_S_hloc.pdf}{0.49}
-\caption{The control pairs of Section~\ref{sec:prepost}: two consecutive windows of \PreWindow~s in the solo time of the flights of $\A$ (top, \PreEventsMSDCA{} events) and in solo flights (bottom, \PreEventsMSDCS{} events); $\MSD(\tau)$ and $\Hloc(\tau)$.}
+\caption{Section~\ref{sec:prepost}: the four windows of the \PreEvents{} events with the four windows (top), and the control pairs, two consecutive windows of \PreWindow~s in the solo time of the flights of $\A$ (middle, \PreEventsMSDCA{} events) and in solo flights (bottom, \PreEventsMSDCS{} events); $\MSD(\tau)$ and $\Hloc(\tau)$ over every lag (the window of $\Hloc$ is cut only at the last lag), fitted $H$ in the legend, 90\% bands.}
 \label{fig:prepost-controls}
 \end{figure}
 
@@ -147,7 +211,7 @@ Each of $D_\text{in}$, $D_\text{out}$, $g$ and $d_w$ is computed on the events t
 \centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \input{../generated/comparisons/decomposition_controls_table}
-\caption{Decomposition, level all, on \MatNGPieces{} pieces of $\G$ (\MatNGPiecesWithPhases{} for the phase statistics): value of $\G$ and of the controls of each cell; the cells are named by the conditions they hold ($\emptyset$ none, R route, T season and hour, W wing).
+\caption{Decomposition, level all, on \DecPiecesK{} pieces of $\G$ (\DecPiecesQ{} for $\Hq$, \DecPiecesPhase{} for the phase statistics): value of $\G$ and of the controls of each cell; the cells are named by the conditions they hold ($\emptyset$ none, R route, T season and hour, W wing).
 Dataset 1000 for $\Hk$ and the statistics, 2250 for $\Hq$; average first, ratio after, unit the piece.}
 \label{tab:decomposition-controls}
 \end{table}
@@ -156,6 +220,6 @@ Dataset 1000 for $\Hk$ and the statistics, 2250 for $\Hq$; average first, ratio 
 \centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \input{../generated/comparisons/decomposition_deltas_table}
-\caption{Decomposition, level all: $\Delta(C)=\G-{}$controls of the cell $C$ for the 8 cells (same pieces and units as Table~\ref{tab:decomposition-controls}); $^\ast$: the 5--95\% band excludes 0.}
+\caption{Decomposition, level all: $\Delta(C)=\G-{}$controls of the cell $C$ for the 8 cells (same pieces and units as Table~\ref{tab:decomposition-controls}); $^\ast$: the 90\% band excludes 0.}
 \label{tab:decomposition-deltas}
 \end{table}

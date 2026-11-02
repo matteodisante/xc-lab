@@ -42,8 +42,8 @@ all its pieces in that population,
 with $t$ and $t+\tau$ in the same piece. The ensemble $\MSD(\tau)$ is its mean over the flights, one weight
 per flight. $\Hloc(\tau)$ is half the slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$
 decades of $\tau$: 1 for a straight line, $\tfrac12$ for a random walk. $H$ is half the slope over all the
-lags of a curve, from 10~s to its end. Bands are 5--95\% of \NBoot{} bootstrap draws
-that resample the dependency blocks of the grouping (Appendix~\ref{app:bootstrap}).
+lags of a curve, from 10~s to its end. Bands are 90\% bands of a two-way bootstrap of pilots and blocks
+(\NBoot{} draws of each, Appendix~\ref{app:bootstrap}).
 
 \paragraph{Datasets.} A lag $\tau$ needs pieces of at least $\tau/0.8$~s, so that the origins of every piece
 cover the lag in the same share of it. A dataset to the lag $T$ keeps, in each population, its pieces of at
@@ -96,5 +96,5 @@ This is the estimator of the MSD, one weight per unit. The ratio of sums, $\sum 
 
 \paragraph{Survival of the phase durations.} For climbs, searches that end in a climb and glides, the survival function
 $P(\tau_\text{phase}>\tau)$ of the number of fixes of a run (1~Hz, so seconds), with the duration trimmed as in the
-note on phases. Every run weighs 1; its band is pointwise 5--95\% of the draws of the unit's bootstrap
+note on phases. Every run weighs 1; its band holds at each $t$ (Appendix~\ref{app:bootstrap})
 (Appendix~\ref{app:survival}).
