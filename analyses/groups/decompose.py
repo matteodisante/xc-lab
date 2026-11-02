@@ -65,9 +65,9 @@ class Units:
     """Rows to compare: population, stratum, block, and the values (one column per lag or per
     statistic) with, for ratios, their denominators."""
 
-    def __init__(self, population, stratum, block, values, den=None):
+    def __init__(self, population, stratum, block, values, den=None, flight=None):
         self.population, self.stratum, self.block = population, stratum, block
-        self.values, self.den = values, den
+        self.values, self.den, self.flight = values, den, flight
 
 
 def local_hour(utc):
@@ -95,12 +95,12 @@ def msd_units(p, key, info, block):
                           **{k: v for k, v in p.items() if np.ndim(v) == 1 and k not in ("flight", "population")}})
     table["stratum"] = strata(table, key, info)
     code, keys = pd.factorize(pd.MultiIndex.from_frame(table[["flight", "stratum", "population"]]))
-    sums, origins = np.zeros((len(keys), len(LAGS))), np.zeros((len(keys), len(LAGS)))
+    sums, origins = (np.zeros((len(keys), p["sums"].shape[1])) for _ in range(2))
     np.add.at(sums, code, p["sums"])
     np.add.at(origins, code, p["origins"])
     keys = pd.DataFrame(keys.tolist(), columns=["flight", "stratum", "population"])
     return Units(keys["population"].to_numpy(), keys["stratum"].to_numpy(), block.reindex(keys["flight"]).to_numpy(),
-                 sums / origins)
+                 sums / origins, flight=keys["flight"].to_numpy())
 
 
 def ratio_units(table, key, info, block, stats):
@@ -245,9 +245,9 @@ def flight_table(flights, summary):
     return info, pd.Series(joined, index=flights["flight"].to_numpy()), int(joined.max()) + 1
 
 
-def block_counts(n_blocks, rng):
-    """N_BOOT draws of the blocks with replacement: how many times each block is drawn."""
-    return rng.multinomial(n_blocks, np.full(n_blocks, 1 / n_blocks), size=N_BOOT).astype(np.int32)
+def block_counts(n_blocks, rng, n_boot=N_BOOT):
+    """`n_boot` draws of the blocks with replacement: how many times each block is drawn."""
+    return rng.multinomial(n_blocks, np.full(n_blocks, 1 / n_blocks), size=n_boot).astype(np.int32)
 
 
 if __name__ == "__main__":
