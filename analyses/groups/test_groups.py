@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import blocks  # noqa: E402
 import budget  # noqa: E402
 import decompose  # noqa: E402
+import decomposition  # noqa: E402
 import describe  # noqa: E402
 import longlags  # noqa: E402
 import matched  # noqa: E402
@@ -1190,3 +1191,84 @@ def test_matched_long_series_stops_at_the_largest_lag_that_keeps_enough_pieces(m
     assert matched.long_lag(t, line, "all") == 1500  # at 1500 s (pieces and segments of 1875 s) pieces 0 and 2 count
     t["dur_piece"] = 1000  # no piece reaches the 1250 s the lag of 1000 s needs
     assert matched.long_lag(t, line, "all") is None
+
+
+def test_decomposition_shapley_identity_on_random_deltas():
+    rng = np.random.default_rng(1)
+    delta = {c: rng.normal(size=(7, 5)) for c in range(8)}
+    phi = decomposition.shapley(delta)
+    total = delta[7] + phi["R"] + phi["T"] + phi["W"]
+    assert np.allclose(total, delta[0], rtol=0, atol=1e-12)
+    delta[3][0, 0] = np.nan  # a NaN stays NaN on the two sides, the identity still passes
+    delta[0][0, 0] = np.nan
+    decomposition.shapley(delta)
+
+
+def test_decomposition_shapley_of_additive_deltas_gives_the_parts_and_the_rest():
+    a = {"R": 3.0, "T": -1.0, "W": 0.5}
+    g = 0.7
+    delta = {c: g + sum(v for k, (n, b) in zip("RTW", decomposition.FACTORS) for v in [a[n]] if not c & b) for c in range(8)}
+    phi = decomposition.shapley(delta)
+    assert {k: float(v) for k, v in phi.items()} == pytest.approx(a)
+    assert delta[7] == pytest.approx(g)
+    assert decomposition.shares(delta[0], {"R": phi["R"]})["R"] == pytest.approx(3.0 / (g + 2.5))
+    assert decomposition.shares(1e-12, {"R": 1.0}) == {"R": None}
+
+
+def _pool(starts, lengths, dates, labels):
+    n = np.array(lengths)
+    return decomposition.Pool(np.array(_utc(*starts)), n, np.array(dates), np.array(labels), np.arange(len(n)))
+
+
+def test_decomposition_windows_sit_inside_their_piece_near_the_hour_and_are_as_long():
+    # winter (UTC+1): the piece's middle is 23:40 local; pool pieces start at 09:00, 23:00 and 00:00 local
+    mid = _utc("2024-01-10 22:40")[0]
+    starts = [f"2024-01-{d:02d} {h}:00" for d in range(11, 31) for h in ("08", "22", "23")]  # local 09:00, 23:00, 00:00
+    pool = _pool(starts, [600] * len(starts), [f"d{i}" for i in range(len(starts))], ["B"] * len(starts))
+    n = 100
+    rng = np.random.default_rng(0)
+    rows, s = decomposition.windows_of(pool, n, "piece-day", "B", mid, decomposition.T | decomposition.W, rng, (1, 1), k=50)
+    assert 0 < len(rows) <= 50 and len(set(pool.flight[rows])) == len(rows)
+    assert (s >= 0).all() and (s + n <= pool.n[rows]).all()  # the window of n points lies inside the pool piece
+    mids = pool.utc[rows] + (2 * s + n - 1) * tamsd.GRID_S / 2
+    assert (matched.hour_gap(mids, np.full(len(mids), mid)) <= 1 + 1e-9).all()
+    assert (matched.month_gap(mids, np.full(len(mids), mid)) <= 1).all()
+
+
+def test_decomposition_windows_cross_midnight_and_obey_date_wing_and_length():
+    mid = _utc("2024-01-10 23:15")[0]  # 00:15 local on the 11th
+    pool = _pool(["2024-01-19 22:00", "2024-01-20 12:00", "2024-01-21 22:00", "2024-01-22 22:00"], [800, 800, 40, 800],
+                 ["a", "b", "c", "a"], ["B", "B", "B", "A"])
+    rows, s = decomposition.windows_of(pool, 100, "a", "B", mid, decomposition.T | decomposition.W, np.random.default_rng(3), (1, 1))
+    assert rows.tolist() == []  # the only candidate on another date and long enough with the hour is piece 0, date a
+    rows, s = decomposition.windows_of(pool, 100, "z", "B", mid, decomposition.T | decomposition.W, np.random.default_rng(3), (1, 1))
+    assert rows.tolist() == [0]  # 1: noon never within an hour; 2: too short; 3: other wing
+    assert (matched.hour_gap(pool.utc[rows] + (2 * s + 99) * tamsd.GRID_S / 2, np.full(1, mid)) <= 1 + 1e-9).all()
+    rows, s = decomposition.windows_of(pool, 100, "z", "B", mid, 0, np.random.default_rng(3), (1, 1))
+    assert sorted(rows.tolist()) == [0, 1, 3] and (s + 100 <= pool.n[rows]).all()  # no condition: any date, wing, hour
+
+
+def test_decomposition_the_cells_with_route_are_nested_filters_of_the_match_table():
+    t = pd.DataFrame({"side": "G", "piece": [0, 0, 1, 2, 3], "solo": range(5), "cover": [0.9, 0.9, 0.9, 0.9, 0.9],
+                      "dmonth": [0, 3, 1, 1, 0], "dhour": [0.5, 0.5, 2.0, 1.0, 0.2],
+                      "class_piece": ["B", "B", "A", "C", "B"], "class_solo": ["B", "B", "A", "D", "B"],
+                      "dur_piece": 2000, "dur_solo": [2000, 2000, 2000, 2000, 1000], "isolated": False})
+    cal, win = (1, 1), t.iloc[:0]
+    rows = lambda c: decomposition.cell_rows(t, win, c, "1000", cal, "class")["solo"].tolist()
+    assert rows(decomposition.R) == [0, 1, 2, 3]
+    assert rows(decomposition.R | decomposition.T) == [0, 3]
+    assert rows(decomposition.R | decomposition.W) == [0, 1, 2]
+    full = rows(decomposition.FULL)
+    assert full == [0] == matched.select(t, "1000", "month1_hour1_class")["solo"].tolist()
+
+
+def test_decomposition_every_cell_of_a_quantity_has_the_same_pieces(monkeypatch):
+    # decompose() hands the same piece set to every cell: the rows come from pick(cell, set) restricted to the set
+    calls = []
+    monkeypatch.setattr(matched, "msd_series", lambda ctx, M, rows, T, years: calls.append(sorted(rows["piece"].unique())) or {"pieces": 0})
+    monkeypatch.setattr(matched, "phase_series", lambda ctx, M, rows, years: {"pieces": 0})
+    kept = {"1000": np.array([1, 2]), "2250": np.array([2]), "phase": np.array([1])}
+    frame = pd.DataFrame({"piece": [0, 1, 1, 2, 3], "solo": range(5)})
+    ctx = type("C", (), {"tracks": {"flight": np.arange(5)}})()
+    decomposition.decompose(ctx, None, kept, lambda cell, name: frame[frame["piece"].isin(kept[name])])
+    assert all(c in ([1, 2], [2]) for c in calls) and len(calls) == 16
