@@ -1034,3 +1034,18 @@ def test_phase_differences_by_window_recover_the_effect_and_the_drift_with_the_n
 
 def test_the_window_lags_stop_at_eight_tenths_of_the_window():
     assert prepost.window_lags(2400).max() == 1840 and prepost.window_lags(1250).max() == 1000
+
+
+def test_prepost_open_numbers_of_the_report():
+    path = tamsd.OUT / "open_min0.1" / "prepost_2400.json"
+    if not path.exists():
+        pytest.skip("prepost.py --open --window 2400 has not run")
+    r = json.loads(path.read_text())
+    d, k = r["differences"], "H_loc(1000 s)"
+    assert r["lags"][-1] == 1840 and r["n_boot"] == 1000
+    assert r["curves"]["stages"]["events"] == 1595 and d["g"]["events (MSD)"] == 1595
+    assert (d["D_in"]["events (MSD)"], d["D_out"]["events (MSD)"], d["post - pre"]["events (MSD)"]) == (3197, 6076, 1818)
+    assert [round(d[n][k]["value"], 3) for n in ("D_in", "D_out", "post - pre", "g", "d w")] == [0.018, 0.021, 0.001, 0.023, -0.002]
+    four_in, four_out = (d[f"{x} (four-window events)"] for x in ("D_in", "D_out"))
+    assert d["g"][k]["value"] == pytest.approx((four_in[k]["value"] + four_out[k]["value"]) / 2, abs=1e-12)
+    assert d["d w"][k]["value"] == pytest.approx((four_in[k]["value"] - four_out[k]["value"]) / 2, abs=1e-12)
