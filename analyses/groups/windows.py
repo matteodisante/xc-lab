@@ -13,6 +13,8 @@ import prepost
 import tamsd
 from tamsd import OUT, save
 
+COLOR = {"D_in": "#d98200", "D_out": "#7a3b9e", "g": "#111111"}  # distinct, unlike the shades of prepost.FOREST
+
 PANELS = (("H_loc(1000 s)", ("D_in", "D_out", "g"), r"$\Delta H_{\rm loc}(1000$ s$)$"),
           ("time in climb (%)", ("g",), "$\\Delta$ time in climb (points)"))
 
@@ -36,7 +38,7 @@ def draw(windows, path):
             lo, hi = zip(*[v["band"] for v in q])
             val = [v["value"] for v in q]
             ax.errorbar(xs, val, yerr=[[v - a for v, a in zip(val, lo)], [b - v for v, b in zip(val, hi)]], fmt="o-", ms=4,
-                        lw=1, elinewidth=1.6, capsize=2, color=prepost.FOREST[effect], label=effect.replace("_", "$_{\\rm ") + ("}$" if "_" in effect else ""))
+                        lw=1, elinewidth=1.6, capsize=2, color=COLOR[effect], label=effect.replace("_", "$_{\\rm ") + ("}$" if "_" in effect else ""))
         ax.axhline(0, color="#999999", lw=0.8, ls=":")
         ax.set(xscale="log", xlabel="window (s)", ylabel=label, xticks=list(windows), xticklabels=[str(w) for w in windows])
         ax.minorticks_off()

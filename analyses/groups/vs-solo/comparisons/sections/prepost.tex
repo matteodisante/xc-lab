@@ -48,7 +48,7 @@ season, hour and wing, level all), at the same lag, with 90\% bands; $g-\Delta$ 
 on the longer pieces of dataset 2760, $\Delta(\G-\SG)$ at 1000~s is \MatDeltaHKLongG{} \MatDeltaHKLongGBand, close to $g$. Time in climb, searches ending in a climb and climbs per hour have the same sign in the two
 comparisons (\PreGClimb{} against \MatDeltaClimbG, \PreGFound{} against \MatDeltaFoundG, \PreGCph{} against \MatDeltaCphG). Time in search (\PreGSearch{} against \MatDeltaSearchG), climb rate (\PreGRate{} against \MatDeltaRateG),
 glide speed (\PreGGlide{} against \MatDeltaGlideG) and height lost per km of glide (\PreGSink{} against \MatDeltaSinkG) have opposite signs (Table~\ref{tab:prepost}); for the climb rate, the glide speed and the height lost both bands exclude 0.
-Inside its group a pilot glides faster and flatter than just before and after, while group time glides slower and steeper than solo flights on the same route.
+Inside its group a pilot glides faster and flatter than just before and after, while group time glides slower and steeper than solo flights on the same route, a deficit the same pilots alone show too (glide speed \MatDeltaGlideA{} km/h for $\A-\SAA$ against \MatDeltaGlideG{} for $\G-\SG$). Net of selection the glide speed (\MatDeltaGlideD{} \MatDeltaGlideDBand), the climb rate (\MatDeltaRateD) and the time in search (\MatDeltaSearchD) agree in sign with $g$, the height lost (\MatDeltaSinkD) does not; their bands include 0.
 
 \begin{figure}
 \centering
@@ -57,7 +57,7 @@ Inside its group a pilot glides faster and flatter than just before and after, w
 \label{fig:prepost-windows}
 \end{figure}
 
-\paragraph{The length of the window.} $g$ of $\Hk$ is \PreWinBHK{} \PreWinBHKBand{} at \PreWinBLen~s, \PreWinCHK{} \PreWinCHKBand{} at \PreWinCLen~s and \PreWinDHK{} \PreWinDHKBand{} at \PreWinDLen~s (Figure~\ref{fig:prepost-windows}). At \PreWinALen~s it is \PreWinAHK{} \PreWinAHKBand: the lag 1000~s is at the limit of the $\tau/0.8$ rule, and only 260~s of the window can start a displacement of 1000~s. $g$ of the time in climb stays between \PreWinBClimb{} and \PreWinAClimb{} points at every length.
+\paragraph{The length of the window.} $g$ of $\Hk$ is \PreWinBHK{} \PreWinBHKBand{} at \PreWinBLen~s, \PreWinCHK{} \PreWinCHKBand{} at \PreWinCLen~s and \PreWinDHK{} \PreWinDHKBand{} at \PreWinDLen~s (Figure~\ref{fig:prepost-windows}). At \PreWinALen~s it is \PreWinAHK{} \PreWinAHKBand: the lag 1000~s is at the limit of the $\tau/0.8$ rule, and only 260~s of the window can start a displacement of 1000~s, a possible reason that we do not test. At the longest lag of Figure~\ref{fig:prepost-stages} the band of $g$ on the windows of \PreWindow~s reaches 0, as that lag is at the limit of the rule. $g$ of the time in climb stays between \PreWinBClimb{} and \PreWinAClimb{} points at every length.
 
 \paragraph{What we keep.} The same flight is straighter inside its group than just before and just after it ($D_\text{in}$ \PreInHK, $D_\text{out}$ \PreOutHK) while the control pairs stay near 0, so $g$ is \PreGHK{} \PreGHKBand, with $d_w$ \PreDwHK{} \PreDwHKBand. $g$ is close to the
 same-route gap at 1000~s on the longer pieces of dataset 2760 and above that on dataset 1000. The two comparisons agree in sign for time in climb, searches ending in a climb and climbs per hour, and disagree for time in search, climb rate, glide speed and height lost per km of glide.

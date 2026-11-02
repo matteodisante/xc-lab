@@ -154,6 +154,12 @@ def mac_value(name, v, d, sign=False):
 
 
 def raw_tex(r):
+    curves = {ds: {p: v["curve"] for p, v in r["datasets"][ds]["populations"].items()} for ds in ("1000", "2760", "longest")}
+    span = lambda ds: [max(c["H_loc"]) - min(c["H_loc"]) for c in curves[ds].values()]  # how much H_loc varies along a curve
+    macro("RawHlocRangeLow", num(min(span("1000") + span("2760")), 3))
+    macro("RawHlocRangeHigh", num(max(span("1000") + span("2760")), 3))
+    macro("RawHlocRangeLong", num(max(span("longest")), 3))
+    macro("RawHMeanGap", num(max(abs(c["H"] - np.mean(c["H_loc"])) for d in curves.values() for c in d.values()), 3))
     for tag in ("S", "G"):
         macro(f"RawGlideMedian{tag}", num(phase_median(r["survival"][tag]["transition"]), 0))
         macro(f"RawClimbMedian{tag}", num(phase_median(r["survival"][tag]["climb"]), 0))

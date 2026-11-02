@@ -42,7 +42,7 @@ all its pieces in that population,
 with $t$ and $t+\tau$ in the same piece. The ensemble $\MSD(\tau)$ is its mean over the flights, one weight
 per flight. $\Hloc(\tau)$ is half the slope of $\log\MSD$ against $\log\tau$ over the lags within $\pm0.25$
 decades of $\tau$: 1 for a straight line, $\tfrac12$ for a random walk. $H$ is half the slope over all the
-lags of a curve, from 10~s to its end. Bands are 90\% bands of a two-way bootstrap of pilots and blocks
+lags of a curve, from 10~s to its end; it is a mean of $\Hloc$ over the lags and depends on them (Appendix~\ref{app:hloc}). Bands are 90\% bands of a two-way bootstrap of pilots and blocks
 (\NBoot{} draws of each, Appendix~\ref{app:bootstrap}).
 
 \paragraph{Datasets.} A lag $\tau$ needs pieces of at least $\tau/0.8$~s, so that the origins of every piece

@@ -14,6 +14,9 @@ $\MSD(\tau)=\frac1F\sum_f\overline{\delta^2_f}(\tau)$. The sums are computed wit
 $H$ is half the slope of $\log_{10}\MSD$ against $\log_{10}\tau$, least squares with one weight per lag, over all the lags of a curve (10~s to the end of its dataset):
 $H=\tfrac12\,\mathrm{slope}$. $\Hloc(\tau)$ is the same fit over the lags $\lambda$ with $|\log_{10}\lambda-\log_{10}\tau|\le0.25$; when fewer than 3 lags lie there, the 3 nearest. A straight line gives 1, a random walk $\tfrac12$.
 
+\emph{$H$ is a mean of $\Hloc$, not an exponent.} $\Hloc$ is not constant: along a curve it varies by \RawHlocRangeLow{} to \RawHlocRangeHigh{} on datasets 1000 and 2760, and by up to \RawHlocRangeLong{} on the longest. The fitted $H$ is then a summary: it lies within \RawHMeanGap{} of the mean of $\Hloc$ over the lags of its curve, and its value depends on the lags used. The same-route gap of $H$ is \MatDeltaFitKG{} to 1000~s and \MatDeltaFitTG{} to 2760~s: it mixes the small deficit at the short lags and the gain at the long ones.
+The variation follows the shape of the flights, climbs and glides that alternate and, at long lags, folding; we do not test it.
+
 \emph{Example.} With the two lags of one and two steps and the MSD above, the slope of the log--log line is $\log_2(\ToyMsdTwo/\ToyMsdOne)$, so $H=\ToyH$.
 
 \emph{The window cut at the edge.} $\Hq$ uses the lags within $0.25$ decades of 1840~s, from \HqLowest{} to \HqHighest~s; dataset 2760 stops at 2760~s, so the window is cut on the upper side and uses the lags from \HqLowest{} to 2760~s only.

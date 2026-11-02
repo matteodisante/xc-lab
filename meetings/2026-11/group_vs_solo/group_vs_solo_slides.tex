@@ -120,10 +120,10 @@
 %% ------------------------------------------------------------------ main
 
 \begin{frame}{Three questions}
-\begin{itemize}\setlength{\itemsep}{1.1em}
-  \item[\textcolor{steel}{\Large\textbf{1}}] \large Do flights in a group move differently from solo flights?
-  \item[\textcolor{steel}{\Large\textbf{2}}] \large Is it the group, or the route, season, hour and wing that go with it?
-  \item[\textcolor{steel}{\Large\textbf{3}}] \large Does the same flight change when it enters a group, and when it leaves?
+\begin{itemize}\setlength{\itemsep}{1.8em}\Large
+  \item[\textcolor{steel}{\Huge\textbf{1}}] Do flights in a group move differently from solo flights?
+  \item[\textcolor{steel}{\Huge\textbf{2}}] Is it the group, or the route, season, hour and wing that go with it?
+  \item[\textcolor{steel}{\Huge\textbf{3}}] Does the same flight change when it enters a group, and when it leaves?
 \end{itemize}
 \takeaway{One thread: how straight a flight is, and how it climbs and glides.}
 \source{FFVL archive, paragliders.}
@@ -140,9 +140,9 @@
 \end{frame}
 
 \begin{frame}{Which flights: the open ones}
-\fig[0.48\textheight]{open_declared/opening.pdf}
-\defn{Opening}{distance takeoff to landing over the path flown: 1 straight, $\approx0$ back at the takeoff. We keep opening $\ge0.1$: 55\,879 of the 66\,845 declared-open flights (84\%).}
-\takeaway{The longer the lag, the more folded the flights (median opening 0.32, then 0.23): that is why solo MSD bends at long lags.}
+\fig[0.40\textheight]{open_declared/opening.pdf}
+\defn{Opening}{distance takeoff to landing over the path flown: 1 straight, $\approx0$ back at the takeoff. We keep opening $\ge0.1$ (55\,879 of 66\,845 declared-open flights, 84\%): the lowest threshold that drops flights coming back near the takeoff and keeps similar shares at low and high takeoffs (right).}
+\takeaway{The longer the time scale, the more folded the flights (median opening 0.32, then 0.23): solo flights look less straight on long scales.}
 \end{frame}
 
 %% Question 1
@@ -150,13 +150,13 @@
 \partframe{Question 1}{Do flights in a group move differently from solo flights?}
 
 \begin{frame}{Raw: group time is straighter at the long lags}
-\fig[0.44\textheight]{open_min0.1/raw_1000_delta.pdf}
+\fig[0.40\textheight]{open_min0.1/raw_1000_delta.pdf}
 \begin{itemize}
   \item $\Hloc(\tau)$: how straight the flight is at the time lag $\tau$; 1 for a straight line, $\tfrac12$ for a random walk.
   \item $\Hloc(1000~\mathrm{s})$: $\G$ 0.915, $\Sl$ 0.897, $\A$ 0.894.
   \item $\G-\Sl=+0.018\ [+0.015,+0.021]$; $-0.006$ at 10~s, positive from 170~s.
 \end{itemize}
-\source{Open flights, pieces of at least 1250~s (dataset 1000): 11\,077 flights in $\G$, 8\,991 in $\A$, 43\,977 in $\Sl$. 90\% bands: bootstrap of pilots and blocks.}
+\source{Open flights, pieces of at least 1250~s (dataset 1000): 11\,077 flights in $\G$, 8\,991 in $\A$, 43\,977 in $\Sl$. 90\% bands (5--95\%): bootstrap of pilots and blocks.}
 \appref{\applink{app-hloc}{how we compute $\Hloc$}\quad\applink{app-bands}{how the bands are built}\quad\applink{app-rawlong}{longer lags}}
 \end{frame}
 
@@ -168,7 +168,6 @@
 \end{columns}
 \begin{itemize}
   \item Within the first leg group time is a little less straight ($-0.006$ at 10~s); beyond it, straighter.
-  \item The same flight gains earlier: $g>0$ from 50~s.
   \item Glides last as long in $\G$; $\G$ finds the next climb more often: 46.6\% of its searches against 40.5\%.
 \end{itemize}
 \takeaway{Why it pays after a first leg is open: waiting to form at the start, a better search for thermals, known thermals, or zones and weather.}
@@ -216,10 +215,10 @@ We take them apart
 \appref{\applink{app-matching}{what is a control}\quad\applink{app-longT}{why the long dataset stops at 2760~s}}
 \end{frame}
 
-\begin{frame}{On the same route the gap shrinks, but stays}
-\fig[0.56\textheight]{open_min0.1/matched_1000_delta.pdf}
+\begin{frame}{On the same route the group is still straighter}
+\fig[0.48\textheight]{open_min0.1/matched_1000_delta.pdf}
 \begin{itemize}
-  \item $\G-\SG=+0.010\ [+0.004,+0.017]$ at 1000~s, against $+0.018$ raw.
+  \item $\G-\SG=+0.010\ [+0.004,+0.017]$ at 1000~s, against controls on the route; the raw $+0.018$ is against all solo flights.
   \item Selection $\A-\SAA$: $+0.006\ [-0.003,+0.016]$.
 \end{itemize}
 \source{Pieces of at least 1250~s; left: $\Hloc$ of $\G$, its controls $\SG$, $\A$ and $\SAA$; right: the differences with 90\% bands.}
@@ -234,31 +233,26 @@ We take them apart
 \end{itemize}
 \end{frame}
 
+\begin{frame}{On the same route: more climbing; the glide deficit is shared}
+\begin{columns}[T,onlytextwidth]
+\column{.24\textwidth}\bignum{orangeJ}{$+3.0$ pp}{more time in climb\\{\scriptsize $\G-\SG$ $[+1.4,+4.5]$}}
+\column{.24\textwidth}\bignum{orangeJ}{$+2.4$ pp}{net of selection\\{\scriptsize subtracting $\A-\SAA$ $[+0.8,+4.0]$}}
+\column{.24\textwidth}\bignum{steel}{$-0.9$}{km/h of glide speed, $\G-\SG$\\{\scriptsize $[-1.7,-0.1]$}}
+\column{.24\textwidth}\bignum{steel}{$-1.0$}{km/h for the same pilots alone, $\A-\SAA$}
+\end{columns}
+\vspace{4mm}
+\takeaway{Only the time in climb survives net of selection (the other differences of the two gaps include 0). The glide deficit is shared by the same pilots alone: it looks like selection, and may explain the opposite sign in question 3. Not tested.}
+\end{frame}
+
+\begin{frame}{Fixing the route changes the gap; fixing the rest changes little}
+\fig[0.48\textheight]{open_min0.1/slide_factors.pdf}
+\takeaway{No factor fixed: controls from any route, solo windows of long flights that climb more than $\G$, so the gap is negative (it is not the raw gap of slide 5). Route fixed: positive. All fixed: about the same. The route carries 98\% of what the factors explain at $\Hloc(1840~\mathrm{s})$, 96\% for time in climb; season and hour almost nothing.}
+\appref{\applink{app-shapley}{the Shapley split}\quad\applink{app-decall}{all nine quantities}\quad\applink{app-deccells}{the eight cells and their curves}}
+\end{frame}
+
 \begin{frame}{But part of the gap is who flies in groups}
 \fig[0.72\textheight]{open_min0.1/slide_selection.pdf}
 \takeaway{$\A-\SAA$: the same pilots alone against their controls. At 1840~s they already show the gap: on the same route the group effect is not separable from who flies. We need the same flight: question 3.}
-\end{frame}
-
-\begin{frame}{On the same route the group climbs more and glides slower}
-\begin{columns}[T,onlytextwidth]
-\column{.24\textwidth}\bignum{orangeJ}{$+3.0$ pp}{more time in climb\\{\scriptsize $[+1.4,+4.5]$ percentage points}}
-\column{.24\textwidth}\bignum{orangeJ}{$+0.73$}{more climbs per hour}
-\column{.24\textwidth}\bignum{steel}{$-0.9$}{km/h of glide speed}
-\column{.24\textwidth}\bignum{steel}{$+6$}{m more height lost per km}
-\end{columns}
-\vspace{4mm}
-\takeaway{Same route, season, hour and wing: group time climbs more, glides slower and steeper. At 1000~s the same pilots alone do not differ from their controls (5 of the 9 quantities include 0: two $\Hloc$ and seven phase statistics, five of them here). The raw faster glide of $\G$ ($+2.1$~km/h) changes sign on the same route.}
-\end{frame}
-
-\begin{frame}{How much does each factor explain?}
-\fig[0.56\textheight]{open_min0.1/decomposition_main.pdf}
-\defn{Shapley split}{route $R$, season and hour $T$, wing $W$: $\Delta(\emptyset)=\Delta(F)+\varphi_R+\varphi_T+\varphi_W$. $\Delta(\emptyset)$ (``none'') has controls from any route, $\Delta(F)$ all fixed.}
-\appref{\applink{app-decall}{all nine quantities}\quad\applink{app-deccells}{the eight cells and their curves}}
-\end{frame}
-
-\begin{frame}{The route is almost all of it}
-\fig[0.56\textheight]{open_min0.1/slide_factors.pdf}
-\takeaway{The route carries most of what the factors explain (98\% at $\Hloc(1840~\mathrm{s})$, 96\% for time in climb, 84\% for glide speed); season and hour almost nothing, the wing little. Fixing the route is enough.}
 \end{frame}
 
 %% Question 3
@@ -280,10 +274,11 @@ We take them apart
 \end{frame}
 
 \begin{frame}{With windows of 2400~s the flight is straighter in the group}
-\fig[0.56\textheight]{open_min0.1/prepost_2400_delta.pdf}
+\fig[0.52\textheight]{open_min0.1/prepost_2400_delta.pdf}
 \begin{itemize}
   \item $g=+0.026\ [+0.020,+0.032]$ at $\Hloc(1000~\mathrm{s})$; $D_\text{in}=+0.025$, $D_\text{out}=+0.027$.
-  \item Time in climb $+2.8\ [+2.0,+3.6]$ pp; the control pairs stay near 0.
+  \item Time in climb $+2.8\ [+2.0,+3.6]$ pp; at 1000~s the control pairs stay near 0.
+  \item $g>0$ from 50~s, earlier than the raw $\G-\Sl$ (170~s).
 \end{itemize}
 \source{1\,595 events with the four windows.}
 \appref{\applink{app-prepostforest}{all the differences}}
@@ -293,30 +288,41 @@ We take them apart
 \fig[0.48\textheight]{open_min0.1/prepost_windows.pdf}
 \begin{itemize}
   \item $g$ at $\Hloc(1000~\mathrm{s})$: $-0.001$ (1260~s), $+0.023$ (1800), $+0.026$ (2400), $+0.025$ (3000).
-  \item At 1260~s the lag 1000~s is at the limit of the $\tau/0.8$ rule: only 260~s of the window can start a 1000-s displacement.
+  \item At 1260~s the lag 1000~s is at the limit of the $\tau/0.8$ rule: only 260~s of the window can start a 1000-s displacement (a possible reason, not tested).
   \item Time in climb: $+2.5$ to $+3.8$ pp at every length.
 \end{itemize}
 \source{Events with the four windows: 3\,549, 2\,567, 1\,595 and 695.}
 \end{frame}
 
 \begin{frame}{Same route and same flight: some agree, some do not}
-\fig[0.64\textheight]{open_min0.1/slide_agreement.pdf}
-\takeaway{Inside its group a pilot glides faster and flatter than before and after; on the same route group time glides slower and steeper. We give no reason.}
+\fig[0.56\textheight]{open_min0.1/slide_agreement.pdf}
+\takeaway{Inside its group a pilot glides faster and flatter than before and after; on the same route group time glides slower and steeper, but so do the same pilots alone. Net of selection the signs agree with $g$, except for height lost. Not tested.}
+\end{frame}
+
+\begin{frame}{Another metric: the fitted $H$}
+\fig[0.40\textheight]{open_min0.1/slide_fitted_h.pdf}
+\begin{itemize}
+  \item $H$: slope of $\log\MSD$ from 10~s to the end of the lags $T$; a mean of $\Hloc$ over the lags (within 0.002).
+  \item Careful: $\Hloc$ is not constant (it varies by 0.04--0.05 along a curve, up to 0.09 at the longest lags), so $H$ is not an exponent: it depends on $T$.
+\end{itemize}
+\takeaway{The gap in $H$ changes sign with the lags used: same route $-0.005$ to 1000~s, $+0.008$ to 2760~s. It mixes the small deficit at short lags and the gain at long lags.}
 \end{frame}
 
 %% Take-home
 \setcounter{talkpart}{0}
 \begin{frame}{Take-home}
-\renewcommand{\arraystretch}{1.9}
+\renewcommand{\arraystretch}{1.5}
 \begin{tabularx}{\linewidth}{@{}c X r@{}}
 \textcolor{steel}{\Huge\textbf{1}} & \large In a group the flight is straighter at the long lags
   & \shortstack[r]{{\Huge\textcolor{blueI}{$+0.018$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, raw}} \\
-\textcolor{steel}{\Huge\textbf{2}} & \large On the same route the gap halves; at long lags the pilots who fly in groups show part of it
+\textcolor{steel}{\Huge\textbf{2}} & \large On the same route the group is still straighter; at long lags the pilots alone show it too
   & \shortstack[r]{{\Huge\textcolor{orangeJ}{$+0.010$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, same route}} \\
 \textcolor{steel}{\Huge\textbf{3}} & \large The same flight, which removes who flies, is straighter inside its group
   & \shortstack[r]{{\Huge\textcolor{aqua}{$+0.026$}}\\[-1mm]{\scriptsize $\Hloc(1000~\mathrm{s})$, $g$}} \\
+\textcolor{steel}{\Huge\textbf{+}} & \large In all three designs, more time in climb
+  & \shortstack[r]{{\Huge\textcolor{steel}{$+3$ pp}}\\[-1mm]{\scriptsize $+3.3$, $+3.0$, $+2.8$}} \\
 \end{tabularx}
-\takeaway{Open: glide speed and height lost point the other way in 3 than in 2.}
+\takeaway{Open: glide speed and height lost point the other way in 3 than in 2; the pilots alone show the glide deficit of 2.}
 \end{frame}
 
 %% ------------------------------------------------------------------ appendix
@@ -422,6 +428,11 @@ $\pm2$, $\pm2$, level & 537/1095 & 294/650 & 139/370 \\
 \plainfig[app-decall]{The decomposition: all nine quantities}{open_min0.1/decomposition.pdf}
 
 \plainfig[app-rawstats]{Raw: the seven phase statistics}{open_min0.1/raw_statistics.pdf}
+
+\begin{frame}[label=app-shapley]{The Shapley split of the raw gap}
+\fig[0.64\textheight]{open_min0.1/decomposition_main.pdf}
+\defn{Split}{route $R$, season and hour $T$, wing $W$: $\Delta(\emptyset)=\Delta(F)+\varphi_R+\varphi_T+\varphi_W$. $\Delta(\emptyset)$ (``none''): no factor fixed; $\Delta(F)$: all fixed. Time in climb: $-9.5=+3.0-12.0+0.2-0.7$ pp.}
+\end{frame}
 
 \begin{frame}[label=app-deccells]{The controls of the decomposition}
 \fig[0.56\textheight]{open_min0.1/decomposition_2760_delta.pdf}
