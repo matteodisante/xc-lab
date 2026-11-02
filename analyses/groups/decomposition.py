@@ -17,7 +17,7 @@ only the conditions of C:
 
 Every cell uses the same pieces (those with a control in F on the dataset, and a window in every cell without R;
 for the phase statistics also those with phase time and a phased control in every cell), the same pool and the same
-draws (matched.Context). Quantities: H_loc(1000 s) on dataset `1000`, H_loc(1840 s) on `2250`, the fitted H of
+draws of twoway.py (matched.Context). Quantities: H_loc(1000 s) on dataset `1000`, H_loc(1840 s) on `2250`, the fitted H of
 both, the seven phase statistics (dataset `1000`). The Shapley value of each factor, for every draw and year:
 
     phi_k = sum over C in F without k of |C|! (2 - |C|)! / 3!  [Delta(C) - Delta(C with k)]
@@ -37,6 +37,7 @@ import curves
 import isolated
 import matched
 import route
+import twoway
 from blocks import with_takeoffs
 from matched import DATASETS, LEVEL_NAMES, MAIN_COVER, METRICS, NAMES
 from tamsd import CACHE, COLORS, GRID_S, LABELS, N_BOOT, OUT, SEED, SUPPORT, read_flights
@@ -147,7 +148,7 @@ def window_table(tracks, flights, pieces, level, label, calipers, first):
     for cell in (c for c in range(8) if not c & R):
         for g, lvl in zip(pieces, lv):
             rng = np.random.default_rng([SEED, int(g), cell])
-            rows, s = windows_of(pool, int(n[g]), date[g], lab[g], utc0[g] + start[g] + n[g] * GRID_S / 2, cell, rng, calipers)
+            rows, s = windows_of(pool, int(n[g]), date[g], lab[g], utc0[g] + start[g] + (n[g] - 1) * GRID_S / 2, cell, rng, calipers)
             out.append(pd.DataFrame({"piece": g, "solo": sol[rows], "i": s, "j": s + n[g] - 1, "level_piece": lvl, "cell": cell}))
     out = pd.concat(out, ignore_index=True)
     out.index = out.index + first
@@ -164,7 +165,7 @@ def cell_rows(base, win, cell, dataset, calipers, same):
         if cell & T:
             keep &= (base["dmonth"] <= month) & (base["dhour"] <= hour + 1e-9)
         if cell & W:
-            keep &= base[f"{same}_piece"].notna() & (base[f"{same}_piece"] == base[f"{same}_solo"])
+            keep &= base["level_piece"].notna() & (base[f"{same}_piece"] == base[f"{same}_solo"])  # as matched.select
         return base[keep]
     return win[win["cell"] == cell]
 
@@ -201,13 +202,13 @@ def report(cells):
                 for c in range(8)}
         both = [0, 1] if pair[0][1] is not None else [0]
         parts = {i: shapley({c: pair[c][i] for c in range(8)}) for i in both}
-        quote = lambda f: isolated.quote(f(0), f(1) if 1 in parts else None)
+        quote = lambda f: twoway.quote(f(0), f(1) if 1 in parts else None)
         phi = {k: quote(lambda i, k=k: parts[i][k]) for k, _ in FACTORS}
         point = {k: float(parts[0][k][0]) for k, _ in FACTORS}
         d0 = float(pair[0][0][0])
         out[metric] = {
             "set": name,
-            "cells": {cell_name(c): {"delta": isolated.quote(pair[c][0], pair[c][1]),
+            "cells": {cell_name(c): {"delta": twoway.quote(pair[c][0], pair[c][1]),
                                      "group": float(draws[c][metric]["group"][0][0]),
                                      "control": float(draws[c][metric]["control"][0][0]), **cells[c][1][name]}
                       for c in range(8)},
@@ -250,7 +251,19 @@ def draw_curves(cells, folder, tag, tracks):
             drawn.append(curves.series(h, label, RAMP[k], STYLES[sum(1 for d in range(c) if bin(d).count('1') == k)]))
         if drawn:
             T_ = drawn[0]["T"]
-            curves.figures(drawn, folder / f"decomposition{tag}_{name}", f"decomposition, lags to {T_:,} s, pieces of at least {T_ / SUPPORT:g} s")
+            title = f"decomposition, lags to {T_:,} s, pieces of at least {T_ / SUPPORT:g} s"
+            curves.figures(drawn, folder / f"decomposition{tag}_{name}", title)
+            left = [{**drawn[0], "label": "G"}] + [{**matched.curve_of(cells[c][0][key], "control"), "label": f"controls of {'∅' if c == 0 else cell_name(c)}",
+                                                    "color": RAMP[bin(c).count("1")]} for c in (0, FULL) if cells[c][0][key]]
+            right = []
+            for c in range(8):
+                if cells[c][0][key] is None:
+                    continue
+                k, ends = bin(c).count("1"), c in (0, FULL)
+                d = matched.delta_curve(cells[c][0][key])
+                right.append({**d, "band": d["band"] if ends else None, "label": f"Δ({'∅' if c == 0 else cell_name(c)})", "color": RAMP[k],
+                              "ls": STYLES[sum(1 for e in range(c) if bin(e).count('1') == k)], "lw": 1.4 if ends else 0.9})
+            curves.delta_figure(left, right, folder / f"decomposition{tag}_{name}_delta", title)
 
 
 def main(sample):
@@ -265,7 +278,7 @@ def main(sample):
     month, hour, same = matched.CALIPERS[chosen]
     calipers = (month, hour)
     level, cls = isolated.levels(flights), isolated.wing_class(flights)
-    label = cls if same == "class" else level
+    label = cls.reindex(level.index) if same == "class" else level  # the classes of isolated.LEVELS only
 
     # the pieces with a control in F, per dataset
     sets = {d: np.unique(matched.select(table, d, chosen)["piece"].to_numpy()) for d in DATASETS}

@@ -26,6 +26,7 @@ import raw  # noqa: E402
 import route  # noqa: E402
 import survival  # noqa: E402
 import tamsd  # noqa: E402
+import twoway  # noqa: E402
 import zones as zonelib  # noqa: E402
 from common.msd import tamsd as lab_tamsd  # noqa: E402
 
@@ -999,7 +1000,7 @@ def test_the_msd_differences_on_four_window_events_give_g_and_the_drift():
     on = lambda labels: prepost.curves_on(units, counts, labels, lags)
     out = prepost.effects(on)
     for name, expected in (("D_in", 0.055), ("D_out", 0.025), ("g", 0.04), ("d w", 0.015)):
-        values, events, windows, flights = out[name if name in ("g", "d w") else name + " (four-window events)"]
+        values, events, windows, flights = out[name]
         assert events == 30 and windows == 30 and flights == 30
         k = list(lags).index(1000)
         assert values[0, k] == pytest.approx(expected, abs=1e-9) and values[0, -1] == pytest.approx(expected, abs=1e-9), name
@@ -1010,7 +1011,7 @@ def test_events_without_a_window_leave_the_pairs_that_need_it():
     units, lags, _ = synthetic_windows(with_post=False)  # odd events have no post
     counts = np.ones((3, len(units.population)), np.int32)
     out = prepost.effects(lambda labels: prepost.curves_on(units, counts, labels, lags))
-    assert out["D_in"][1] == 30 and out["D_out"][1] == 15 and out["g"][1] == 15 and out["post - pre"][1] == 15
+    assert out["D_in"][1] == 15 and out["D_out"][1] == 15 and out["g"][1] == 15 and out["post - pre"][1] == 15
     # the pre window on the 15 events with a post is the same as the post's partner: g is still exact there
     assert out["g"][0][0, list(lags).index(1000)] == pytest.approx(0.04, abs=1e-9)
 
@@ -1172,12 +1173,12 @@ def test_matched_difference_of_deltas_is_taken_on_every_draw():
     assert diff[0].tolist() == [2, -2, 6]
     assert diff[1].tolist() == [1 - 3, 1 - 1]  # years: (2 - 1) - (4 - 1) and (1 - 0) - (4 - 3)... per year
     # the band of the difference is that of its draws, not the difference of the bands
-    x = np.r_[0.0, np.linspace(-1, 1, 101)]
+    x = np.r_[0.0, np.linspace(-1, 1, 102)]
     zero = {"m": {"group": (0 * x, None), "control": (0 * x, None)}}
     out = matched.contrasts({"m": {"group": (x, None), "control": zero["m"]["control"]}},
                             {"m": {"group": (-x, None), "control": zero["m"]["control"]}})
     lo, hi = matched.quoted(out["(G - S|G) - (A - S|A)"]["m"])["band"]
-    assert (lo, hi) == pytest.approx(tuple(np.percentile(2 * x[1:], [5, 95])))
+    assert (lo, hi) == pytest.approx(tuple(twoway.band(0.0, 2 * x[1:])))
 
 
 def test_matched_long_series_stops_at_the_largest_lag_that_keeps_enough_pieces(monkeypatch):
@@ -1249,14 +1250,16 @@ def test_decomposition_windows_cross_midnight_and_obey_date_wing_and_length():
 
 
 def test_decomposition_the_cells_with_route_are_nested_filters_of_the_match_table():
-    t = pd.DataFrame({"side": "G", "piece": [0, 0, 1, 2, 3], "solo": range(5), "cover": [0.9, 0.9, 0.9, 0.9, 0.9],
-                      "dmonth": [0, 3, 1, 1, 0], "dhour": [0.5, 0.5, 2.0, 1.0, 0.2],
-                      "class_piece": ["B", "B", "A", "C", "B"], "class_solo": ["B", "B", "A", "D", "B"],
-                      "dur_piece": 2000, "dur_solo": [2000, 2000, 2000, 2000, 1000], "isolated": False})
+    # the last row: a class outside isolated.LEVELS ("Biplace", no level) matches itself and still has no wing
+    t = pd.DataFrame({"side": "G", "piece": [0, 0, 1, 2, 3, 4], "solo": range(6), "cover": 0.9,
+                      "dmonth": [0, 3, 1, 1, 0, 0], "dhour": [0.5, 0.5, 2.0, 1.0, 0.2, 0.1],
+                      "class_piece": ["B", "B", "A", "C", "B", "Biplace"], "class_solo": ["B", "B", "A", "D", "B", "Biplace"],
+                      "level_piece": ["beginners"] * 3 + ["experienced", "beginners", None],
+                      "dur_piece": 2000, "dur_solo": [2000, 2000, 2000, 2000, 1000, 2000], "isolated": False})
     cal, win = (1, 1), t.iloc[:0]
     rows = lambda c: decomposition.cell_rows(t, win, c, "1000", cal, "class")["solo"].tolist()
-    assert rows(decomposition.R) == [0, 1, 2, 3]
-    assert rows(decomposition.R | decomposition.T) == [0, 3]
+    assert rows(decomposition.R) == [0, 1, 2, 3, 5]
+    assert rows(decomposition.R | decomposition.T) == [0, 3, 5]
     assert rows(decomposition.R | decomposition.W) == [0, 1, 2]
     full = rows(decomposition.FULL)
     assert full == [0] == matched.select(t, "1000", "month1_hour1_class")["solo"].tolist()
@@ -1314,3 +1317,24 @@ def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
     for q, x in j["decomposition"]["levels"]["all"].items():
         total = x["delta_F"]["value"] + sum(x["phi"][k]["value"] for k in "RTW")
         assert total == pytest.approx(x["delta_none"]["value"], abs=1e-9)
+
+
+def test_twoway_variance_is_pilots_plus_blocks_minus_cells_at_least_the_larger_one_way():
+    one = lambda sd: sd * np.array([-1.0, 1.0] * 50)  # variance sd ** 2
+    assert twoway.variance(np.r_[one(2), one(3), one(1)]) == pytest.approx(4 + 9 - 1)
+    assert twoway.variance(np.r_[one(2), one(1), one(3)]) == pytest.approx(4)  # 4 + 1 - 9 < 0: the larger one-way
+    band = twoway.band(0.5, np.r_[one(2), one(3), one(1)])
+    assert band == pytest.approx([0.5 - twoway.Z * np.sqrt(12), 0.5 + twoway.Z * np.sqrt(12)])
+
+
+def test_twoway_counts_draw_pilots_blocks_and_cells_in_turn():
+    cell, pilot, block = twoway.cell_codes(np.array([0, 0, 1, 1, 2]), np.array([0, 1, 1, 1, 0]))
+    assert cell.tolist() == [0, 1, 2, 2, 3] and pilot.tolist() == [0, 0, 1, 2] and block.tolist() == [0, 1, 1, 0]
+    c = twoway.counts(pilot, block, np.random.default_rng(0), size=40)
+    assert c.shape == (120, 4) and c.dtype == np.uint8
+    p, b, k = np.split(c, 3)
+    assert (p[:, 0] == p[:, 1]).all() and (b[:, 1] == b[:, 2]).all() and (b[:, 0] == b[:, 3]).all()
+    assert (p[:, [0, 2, 3]].sum(axis=1) == 3).all() and (b[:, [0, 1]].sum(axis=1) == 2).all() and (k.sum(axis=1) == 4).all()
+    of, n = twoway.weights(cell, c)
+    w = of(np.array([4, 0]), np.arange(n))
+    assert n == 121 and (w[:, 0] == 1).all() and (w[:, 1:] == c[:, [3, 0]].T).all()

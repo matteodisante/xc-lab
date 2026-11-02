@@ -194,7 +194,7 @@ def matches(tracks, flights, level, sample=None):
                 if rows:
                     r = pd.DataFrame(rows, columns=["solo", "i", "j", "cover"])
                     mid_s = utc0[r["solo"]] + start[r["solo"]] + (r["i"] + r["j"]).to_numpy() * GRID_S / 2
-                    r = r[season_ok(np.full(len(r), utc0[g] + start[g] + n[g] * GRID_S / 2), mid_s)]
+                    r = r[season_ok(np.full(len(r), utc0[g] + start[g] + (n[g] - 1) * GRID_S / 2), mid_s)]
                     r = r[~pd.Series(flight[r["solo"]]).duplicated().to_numpy()]  # one match per solo flight
                     out.extend((name, g, *row) for row in r.itertuples(index=False))
             if d % 500 == 0:

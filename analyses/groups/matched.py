@@ -33,8 +33,9 @@ logarithm, the slopes and the ratios taken after the means:
     survival of climbs, searches that end in a climb and glides (level "all"): the runs of a piece weigh 1,
              those of a control 1 / (controls of its piece), and the bootstrap weights on top.
 
-Bands: 5-95% of the N_BOOT draws of isolated.bootstrap_weights (pilots x blocks), the same for every
-number; for every Delta also the minimum and maximum over the years leaving one year out.
+Bands: twoway.py (every flight, group or solo, weighs the count of its pilot, block or cell, so a piece
+enters a draw with the controls drawn with it), the same draws for every number; for every Delta also the
+minimum and maximum over the years leaving one year out.
 
     uv run python matched.py --open --stats [--sample N]    # after the match tables (--rho 300 and 1000 for the robustness)
 """
@@ -54,6 +55,7 @@ import longlags
 import raw
 import route
 import survival
+import twoway
 from blocks import with_takeoffs
 from phase_msd import PHASES
 from tamsd import CACHE, COLORS, GRID_S, LABELS, N_BOOT, OUT, SEED, SUPPORT, read_flights, save
@@ -100,7 +102,7 @@ def select(table, dataset, caliper, cover=MAIN_COVER, isolation=False):
     for pieces and segments of the dataset (a key of DATASETS, or a lag T in s); with `isolation`, only isolated segments."""
     month, hour, by = CALIPERS[caliper]
     shortest = (DATASETS[dataset] if isinstance(dataset, str) else dataset) / SUPPORT
-    same = table[f"{by}_piece"].notna() & (table[f"{by}_piece"] == table[f"{by}_solo"])
+    same = table["level_piece"].notna() & (table[f"{by}_piece"] == table[f"{by}_solo"])  # classes of isolated.LEVELS only
     keep = ((table["cover"] >= cover - 1e-9) & (table["dur_piece"] >= shortest) & (table["dur_solo"] >= shortest)
             & (table["dmonth"] <= month) & (table["dhour"] <= hour + 1e-9) & same)
     return table[keep & table["isolated"]] if isolation else table[keep]
@@ -192,7 +194,7 @@ def describe(found, tracks, flights, summary_level, cls):
     info = flights.set_index("flight").reindex(tracks["flight"])
     utc0 = info["utc0"].to_numpy(float)
     g, s = found["piece"].to_numpy(), found["solo"].to_numpy()
-    mid_g = utc0[g] + tracks["start"][g] + tracks["n"][g] * GRID_S / 2
+    mid_g = utc0[g] + tracks["start"][g] + (tracks["n"][g] - 1) * GRID_S / 2
     mid_s = utc0[s] + tracks["start"][s] + (found["i"] + found["j"]).to_numpy() * GRID_S / 2
     f = tracks["flight"]
     found = found.assign(dmonth=month_gap(mid_g, mid_s).astype(np.int8), dhour=hour_gap(mid_g, mid_s),
@@ -268,7 +270,8 @@ class Context:
         self.universe = np.unique(tracks["flight"])
         pilot, block, year = isolated.codes(flights, summary, self.universe)
         self.pilot, self.years = pilot, np.unique(year)
-        self.boot = isolated.bootstrap_weights(pilot, block, np.random.default_rng(SEED))
+        cell, of_pilot, of_block = twoway.cell_codes(pilot, block)
+        self.boot = twoway.weights(cell, twoway.counts(of_pilot, of_block, np.random.default_rng(SEED)))
         self.leaving = isolated.year_weights(year, self.years)
         self.tables, self.defs = isolated.run_terms(flights), raw.stat_defs()
         self.scale = np.array([next(s[n][2] for s in self.defs.values() if n in s) for n in NAMES], float)
@@ -332,6 +335,13 @@ def long_lag(table, line, level):
     return None
 
 
+def common_long_lag(table, line, level):
+    """The smaller long_lag of the sides G and A of `table`, so that G - S|G and A - S|A share their lags; None
+    when either has none."""
+    lags = [long_lag(table[table["side"] == side], line, level) for side in ("G", "A")]
+    return None if None in lags else min(lags)
+
+
 def run_engine(ctx, sel, a, b, years):
     """isolated.engine on the rows `sel` (one per piece and pool flight), with `a` (one row per unique piece of
     `sel`) and `b` (one per row of `sel`): the sums for the bootstrap draws and, with `years`, for the years."""
@@ -346,7 +356,7 @@ def msd_series(ctx, M, sel, T, years):
     lags = LAGS[LAGS <= T]
     _, pos, rows = M.at(sel)
     boot, year = run_engine(ctx, sel, M.msd_g[pos][:, :len(lags)], M.msd_s[rows][:, :len(lags)], years)
-    return {"lags": lags, "T": T, "pieces": int(len(pos)), "boot": isolated.sides(boot, lags),
+    return {"lags": lags, "T": T, "pieces": int(len(pos)), "controls": int(len(sel)), "boot": isolated.sides(boot, lags),
             "year": isolated.sides(year, lags) if years else None}
 
 
@@ -421,7 +431,7 @@ def survival_series(ctx, M, sel):
             with np.errstate(invalid="ignore", divide="ignore"):
                 curve = s[:-1] / s[-1]
             out[phase][side] = {"grid": SURVIVAL_GRID.tolist(), "value": curve[:, 0].tolist(),
-                                "band": np.nanpercentile(curve[:, 1:], [5, 95], axis=1).tolist(),
+                                "band": twoway.share_band(curve[:, 0], curve[:, 1:].T),
                                 "runs": int(units[:, k * width + width - 1].sum())}
     return out
 
@@ -432,7 +442,7 @@ def estimate(ctx, M, table, side, line, levels=LEVEL_NAMES, years=True, survival
     t, out = table[table["side"] == side], {}
     for level in levels:
         main = of_level(select(t, "1000", **line), level)
-        T = long_lag(t, line, level)
+        T = common_long_lag(table, line, level)
         e = {"main": msd_series(ctx, M, main, 1000, years) if len(main) else None, "long_T": T,
              "long": msd_series(ctx, M, of_level(select(t, T, **line), level), T, years) if T else None,
              "phases": phase_series(ctx, M, main, years) if len(main) else None}
@@ -479,8 +489,8 @@ def draws(e):
 
 
 def quoted(pair):
-    """isolated.quote of a (draws, years) pair (no years when there are none)."""
-    return isolated.quote(*pair)
+    """twoway.quote of a (draws, years) pair (no years when there are none)."""
+    return twoway.quote(*pair)
 
 
 def contrasts(dg, da=None):
@@ -496,13 +506,17 @@ def contrasts(dg, da=None):
 
 
 def curve_of(ser, which):
-    """MSD and H_loc with 5-95% bands, and the fitted H with its band, of the group or the control of an msd_series."""
+    """MSD and H_loc with their bands, and the fitted H with its band, of the group or the control of an msd_series."""
     b = ser["boot"][which]
-    band = lambda a: np.nanpercentile(a[1:], [5, 95], axis=0)
-    f = band(b["H"][:, None])
-    return {"lags": ser["lags"].tolist(), "T": ser["T"], "pieces": ser["pieces"], "msd": b["msd"][0].tolist(),
-            "msd_band": band(b["msd"]).tolist(), "H_loc": b["H_loc"][0].tolist(), "H_loc_band": band(b["H_loc"]).tolist(),
-            "H": float(b["H"][0]), "H_band": [float(f[0][0]), float(f[1][0])]}
+    band = lambda a: twoway.band(a[0], a[1:])
+    return {"lags": ser["lags"].tolist(), "T": ser["T"], "pieces": ser["pieces"], "controls": ser["controls"], "msd": b["msd"][0].tolist(),
+            "msd_band": band(b["msd"]), "H_loc": b["H_loc"][0].tolist(), "H_loc_band": band(b["H_loc"]),
+            "H": float(b["H"][0]), "H_band": band(b["H"])}
+
+
+def delta_curve(ser):
+    """Delta H_loc (group - control) at every lag of an msd_series, with its band."""
+    return {"lags": ser["lags"].tolist(), **twoway.quote(ser["boot"]["delta"]["H_loc"])}
 
 
 def draw_msd(est, folder, tag):
@@ -515,10 +529,16 @@ def draw_msd(est, folder, tag):
                 continue
             c = curve_of(ser, which)
             lo, hi = c["H_band"]
-            drawn.append(curves.series(c, f"{label} ({c['pieces']:,} pieces): H = {c['H']:.3f} [{lo:.3f}, {hi:.3f}]", *SIDE_STYLE[label]))
+            n = f"{c['pieces']:,} pieces" if which == "group" else f"{c['controls']:,} controls"
+            drawn.append(curves.series(c, f"{label} ({n}): H = {c['H']:.3f} [{lo:.3f}, {hi:.3f}]", *SIDE_STYLE[label]))
         if drawn:
             T = max(c["T"] for c in drawn)
-            curves.figures(drawn, folder / f"matched{tag}_{name}", f"matched, lags to {T:,} s, pieces of at least {T / SUPPORT:g} s")
+            title = f"matched, lags to {T:,} s, pieces of at least {T / SUPPORT:g} s"
+            curves.figures(drawn, folder / f"matched{tag}_{name}", title)
+            right = [{**delta_curve(est[side]["all"][key]), "label": c, "color": CONTRAST_COLORS[c]}
+                     for side, c in (("G", CONTRASTS[0]), ("A", CONTRASTS[1])) if est[side]["all"][key]]
+            curves.delta_figure([{**c, "label": c["label"].split(" (")[0]} for c in drawn], right,
+                                folder / f"matched{tag}_{name}_delta", title)
 
 
 def draw_survival(surv, path):
@@ -588,7 +608,7 @@ def robustness(ctx, table, tables_rho, chosen):
         d = contrasts(draws(e))[CONTRASTS[0]]
         out[name] = {"line": line | {"rho": rho or route.RHO},
                      "pieces": e["counts"]["pieces"], "long T": e["long_T"],
-                     "quotes": {m: isolated.quote(d[m][0]) for m in FOREST if m in d}}
+                     "quotes": {m: twoway.quote(d[m][0]) for m in FOREST if m in d}}
     return out
 
 
@@ -622,7 +642,9 @@ def run_stats(ctx, table, tables_rho, chosen, tag):
                 key: curve_of(est[s][level][key], which) for key in ("main", "long") if est[s][level][key]}}
                 for label, s, which, draws_ in (("G", "G", "group", g), ("S|G", "G", "control", g),
                                                 ("A", "A", "group", a), ("S|A", "A", "control", a))},
-            "deltas": {c: {m: quoted(v) for m, v in dm.items()} for c, dm in d.items()}}
+            "deltas": {c: {m: quoted(v) for m, v in dm.items()} for c, dm in d.items()},
+            "delta curves": {c: {key: delta_curve(est[s][level][key]) for key in ("main", "long") if est[s][level][key]}
+                             for s, c in (("G", CONTRASTS[0]), ("A", CONTRASTS[1]))}}
         for c in CONTRASTS:
             forest.append((f"{level}: {c}", CONTRAST_COLORS[c], result["levels"][level]["deltas"][c]))
         forest.append(None)

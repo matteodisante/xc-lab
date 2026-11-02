@@ -183,7 +183,7 @@ def units(tracks, found, flights, block, season=False):
     ("route"), the piece as stratum; with season, only the matches of the same season and hour."""
     info = flights.set_index("flight")
     utc0 = info["utc0"].reindex(tracks["flight"]).to_numpy()
-    mid_g = utc0[found["piece"]] + tracks["start"][found["piece"]] + tracks["n"][found["piece"]] * GRID_S / 2
+    mid_g = utc0[found["piece"]] + tracks["start"][found["piece"]] + (tracks["n"][found["piece"]] - 1) * GRID_S / 2
     mid_s = utc0[found["solo"]] + tracks["start"][found["solo"]] + (found["i"] + found["j"]).to_numpy() * GRID_S / 2
     if season:
         month = lambda t: pd.to_datetime(t, unit="s", utc=True).month.to_numpy()

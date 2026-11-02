@@ -71,9 +71,15 @@ def longest(avail):
     return max(ok) if ok else 0
 
 
-def curve(p, mask, block, rng, tau, counts=None):
+def percentile_band(value, draws):
+    """5-95% of the draws (rows)."""
+    return np.percentile(draws, [5, 95], axis=0).tolist()
+
+
+def curve(p, mask, block, rng, tau, counts=None, band=percentile_band, with_draws=False):
     """MSD, H_loc and bands of the population `mask` on its pieces long enough for the lag `tau`, over
-    the lags up to `tau`; `counts`: the bootstrap draws of tamsd.ensemble."""
+    the lags up to `tau`; `counts`: the bootstrap draws of tamsd.ensemble; `band(value, draws)`: the band;
+    `with_draws`: also the draws of H_loc (rows) as "H_loc_draws"."""
     keep = long_enough(p, mask, tau)
     lags = LONG_LAGS[LONG_LAGS <= tau]
     flights, k = np.unique(p["flight"][keep], return_inverse=True)
@@ -83,10 +89,11 @@ def curve(p, mask, block, rng, tau, counts=None):
     mean, draws = ensemble(sums / origins, block.reindex(flights).to_numpy(), rng, counts)
     h = np.array([local_h(lags, d) for d in draws])
     fitted = np.array([fit_h(lags, d) for d in draws])
-    return {"flights": len(flights), "pieces": int(keep.sum()), "lags": lags.tolist(), "msd": mean.tolist(),
-            "H": fit_h(lags, mean), "H_band": np.percentile(fitted, [5, 95]).tolist(),
-            "msd_band": np.percentile(draws, [5, 95], axis=0).tolist(), "H_loc": local_h(lags, mean).tolist(),
-            "H_loc_band": np.percentile(h, [5, 95], axis=0).tolist()}
+    out = {"flights": len(flights), "pieces": int(keep.sum()), "lags": lags.tolist(), "msd": mean.tolist(),
+           "H": fit_h(lags, mean), "H_band": band(fit_h(lags, mean), fitted),
+           "msd_band": band(mean, draws), "H_loc": local_h(lags, mean).tolist(),
+           "H_loc_band": band(local_h(lags, mean), h)}
+    return out | {"H_loc_draws": h} if with_draws else out
 
 
 def panels(available):

@@ -22,13 +22,13 @@ middle, with 5-95% bands from blocks that join episodes and site-days (decompose
 With --open (or --declared-open) the open flights are analysed by the method of the comparisons plan (point 4):
 windows of OPEN_WINDOW_S s measured at the lags of longlags.LONG_LAGS up to SUPPORT x the window; the MSD
 and the H_loc figures of the four windows and of the control pairs; the seven phase statistics by the
-estimator that averages first (unit = window); the differences D_in = start - pre, D_out = end - post,
-post - pre and the controls, and, on the events that have all four windows, the drift-free
+estimator that averages first (unit = window); post - pre and the controls on the events that have both
+windows, and, on the events that have all four, D_in = start - pre, D_out = end - post and the drift-free
 
     g   = (D_in + D_out) / 2    the group effect, free of a drift linear in time
     d w = (D_in - D_out) / 2    the drift over one window
 
-with 5-95% bands of N_BOOT draws of decompose.block_counts, the same for every quantity.
+with the bands of twoway.py (the same draws of pilots, blocks and cells for every quantity).
 
     uv run python prepost.py --open [--window SECONDS] [--sample N] [--recompute]    # after tamsd.py and performance.py --open
     uv run python prepost.py --open --redraw [--window SECONDS]    # the forest plot again from the JSON
@@ -48,6 +48,7 @@ import isolated
 import longlags
 import raw
 import tamsd
+import twoway
 import zones
 from blocks import with_takeoffs
 from tamsd import (CACHE, COLORS, FIXES, LABELS, LAGS, N_BOOT, OPEN, OUT, SEED, read_flights, read_pieces, save,
@@ -62,8 +63,8 @@ STAGES = ("pre", "start", "end", "post")
 OPEN_WINDOW_S = 2400  # s, the window of the open flights: lags up to 1840 s keep 56 origins
 QUOTED_LAG = 1000  # s, the quoted H_loc
 FOREST_TICKS = 5  # at most, on each axis of the forest plot
-OPEN_COMPARISONS = {"D_in": ("start", "pre"), "D_out": ("end", "post"), "post - pre": ("post", "pre"),
-                    "ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"), "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}
+OPEN_COMPARISONS = {"post - pre": ("post", "pre"), "ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"),
+                    "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}  # D_in and D_out: on the events of g (effects)
 FOUR = ("g", "d w")  # the drift-free effects, on the events that have the four STAGES
 CONTROLS = {"A": ("ctrlA1", "ctrlA2"), "S": ("ctrlS1", "ctrlS2")}
 LINES = {  # window: (colour, line style)
@@ -242,8 +243,9 @@ def drift_free(d_in, d_out):
 
 def curves_on(units, counts, labels, lags):
     """Per population of `labels`, on the events that have them all (unit = window, weight 1 or the count of its
-    block): the ensemble MSD and, as `values`, H_loc at every lag and the fitted H, in rows (point estimate, then
-    one row per draw of `counts`); windows, flights; and the events."""
+    block): the ensemble MSD and, as `values`, H_loc at every lag, the fitted H and H_loc(QUOTED_LAG) with its
+    window cut at QUOTED_LAG as on dataset `1000` of the other points, in rows (point estimate, then one row per
+    draw of `counts`); windows, flights; and the events."""
     keep = events_with(units.population, units.stratum, labels)
     out = {}
     for label in labels:
@@ -252,7 +254,9 @@ def curves_on(units, counts, labels, lags):
         with np.errstate(invalid="ignore"):  # a draw may keep none of the windows
             msd = (w @ units.values[m]) / w.sum(axis=1)[:, None]
         h, f = zones.curve(msd, lags)
-        out[label] = {"msd": msd, "values": np.column_stack([h, f]), "windows": int(m.sum()),
+        cut = lags <= QUOTED_LAG
+        quoted = np.array([tamsd.local_h(lags[cut], row[cut])[-1] for row in msd])
+        out[label] = {"msd": msd, "values": np.column_stack([h, f, quoted]), "windows": int(m.sum()),
                       "flights": int(np.unique(units.flight[m]).size)}
     return out, int(np.unique(units.stratum[keep]).size)
 
@@ -302,24 +306,26 @@ def effects(on, comparisons=OPEN_COMPARISONS, stages=STAGES):
     d_in, d_out = v["start"] - v["pre"], v["end"] - v["post"]
     g, dw = drift_free(d_in, d_out)
     shape = got["pre"]["windows"], got["pre"]["flights"]
-    out.update({"D_in (four-window events)": (d_in, events, *shape), "D_out (four-window events)": (d_out, events, *shape),
+    out.update({"D_in": (d_in, events, *shape), "D_out": (d_out, events, *shape),
                 "g": (g, events, *shape), "d w": (dw, events, *shape)})
     return out
 
 
 def describe_msd(x, lags):
-    """A difference of `curves_on` (rows draws): Delta H_loc at QUOTED_LAG, Delta H and Delta H_loc at every lag."""
-    values, k = x[0], list(lags).index(QUOTED_LAG)
-    return {f"H_loc({QUOTED_LAG} s)": decompose.described(values[:, k]), "Delta H": decompose.described(values[:, -1]),
-            "dH_loc": {"value": values[0, :-1].tolist(), "band": np.percentile(values[1:, :-1], [5, 95], axis=0).tolist()}}
+    """A difference of `curves_on` (rows draws): Delta H_loc at QUOTED_LAG (window cut there), Delta H and Delta
+    H_loc at every lag."""
+    values = x[0]
+    return {f"H_loc({QUOTED_LAG} s)": twoway.quote(values[:, -1]), "Delta H": twoway.quote(values[:, -2]),
+            "dH_loc": twoway.quote(values[:, :-2])}
 
 
 def curve_of(entry, lags):
     """A series for curves.series from one population of `curves_on`: MSD and H_loc with 5-95% bands, and H."""
     v, m = entry["values"], entry["msd"]
-    p = lambda a: np.percentile(a[1:], [5, 95], axis=0).tolist()
-    return {"lags": lags.tolist(), "msd": m[0].tolist(), "msd_band": p(m), "H_loc": v[0, :-1].tolist(),
-            "H_loc_band": p(v[:, :-1]), "H": float(v[0, -1]), "H_band": np.percentile(v[1:, -1], [5, 95]).tolist(),
+    p = lambda a: twoway.band(a[0], a[1:])
+    return {"lags": lags.tolist(), "msd": m[0].tolist(), "msd_band": p(m), "H_loc": v[0, :-2].tolist(),
+            "H_loc_band": p(v[:, :-2]), "H": float(v[0, -2]), "H_band": p(v[:, -2]),
+            f"H_loc({QUOTED_LAG} s)": float(v[0, -1]), f"H_loc({QUOTED_LAG} s) band": p(v[:, -1]),
             "windows": entry["windows"], "flights": entry["flights"]}
 
 
@@ -345,13 +351,13 @@ def open_analysis(units, meta, r, q, stats, counts, lags):
         result["curves"][key] = {"events": events, **{l: curve_of(c, lags) for l, c in got.items()}}
         got, events = phase(labels)
         result["phase statistics"][key] = {"events": events, **{l: {
-            "windows": c["windows"], "flights": c["flights"], **{s: decompose.described(c["values"][:, j])
+            "windows": c["windows"], "flights": c["flights"], **{s: twoway.quote(c["values"][:, j])
                                                                    for j, s in enumerate(stats)}} for l, c in got.items()}}
     for name in m:
         result["differences"][name] = {
             "events (MSD)": m[name][1], "windows (MSD)": m[name][2], "flights (MSD)": m[name][3],
             "events (phase)": p[name][1], "windows (phase)": p[name][2], "flights (phase)": p[name][3],
-            **describe_msd(m[name], lags), **{s: decompose.described(p[name][0][:, j]) for j, s in enumerate(stats)}}
+            **describe_msd(m[name], lags), **{s: twoway.quote(p[name][0][:, j]) for j, s in enumerate(stats)}}
     return result
 
 
@@ -361,6 +367,19 @@ def forest(result, path, width):
     decompose.forest(diffs, path, (f"H_loc({QUOTED_LAG} s)", *raw.STATISTICS), list(FOREST), FOREST_LABELS, FOREST,
                      f"Open paragliders, windows of {width} s: before, during and after a group", per_row=4, nticks=FOREST_TICKS)
     plt.close("all")
+
+
+def draw_delta(result, lags, path, title):
+    """H_loc of the four windows beside D_in, D_out, g (with its band), d w and the two controls, at every lag."""
+    stages = result["curves"]["stages"]
+    left = [{**stages[l], "label": l, "color": LINES[l][0], "ls": LINES[l][1]} for l in STAGES]
+    right = [{"lags": lags[:len(result["differences"][k]["dH_loc"]["value"])].tolist(), **result["differences"][k]["dH_loc"],
+              "label": FOREST_LABELS[k], "color": FOREST[k], "ls": "-" if k in ("D_in", "D_out", "g") else "--",
+              "lw": 1.4 if k == "g" else 0.9} for k in ("D_in", "D_out", "g", "d w", "ctrlA2 - ctrlA1", "ctrlS2 - ctrlS1")]
+    for r in right:
+        if r["label"] != FOREST_LABELS["g"]:
+            r["band"] = None
+    curves.delta_figure(left, right, path, title)
 
 
 def run_open(flights, membership, summary, width, sample=None, recompute=False):
@@ -373,14 +392,16 @@ def run_open(flights, membership, summary, width, sample=None, recompute=False):
         flights = flights[flights["flight"].isin(keep)]
     spans = stretches(flights, membership, summary)
     wins = windows(spans, np.random.default_rng(SEED), width)
-    print(wins["population"].value_counts().to_dict(), flush=True)
+    made = wins["population"].value_counts().to_dict()
+    print(made, flush=True)
     cache_file = CACHE / f"prepost_pieces_{width}_lag{lags.max()}{tag}.npz"
     if recompute or not cache_file.exists():
         found = tamsd.measure("para", flights, wins, lags, width - tamsd.GRID_S)  # a window holds width / 10 grid points
         np.savez(cache_file, **{f"para/{k}": v for k, v in found.items()})
     p = read_pieces(cache_file)["para"]
-    info, block, n_blocks = decompose.flight_table(flights, summary)
-    counts = decompose.block_counts(n_blocks, np.random.default_rng(SEED), N_BOOT)
+    info = decompose.flight_table(flights, summary)[0]
+    block, of_pilot, of_block = twoway.cells(flights, summary)  # the cell of each flight, as a block code
+    counts = twoway.counts(of_pilot, of_block, np.random.default_rng(SEED))
     units = decompose.msd_units(p, "episode", info, block)
     measured = pd.DataFrame({k: p[k] for k in ("flight", "population", "episode")}).drop_duplicates()
     wins = wins.merge(measured, on=["flight", "population", "episode"])
@@ -388,13 +409,15 @@ def run_open(flights, membership, summary, width, sample=None, recompute=False):
     defs = raw.stat_defs()
     meta, r, q, stats = window_rates(tables, wins, block, defs)
     result = open_analysis(units, meta, r, q, stats, counts, lags)
-    result |= {"window_s": width, "lags": lags.tolist(), "n_boot": N_BOOT, "windows made": wins["population"].value_counts().to_dict(),
+    result |= {"window_s": width, "lags": lags.tolist(), "n_boot": N_BOOT, "windows made": made,
+               "windows measured": wins["population"].value_counts().to_dict(),
                "windows with phase time": meta["population"].value_counts().to_dict()}
     (OUT / f"prepost_{width}{tag}.json").write_text(json.dumps(result, indent=1))
     for key, labels in (("stages", STAGES), *((f"controls {k}", v) for k, v in CONTROLS.items())):
         draw_curves({l: result["curves"][key][l] for l in labels}, OUT / f"prepost_{width}{tag}_{key.replace(' ', '_')}",
                     f"{key}: {result['curves'][key]['events']:,} events, windows of {width} s".replace(",", " "))
     forest(result, OUT / f"prepost_{width}{tag}_forest.pdf", width)
+    draw_delta(result, lags, OUT / f"prepost_{width}{tag}_delta", f"{result['curves']['stages']['events']:,} events, windows of {width} s")
     return result
 
 

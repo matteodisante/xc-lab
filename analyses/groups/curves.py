@@ -71,3 +71,29 @@ def plot(ax, curves, ylim=None, inset=INSET):
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     return small
+
+
+def delta_figure(left, right, path, title=None):
+    """A comparison over every lag (`path`.pdf and .png): left, H_loc(tau) of the series `left` (no bands); right,
+    the differences `right` (dicts: lags, value, label, color, and optionally band, ls) with their bands, and 0."""
+    fig, axes = plt.subplots(1, 2, figsize=(8.4, 2.7), constrained_layout=True)
+    for c in left:
+        axes[0].plot(c["lags"], c["H_loc"], color=c["color"], ls=c.get("ls", "-"), lw=1.4, label=c["label"])
+    axes[0].set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$H_{\rm loc}(\tau)$")
+    for d in right:
+        if d.get("band") is not None:
+            axes[1].fill_between(d["lags"], *d["band"], color=d["color"], alpha=0.18, lw=0)
+        axes[1].plot(d["lags"], d["value"], color=d["color"], ls=d.get("ls", "-"), lw=d.get("lw", 1.4), label=d["label"])
+    axes[1].axhline(0, color="#999999", lw=0.8)
+    axes[1].set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$\Delta H_{\rm loc}(\tau)$")
+    for ax in axes:
+        ax.legend(frameon=False, fontsize=6.5, loc="best")
+        ax.grid(color="#eeeeee", lw=0.5)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+    if title:
+        fig.suptitle(title, fontsize=8)
+    path = Path(path).with_suffix(".pdf")
+    fig.savefig(path, bbox_inches="tight")
+    fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
+    plt.close(fig)

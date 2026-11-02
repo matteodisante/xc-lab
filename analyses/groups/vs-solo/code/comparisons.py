@@ -335,7 +335,7 @@ def prepost_tex(p, m):
             continue
         macro(f"PreWindows{stage.capitalize()}", num(c["windows"], 0))
         macro(f"PreFit{stage.capitalize()}", num(c["H"], 3))
-        macro(f"PreHK{stage.capitalize()}", num(c["H_loc"][lag], 3))
+        macro(f"PreHK{stage.capitalize()}", num(c["H_loc(1000 s)"], 3))  # window cut at 1000 s, as points 1-3
     macro("PreEvents", num(p["curves"]["stages"]["events"], 0))
     macro("PreWindow", num(p["window_s"], 0))
     macro("PreMaxLag", num(max(p["lags"]), 0))

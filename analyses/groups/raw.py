@@ -6,8 +6,8 @@ flights). For each, the MSD and the H_loc figures with the fitted H (10 s to the
 legend. On the pieces of dataset `1000`, unit = the flight: the seven phase statistics with the estimator
 "average first, ratio after" (budget.unit_rates, budget.mean_ratios) and, as a check, the ratio of sums;
 the survival of the durations of climbs, searches that end in a climb and glides. A run of Vilpellet
-belongs to the piece that holds its middle (isolated.window_sums). All bands: 5-95% of the same N_BOOT draws
-of the dependency blocks of the method (flights tied by episodes; a solo flight is a block alone).
+belongs to the piece that holds its middle (isolated.window_sums). All bands: twoway.py, the same draws of
+pilots, blocks and cells for every number.
 
     uv run python raw.py --open [--run NAME]    # after tamsd.py, longlags.py and performance.py with --open
 """
@@ -27,6 +27,8 @@ import isolated
 import longlags
 import survival
 import tamsd
+import twoway
+from blocks import with_takeoffs
 from phase_msd import PHASES
 from tamsd import COLORS, LABELS, OUT, SEED, read_flights, save
 
@@ -42,6 +44,8 @@ DIGITS = {"time in climb (%)": 1, "time in search (%)": 1, "searches that end in
           "climbs per hour": 2, "climb rate (m/s)": 2, "glide speed (km/h)": 1, decompose.SINK: 0}
 SOURCES = ("b", "p")  # the terms of budget.py and of performance.py (isolated.phase_stats)
 SURVIVAL_PHASES = {"climb": "climb", "search": "search that ends in a climb", "transition": "glide"}
+GAPS = {"G - S": ("group", "solo"), "A - S": ("group_solo", "solo"), "G - A": ("group", "group_solo")}
+GAP_COLORS = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
 
 
 def stat_defs():
@@ -88,7 +92,8 @@ def unit_terms(tables, defs, pieces):
 
 def phase_statistics(tables, defs, pieces, block, counts):
     """The seven statistics of one population on its pieces: the new estimator and the ratio of sums, each
-    with the value and the 5-95% band over the draws `counts`."""
+    with the value and its band over the draws `counts`; and, as "draws", the value and the draws of the new
+    estimator (rows), for the gaps."""
     time, sums = unit_terms(tables, defs, pieces)
     time = time[time > 0]
     result = {"flights": int(len(time)), "phase time (h)": float(time.sum() / 3600)}
@@ -100,8 +105,10 @@ def phase_statistics(tables, defs, pieces, block, counts):
             value.append(v)
             draws.append(pd.DataFrame(d, columns=list(stats)))
         value, draws = pd.concat(value), pd.concat(draws, axis=1)
-        result[key] = {name: {"value": float(value[name]), "band": np.nanpercentile(draws[name], [5, 95]).tolist()}
+        result[key] = {name: {"value": float(value[name]), "band": twoway.band(float(value[name]), draws[name].to_numpy())}
                        for name in STATISTICS}
+        if key == "average first":
+            result["draws"] = np.vstack([value[list(STATISTICS)].to_numpy(), draws[list(STATISTICS)].to_numpy()])
     return result
 
 
@@ -115,7 +122,7 @@ def survival_curves(runs, pieces, block, counts):
         x = r["n_fixes"].to_numpy(float)
         keep = np.isin(x, trim(x))
         out[phase] = {"runs": int(keep.sum()), "flights": int(r.loc[keep, "flight"].nunique()),
-                      **survival.survival_curve(x[keep], block.reindex(r["flight"]).to_numpy()[keep], counts)}
+                      **survival.survival_curve(x[keep], block.reindex(r["flight"]).to_numpy()[keep], counts, band=twoway.share_band)}
     return out
 
 
@@ -136,6 +143,15 @@ def plot_survival(result, path):
     save(fig, path)
 
 
+def gap_at(gaps, lag):
+    """Each gap of `gaps` (dataset_curves) at `lag`, value and band, or None when the curves stop before it."""
+    lags = next(iter(gaps.values()))["lags"]
+    if lag not in lags:
+        return None
+    i = lags.index(lag)
+    return {gap: {"value": g["value"][i], "band": [g["band"][0][i], g["band"][1][i]]} for gap, g in gaps.items()}
+
+
 def hloc_at(c, lag):
     """H_loc at `lag` of a curve of longlags.curve, with its band, or None when the curve stops before it."""
     if lag not in c["lags"]:
@@ -145,16 +161,23 @@ def hloc_at(c, lag):
 
 
 def dataset_curves(p, block, counts, rng):
-    """The curves of S, A, G of the three datasets: {name: {tau_max, curves: {pop: curve}}}."""
+    """The curves of S, A, G of the three datasets and the differences GAPS of H_loc at every lag, with their
+    bands (the populations share the draws): {name: {tau_max, curves: {pop: curve}, gaps: {name: quote}}}."""
     avail = {k: longlags.available(p, m) for k, m in longlags.populations(p).items() if k in longlags.POOLED}
     taus = {"1000": tamsd.TAU_MAX, "2250": longlags.panels(avail)["fixed"], "longest": longlags.panels(avail)["longest"]}
     masks = longlags.populations(p)
-    return {name: {"tau_max": tau, "curves": {pop: longlags.curve(p, masks[pop], block, rng, tau, counts)
-                                              for pop in POPS}} for name, tau in taus.items()}
+    out = {}
+    for name, tau in taus.items():
+        got = {pop: longlags.curve(p, masks[pop], block, rng, tau, counts, twoway.band, with_draws=True) for pop in POPS}
+        rows = {pop: np.vstack([c["H_loc"], c.pop("H_loc_draws")]) for pop, c in got.items()}
+        out[name] = {"tau_max": tau, "curves": got,
+                     "gaps": {gap: {"lags": got[a]["lags"], **twoway.quote(rows[a] - rows[b])} for gap, (a, b) in GAPS.items()}}
+    return out
 
 
 def draw_datasets(datasets, folder):
-    """The MSD and the H_loc figure of each dataset, `raw_<name>_msd` and `raw_<name>_hloc`."""
+    """The MSD and the H_loc figure of each dataset, `raw_<name>_msd` and `raw_<name>_hloc`, and the H_loc
+    of S, A, G beside their differences, `raw_<name>_delta`."""
     for name, d in datasets.items():
         drawn = []
         for pop, short in POPS.items():
@@ -163,15 +186,18 @@ def draw_datasets(datasets, folder):
             drawn.append(curves.series(c, f"{short} ({c['flights']:,} flights): H = {c['H']:.3f} [{lo:.3f}, {hi:.3f}]",
                                        COLORS[pop]))
         curves.figures(drawn, folder / f"raw_{name}", f"dataset {name}: pieces of at least {d['tau_max'] / tamsd.SUPPORT:g} s")
+        left = [{**d["curves"][pop], "label": short, "color": COLORS[pop]} for pop, short in POPS.items()]
+        right = [{**d["gaps"][gap], "label": gap, "color": GAP_COLORS[gap]} for gap in GAPS]
+        curves.delta_figure(left, right, folder / f"raw_{name}_delta",
+                            f"dataset {name}: pieces of at least {d['tau_max'] / tamsd.SUPPORT:g} s")
 
 
 if __name__ == "__main__":
     tamsd.folders()
-    flights = read_flights()
-    summary = pd.read_parquet(LABELS / "flight_summary.parquet").set_index("flight")
-    code = pd.Series(pd.factorize(summary["block"].reindex(flights["flight"]))[0], index=flights["flight"].to_numpy())
+    flights = with_takeoffs(read_flights())
+    code, pilot, block = twoway.cells(flights, pd.read_parquet(LABELS / "flight_summary.parquet"))
     rng = np.random.default_rng(SEED)
-    counts = decompose.block_counts(int(code.max()) + 1, rng)
+    counts = twoway.counts(pilot, block, rng)
     p = dict(np.load(longlags.PIECES))
     datasets = dataset_curves(p, code, counts, rng)
     draw_datasets(datasets, OUT)
@@ -187,12 +213,17 @@ if __name__ == "__main__":
                 {n: (None, None, None, DIGITS[n]) for n in STATISTICS}, "Open paragliders: the seven phase statistics",
                 {pop: NAMES[pop] for pop in POPS}, COLORS)
     plot_survival(surv, OUT / "raw_survival.pdf")
+    draws = {pop: stats[pop].pop("draws") for pop in POPS}
     result = {"datasets": {name: {"tau_max": d["tau_max"], "populations": {
         POPS[pop]: {"flights": c["flights"], "pieces": c["pieces"], "H": c["H"], "H_band": c["H_band"],
                     **{f"H_loc({lag} s)": hloc_at(c, lag) for lag in DATASET_LAGS}, "curve": c}
         for pop, c in d["curves"].items()}} for name, d in datasets.items()},
+        "gaps": {name: {"H_loc": d["gaps"], **{f"H_loc({lag} s)": gap_at(d["gaps"], lag) for lag in DATASET_LAGS}}
+                 for name, d in datasets.items()},
+        "phase gaps": {gap: {n: twoway.quote(draws[a][:, j] - draws[b][:, j]) for j, n in enumerate(STATISTICS)}
+                       for gap, (a, b) in GAPS.items()},
         "phase statistics": {POPS[pop]: s for pop, s in stats.items()},
-        "survival": {POPS[pop]: s for pop, s in surv.items()}, "n_boot": tamsd.N_BOOT}
+        "survival": {POPS[pop]: s for pop, s in surv.items()}, "n_boot": tamsd.N_BOOT, "cells": int(len(pilot))}
     (OUT / "raw.json").write_text(json.dumps(result, indent=1))
     for name, d in result["datasets"].items():
         for pop, v in d["populations"].items():
