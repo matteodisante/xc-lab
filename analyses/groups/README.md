@@ -6,7 +6,7 @@ pipeline on the labels and import each other; the questions are split by their d
 
 | question | scripts | document |
 |---|---|---|
-| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower) | `vs-solo/general/group_vs_solo.pdf`; the route and isolated controls in `vs-solo/comparisons/group_vs_solo_comparisons.pdf` |
+| Does flying in a group change the flight? | tamsd, episodes, phase_msd, survival, budget, performance, redundancy, size, decompose, zones, route, isolated, prepost, mechanisms (leader and follower); on open flights raw, matched, decomposition, prepost `--open` | `vs-solo/general/group_vs_solo.pdf`; the four comparisons on open flights in `vs-solo/comparisons/group_vs_solo_comparisons.pdf` |
 | What are the groups? | describe, mechanisms, cohesion, hierarchy, chains, partners, fission | `structure/group_structure.pdf` |
 | Does it depend on the wing level? | `experienced/` | none |
 
@@ -117,11 +117,31 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   on its pieces of dataset `1000`) with the ratio of sums as a check, and the survival of climbs, searches that
   end in a climb and glides (`survival.survival_curve`, with optional weights); all in `raw.json`, with one
   set of bootstrap draws of the dependency blocks for every band.
+- **`prepost.py --open`** (point 4): windows of 2400 s, MSD and H_loc figures of pre, start, end, post and of the
+  two control pairs, the seven statistics by the estimator that averages first (unit = the window), D_in, D_out,
+  post - pre and, on the events with the four windows, the drift-free g = (D_in + D_out) / 2 and d w = (D_in - D_out) / 2.
+  `--redraw` draws the forest plot again from the JSON (`prepost_2400.json`).
+- **`matched.py`** (`--open`, point 2): one match table on the route only (rho 500 m, cover 0.8, same direction), calipers
+  as filters (month, hour, wing class or level), counts of pieces per caliper (`matched_counts.json`), then `--stats`:
+  G against S|G and A against S|A with the seven statistics, survival with weights and the robustness lines.
+  Pilots x blocks bands, and the range over the years leaving one out (`matched.json`).
+- **`decomposition.py`** (`--open`, point 3): Delta(C) for the 8 subsets of {route, season and hour, wing} on the same
+  pieces, controls without a route as windows of solo pieces, and the Shapley value of each factor
+  (`decomposition.json`); the identity Delta(none) = Delta(F) + phi_R + phi_T + phi_W holds on every draw.
 - **`regions.py`**: S, G and A in the six cells of 50 km x 50 km with the most flights of group time
   (whichever the takeoff), named by their busiest takeoff; G above A above S at 1000 s in five of the six.
   **`maps.py`**: two maps of France, the density of the pieces of S and of G, with those cells.
 - **`mechanisms.py`**: phase at entry and exit, leader minus follower in groups of two, habitual
   leaders, hours (the last three serve the structure note too).
+
+**The four comparisons on open flights**, report `vs-solo/comparisons/group_vs_solo_comparisons.pdf @ 634cd88`
+(19 pages, 13 of them core). Raw: H_loc(1000 s) 0.915 (G), 0.897 (S), 0.894 (A), the bands of G and S apart for it and for
+the seven phase statistics. Same route, season, hour and wing (caliper month ±1, hour ±1, same class, 1763 pieces
+of G): Delta H_loc(1000 s) +0.008 [-0.003, +0.025], and the bands of all nine quantities include 0, so do
+those of the selection term. Decomposition: the route carries most of Delta(none) for time in climb, glide
+speed and height lost per km. Before and after: g = +0.023 [+0.018, +0.029] at H_loc(1000 s), inside the band of
+the same-route gap; time in search, climb rate, glide speed and height lost per km have opposite signs in the
+two comparisons.
 
 ## What are the groups?
 
@@ -174,6 +194,8 @@ numbers quoted here, except those of `isolated.py` and `experienced/`, which no 
 `experienced/test_*.py` checks the fits.
 
 ```
+# open flights, after tamsd, longlags, performance with --open: raw, prepost, matched (--stats), decomposition
+uv run python raw.py --open; uv run python prepost.py --open --window 2400; uv run python matched.py --open --stats; uv run python decomposition.py --open
 uv run python tamsd.py [--run NAME]      # from this folder, needs SSD_DISANTE; --recompute: about 5 min
 uv run python episodes.py [--run NAME]   # after tamsd.py
 uv run python phase_msd.py [--run NAME]  # --recompute: about 6 min; the bootstrap of the slopes about 45 min
