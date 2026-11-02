@@ -18,6 +18,19 @@ H_loc and the fitted H) and on the phase statistics of the runs placed in the wi
 middle, with 5-95% bands from blocks that join episodes and site-days (decompose.block_counts).
 
     uv run python prepost.py [--run NAME] [--window SECONDS] [--recompute]    # after tamsd.py and performance.py
+
+With --open (or --declared-open) the open flights are analysed by the method of the comparisons plan (point 4):
+windows of OPEN_WINDOW_S s measured at the lags of longlags.LONG_LAGS up to SUPPORT x the window; the MSD
+and the H_loc figures of the four windows and of the control pairs; the seven phase statistics by the
+estimator that averages first (unit = window); the differences D_in = start - pre, D_out = end - post,
+post - pre and the controls, and, on the events that have all four windows, the drift-free
+
+    g   = (D_in + D_out) / 2    the group effect, free of a drift linear in time
+    d w = (D_in - D_out) / 2    the drift over one window
+
+with 5-95% bands of N_BOOT draws of decompose.block_counts, the same for every quantity.
+
+    uv run python prepost.py --open [--window SECONDS] [--sample N] [--recompute]    # after tamsd.py and performance.py --open
 """
 
 import json
@@ -28,10 +41,16 @@ import numpy as np
 import pandas as pd
 
 import budget
+import curves
 import decompose
+import isolated
+import longlags
+import raw
+import tamsd
 import zones
 from blocks import with_takeoffs
-from tamsd import CACHE, COLORS, FIXES, LABELS, LAGS, OUT, SEED, read_flights, read_pieces, save, save_pieces, stretches
+from tamsd import (CACHE, COLORS, FIXES, LABELS, LAGS, N_BOOT, OPEN, OUT, SEED, read_flights, read_pieces, save,
+                   save_pieces, stretches)
 
 WINDOW_S = 1260  # s, the shortest window: the 1250 s of a piece of the TA-MSD on the 10-s grid; --window SECONDS
 LONG_S = 3000  # s, the default of the command line: lags up to 1000 s keep 200 origins
@@ -39,6 +58,20 @@ COMPARISONS = {  # name: (P, Q); the difference is P - Q
     "entry": ("start", "pre"), "exit": ("end", "post"), "after minus before": ("post", "pre"),
     "control, group flights alone": ("ctrlA2", "ctrlA1"), "control, solo flights": ("ctrlS2", "ctrlS1")}
 STAGES = ("pre", "start", "end", "post")
+OPEN_WINDOW_S = 2400  # s, the window of the open flights: lags up to 1840 s keep 56 origins
+QUOTED_LAG = 1000  # s, the quoted H_loc
+OPEN_COMPARISONS = {"D_in": ("start", "pre"), "D_out": ("end", "post"), "post - pre": ("post", "pre"),
+                    "ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"), "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}
+FOUR = ("g", "d w")  # the drift-free effects, on the events that have the four STAGES
+CONTROLS = {"A": ("ctrlA1", "ctrlA2"), "S": ("ctrlS1", "ctrlS2")}
+LINES = {  # window: (colour, line style)
+    "pre": (COLORS["group_solo"], "-"), "start": (COLORS["group"], "-"), "end": ("#8c2f0f", "--"), "post": ("#0f6e4c", "--"),
+    "ctrlA1": (COLORS["group_solo"], "-"), "ctrlA2": ("#0f6e4c", "--"), "ctrlS1": (COLORS["solo"], "-"), "ctrlS2": ("#16427a", "--")}
+FOREST = {"D_in": "#eb6834", "D_out": "#8c2f0f", "post - pre": "#555555", "g": "#c24a1d", "d w": "#9a9893",
+          "ctrlA2 - ctrlA1": "#1baf7a", "ctrlS2 - ctrlS1": "#2a78d6"}
+FOREST_LABELS = {"D_in": "D_in = start - pre", "D_out": "D_out = end - post", "post - pre": "post - pre",
+                 "g": "g = (D_in + D_out) / 2", "d w": "d w = (D_in - D_out) / 2",
+                 "ctrlA2 - ctrlA1": "control, group flights alone", "ctrlS2 - ctrlS1": "control, solo flights"}
 STATS = {**decompose.BUDGET, **{k: v for k, v in decompose.PERFORMANCE.items() if k != decompose.XC}}
 
 
@@ -188,11 +221,194 @@ def figure_profile(profile_, path):
     save(fig, path)
 
 
+def window_lags(width):
+    """The lags of longlags.LONG_LAGS a window of `width` s measures without changing population: up to SUPPORT x width."""
+    return longlags.LONG_LAGS[longlags.LONG_LAGS <= tamsd.SUPPORT * width]
+
+
+def events_with(population, event, labels):
+    """Mask over the rows: those of the events that have a row in every population of `labels`."""
+    e = pd.factorize(event)[0]
+    have = np.all([np.bincount(e[population == label], minlength=e.max() + 1) > 0 for label in labels], axis=0)
+    return have[e]
+
+
+def drift_free(d_in, d_out):
+    """The group effect g = (D_in + D_out) / 2 and the drift over one window d w = (D_in - D_out) / 2."""
+    return (d_in + d_out) / 2, (d_in - d_out) / 2
+
+
+def curves_on(units, counts, labels, lags):
+    """Per population of `labels`, on the events that have them all (unit = window, weight 1 or the count of its
+    block): the ensemble MSD and, as `values`, H_loc at every lag and the fitted H, in rows (point estimate, then
+    one row per draw of `counts`); windows, flights; and the events."""
+    keep = events_with(units.population, units.stratum, labels)
+    out = {}
+    for label in labels:
+        m = keep & (units.population == label)
+        w = np.vstack([np.ones(m.sum()), counts[:, units.block[m]]]).astype(float)
+        with np.errstate(invalid="ignore"):  # a draw may keep none of the windows
+            msd = (w @ units.values[m]) / w.sum(axis=1)[:, None]
+        h, f = zones.curve(msd, lags)
+        out[label] = {"msd": msd, "values": np.column_stack([h, f]), "windows": int(m.sum()),
+                      "flights": int(np.unique(units.flight[m]).size)}
+    return out, int(np.unique(units.stratum[keep]).size)
+
+
+def phase_on(meta, r, q, counts, labels, stats):
+    """The same for the statistics of `stats` by the estimator that averages first: windows `meta` (flight,
+    population, episode, block) with their rates r and q (budget.unit_rates); `values` has one column per statistic."""
+    keep = events_with(meta["population"].to_numpy(), meta["episode"].to_numpy(), labels)
+    out = {}
+    for label in labels:
+        m = keep & (meta["population"] == label).to_numpy()
+        value, draws = budget.mean_ratios(r[m], q[m], meta["block"].to_numpy()[m], counts, stats)
+        out[label] = {"values": np.vstack([value.to_numpy(), draws]), "windows": int(m.sum()),
+                      "flights": int(meta["flight"][m].nunique())}
+    return out, int(meta["episode"][keep].nunique())
+
+
+def window_rates(tables, wins, block, stats_by_source):
+    """Per window of `wins` (flight, a, b): its phase time T_u from the runs that lie in it by their middle, and
+    r_u, q_u of every statistic (budget.unit_rates), keeping the windows with T_u > 0; returns (meta, r, q, stats)."""
+    flight, a, b = (wins[c].to_numpy() for c in ("flight", "a", "b"))
+    time = pd.Series(isolated.window_sums(tables["b"], ["s"], flight, a, b)[:, 0])
+    rates, stats = [], {}
+    for src, st in stats_by_source.items():
+        cols = sorted({c for num, den, *_ in st.values() for c in (num, den)})
+        sums = pd.DataFrame(isolated.window_sums(tables[src], cols, flight, a, b), columns=cols)
+        rates.append(budget.unit_rates(sums, np.arange(len(wins)), time, st))
+        stats |= st
+    stats = {n: stats[n] for n in raw.STATISTICS}
+    r = pd.concat([x[0] for x in rates], axis=1)[list(stats)]
+    q = pd.concat([x[1] for x in rates], axis=1)[list(stats)]
+    ok = (time > 0).to_numpy()
+    meta = wins.assign(block=block.reindex(wins["flight"]).to_numpy(int))[ok].reset_index(drop=True)
+    return meta, r[ok].reset_index(drop=True), q[ok].reset_index(drop=True), stats
+
+
+def effects(on, comparisons=OPEN_COMPARISONS, stages=STAGES):
+    """The differences P - Q of `comparisons` (each on the events that have both windows), and D_in, D_out, g and
+    d w on the events that have the `stages`, from `on(labels)` = (per population its `values`, events). Returns
+    {name: (values, events)}: rows draws, columns what `on` measures."""
+    out = {}
+    for name, (P, Q) in comparisons.items():
+        got, events = on((P, Q))
+        out[name] = (got[P]["values"] - got[Q]["values"], events, got[P]["windows"], got[P]["flights"])
+    got, events = on(stages)
+    v = {k: x["values"] for k, x in got.items()}
+    d_in, d_out = v["start"] - v["pre"], v["end"] - v["post"]
+    g, dw = drift_free(d_in, d_out)
+    shape = got["pre"]["windows"], got["pre"]["flights"]
+    out.update({"D_in (four-window events)": (d_in, events, *shape), "D_out (four-window events)": (d_out, events, *shape),
+                "g": (g, events, *shape), "d w": (dw, events, *shape)})
+    return out
+
+
+def describe_msd(x, lags):
+    """A difference of `curves_on` (rows draws): Delta H_loc at QUOTED_LAG, Delta H and Delta H_loc at every lag."""
+    values, k = x[0], list(lags).index(QUOTED_LAG)
+    return {f"H_loc({QUOTED_LAG} s)": decompose.described(values[:, k]), "Delta H": decompose.described(values[:, -1]),
+            "dH_loc": {"value": values[0, :-1].tolist(), "band": np.percentile(values[1:, :-1], [5, 95], axis=0).tolist()}}
+
+
+def curve_of(entry, lags):
+    """A series for curves.series from one population of `curves_on`: MSD and H_loc with 5-95% bands, and H."""
+    v, m = entry["values"], entry["msd"]
+    p = lambda a: np.percentile(a[1:], [5, 95], axis=0).tolist()
+    return {"lags": lags.tolist(), "msd": m[0].tolist(), "msd_band": p(m), "H_loc": v[0, :-1].tolist(),
+            "H_loc_band": p(v[:, :-1]), "H": float(v[0, -1]), "H_band": np.percentile(v[1:, -1], [5, 95]).tolist(),
+            "windows": entry["windows"], "flights": entry["flights"]}
+
+
+def draw_curves(curves_by_label, stem, title):
+    """The MSD and the H_loc figure of the windows of `curves_by_label` (label: curve_of), fitted H in the legend."""
+    drawn = []
+    for label, c in curves_by_label.items():
+        lo, hi = c["H_band"]
+        drawn.append(curves.series(c, f"{label} ({c['windows']:,} windows): H = {c['H']:.3f} [{lo:.3f}, {hi:.3f}]",
+                                   *LINES[label]))
+    curves.figures(drawn, stem, title)
+
+
+def open_analysis(units, meta, r, q, stats, counts, lags):
+    """Everything of the open mode as a dict: window curves, differences of the MSD statistics and of the phase
+    statistics, with bands from `counts`."""
+    msd_on = lambda labels: curves_on(units, counts, labels, lags)
+    phase = lambda labels: phase_on(meta, r, q, counts, labels, stats)
+    m, p = effects(msd_on), effects(phase)
+    result = {"curves": {}, "differences": {}, "phase statistics": {}}
+    for key, labels in (("stages", STAGES), *((f"controls {k}", v) for k, v in CONTROLS.items())):
+        got, events = msd_on(labels)
+        result["curves"][key] = {"events": events, **{l: curve_of(c, lags) for l, c in got.items()}}
+        got, events = phase(labels)
+        result["phase statistics"][key] = {"events": events, **{l: {
+            "windows": c["windows"], "flights": c["flights"], **{s: decompose.described(c["values"][:, j])
+                                                                   for j, s in enumerate(stats)}} for l, c in got.items()}}
+    for name in m:
+        result["differences"][name] = {
+            "events (MSD)": m[name][1], "windows (MSD)": m[name][2], "flights (MSD)": m[name][3],
+            "events (phase)": p[name][1], "windows (phase)": p[name][2], "flights (phase)": p[name][3],
+            **describe_msd(m[name], lags), **{s: decompose.described(p[name][0][:, j]) for j, s in enumerate(stats)}}
+    return result
+
+
+def forest(result, path, width):
+    """The forest plot of Delta H_loc(1000 s) and the seven Delta for D_in, D_out, post - pre, g, d w and the controls."""
+    diffs = result["differences"]
+    decompose.forest(diffs, path, (f"H_loc({QUOTED_LAG} s)", *raw.STATISTICS), list(FOREST), FOREST_LABELS, FOREST,
+                     f"Open paragliders, windows of {width} s: before, during and after a group", per_row=4)
+    plt.close("all")
+
+
+def run_open(flights, membership, summary, width, sample=None, recompute=False):
+    """The open mode: windows, pieces (cached), analysis, JSON and figures in OUT."""
+    tag = f"_sample{sample}" if sample else ""
+    lags = window_lags(width)
+    if sample:  # the first `sample` group flights and as many solo ones
+        grouped = summary.set_index("flight")["n_entries"].reindex(flights["flight"]).to_numpy() > 0
+        keep = np.r_[flights["flight"][grouped].to_numpy()[:sample], flights["flight"][~grouped].to_numpy()[:sample]]
+        flights = flights[flights["flight"].isin(keep)]
+    spans = stretches(flights, membership, summary)
+    wins = windows(spans, np.random.default_rng(SEED), width)
+    print(wins["population"].value_counts().to_dict(), flush=True)
+    cache_file = CACHE / f"prepost_pieces_{width}_lag{lags.max()}{tag}.npz"
+    if recompute or not cache_file.exists():
+        found = tamsd.measure("para", flights, wins, lags, width - tamsd.GRID_S)  # a window holds width / 10 grid points
+        np.savez(cache_file, **{f"para/{k}": v for k, v in found.items()})
+    p = read_pieces(cache_file)["para"]
+    info, block, n_blocks = decompose.flight_table(flights, summary)
+    counts = decompose.block_counts(n_blocks, np.random.default_rng(SEED), N_BOOT)
+    units = decompose.msd_units(p, "episode", info, block)
+    measured = pd.DataFrame({k: p[k] for k in ("flight", "population", "episode")}).drop_duplicates()
+    wins = wins.merge(measured, on=["flight", "population", "episode"])
+    tables = isolated.run_terms(flights)
+    defs = raw.stat_defs()
+    meta, r, q, stats = window_rates(tables, wins, block, defs)
+    result = open_analysis(units, meta, r, q, stats, counts, lags)
+    result |= {"window_s": width, "lags": lags.tolist(), "n_boot": N_BOOT, "windows made": wins["population"].value_counts().to_dict(),
+               "windows with phase time": meta["population"].value_counts().to_dict()}
+    (OUT / f"prepost_{width}{tag}.json").write_text(json.dumps(result, indent=1))
+    for key, labels in (("stages", STAGES), *((f"controls {k}", v) for k, v in CONTROLS.items())):
+        draw_curves({l: result["curves"][key][l] for l in labels}, OUT / f"prepost_{width}{tag}_{key.replace(' ', '_')}",
+                    f"{key}: {result['curves'][key]['events']:,} events, windows of {width} s".replace(",", " "))
+    forest(result, OUT / f"prepost_{width}{tag}_forest.pdf", width)
+    return result
+
+
 if __name__ == "__main__":
     flights = with_takeoffs(read_flights())
     membership = pd.read_parquet(LABELS / "membership.parquet")
     summary = pd.read_parquet(LABELS / "flight_summary.parquet")
-    width = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else LONG_S
+    width = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else OPEN_WINDOW_S if OPEN else LONG_S
+    if OPEN:
+        tamsd.folders()
+        sample = int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else None
+        out = run_open(flights, membership, summary, width, sample, "--recompute" in sys.argv)
+        for name, d in out["differences"].items():
+            print(name, {k: d[k] for k in d if k.startswith(("events", "windows"))},
+                  {k: [round(d[k]["value"], 4), np.round(d[k]["band"], 4).tolist()] for k in d if k != "dH_loc" and isinstance(d[k], dict)})
+        sys.exit()
     cache_file = CACHE / f"prepost_pieces_{width}.npz"
     spans = stretches(flights, membership, summary)
     wins = windows(spans, np.random.default_rng(SEED), width)

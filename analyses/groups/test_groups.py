@@ -12,6 +12,7 @@ import blocks  # noqa: E402
 import budget  # noqa: E402
 import decompose  # noqa: E402
 import describe  # noqa: E402
+import longlags  # noqa: E402
 import mechanisms  # noqa: E402
 import prepost  # noqa: E402
 import performance  # noqa: E402
@@ -963,3 +964,73 @@ def test_runs_belong_to_the_piece_that_holds_their_middle():
     table = pd.DataFrame({"flight": [1, 1, 1, 2], "t_mid": [5.0, 15.0, 25.0, 5.0]})
     mask = raw.in_pieces(table, np.array([1, 1, 2]), np.array([0.0, 20.0, 100.0]), np.array([10.0, 30.0, 200.0]))
     assert mask.tolist() == [True, False, True, False]
+
+
+def synthetic_windows(n_events=30, g=0.04, d=0.015, with_post=True):
+    """Windows pre, start, end, post of n events, one flight each: H of a window = base + g in the group + d x its
+    position in time (pre 0, start 1, end 2 + stay, post 3 + stay), MSD = lag^(2H)."""
+    lags = longlags.LONG_LAGS[longlags.LONG_LAGS <= 1840]
+    rng = np.random.default_rng(1)
+    rows = []
+    for e in range(n_events):
+        base, stay = rng.uniform(0.7, 0.8), rng.integers(0, 5)
+        for label, inside, pos in (("pre", 0, 0), ("start", 1, 1), ("end", 1, 2 + stay), ("post", 0, 3 + stay)):
+            if label == "post" and not with_post and e % 2:
+                continue
+            rows.append((label, e, base + g * inside + d * pos))
+    pop, event, h = (np.array(c) for c in zip(*rows))
+    msd = lags[None, :].astype(float) ** (2 * h[:, None])
+    units = decompose.Units(pop, event, np.arange(len(pop)), msd, flight=np.arange(len(pop)))
+    return units, lags, h
+
+
+def test_drift_free_estimator_returns_the_effect_and_the_drift_exactly():
+    g, dw = prepost.drift_free(np.array([0.055, 0.1]), np.array([0.025, 0.02]))
+    assert g == pytest.approx([0.04, 0.06], abs=1e-15) and dw == pytest.approx([0.015, 0.04], abs=1e-15)
+
+
+def test_the_msd_differences_on_four_window_events_give_g_and_the_drift():
+    units, lags, _ = synthetic_windows()
+    counts = np.random.default_rng(0).multinomial(len(units.population), np.full(len(units.population), 1 / len(units.population)), size=7)
+    on = lambda labels: prepost.curves_on(units, counts, labels, lags)
+    out = prepost.effects(on)
+    for name, expected in (("D_in", 0.055), ("D_out", 0.025), ("g", 0.04), ("d w", 0.015)):
+        values, events, windows, flights = out[name if name in ("g", "d w") else name + " (four-window events)"]
+        assert events == 30 and windows == 30 and flights == 30
+        k = list(lags).index(1000)
+        assert values[0, k] == pytest.approx(expected, abs=1e-9) and values[0, -1] == pytest.approx(expected, abs=1e-9), name
+    assert out["D_in"][1] == 30 and out["post - pre"][1] == 30
+
+
+def test_events_without_a_window_leave_the_pairs_that_need_it():
+    units, lags, _ = synthetic_windows(with_post=False)  # odd events have no post
+    counts = np.ones((3, len(units.population)), np.int32)
+    out = prepost.effects(lambda labels: prepost.curves_on(units, counts, labels, lags))
+    assert out["D_in"][1] == 30 and out["D_out"][1] == 15 and out["g"][1] == 15 and out["post - pre"][1] == 15
+    # the pre window on the 15 events with a post is the same as the post's partner: g is still exact there
+    assert out["g"][0][0, list(lags).index(1000)] == pytest.approx(0.04, abs=1e-9)
+
+
+def test_phase_differences_by_window_recover_the_effect_and_the_drift_with_the_new_estimator():
+    stats = {"climbs per hour": budget.STATS["climbs per hour"]}
+    rng = np.random.default_rng(2)
+    meta, rate = [], []
+    for e in range(20):
+        base, stay = rng.uniform(1, 2), rng.integers(0, 4)
+        for label, inside, pos in (("pre", 0, 0), ("start", 1, 1), ("end", 1, 2 + stay), ("post", 0, 3 + stay)):
+            meta.append((e, label, e % 4)), rate.append(base + 0.5 * inside + 0.2 * pos)
+    meta = pd.DataFrame(meta, columns=["flight", "population", "block"]).assign(episode=lambda m: m["flight"])
+    # windows of different lengths: the rate per hour of each is the same whatever the time, so the mean over windows is exact
+    r = pd.DataFrame({"climbs per hour": np.array(rate) / 3600})
+    q = pd.DataFrame({"climbs per hour": np.full(len(r), 1 / 3600)})
+    counts = np.random.default_rng(3).multinomial(4, np.full(4, 0.25), size=5)
+    out = prepost.effects(lambda labels: prepost.phase_on(meta, r, q, counts, labels, stats))
+    assert out["g"][0][0, 0] == pytest.approx(0.5, abs=1e-12) and out["d w"][0][0, 0] == pytest.approx(0.2, abs=1e-12)
+    assert out["D_in"][0][0, 0] == pytest.approx(0.7) and out["post - pre"][2] == 20
+    # a draw that keeps only the events of block 1 still gives g = 0.5 (the effect is the same in every event)
+    only = np.array([[0, 5, 0, 0]])
+    assert prepost.effects(lambda labels: prepost.phase_on(meta, r, q, only, labels, stats))["g"][0][0, 0] == pytest.approx(0.5, abs=1e-12)
+
+
+def test_the_window_lags_stop_at_eight_tenths_of_the_window():
+    assert prepost.window_lags(2400).max() == 1840 and prepost.window_lags(1250).max() == 1000
