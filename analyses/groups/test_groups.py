@@ -15,11 +15,13 @@ import describe  # noqa: E402
 import longlags  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
+import isolated  # noqa: E402
 import prepost  # noqa: E402
 import performance  # noqa: E402
 import phase_msd  # noqa: E402
 import redundancy  # noqa: E402
 import size  # noqa: E402
+import raw  # noqa: E402
 import route  # noqa: E402
 import survival  # noqa: E402
 import tamsd  # noqa: E402
@@ -1096,3 +1098,95 @@ def test_matched_isolation_of_a_segment_from_the_flags_of_its_points():
     assert matched.segment_isolated(flags, 7, 12, 3)  # points 9 and 12
     assert not matched.segment_isolated(flags, 4, 7, 3)  # point 6 only
     assert matched.segment_isolated(flags, 0, 4, 3)  # points 0 and 3
+
+
+def _ones(rows, cols):
+    return np.ones((len(rows), len(cols)))
+
+
+def test_matched_survival_weighs_the_controls_by_one_over_the_controls_of_their_piece():
+    grid = np.array([50.0, 500.0])
+    # piece 0: runs 10, 100; its control: runs 10, 100. piece 1: runs 10; its two controls: runs 10 and runs 1000, 10
+    piece = duration_counts_of([[10, 100], [10]], grid)
+    control = np.vstack([duration_counts_of([[10, 100]], grid), duration_counts_of([[10], [1000, 10]], grid)])
+    a, b = piece, control
+    group, ctrl, _ = isolated.engine(np.array([0, 1, 1]), np.array([0, 1, 2]), a, b, np.array([0, 1]), np.array([0, 1, 2]), (_ones, 1))
+    assert (group[:2, 0] / group[2, 0]).tolist() == [1 / 3, 0.0]  # 100 > 50 once of three runs
+    # control side: piece 0 weighs 1 (runs 10, 100), piece 1 weighs 1/2 for each of its controls (runs 10; 1000, 10)
+    total = 2 + 0.5 * 1 + 0.5 * 2
+    assert ctrl[2, 0] == pytest.approx(total)
+    assert ctrl[0, 0] / ctrl[2, 0] == pytest.approx((1 + 0.5) / total)  # runs above 50: 100 and 1000
+    assert ctrl[1, 0] / ctrl[2, 0] == pytest.approx(0.5 / total)  # above 500: the 1000 only
+
+
+def duration_counts_of(runs_by_unit, grid):
+    unit = np.concatenate([np.full(len(r), u) for u, r in enumerate(runs_by_unit)])
+    x = np.concatenate([np.asarray(r, float) for r in runs_by_unit])
+    return matched.duration_counts(unit, x, len(runs_by_unit), grid)
+
+
+def test_matched_duration_counts_with_equal_weights_are_the_plain_survival():
+    x = np.array([5.0, 20.0, 20.0, 400.0, 90.0])
+    grid = survival.GRID
+    counts = matched.duration_counts(np.zeros(len(x), int), x, 1)[0]
+    curve = survival.survival_curve(x, np.zeros(len(x), int), np.ones((2, 1)), grid=grid)
+    assert (counts[:-1] / counts[-1]).tolist() == pytest.approx(curve["value"])
+
+
+def test_matched_runs_go_to_the_window_that_holds_their_middle():
+    ctx = object.__new__(matched.Context)
+    runs = pd.DataFrame({"flight": [1, 1, 1, 2], "t_mid": [5.0, 15.0, 25.0, 15.0], "n_fixes": [3, 4, 5, 6]})
+    ctx.runs = runs.assign(key=runs["flight"] * isolated.RANK + runs["t_mid"])
+    unit, idx = matched.window_runs(ctx, np.array([1, 1, 2, 1]), np.array([0.0, 10.0, 0.0, 30.0]), np.array([20.0, 30.0, 10.0, 40.0]))
+    assert unit.tolist() == [0, 0, 1, 1]  # window 2 (flight 2, [0, 10)) and window 3 hold no middle
+    assert ctx.runs["n_fixes"].to_numpy()[idx].tolist() == [3, 4, 4, 5]
+
+
+def test_matched_unit_rates_are_per_unit_shares_and_zero_without_phase_time():
+    ctx = object.__new__(matched.Context)
+    ctx.defs = raw.stat_defs()
+    ctx.scale = np.array([next(s[n][2] for s in ctx.defs.values() if n in s) for n in matched.NAMES], float)
+    rng = np.random.default_rng(3)
+    base = {"flight": [1, 1, 1, 1], "t_mid": [5.0, 15.0, 25.0, 35.0]}
+    b = pd.DataFrame(base | {c: rng.integers(1, 9, 4).astype(float) for st in ctx.defs["b"].values() for c in (*st[:2], "s")})
+    p = pd.DataFrame(base | {c: rng.integers(1, 9, 4).astype(float) for st in ctx.defs["p"].values() for c in st[:2]})
+    ctx.tables = {"b": b, "p": p}
+    T, rq = ctx.rates(np.array([1, 1, 1]), np.array([0.0, 20.0, 100.0]), np.array([20.0, 40.0, 120.0]))
+    assert T.tolist() == [b["s"][:2].sum(), b["s"][2:].sum(), 0.0]
+    k = matched.NAMES.index("time in climb (%)")
+    assert rq[0, k] == pytest.approx(b["climb_s"][:2].sum() / T[0])  # r = n / T
+    assert rq[0, len(matched.NAMES) + k] == pytest.approx(1.0)  # q = d / T = s / T
+    assert (rq[2] == 0).all()
+    # the estimator on two units: scale * sum r / sum q, not the share of the sums
+    r = rq[:2, k]
+    assert 100 * r.sum() / rq[:2, len(matched.NAMES) + k].sum() == pytest.approx(100 * r.mean())
+
+
+def test_matched_difference_of_deltas_is_taken_on_every_draw():
+    draws = lambda g, c, gy, cy: {"m": {"group": (np.array(g, float), np.array(gy, float)),
+                                        "control": (np.array(c, float), np.array(cy, float))}}
+    out = matched.contrasts(draws([5, 4, 7], [1, 1, 1], [1, 2], [0, 1]), draws([3, 6, 2], [1, 1, 2], [4, 4], [1, 3]))
+    assert out["G - S|G"]["m"][0].tolist() == [4, 3, 6] and out["A - S|A"]["m"][0].tolist() == [2, 5, 0]
+    diff = out["(G - S|G) - (A - S|A)"]["m"]
+    assert diff[0].tolist() == [2, -2, 6]
+    assert diff[1].tolist() == [1 - 3, 1 - 1]  # years: (2 - 1) - (4 - 1) and (1 - 0) - (4 - 3)... per year
+    # the band of the difference is that of its draws, not the difference of the bands
+    x = np.r_[0.0, np.linspace(-1, 1, 101)]
+    zero = {"m": {"group": (0 * x, None), "control": (0 * x, None)}}
+    out = matched.contrasts({"m": {"group": (x, None), "control": zero["m"]["control"]}},
+                            {"m": {"group": (-x, None), "control": zero["m"]["control"]}})
+    lo, hi = matched.quoted(out["(G - S|G) - (A - S|A)"]["m"])["band"]
+    assert (lo, hi) == pytest.approx(tuple(np.percentile(2 * x[1:], [5, 95])))
+
+
+def test_matched_long_series_stops_at_the_largest_lag_that_keeps_enough_pieces(monkeypatch):
+    monkeypatch.setattr(matched, "MIN_PIECES", 2)
+    t = pd.DataFrame({"side": "G", "piece": [0, 1, 2, 3], "solo": range(4), "cover": 0.9, "dmonth": 0, "dhour": 0.0,
+                      "class_piece": "B", "class_solo": "B", "level_piece": "beginners", "level_solo": "beginners",
+                      "dur_piece": [2000, 2000, 3000, 3000], "dur_solo": [3000, 1300, 3000, 3000], "isolated": True})
+    line = {"caliper": "month1_hour1_class"}
+    assert matched.long_lag(t, line, "all") == 2250  # pieces 2 and 3 last 3000 >= 2250 / 0.8
+    t["dur_piece"] = [2000, 2000, 3000, 1500]
+    assert matched.long_lag(t, line, "all") == 1500  # at 1500 s (pieces and segments of 1875 s) pieces 0 and 2 count
+    t["dur_piece"] = 1000  # no piece reaches the 1250 s the lag of 1000 s needs
+    assert matched.long_lag(t, line, "all") is None
