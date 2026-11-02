@@ -62,7 +62,7 @@
 \newcounter{talkpart}\setcounter{talkpart}{0}
 \newcommand{\threaditem}[2]{\ifnum\value{talkpart}=#1\textcolor{steel}{\textbf{#2}}\else\textcolor{muted}{#2}\fi}
 \setbeamertemplate{footline}{%
-  \hspace{7mm}\textcolor{muted}{\fontsize{6.5}{8}\selectfont November 2026}\hfill
+  \hspace{7mm}\textcolor{muted}{\fontsize{6.5}{8}\selectfont 3 November 2026}\hfill
   \ifnum\value{talkpart}>0{\fontsize{7}{8.5}\selectfont
     \threaditem{1}{1 Raw}\quad\threaditem{2}{2 Same route and factors}\quad\threaditem{3}{3 Same flight}}\fi
   \hspace{7mm}\vspace{2mm}}
@@ -113,7 +113,7 @@
    {{\LARGE\bfseries Does a paraglider move differently in a group?}\\[4mm]
    {\small Group time against solo flight, on open flights}};
  \node[text=steel,align=center]at([yshift=10mm]current page.south)
-   {{\normalsize November 2026}\\[1.5mm]};
+   {{\normalsize 3 November 2026}\\[1.5mm]};
 \end{tikzpicture}
 \end{frame}
 
@@ -150,9 +150,8 @@
 \partframe{Question 1}{Do flights in a group move differently from solo flights?}
 
 \begin{frame}{Raw: group time is straighter at the long lags}
-\fig[0.40\textheight]{open_min0.1/raw_1000_delta.pdf}
+\fig[0.52\textheight]{open_min0.1/raw_1000_delta.pdf}
 \begin{itemize}
-  \item $\Hloc(\tau)$: how straight the flight is at the time lag $\tau$; 1 for a straight line, $\tfrac12$ for a random walk.
   \item $\Hloc(1000~\mathrm{s})$: $\G$ 0.915, $\Sl$ 0.897, $\A$ 0.894.
   \item $\G-\Sl=+0.018\ [+0.015,+0.021]$; $-0.006$ at 10~s, positive from 170~s.
 \end{itemize}
@@ -171,6 +170,15 @@
   \item Glides last as long in $\G$; $\G$ finds the next climb more often: 46.6\% of its searches against 40.5\%.
 \end{itemize}
 \takeaway{Why it pays after a first leg is open: waiting to form at the start, a better search for thermals, known thermals, or zones and weather.}
+\end{frame}
+
+\begin{frame}{Fitted $H$ of S, A and G}
+\fig[0.40\textheight]{open_min0.1/slide_fitted_h_raw.pdf}
+\begin{itemize}
+  \item $H$: slope of $\log\MSD$ from 10~s to the end of the lags $T$; a mean of $\Hloc$ over the lags (within 0.002).
+  \item Careful: $\Hloc$ is not constant (it varies by 0.04--0.05 along a curve, up to 0.09 at the longest lags): $H$ is not a well-defined exponent and depends on $T$.
+\end{itemize}
+\takeaway{$H$ of $\G$ exceeds that of $\Sl$ by 0.003 to 1000~s, 0.009 to 2760~s and 0.020 to 11\,450~s (point values): the gap grows with the lags used.}
 \end{frame}
 
 \begin{frame}{Raw: group time also flies differently}
@@ -233,6 +241,11 @@ We take them apart
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Fitted $H$ on the same route}
+\fig[0.56\textheight]{open_min0.1/slide_fitted_h_route.pdf}
+\takeaway{$\G-\SG$: $-0.005\ [-0.008,-0.002]$ to 1000~s and $+0.008\ [+0.004,+0.012]$ to 2760~s. The sign depends on the lags: $H$ mixes the small deficit at short lags and the gain at long lags. $\A-\SAA$: about 0 to 1000~s, $+0.006$ to 2760~s.}
+\end{frame}
+
 \begin{frame}{On the same route: more climbing; the glide deficit is shared}
 \begin{columns}[T,onlytextwidth]
 \column{.24\textwidth}\bignum{orangeJ}{$+3.0$ pp}{more time in climb\\{\scriptsize $\G-\SG$ $[+1.4,+4.5]$}}
@@ -284,28 +297,24 @@ We take them apart
 \appref{\applink{app-prepostforest}{all the differences}}
 \end{frame}
 
-\begin{frame}{$g$ is stable from 1800~s; at 1260~s it vanishes}
-\fig[0.48\textheight]{open_min0.1/prepost_windows.pdf}
+\begin{frame}{$g$ appears at every window length; $\Hloc(1000~\mathrm{s})$ is a fair quote from 1800~s}
+\fig[0.36\textheight]{open_min0.1/prepost_windows.pdf}
 \begin{itemize}
-  \item $g$ at $\Hloc(1000~\mathrm{s})$: $-0.001$ (1260~s), $+0.023$ (1800), $+0.026$ (2400), $+0.025$ (3000).
-  \item At 1260~s the lag 1000~s is at the limit of the $\tau/0.8$ rule: only 260~s of the window can start a 1000-s displacement (a possible reason, not tested).
-  \item Time in climb: $+2.5$ to $+3.8$ pp at every length.
+  \item $g(\tau)$ peaks at 390~s for windows of 1260~s ($+0.017$) and at 580--710~s for longer ones ($+0.024$ to $+0.025$): the peak moves with the window, and $g$ falls near its length.
+  \item $g$ at $\Hloc(1000~\mathrm{s})$: $-0.001$, $+0.023$, $+0.026$, $+0.025$ for 1260, 1800, 2400, 3000~s. At 1260~s the lag is 0.79 of the window: $D_\text{in}=-0.010$, $D_\text{out}=+0.008$.
+  \item At 1840~s: $g=+0.007\ [-0.002,+0.016]$ on 2400-s windows, $+0.023\ [+0.015,+0.031]$ on 3000-s windows; the bands overlap.
 \end{itemize}
 \source{Events with the four windows: 3\,549, 2\,567, 1\,595 and 695.}
+\end{frame}
+
+\begin{frame}{Fitted $H$ in the same flight}
+\fig[0.64\textheight]{open_min0.1/slide_fitted_h_flight.pdf}
+\takeaway{$\Delta H$ of $g$ is positive for every window: $+0.002$, $+0.007$, $+0.009$, $+0.010$ for 1260, 1800, 2400, 3000~s (fit from 10~s to 0.8 of the window).}
 \end{frame}
 
 \begin{frame}{Same route and same flight: some agree, some do not}
 \fig[0.56\textheight]{open_min0.1/slide_agreement.pdf}
 \takeaway{Inside its group a pilot glides faster and flatter than before and after; on the same route group time glides slower and steeper, but so do the same pilots alone. Net of selection the signs agree with $g$, except for height lost. Not tested.}
-\end{frame}
-
-\begin{frame}{Another metric: the fitted $H$}
-\fig[0.40\textheight]{open_min0.1/slide_fitted_h.pdf}
-\begin{itemize}
-  \item $H$: slope of $\log\MSD$ from 10~s to the end of the lags $T$; a mean of $\Hloc$ over the lags (within 0.002).
-  \item Careful: $\Hloc$ is not constant (it varies by 0.04--0.05 along a curve, up to 0.09 at the longest lags), so $H$ is not an exponent: it depends on $T$.
-\end{itemize}
-\takeaway{The gap in $H$ changes sign with the lags used: same route $-0.005$ to 1000~s, $+0.008$ to 2760~s. It mixes the small deficit at short lags and the gain at long lags.}
 \end{frame}
 
 %% Take-home
@@ -423,7 +432,7 @@ $\pm2$, $\pm2$, level & 537/1095 & 294/650 & 139/370 \\
 
 \plainfig[app-forest]{Same route: the nine quantities, by wing level}{open_min0.1/matched_forest.pdf}
 
-\plainfig[app-robust]{Same route, 9 lines (calipers, isolation, cover, route radius): $\Delta\Hloc(1000~\mathrm{s})$ from $+0.007$ to $+0.012$, $\Delta\Hloc(1840~\mathrm{s})$ from $+0.017$ to $+0.034$}{open_min0.1/matched_robustness.pdf}
+\plainfig[app-robust]{Same route, 8 lines: $\Delta\Hloc(1000~\mathrm{s})$ $+0.007$ to $+0.012$; $\Delta\Hloc(1840~\mathrm{s})$ $+0.017$ to $+0.022$ ($+0.031$ to $+0.034$ with a shorter long series)}{open_min0.1/matched_robustness.pdf}
 
 \plainfig[app-decall]{The decomposition: all nine quantities}{open_min0.1/decomposition.pdf}
 
@@ -520,14 +529,6 @@ block strong & 88 & 84 & 88 & 99 & 89 & 88 \\
 \begin{itemize}
   \item $\Hloc$ of $\Sl$ and $\A$ falls at the longest lags, that of $\G$ does not.
   \item $\G$ keeps few flights there: pieces of at least 14\,312~s.
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Variability by year}
-\begin{itemize}
-  \item The bands are the only uncertainty drawn.
-  \item The estimates with one year left out are stored for every result.
-  \item Planned: a study of how the effects change from one year to another.
 \end{itemize}
 \end{frame}
 

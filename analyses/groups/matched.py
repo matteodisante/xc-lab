@@ -256,7 +256,6 @@ METRICS = ("H_loc(1000 s)", "H_loc(1840 s)", "H (10 s to 1000 s)", "H (10 s to T
 FOREST = METRICS[:2] + METRICS[4:]  # drawn: the two H_loc and the seven statistics
 SURVIVAL_GRID = survival.GRID
 LINES = {"main": {}, "caliper month1_hour1_level": dict(caliper="month1_hour1_level"),
-         "caliper month2_hour2_class": dict(caliper="month2_hour2_class"),
          "caliper month2_hour2_level": dict(caliper="month2_hour2_level"), "isolation on": dict(isolation=True),
          "cover 0.7": dict(cover=0.7), "cover 0.9": dict(cover=0.9), "rho 300 m": dict(rho=300), "rho 1000 m": dict(rho=1000)}
 

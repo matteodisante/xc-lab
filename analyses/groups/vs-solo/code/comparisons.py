@@ -153,9 +153,22 @@ def mac_value(name, v, d, sign=False):
     macro(name + "Band", bracket(v["band"], d, sign))
 
 
+def hloc_cut(c, lag, cut):
+    """H_loc at `lag` of a curve `c` (lags, msd) with the window cut at `cut` s: the fit of tamsd.local_h on the
+    lags up to `cut` only."""
+    lags, msd = np.asarray(c["lags"], float), np.asarray(c["msd"], float)
+    x, y = np.log10(lags[lags <= cut]), np.log10(msd[lags <= cut])
+    near = np.abs(x - np.log10(lag)) <= 0.25 + 1e-9
+    if near.sum() < 3:
+        near = np.isin(np.arange(len(x)), np.argsort(np.abs(x - np.log10(lag)), kind="stable")[:3])
+    return float(0.5 * np.polyfit(x[near], y[near], 1)[0])
+
+
 def raw_tex(r):
     curves = {ds: {p: v["curve"] for p, v in r["datasets"][ds]["populations"].items()} for ds in ("1000", "2760", "longest")}
     span = lambda ds: [max(c["H_loc"]) - min(c["H_loc"]) for c in curves[ds].values()]  # how much H_loc varies along a curve
+    for ds, tag in (("2760", "Two"), ("longest", "Long")):
+        macro(f"RawHKCut{tag}S", num(hloc_cut(curves[ds]["S"], 1000, 1000), 3))
     macro("RawHlocRangeLow", num(min(span("1000") + span("2760")), 3))
     macro("RawHlocRangeHigh", num(max(span("1000") + span("2760")), 3))
     macro("RawHlocRangeLong", num(max(span("longest")), 3))
@@ -299,12 +312,19 @@ def matched_tex(m):
     macro("MatNQuant", num(len(QUANT), 0))
     rob = m["robustness"]
     macro("MatRobLines", num(len(rob), 0))
+    same = rob["main"]["long T"]  # the lines of the main long series share its window; the others are cut shorter
     for q in (HK, HQ):
-        v = [x["quotes"][q] for x in rob.values() if q in x["quotes"]]  # a line whose long series stops below the lag has none
+        v = [x["quotes"][q] for x in rob.values() if q in x["quotes"] and (q == HK or x["long T"] == same)]
         macro(f"MatRobLines{TAG[q]}", num(len(v), 0))
         macro(f"MatRobLow{TAG[q]}", signed(min(x["value"] for x in v), 3))
         macro(f"MatRobHigh{TAG[q]}", signed(max(x["value"] for x in v), 3))
         macro(f"MatRobZero{TAG[q]}", num(sum(zero_in(x) for x in v), 0))
+    short = [x for x in rob.values() if HQ in x["quotes"] and x["long T"] != same]
+    macro("MatRobShortLinesHQ", num(len(short), 0))
+    macro("MatRobShortTLow", num(min(x["long T"] for x in short), 0))
+    macro("MatRobShortTHigh", num(max(x["long T"] for x in short), 0))
+    macro("MatRobShortLowHQ", signed(min(x["quotes"][HQ]["value"] for x in short), 3))
+    macro("MatRobShortHighHQ", signed(max(x["quotes"][HQ]["value"] for x in short), 3))
     macro("MatRobPiecesLow", num(min(x["pieces"] for x in rob.values()), 0))
     macro("MatRobPiecesHigh", num(max(x["pieces"] for x in rob.values()), 0))
     macro("MatRobIsolationPieces", num(rob["isolation on"]["pieces"], 0))
@@ -373,6 +393,15 @@ def windows_tex(runs):
         macro(f"PreWin{tag}Events", num(g["events (MSD)"], 0))
         mac_value(f"PreWin{tag}HK", g[HK], 3, True)
         mac_value(f"PreWin{tag}Climb", g["time in climb (%)"], 1, True)
+        d = g["dH_loc"]
+        top = int(np.argmax(d["value"]))  # the lag where g(tau) peaks
+        macro(f"PreWin{tag}PeakLag", num(runs[w]["lags"][top], 0))
+        mac_value(f"PreWin{tag}Peak", {"value": d["value"][top], "band": [d["band"][0][top], d["band"][1][top]]}, 3, True)
+        macro(f"PreWin{tag}DIn", signed(runs[w]["differences"]["D_in"][HK]["value"], 3))
+        macro(f"PreWin{tag}DOut", signed(runs[w]["differences"]["D_out"][HK]["value"], 3))
+        if 1840 in runs[w]["lags"]:  # g at the lag 1840 s, where the window of H_loc is cut by the lags of this run
+            i = runs[w]["lags"].index(1840)
+            mac_value(f"PreWin{tag}HQ", {"value": d["value"][i], "band": [d["band"][0][i], d["band"][1][i]]}, 3, True)
 
 
 def phase_median(s):

@@ -1331,6 +1331,9 @@ def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
     st = j["prepost_2400"]["curves"]["stages"]
     g = 0.5 * ((np.array(st["start"]["H_loc"]) - np.array(st["pre"]["H_loc"])) + (np.array(st["end"]["H_loc"]) - np.array(st["post"]["H_loc"])))
     assert g[-1] > 0 and m["PreGCross"] == num(j["prepost_2400"]["lags"][int(np.flatnonzero(g <= 0)[-1]) + 1], 0)
+    cut = comparisons.hloc_cut(j["raw"]["datasets"]["1000"]["populations"]["S"]["curve"], 1000, 1000)  # dataset 1000 stops at 1000 s
+    assert cut == pytest.approx(j["raw"]["datasets"]["1000"]["populations"]["S"]["H_loc(1000 s)"]["value"], abs=1e-9)
+    assert float(m["RawHKCutTwoS"]) == pytest.approx(comparisons.hloc_cut(j["raw"]["datasets"]["2760"]["populations"]["S"]["curve"], 1000, 1000), abs=5e-4)
     assert float(m["RawHMeanGap"]) <= 0.003 and float(m["RawHlocRangeLow"]) <= float(m["RawHlocRangeHigh"])
     # g against the length of the window
     runs = {w: json.loads((OPEN_OUT / f"prepost_{w}.json").read_text()) for w in comparisons.WINDOWS}

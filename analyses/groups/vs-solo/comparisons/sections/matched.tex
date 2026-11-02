@@ -74,13 +74,13 @@ A run of a piece weighs 1, a run of a control $1/$(controls of its piece); 90\% 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{open_min0.1/matched_robustness.pdf}
-\caption{Robustness of $\Delta(\G-\SG)$, level all, one row per line of the analysis: the other calipers of Table~\ref{tab:calipers}, isolation on (nobody within 10~km: \MatRobIsolationPieces{} pieces), $\rho=300$ and 1000~m, cover 0.7 and 0.9.
+\caption{Robustness of $\Delta(\G-\SG)$, level all, one row per line of the analysis: the main line, the calipers month $\pm1$, hour $\pm1$, same level and month $\pm2$, hour $\pm2$, same level (Table~\ref{tab:calipers}), isolation on (nobody within 10~km: \MatRobIsolationPieces{} pieces), $\rho=300$ and 1000~m, cover 0.7 and 0.9.
 The lines keep between \MatRobPiecesLow{} and \MatRobPiecesHigh{} pieces on dataset 1000. 90\% bands.}
 \label{fig:matched-robust}
 \end{figure}
 
-\paragraph{Robustness.} Over the \MatRobLines{} lines of Figure~\ref{fig:matched-robust}, $\Delta\Hk$ stays between \MatRobLowHK{} and \MatRobHighHK{}, with a band that includes 0 in \MatRobZeroHK{} of them, and $\Delta\Hq$, on the \MatRobLinesHQ{} lines whose long series reaches 1840~s, between
-\MatRobLowHQ{} and \MatRobHighHQ, with a band that includes 0 in \MatRobZeroHQ.
+\paragraph{Robustness.} Over the \MatRobLines{} lines of Figure~\ref{fig:matched-robust}, the main line included, $\Delta\Hk$ stays between \MatRobLowHK{} and \MatRobHighHK{}, with a band that includes 0 in \MatRobZeroHK{} of them. $\Delta\Hq$, on the \MatRobLinesHQ{} lines whose long series reaches the lag of the main line (\MatLongT~s), stays between
+\MatRobLowHQ{} and \MatRobHighHQ, with a band that includes 0 in \MatRobZeroHQ. On the \MatRobShortLinesHQ{} lines whose long series stops earlier, at \MatRobShortTLow{} to \MatRobShortTHigh~s, the window is cut more and $\Delta\Hq$ is between \MatRobShortLowHQ{} and \MatRobShortHighHQ.
 
 \paragraph{What we keep.} On the same route, season, hour and wing group time still progresses straighter than solo flight at the long lags: $\Hq$ \MatDeltaHQG{} \MatDeltaHQGBand, $\Hloc$ at 1000~s on dataset 2760 \MatDeltaHKLongG{} \MatDeltaHKLongGBand, while on the shorter pieces of dataset 1000 $\Hk$ gives \MatDeltaHKG{} \MatDeltaHKGBand, against \RawGapHK{} raw.
 It is less straight at the short lags and climbs more; it glides slower and steeper than its controls, but so do the same pilots alone. The selection term $\Delta(\A-\SAA)$ is \MatDeltaHKA{} \MatDeltaHKABand{} at $\Hk$ and its bands include 0 for \MatZeroA{} of the \MatNQuant{} quantities:

@@ -61,42 +61,47 @@ def agreement():
                         stats=list(AGREE), width=6.8)
 
 
+def _finish(fig, ax, name):
+    ax.grid(color="#eeeeee", lw=0.5)
+    ax.tick_params(labelsize=8)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    save(fig, OUT / name)
+
+
+def _bar(ax, y, q, color, **kw):
+    ax.errorbar(q["value"], y, xerr=[[q["value"] - q["band"][0]], [q["band"][1] - q["value"]]], fmt="o", ms=5, color=color,
+                elinewidth=1.8, capsize=2, **kw)
+
+
 def fitted_h():
-    """The fitted H (10 s to the end of the lags) in the three designs: of S, A, G on each dataset of the raw
+    """The fitted H (10 s to the end of the lags), one figure per design: of S, A, G on each dataset of the raw
     comparison; the differences of the same route; g of the same flight against the length of the window."""
-    fig, axes = plt.subplots(1, 3, figsize=(8.4, 2.9), constrained_layout=True)
     raw = read("raw")["datasets"]
+    fig, ax = plt.subplots(figsize=(5.2, 2.6), constrained_layout=True)
     for k, (pop, short) in enumerate((("solo", "S"), ("group_solo", "A"), ("group", "G"))):
         for y, ds in enumerate(("1000", "2760", "longest")):
             h = raw[ds]["populations"][short]
-            axes[0].errorbar(h["H"], y + 0.2 * (k - 1), xerr=[[h["H"] - h["H_band"][0]], [h["H_band"][1] - h["H"]]], fmt="o", ms=4,
-                             color=COLORS[pop], elinewidth=1.6, capsize=2, label=short if y == 0 else None)
-    axes[0].set(yticks=range(3), yticklabels=[f"to {raw[ds]['tau_max']:,} s" for ds in ("1000", "2760", "longest")], ylim=(2.6, -0.6),
-                title="raw: H of S, A, G")
-    axes[0].legend(frameon=False, fontsize=7)
+            _bar(ax, y + 0.2 * (k - 1), {"value": h["H"], "band": h["H_band"]}, COLORS[pop], label=short if y == 0 else None)
+    ax.set(yticks=range(3), yticklabels=[f"to {raw[ds]['tau_max']:,} s" for ds in ("1000", "2760", "longest")], ylim=(2.6, -0.6),
+           xlabel="$H$, fitted from 10 s")
+    ax.legend(frameon=False, fontsize=8)
+    _finish(fig, ax, "slide_fitted_h_raw.pdf")
     deltas = read("matched")["levels"]["all"]["deltas"]
-    cases = [(k, m) for m in ("H (10 s to 1000 s)", "H (10 s to T)") for k in ("G - S|G", "A - S|A")]
-    for y, (k, m) in enumerate(cases):
-        q = quote(deltas[k][m])
-        axes[1].errorbar(q["value"], y, xerr=[[q["value"] - q["band"][0]], [q["band"][1] - q["value"]]], fmt="o", ms=4,
-                         color="#eb6834" if k.startswith("G") else "#1baf7a", elinewidth=1.6, capsize=2)
-    axes[1].set(yticks=range(4), yticklabels=["G - S|G, to 1000 s", "A - S|A, to 1000 s", "G - S|G, to 2760 s", "A - S|A, to 2760 s"],
-                ylim=(3.6, -0.6), title="same route: $\\Delta H$")
+    fig, ax = plt.subplots(figsize=(5.2, 2.6), constrained_layout=True)
+    for y, (k, m) in enumerate((k, m) for m in ("H (10 s to 1000 s)", "H (10 s to T)") for k in ("G - S|G", "A - S|A")):
+        _bar(ax, y, quote(deltas[k][m]), "#eb6834" if k.startswith("G") else "#1baf7a")
+    ax.axvline(0, color="#999999", lw=0.8, ls=":")
+    ax.set(yticks=range(4), yticklabels=["G - S|G, to 1000 s", "A - S|A, to 1000 s", "G - S|G, to 2760 s", "A - S|A, to 2760 s"],
+           ylim=(3.6, -0.6), xlabel="$\\Delta H$, fitted from 10 s")
+    _finish(fig, ax, "slide_fitted_h_route.pdf")
+    fig, ax = plt.subplots(figsize=(5.2, 2.6), constrained_layout=True)
     for y, w in enumerate((1260, 1800, 2400, 3000)):
-        q = quote(read(f"prepost_{w}")["differences"]["g"]["Delta H"])
-        axes[2].errorbar(q["value"], y, xerr=[[q["value"] - q["band"][0]], [q["band"][1] - q["value"]]], fmt="o", ms=4,
-                         color="#8c2f0f", elinewidth=1.6, capsize=2)
-    axes[2].set(yticks=range(4), yticklabels=[f"window {w} s" for w in (1260, 1800, 2400, 3000)], ylim=(3.6, -0.6),
-                title="same flight: $\\Delta H$ of $g$, to 0.8 W")
-    for ax in axes[1:]:
-        ax.axvline(0, color="#999999", lw=0.8, ls=":")
-    for ax in axes:
-        ax.grid(color="#eeeeee", lw=0.5)
-        ax.tick_params(labelsize=7)
-        ax.title.set_fontsize(8.5)
-        for side in ("top", "right"):
-            ax.spines[side].set_visible(False)
-    save(fig, OUT / "slide_fitted_h.pdf")
+        _bar(ax, y, quote(read(f"prepost_{w}")["differences"]["g"]["Delta H"]), "#8c2f0f")
+    ax.axvline(0, color="#999999", lw=0.8, ls=":")
+    ax.set(yticks=range(4), yticklabels=[f"window {w} s" for w in (1260, 1800, 2400, 3000)], ylim=(3.6, -0.6),
+           xlabel="$\\Delta H$ of $g$, fitted from 10 s to 0.8 of the window")
+    _finish(fig, ax, "slide_fitted_h_flight.pdf")
 
 
 if __name__ == "__main__":
