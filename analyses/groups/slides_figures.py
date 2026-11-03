@@ -11,7 +11,7 @@ import curves
 import decompose
 import decomposition
 import matched
-from tamsd import COLORS, OUT, save
+from tamsd import COLORS, OUT, SUPPORT, save
 
 PHASE_STATS = ("time in climb (%)", "time in search (%)", "searches that end in a climb (%)", "climbs per hour",
                "climb rate (m/s)", "glide speed (km/h)", decompose.SINK)
@@ -61,6 +61,38 @@ def raw_delta():
     turn = below[-1] + 1 if below and below[-1] + 1 < len(g["lags"]) else None
     curves.delta_figure(left, right, OUT / "slide_raw_delta",
                         vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
+
+
+def matched_deltas():
+    """G - S|G and A - S|A against the lag, with their bands: pieces of the main series (left) and of the long
+    series (right) on one y scale, `slide_matched_deltas`."""
+    d = read("matched")["levels"]["all"]
+    fig, axes = plt.subplots(1, 2, figsize=(5.6, 2.2), sharey=True, constrained_layout=True)
+    for ax, key in zip(axes, ("main", "long")):
+        T = d["delta curves"][matched.CONTRASTS[0]][key]["lags"][-1]
+        for c in matched.CONTRASTS[:2]:
+            q = d["delta curves"][c][key]
+            ax.fill_between(q["lags"], *q["band"], color=matched.CONTRAST_COLORS[c], alpha=0.18, lw=0)
+            ax.plot(q["lags"], q["value"], color=matched.CONTRAST_COLORS[c], lw=1.4, label=c)
+        ax.axhline(0, color="#999999", lw=0.8)
+        g = d["delta curves"][matched.CONTRASTS[0]][key]
+        below = [i for i, v in enumerate(g["value"]) if v <= 0]
+        if below and below[-1] + 1 < len(g["lags"]):  # the lag from which G - S|G stays above 0
+            turn = g["lags"][below[-1] + 1]
+            ax.axvline(turn, color=matched.CONTRAST_COLORS[matched.CONTRASTS[0]], lw=0.9, ls="--")
+            ax.annotate(f"{turn:g} s", (turn, 1), xycoords=("data", "axes fraction"), xytext=(3, -9),
+                        textcoords="offset points", fontsize=7, color=matched.CONTRAST_COLORS[matched.CONTRASTS[0]])
+        ax.set(xscale="log", xlabel=r"$\tau$ (s)", title=f"pieces of at least {T / SUPPORT:g} s")
+        ax.title.set_fontsize(9)
+        ax.grid(color="#eeeeee", lw=0.5)
+        ax.tick_params(labelsize=8)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+    axes[0].set_ylabel(r"$\Delta H_{\rm loc}(\tau)$")
+    axes[0].legend(frameon=False, fontsize=7.5, loc="upper left")
+    fig.savefig(OUT / "slide_matched_deltas.pdf", bbox_inches="tight")
+    fig.savefig(OUT / "slide_matched_deltas.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
 
 
 def factors():
@@ -138,6 +170,7 @@ if __name__ == "__main__":
     decomposition.draw_decomposition(result, OUT / "decomposition_main.pdf", stats=list(MAIN), width=5.4)
     raw_phases()
     raw_delta()
+    matched_deltas()
     factors()
     selection()
     agreement()

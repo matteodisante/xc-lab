@@ -176,32 +176,43 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Fitted $H$ of S, A and G}
-\fig[0.32\textheight]{open_min0.1/slide_fitted_h_raw.pdf}
-\begin{itemize}
-  \item $H$: slope of $\log\MSD$ from 10~s to the end of the lags $T$; a mean of $\Hloc$ over the lags (within 0.002).
-  \item Careful: $\Hloc$ is not constant (it varies by 0.04--0.05 along a curve, up to 0.09 at the longest lags): $H$ is not a well-defined exponent and depends on $T$.
-\end{itemize}
-\takeaway[.74\linewidth]{$H$ of $\G$ exceeds that of $\Sl$ by 0.003 to 1000~s, 0.009 to 2760~s and 0.020 to 11\,450~s (point values): the gap grows with the lags used.}
-\appref{\applink{app-rawlong}{lags to 2760~s}\\\applink{app-rawlongest}{the longest lags}\\\applink{app-hlocedge}{$\Hloc$ at the edge}}
-\end{frame}
 
 \begin{frame}{Raw: group time also flies differently}
 \vspace{-2mm}
 \begin{columns}[T,onlytextwidth]
 \column{.67\textwidth}\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{open_min0.1/slide_raw_phases.pdf}
 \column{.30\textwidth}\footnotesize
-\begin{itemize}\setlength{\itemsep}{0.4em}
+\begin{itemize}\setlength{\itemsep}{0.25em}
+  \item[\textcolor{steel}{\textbf{1, 2}}] $\G-\Sl\approx0.02$, with pieces of at least 1250~s (1) or 3450~s (2).
   \item[\textcolor{steel}{\textbf{3, 6}}] $\G$ climbs more and finds more climbs.
   \item[\textcolor{steel}{\textbf{4, 5}}] $\G$ searches less and better.
-  \item[\textcolor{steel}{\textbf{7}}] $\A\approx\G$: zones with stronger thermals, better conditions.
+  \item[\textcolor{steel}{\textbf{7}}] $\A\approx\G$: zones with stronger thermals.
   \item[\textcolor{steel}{\textbf{8}}] $\G$ keeps a higher glide speed (Williams et al.\ 2018).
   \item[\textcolor{steel}{\textbf{9}}] $\G$ glides flatter.
 \end{itemize}
-\vspace{1.6em}{\scriptsize\color{ink2} pp: percentage points; 90\% bands (5--95\%). Bands of $\G-\Sl$ exclude 0 in panels 3--9.\par}
+\vspace{0.3em}{\scriptsize\color{ink2} pp: percentage points; 90\% bands. $\G-\Sl$ excludes 0 in panels 3--9.\par}
 \end{columns}
-\appref{\applink{app-estimator}{how each flight counts}\\\applink{app-rawstats}{the seven statistics}}
+\appref{\applink{app-statdef}{how they are computed}\\\applink{app-estimator}{how each flight counts}}
 \end{frame}
+
+
+
+\begin{frame}{Fitted $H$ of S, A and G}
+\begin{columns}[c,onlytextwidth]
+\column{.62\textwidth}\includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{open_min0.1/slide_fitted_h_raw.pdf}
+\column{.36\textwidth}\small
+\begin{itemize}\setlength{\itemsep}{0.6em}
+  \item $H$ of $\G$ exceeds that of $\Sl$ by:
+  \begin{itemize}
+    \item 0.003 to 1000~s,
+    \item 0.009 to 2760~s,
+    \item 0.020 to 11\,450~s.
+  \end{itemize}
+  \item The gap grows with the lags used, and so does its uncertainty.
+\end{itemize}
+\end{columns}
+\end{frame}
+
 
 %% Question 2
 \partframe{Question 2}{Is it the group, or what goes with it?}
@@ -213,7 +224,7 @@
 Group time differs from solo time in
 \begin{itemize}
   \item the \textbf{route} flown,
-  \item the \textbf{season} and the \textbf{hour},
+  \item the \textbf{atmospheric conditions} (the season and the hour),
   \item the \textbf{wing},
   \item the pilots who fly in groups.
 \end{itemize}
@@ -224,35 +235,36 @@ We take them apart
   \item split the gap among them.
 \end{enumerate}
 \end{columns}
-\takeaway{Same route, season, hour and wing: does the group still make a difference?}
+\takeaway{\Large\strut Same route, season, hour and wing: does the group still make a difference?\strut}
 \end{frame}
 
-\begin{frame}{Same route, season, hour and wing}
-\tikzfig[0.72\textheight]{matching}
+\begin{frame}{The control $\SG$: same route, season, hour and wing}
+\vspace{-12mm}
+\tikzfig[0.62\textheight]{matching}
 \begin{itemize}
-  \item Each piece of $\G$ is compared with solo segments on its route.
-  \item Controls must match within tolerances, the \emph{calipers}: the first of four sets that keeps 200 pieces per wing level is month $\pm2$, hour $\pm2$, same class: 2\,717 pieces of $\G$, 2\,474 flights, 1\,378 pilots.
-  \item $\A$ against its own controls $\SAA$ measures who flies in groups.
+  \item For each piece of $\G$ we build its control $\SG$: solo segments on the same route.
+  \item A segment enters $\SG$ only if it meets the four conditions on the right.
+  \item At least 200 pieces of $\G$ per wing level (beg/exp): 2\,717 in all, 2\,474 flights, 1\,378 pilots.
+  \item $\A$ gets its control $\SAA$ in the same way: $\A-\SAA$ measures who flies in groups.
 \end{itemize}
-\appref{\applink{app-matching}{what is a control}\\\applink{app-longT}{why the long dataset stops at 2760~s}}
+\apprefrow{\applink{app-matching}{what is a control}\quad\applink{app-longT}{why the long dataset stops at 2760~s}}
 \end{frame}
 
-\begin{frame}{On the same route the group is still straighter}
-\fig[0.48\textheight]{open_min0.1/matched_1000_delta.pdf}
-\begin{itemize}
-  \item $\G-\SG=+0.010\ [+0.004,+0.017]$ at 1000~s, against controls on the route; the raw $+0.018$ is against all solo flights.
-  \item Selection $\A-\SAA$: $+0.006\ [-0.003,+0.016]$.
-\end{itemize}
-\source{Pieces of at least 1250~s; left: $\Hloc$ of $\G$, its controls $\SG$, $\A$ and $\SAA$; right: the differences with 90\% bands.}
-\appref{\applink{app-forest}{the nine quantities}\\\applink{app-robust}{robustness}}
-\end{frame}
-
-\begin{frame}{On longer pieces it grows with the lag}
-\fig[0.56\textheight]{open_min0.1/matched_2760_delta.pdf}
-\begin{itemize}
-  \item A lag $\tau$ needs pieces of at least $\tau/0.8$: for 1840~s, pieces of at least 3450~s.
-  \item $\G-\SG=+0.021\ [+0.008,+0.034]$ at 1840~s; at 1000~s on the same pieces $+0.024\ [+0.014,+0.034]$.
-\end{itemize}
+\begin{frame}{On the same route, group pilots are straighter, in a group or alone}
+\vspace{-1mm}
+\fig[0.56\textheight]{open_min0.1/slide_matched_deltas.pdf}
+\vspace{-7mm}
+\begin{center}\scriptsize\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+90\% bands & $\Hloc(1000~\mathrm{s})$ & $\Hloc(1840~\mathrm{s})$ \\
+\midrule
+$\G-\SG$ = the group + who flies in groups & $+0.010\ [+0.004,+0.017]$ & $+0.021\ [+0.008,+0.034]$ \\
+$\A-\SAA$ = who flies in groups, alone & $+0.006\ [-0.003,+0.016]$ & $+0.027\ [+0.008,+0.046]$ \\
+difference = the group alone, $\approx0$ & $+0.004\ [-0.007,+0.015]$ & $-0.006\ [-0.028,+0.016]$ \\
+\bottomrule
+\end{tabular}\end{center}
+\apprefrow{\applink{app-matchedhloc}{$\Hloc$ of $\G$, $\SG$, $\A$, $\SAA$}\quad\applink{app-forest}{the nine quantities}\quad\applink{app-robust}{robustness}}
 \end{frame}
 
 \begin{frame}{Fitted $H$ on the same route}
@@ -394,6 +406,27 @@ flight & glide distance & glide time & flight time & glide speed \\
 \end{itemize}
 \end{frame}
 
+\begin{frame}[label=app-statdef]{The seven phase statistics: formulas}
+Per flight, with $T$ its flight time and sums over its runs of the phase; then averaged over flights as on the previous page.
+\begin{center}\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+statistic & formula & in words \\
+\midrule
+time in climb (pp) & $100\,T_{\mathrm{climb}}/T$ & share of the flight spent climbing \\
+time in search (pp) & $100\,T_{\mathrm{search}}/T$ & share spent looking for the next climb \\
+searches $\to$ climb (pp) & $100\,N_{\mathrm{found}}/N_{\mathrm{search}}$ & share of searches directly followed by a climb \\
+climbs per hour & $N_{\mathrm{climb}}/T$ & climbs started per hour of flight \\
+climb rate (m/s) & $\sum\Delta z_{\mathrm{climb}}\,/\,T_{\mathrm{climb}}$ & height gained over time climbing \\
+glide speed (km/h) & $3.6\sum d_{\mathrm{glide}}\,/\,T_{\mathrm{glide}}$ & distance over time gliding \\
+height lost (m/km) & $1000\sum h_{\mathrm{lost}}\,/\sum d_{\mathrm{glide}}$ & height lost per km of glide \\
+\bottomrule
+\end{tabular}
+\end{center}
+{\small $d_{\mathrm{glide}}$: straight distance from the start to the end of a glide (the chord); $h_{\mathrm{lost}}$: height lost during it; $N_{\mathrm{found}}$: searches whose next phase is a climb.}
+\end{frame}
+
 \begin{frame}[label=app-datasets]{Datasets and the $\tau/0.8$ rule}
 \begin{columns}[T,onlytextwidth]
 \column{.5\textwidth}
@@ -442,13 +475,16 @@ $\pm2$, $\pm2$, level & 537/1095 & 294/650 & 139/370 \\
 \source{Isolation (nobody within 10~km) is off in the main result and is one of the robustness lines.}
 \end{frame}
 
+\plainfig[app-matchedhloc]{Same route, pieces of at least 1250~s: $\Hloc$ of $\G$, $\SG$, $\A$, $\SAA$ and their differences}{open_min0.1/matched_1000_delta.pdf}
+
+\plainfig[app-matchedlong]{Same route, pieces of at least 3450~s: the same; at 1000~s $\G-\SG=+0.024\ [+0.014,+0.034]$}{open_min0.1/matched_2760_delta.pdf}
+
 \plainfig[app-forest]{Same route: the nine quantities, by wing level}{open_min0.1/matched_forest.pdf}
 
 \plainfig[app-robust]{Same route, 8 lines: $\Delta\Hloc(1000~\mathrm{s})$ $+0.007$ to $+0.012$; $\Delta\Hloc(1840~\mathrm{s})$ $+0.017$ to $+0.022$ ($+0.031$ to $+0.034$ with a shorter long series)}{open_min0.1/matched_robustness.pdf}
 
 \plainfig[app-decall]{The decomposition: all nine quantities}{open_min0.1/decomposition.pdf}
 
-\plainfig[app-rawstats]{Raw: the seven phase statistics}{open_min0.1/raw_statistics.pdf}
 
 \plainfig[app-map]{Where solo flights and group time are: pieces per 1000~km$^2$}{maps.pdf}
 
