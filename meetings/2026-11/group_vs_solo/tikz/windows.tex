@@ -1,11 +1,16 @@
+\definecolor{endred}{HTML}{8C2F0F}
+\definecolor{postgreen}{HTML}{0F6E4C}
 \begin{tikzpicture}[x=1mm,y=1mm]
+  % the four windows, coloured as in the curves of the next slide
   \draw[->,muted] (0,-9) -- (122,-9) node[right,note]{time};
   \fill[orangeJ!18] (24,-4) rectangle (96,6);
-  \node[note] at (60,9) {stay in the group};
-  \draw[aqua,fill=aqua!30,thick]    (0,-4)  rectangle (24,6);
+  \draw[orangeJ,thick,|-|] (24,10) -- (96,10);
+  \node[note,anchor=south] at (60,10.5) {stay in the group};
+  \draw[aqua,fill=aqua!30,thick,dashed] (0,-4) rectangle (24,6);
   \draw[orangeJ,fill=orangeJ!35,thick] (24,-4) rectangle (48,6);
-  \draw[orange!50!black,fill=orange!50!black!30,thick] (72,-4) rectangle (96,6);
-  \draw[aqua!60!black,fill=aqua!30,thick,dashed] (96,-4) rectangle (120,6);
+  \draw[endred,fill=endred!30,thick] (72,-4) rectangle (96,6);
+  \draw[postgreen,fill=postgreen!30,thick,dashed] (96,-4) rectangle (120,6);
   \foreach \x/\t in {12/pre,36/start,84/end,108/post}{\node[font=\footnotesize] at (\x,1) {\t};}
-  \draw[<->,muted] (0,-6.5) -- (24,-6.5) node[midway,below=-1pt,note]{$W$};
+  \draw[<->,muted] (0,-6.5) -- (24,-6.5);
+  \node[note,anchor=north west] at (0,-12) {$W=2400$~s (max lag: 1840~s)};
 \end{tikzpicture}

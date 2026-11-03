@@ -7,16 +7,16 @@ report, drawn from the JSON of the analyses; nothing is recomputed.
 import json
 
 import matplotlib.pyplot as plt
+import numpy as np
 import curves
 import decompose
 import decomposition
 import matched
+import prepost
 from tamsd import COLORS, OUT, SUPPORT, save
 
 PHASE_STATS = ("time in climb (%)", "time in search (%)", "searches that end in a climb (%)", "climbs per hour",
                "climb rate (m/s)", "glide speed (km/h)", decompose.SINK)
-FACTORS = ("H_loc(1840 s)", "time in climb (%)", "glide speed (km/h)", decompose.SINK)
-AGREE = ("time in climb (%)", "climbs per hour", "time in search (%)", "climb rate (m/s)", "glide speed (km/h)", decompose.SINK)
 MAIN = ("H_loc(1840 s)", "time in climb (%)", "glide speed (km/h)")
 
 
@@ -49,18 +49,78 @@ def raw_phases():
 
 
 def raw_delta():
-    """H_loc of S, A, G with their flights in the legend, beside the differences, on the dataset of 1000 s."""
-    d = read("raw")["datasets"]["1000"]
-    left = [{**d["populations"][short]["curve"], "label": f"{short} ({d['populations'][short]['flights']:,} flights)", "color": COLORS[pop]}
-            for pop, short in (("solo", "S"), ("group_solo", "A"), ("group", "G"))]
-    gaps = read("raw")["gaps"]["1000"]["H_loc"]
+    """H_loc of S, A, G with their flights in the legend, beside the differences, on each dataset of the raw comparison:
+    `slide_raw_delta` (1000 s), `slide_raw_2760_delta`, `slide_raw_longest_delta`."""
+    raw = read("raw")
     colors = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
-    right = [{**gaps[name], "label": name, "color": colors[name]} for name in colors]
-    g = gaps["G - S"]
-    below = [i for i, v in enumerate(g["value"]) if v <= 0]
-    turn = below[-1] + 1 if below and below[-1] + 1 < len(g["lags"]) else None
-    curves.delta_figure(left, right, OUT / "slide_raw_delta",
-                        vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
+    for name, out in (("1000", "slide_raw_delta"), ("2760", "slide_raw_2760_delta"), ("longest", "slide_raw_longest_delta")):
+        d = raw["datasets"][name]
+        left = [{**d["populations"][short]["curve"], "label": f"{short} ({d['populations'][short]['flights']:,} flights)", "color": COLORS[pop]}
+                for pop, short in (("solo", "S"), ("group_solo", "A"), ("group", "G"))]
+        gaps = raw["gaps"][name]["H_loc"]
+        right = [{**gaps[k], "label": k, "color": colors[k]} for k in colors]
+        g = gaps["G - S"]
+        below = [i for i, v in enumerate(g["value"]) if v <= 0]
+        turn = below[-1] + 1 if below and below[-1] + 1 < len(g["lags"]) else None
+        curves.delta_figure(left, right, OUT / out,
+                            vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
+
+
+def raw_msd_fits():
+    """MSD against the lag (log-log) of S, A, G on each dataset of the raw comparison, with the line of the fitted H
+    (least squares of log MSD on log lag, equal weight per lag); below, H_loc against the lag with the fitted H as a
+    dashed line. `slide_raw_msd_fits`."""
+    raw = read("raw")["datasets"]
+    fig, axes = plt.subplots(2, 3, figsize=(8.6, 3.9), sharex="col", gridspec_kw={"height_ratios": [1.3, 1]},
+                             constrained_layout=True)
+    for j, name in enumerate(("1000", "2760", "longest")):
+        top, bottom = axes[0, j], axes[1, j]
+        for pop, short in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+            q = raw[name]["populations"][short]
+            c = q["curve"]
+            lags, msd = np.array(c["lags"]), np.array(c["msd"])
+            slope, icpt = np.polyfit(np.log10(lags), np.log10(msd), 1)
+            top.plot(lags, msd, "o", ms=2.5, color=COLORS[pop], label=f"{short}: H = {slope / 2:.3f} ({q['flights']:,})")
+            top.plot(lags, 10 ** icpt * lags ** slope, color=COLORS[pop], lw=0.9, ls="--")
+            bottom.plot(lags, c["H_loc"], color=COLORS[pop], lw=1.2)
+            bottom.axhline(slope / 2, color=COLORS[pop], lw=0.8, ls="--")
+        top.set(xscale="log", yscale="log", title=f"to {raw[name]['tau_max']:,} s")
+        top.title.set_fontsize(9)
+        top.legend(frameon=False, fontsize=6.5, loc="upper left")
+        bottom.set(xscale="log", xlabel=r"$\tau$ (s)")
+        for ax in (top, bottom):
+            ax.grid(color="#eeeeee", lw=0.5)
+            ax.tick_params(labelsize=7)
+            for side in ("top", "right"):
+                ax.spines[side].set_visible(False)
+    axes[0, 0].set_ylabel(r"MSD (m$^2$)")
+    axes[1, 0].set_ylabel(r"$H_{\rm loc}(\tau)$")
+    axes[0, 2].annotate("stronger\nselection bias", xy=(0.40, 0.72), xytext=(0.04, 0.38), xycoords="axes fraction", ha="left",
+                        fontsize=7, color="#a02020", arrowprops={"arrowstyle": "->", "color": "#a02020", "lw": 1.1})
+    fig.savefig(OUT / "slide_raw_msd_fits.pdf", bbox_inches="tight")
+    fig.savefig(OUT / "slide_raw_msd_fits.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
+def pools_delta():
+    """The figure of slide 5 on two other populations (pools.py): `slide_pool_variable`, the pieces long enough for
+    each lag, and `slide_pool_short`, the pieces of 1000 to 1250 s. The flights are in the legend."""
+    pools = read("pools")
+    colors = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
+    for key, out in (("variable pool", "slide_pool_variable"), ("short pieces", "slide_pool_short")):
+        d = pools[key]
+        left = []
+        for pop, short in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+            q = d["populations"][short]
+            n = q["flights"]
+            label = f"{short} ({n[0]:,} to {n[-1]:,} flights)" if n[0] != n[-1] else f"{short} ({n[0]:,} flights)"
+            left.append({"lags": d["lags"], "H_loc": q["H_loc"], "label": label, "color": COLORS[pop]})
+        right = [{**d["gaps"][k], "label": k, "color": colors[k]} for k in colors]
+        g = d["gaps"]["G - S"]
+        below = [i for i, v in enumerate(g["value"]) if v <= 0]
+        turn = below[-1] + 1 if below and below[-1] + 1 < len(g["lags"]) else None
+        curves.delta_figure(left, right, OUT / out,
+                            vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
 
 
 def matched_deltas():
@@ -95,31 +155,68 @@ def matched_deltas():
     plt.close(fig)
 
 
-def factors():
-    d = read("decomposition")["levels"]["all"]
-    rows = [(label, color, {m: quote(d[m]["cells"][cell]["delta"]) for m in FACTORS})
-            for label, color, cell in (("no factor fixed", "#555555", "none"), ("route fixed", "#16427a", "R"),
-                                       ("route, season, hour, wing fixed", "#eb6834", "R+T+W"))]
-    matched.draw_forest(rows, OUT / "slide_factors.pdf", "Open paragliders: group time against its controls",
-                        stats=list(FACTORS), per_row=2, width=5.6)
-
-
-def selection():
+def matched_forest():
+    """The nine quantities of the same-route comparison at level "all": G - S|G, A - S|A and their difference,
+    `slide_matched_forest`."""
     d = read("matched")["levels"]["all"]["deltas"]
-    rows = [(label, color, {m: quote(d[k][m]) for m in ("H_loc(1000 s)", "H_loc(1840 s)")})
-            for label, color, k in (("G - S|G: the group", "#eb6834", "G - S|G"), ("A - S|A: the same pilots alone", "#1baf7a", "A - S|A"),
-                                    ("difference", "#555555", "(G - S|G) - (A - S|A)"))]
-    matched.draw_forest(rows, OUT / "slide_selection.pdf", "Same route, season, hour and wing",
-                        stats=["H_loc(1000 s)", "H_loc(1840 s)"], per_row=2, width=5.4)
+    labels = {matched.CONTRASTS[0]: "G − S|G", matched.CONTRASTS[1]: "A − S|A", matched.CONTRASTS[2]: "difference"}
+    rows = [(labels[c], matched.CONTRAST_COLORS[c], {m: quote(d[c][m]) for m in matched.FOREST}) for c in matched.CONTRASTS]
+    matched.draw_forest(rows, OUT / "slide_matched_forest.pdf", None, stats=list(matched.FOREST), per_row=3, width=6.0,
+                        wrap=22, row_h=1.6)
 
 
-def agreement():
-    route = read("matched")["levels"]["all"]["deltas"]["G - S|G"]
-    flight = read("prepost_2400")["differences"]["g"]
-    rows = [("same route: G - S|G", "#eb6834", {m: quote(route[m]) for m in AGREE}),
-            ("same flight: g", "#8c2f0f", {m: quote(flight[m]) for m in AGREE})]
-    matched.draw_forest(rows, OUT / "slide_agreement.pdf", "Group time against solo flight, two designs",
-                        stats=list(AGREE), width=6.8)
+def prepost_delta():
+    """H_loc of the four windows of the same flight beside D_in, D_out, g, d w and the two controls, `slide_prepost_delta`.
+    Outside the group (pre, post): green and dashed; in the group (start, end): orange and solid."""
+    d = read("prepost_2400")
+    style = {"pre": (COLORS["group_solo"], "--"), "start": (COLORS["group"], "-"), "end": ("#8c2f0f", "-"),
+             "post": ("#0f6e4c", "--")}
+    left = [{**d["curves"]["stages"][w], "label": w, "color": style[w][0], "ls": style[w][1]} for w in style]
+    keys = ("D_in", "D_out", "g", "d w", "ctrlA2 - ctrlA1", "ctrlS2 - ctrlS1")
+    right = [{"lags": d["lags"][:len(d["differences"][k]["dH_loc"]["value"])], **d["differences"][k]["dH_loc"],
+              "label": prepost.FOREST_LABELS[k], "color": prepost.FOREST[k], "ls": "-" if k in keys[:3] else "--",
+              "lw": 1.4 if k == "g" else 0.9, **({} if k == "g" else {"band": None})} for k in keys]
+    curves.delta_figure(left, right, OUT / "slide_prepost_delta", f"{d['curves']['stages']['events']:,} events, windows of 2400 s")
+
+
+def prepost_forest():
+    """H_loc(1000 s), H_loc(1840 s) and the seven phase statistics of the same flight (windows of 2400 s): D_in, D_out,
+    g and the two controls, `slide_prepost_forest`."""
+    r = read("prepost_2400")
+    d, lags = r["differences"], r["lags"]
+    i = lags.index(1840)
+    at_1840 = lambda q: {"value": q["value"][i], "band": [q["band"][0][i], q["band"][1][i]]}
+    rows_of = (("D_in", "D_in"), ("D_out", "D_out"), ("g", "g"), ("ctrlA2 - ctrlA1", "control, A"), ("ctrlS2 - ctrlS1", "control, solo"))
+    short = {"H_loc(1000 s)": "H_loc(1000 s)", "time in climb (%)": "climb time (pp)", "time in search (%)": "search time (pp)",
+             "searches that end in a climb (%)": "searches → climb (pp)", "climbs per hour": "climbs per hour",
+             "climb rate (m/s)": "climb rate (m/s)", "glide speed (km/h)": "glide speed (km/h)",
+             decompose.SINK: "height lost (m/km)"}
+    rows = [(label, prepost.FOREST[k], {"H_loc(1840 s)": at_1840(d[k]["dH_loc"]), **{short[m]: quote(d[k][m]) for m in short}})
+            for k, label in rows_of]
+    stats = ["H_loc(1000 s)", "H_loc(1840 s)", *[v for k, v in short.items() if k != "H_loc(1000 s)"]]
+    matched.draw_forest(rows, OUT / "slide_prepost_forest.pdf", None, stats=stats, per_row=3, width=6.4, wrap=22, row_h=1.75)
+
+
+def factors():
+    """G against three of the controls of the decomposition (no factor, route, all fixed), on the nine
+    quantities, `slide_factors`."""
+    d = read("decomposition")["levels"]["all"]
+    rows = [(label, color, {m: quote(d[m]["cells"][cell]["delta"]) for m in matched.FOREST})
+            for label, color, cell in (("∅ (no factor)", "#555555", "none"), ("R (route)", "#16427a", "R"),
+                                       ("R+T+W (S|G)", "#eb6834", "R+T+W"))]
+    matched.draw_forest(rows, OUT / "slide_factors.pdf", None, stats=list(matched.FOREST), per_row=3, width=6.0,
+                        wrap=22, row_h=1.6)
+
+
+def shapley():
+    """Delta(none), the Shapley values of the three factors and Delta(F) on the nine quantities, `slide_shapley`."""
+    d = read("decomposition")["levels"]["all"]
+    rows = [(label, decomposition.ROW_COLORS[colour], {m: quote(get(d[m])) for m in matched.FOREST})
+            for label, colour, get in (("Δ(∅)", "Δ(none)", lambda q: q["delta_none"]), ("φ_W", "φ_W", lambda q: q["phi"]["W"]),
+                                       ("φ_T", "φ_T", lambda q: q["phi"]["T"]), ("φ_R", "φ_R", lambda q: q["phi"]["R"]),
+                                       ("Δ(F)", "Δ(F)", lambda q: q["delta_F"]))]
+    matched.draw_forest(rows, OUT / "slide_shapley.pdf", None, stats=list(matched.FOREST), per_row=3, width=6.4,
+                        wrap=22, row_h=1.75)
 
 
 def _finish(fig, ax, name):
@@ -136,16 +233,15 @@ def _bar(ax, y, q, color, **kw):
 
 
 def fitted_h():
-    """The fitted H (10 s to the end of the lags), one figure per design: of S, A, G on each dataset of the raw
-    comparison; the differences of the same route; g of the same flight against the length of the window."""
-    raw = read("raw")["datasets"]
+    """The fitted H (10 s to the end of the lags), one figure per design: of S, A, G to three end lags, each on its
+    own population (fitted_h.py); the differences of the same route; g of the same flight against the window."""
+    by_end = read("fitted_h_by_end")
     fig, ax = plt.subplots(figsize=(5.2, 2.6), constrained_layout=True)
     for k, (pop, short) in enumerate((("solo", "S"), ("group_solo", "A"), ("group", "G"))):
-        for y, ds in enumerate(("1000", "2760", "longest")):
-            h = raw[ds]["populations"][short]
-            _bar(ax, y + 0.2 * (k - 1), {"value": h["H"], "band": h["H_band"]}, COLORS[pop], label=short if y == 0 else None)
-    ax.set(yticks=range(3), yticklabels=[f"to {raw[ds]['tau_max']:,} s" for ds in ("1000", "2760", "longest")], ylim=(2.6, -0.6),
-           xlabel="$H$, fitted from 10 s")
+        for y, end in enumerate(by_end["ends"]):
+            _bar(ax, y + 0.2 * (k - 1), quote(by_end["H"][short][str(end)]), COLORS[pop], label=short if y == 0 else None)
+    ax.set(yticks=range(3), yticklabels=[f"to {end:,} s\n" + " · ".join(f"{k} {by_end['flights'][str(end)][k]:,}" for k in "SAG")
+                                         for end in by_end["ends"]], ylim=(2.6, -0.6), xlabel="$H$, fitted from 10 s")
     ax.legend(frameon=False, fontsize=8)
     _finish(fig, ax, "slide_fitted_h_raw.pdf")
     deltas = read("matched")["levels"]["all"]["deltas"]
@@ -166,12 +262,14 @@ def fitted_h():
 
 
 if __name__ == "__main__":
-    result = read("decomposition")["levels"]["all"]
-    decomposition.draw_decomposition(result, OUT / "decomposition_main.pdf", stats=list(MAIN), width=5.4)
     raw_phases()
     raw_delta()
+    raw_msd_fits()
+    pools_delta()
     matched_deltas()
+    matched_forest()
+    prepost_delta()
+    prepost_forest()
     factors()
-    selection()
-    agreement()
+    shapley()
     fitted_h()
