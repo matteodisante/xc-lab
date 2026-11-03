@@ -73,7 +73,6 @@ if __name__ == "__main__":
                    label=f"{name} ({len(r):,}), median {r.median():.2f}")
     for ax in (left, right):
         ax.axvline(MIN_OPENING, color="#1a7f5a", lw=1.1)
-        ax.axvline(REJECTED, color="#999999", lw=1, ls=":")
         ax.set(xlabel="opening: takeoff to landing / path flown", ylabel="density")
         ax.legend(frameon=False, fontsize=6)
         for side in ("top", "right"):

@@ -7,12 +7,14 @@ report, drawn from the JSON of the analyses; nothing is recomputed.
 import json
 
 import matplotlib.pyplot as plt
+import curves
 import decompose
 import decomposition
 import matched
 from tamsd import COLORS, OUT, save
 
-STATS = ("time in climb (%)", "searches that end in a climb (%)", "climbs per hour", "glide speed (km/h)", decompose.SINK)
+PHASE_STATS = ("time in climb (%)", "time in search (%)", "searches that end in a climb (%)", "climbs per hour",
+               "climb rate (m/s)", "glide speed (km/h)", decompose.SINK)
 FACTORS = ("H_loc(1840 s)", "time in climb (%)", "glide speed (km/h)", decompose.SINK)
 AGREE = ("time in climb (%)", "climbs per hour", "time in search (%)", "climb rate (m/s)", "glide speed (km/h)", decompose.SINK)
 MAIN = ("H_loc(1840 s)", "time in climb (%)", "glide speed (km/h)")
@@ -27,11 +29,38 @@ def quote(q):
 
 
 def raw_phases():
-    stats = read("raw")["phase statistics"]
-    rows = [(label, COLORS[pop], {s: quote(stats[short]["average first"][s]) for s in STATS})
+    """H_loc and the seven phase statistics of S, A, G, on a 3 x 3 grid sized for the slide: `slide_raw_phases`."""
+    raw = read("raw")
+    stats = raw["phase statistics"]
+    hloc = {"$H_{\\mathrm{loc}}(1000\\,\\mathrm{s})$": ("1000", "H_loc(1000 s)"),
+            "$H_{\\mathrm{loc}}(1840\\,\\mathrm{s})$": ("2760", "H_loc(1840 s)")}
+    rows = [(label, COLORS[pop], {**{s: quote(stats[short]["average first"][s]) for s in PHASE_STATS},
+                                  **{name: quote(raw["datasets"][ds]["populations"][short][key]) for name, (ds, key) in hloc.items()}})
             for label, pop, short in (("S", "solo", "S"), ("A", "group_solo", "A"), ("G", "group", "G"))]
-    matched.draw_forest(rows, OUT / "slide_raw_phases.pdf", "Open paragliders: the phase statistics", stats=list(STATS),
-                        width=5.0, prefix="", zero=False)
+    short = {"time in climb (%)": "climb time (%)", "time in search (%)": "search time (%)",
+             "searches that end in a climb (%)": "searches → climb (%)", decompose.SINK: "height lost (m/km)"}
+    rows = [(label, color, {short.get(k, k): v for k, v in quotes.items()}) for label, color, quotes in rows]
+    panels = [*hloc, "climb time (%)", "search time (%)", "searches → climb (%)", "climbs per hour",
+              "climb rate (m/s)", "glide speed (km/h)", "height lost (m/km)"]
+    number = {name: f"{i}  {name}" for i, name in enumerate(panels, 1)}
+    rows = [(label, color, {number[k]: v for k, v in quotes.items()}) for label, color, quotes in rows]
+    matched.draw_forest(rows, OUT / "slide_raw_phases.pdf", None, stats=list(number.values()), per_row=3, width=4.4,
+                        prefix="", zero=False, row_h=1.08)
+
+
+def raw_delta():
+    """H_loc of S, A, G with their flights in the legend, beside the differences, on the dataset of 1000 s."""
+    d = read("raw")["datasets"]["1000"]
+    left = [{**d["populations"][short]["curve"], "label": f"{short} ({d['populations'][short]['flights']:,} flights)", "color": COLORS[pop]}
+            for pop, short in (("solo", "S"), ("group_solo", "A"), ("group", "G"))]
+    gaps = read("raw")["gaps"]["1000"]["H_loc"]
+    colors = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
+    right = [{**gaps[name], "label": name, "color": colors[name]} for name in colors]
+    g = gaps["G - S"]
+    below = [i for i, v in enumerate(g["value"]) if v <= 0]
+    turn = below[-1] + 1 if below and below[-1] + 1 < len(g["lags"]) else None
+    curves.delta_figure(left, right, OUT / "slide_raw_delta",
+                        vline=None if turn is None else (g["lags"][turn], f"G - S > 0 from {g['lags'][turn]:g} s"))
 
 
 def factors():
@@ -108,6 +137,7 @@ if __name__ == "__main__":
     result = read("decomposition")["levels"]["all"]
     decomposition.draw_decomposition(result, OUT / "decomposition_main.pdf", stats=list(MAIN), width=5.4)
     raw_phases()
+    raw_delta()
     factors()
     selection()
     agreement()

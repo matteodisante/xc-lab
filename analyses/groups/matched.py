@@ -42,6 +42,7 @@ minimum and maximum over the years leaving one year out.
 
 import json
 import sys
+import textwrap
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -558,15 +559,16 @@ def draw_survival(surv, path):
     save(fig, path)
 
 
-def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None, prefix="Δ ", zero=True):
+def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None, prefix="Δ ", zero=True, wrap=None, row_h=None):
     """One panel per statistic of `stats`, one row per entry of `rows` = [(label, colour, {stat: quote}) or
-    None for a gap]: a dot with its 5-95% band."""
+    None for a gap]: a dot with its 5-95% band. `wrap`: characters per line of a panel title; `row_h`: height
+    in inches of a row of panels; no `title`: no title over the panels."""
     y, ys = 0.0, []
     for r in rows:
         ys.append(y)
         y += 0.5 if r is None else 1.0
     n = -(-len(stats) // per_row)
-    fig, axes = plt.subplots(n, per_row, figsize=(width or 3.0 * per_row + 2.6, n * (0.2 * y + 1.2)), squeeze=False)
+    fig, axes = plt.subplots(n, per_row, figsize=(width or 3.0 * per_row + 2.6, n * (row_h or 0.2 * y + 1.2)), squeeze=False)
     for ax in axes.flat[len(stats):]:
         ax.axis("off")
     for ax, stat in zip(axes.flat, stats):
@@ -580,12 +582,14 @@ def draw_forest(rows, path, title, stats=FOREST, per_row=3, width=None, prefix="
             ax.axvline(0, color="#999999", lw=0.8, ls=":")
         ax.set_ylim(y - 0.4, -0.6)
         ax.set_yticks([y0 for r, y0 in zip(rows, ys) if r], [r[0] for r in rows if r] if ax in axes[:, 0] else [])
-        ax.set_title(prefix + stat.replace("(%)", "(pp)"), fontsize=8.5)
+        name = prefix + stat.replace("(%)", "(pp)")
+        ax.set_title(textwrap.fill(name, wrap, break_long_words=False) if wrap else name, fontsize=8.5)
         ax.tick_params(labelsize=7)
         ax.grid(axis="x", color="#e6e6e6", lw=0.6)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
-    fig.suptitle(f"{title} (5-95% bands)", fontsize=10)
+    if title:
+        fig.suptitle(f"{title} (5-95% bands)", fontsize=10)
     save(fig, path)
 
 
