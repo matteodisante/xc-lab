@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -8,7 +9,9 @@ import pytest
 
 # Imported by name, not from their files: the worker processes re-import them.
 sys.path.insert(0, str(Path(__file__).parent))
+import age  # noqa: E402
 import blocks  # noqa: E402
+import breathing  # noqa: E402
 import budget  # noqa: E402
 import decompose  # noqa: E402
 import decomposition  # noqa: E402
@@ -21,6 +24,7 @@ import prepost  # noqa: E402
 import performance  # noqa: E402
 import phase_msd  # noqa: E402
 import redundancy  # noqa: E402
+import rotation  # noqa: E402
 import size  # noqa: E402
 import raw  # noqa: E402
 import route  # noqa: E402
@@ -678,6 +682,17 @@ def test_rates_are_counts_per_hour_and_pool_the_largest_sizes():
     assert r["hours"][:2] == [4.0, 2.0] and r["hours"][-1] == 1.0
     assert r["rate"]["leave"][0] == 0.25 and r["rate"]["join"][0] == 0.25 and r["rate"]["split"][1] == 0.5
     assert r["rate"]["merge"][-1] == 2.0
+
+
+def test_exposure_is_cut_at_the_age_and_hour_edges():
+    # a group of 30 min that starts at the age of 10 min and at 12:50: it crosses the age edges at 15 and 30 min
+    # and the hour edge at 13:00 h
+    mins = 60.0
+    x = age.exposure(np.array([10 * mins]), np.array([30 * mins]), np.array([(12 * 60 + 50) * mins]),
+                     np.array([0, 15, 30, 60, np.inf]) * mins, np.array([0, 13, 15, 24]) * 3600)
+    assert x.shape == (1, 4, 3)
+    assert (x[0] / mins).round(6).tolist() == [[5, 0, 0], [5, 10, 0], [0, 10, 0], [0, 0, 0]]
+    assert x.sum() == 30 * mins
 
 
 @pytest.mark.skipif(not (tamsd.OUT / "describe.json").exists(), reason="run describe.py first")
@@ -1363,3 +1378,178 @@ def test_twoway_counts_draw_pilots_blocks_and_cells_in_turn():
     of, n = twoway.weights(cell, c)
     w = of(np.array([4, 0]), np.arange(n))
     assert n == 121 and (w[:, 0] == 1).all() and (w[:, 1:] == c[:, [3, 0]].T).all()
+
+
+def test_rotation_positions_of_a_chain_are_the_known_passage_times():
+    # 1 follows 0 by 30 s, 2 follows 1 by 70 s: passage times 0, 30, 100 s, centred
+    x = rotation.positions(3, [(1, 0), (2, 1)], [[30.0, 70.0]])
+    assert x[0] == pytest.approx(np.array([0.0, 30.0, 100.0]) - 130 / 3)
+    assert x[0].argsort().tolist() == [0, 1, 2]
+
+
+def test_rotation_positions_of_inconsistent_delays_are_the_least_squares_fit():
+    # 1 follows 0 by 30 s, 2 follows 1 by 30 s, but 2 follows 0 by 0 s: x = (-10, 0, 10)
+    x = rotation.positions(3, [(1, 0), (2, 1), (2, 0)], [[30.0, 30.0, 0.0]])
+    assert x[0] == pytest.approx([-10.0, 0.0, 10.0])
+
+
+def test_rotation_positions_use_the_finite_edges_and_leave_a_disconnected_instant_unordered():
+    delays = [[30.0, 30.0, 0.0], [30.0, 70.0, np.nan], [30.0, np.nan, np.nan]]
+    x = rotation.positions(3, [(1, 0), (2, 1), (2, 0)], delays)
+    assert x[1] == pytest.approx(np.array([0.0, 30.0, 100.0]) - 130 / 3)  # a chain is exact
+    assert np.isnan(x[2]).all()  # member 2 is joined to nobody
+
+
+def test_rotation_spells_drop_the_short_runs_and_join_the_neighbours_of_one_pilot():
+    step = 5
+    run = lambda pilot, seconds: [pilot] * (seconds // step)
+    heads = np.array(run(0, 100) + run(1, 30) + run(0, 100) + [-1] * 20 + run(2, 80) + run(2, 60))
+    pilot, first, length = rotation.spells(heads, step)
+    assert pilot.tolist() == [0, 2] and first.tolist() == [0, 66] and length.tolist() == [40, 28]
+
+
+def test_rotation_kendall_of_a_stable_order_is_one_and_of_an_alternating_one_is_minus_one():
+    sign = np.tile([1.0, 1.0, 1.0], (6, 1))
+    ordered = np.ones(6, bool)
+    assert rotation.kendall(sign, ordered, [1, 3]).tolist() == [[5.0, 5], [3.0, 3]]
+    flip = np.array([[1.0], [-1.0], [1.0], [-1.0]])  # an order that alternates
+    assert rotation.kendall(flip, np.ones(4, bool), [1])[0, 0] == -3.0
+
+
+def test_rotation_climbing_marks_the_members_inside_their_climb_runs_on_the_group_grid():
+    group = SimpleNamespace(members=(7, 8, 9), t_start=1000, t_end=1050)
+    runs = {7: (np.array([1010.0, 1040.0]), np.array([1020.0, 1100.0])), 8: (np.array([900.0]), np.array([1012.0]))}
+    c = rotation.climbing(group, 5, runs)  # instants 1000, 1005, ..., 1045; member 9 has no run
+    assert c.shape == (10, 3)
+    assert c[:, 0].nonzero()[0].tolist() == [2, 3, 8, 9]  # [1010, 1020) and [1040, 1050)
+    assert c[:, 1].nonzero()[0].tolist() == [0, 1, 2]  # until 1012: the instant 1010 is in, 1015 out
+    assert not c[:, 2].any()
+    assert c.mean(axis=1)[2] == pytest.approx(2 / 3) and c.mean(axis=1)[5] == 0
+
+
+def test_rotation_covered_is_the_union_of_the_clipped_intervals():
+    on = rotation.covered(np.array([-3, 2, 4]), np.array([1, 5, 4]), 8)  # [-3, 1), [2, 5), and an empty one
+    assert on.tolist() == [True, False, True, True, True, False, False, False]
+
+
+def test_rotation_climb_events_give_the_start_end_and_member_in_time_order():
+    group = SimpleNamespace(members=(7, 8), t_start=1000, t_end=1200)
+    runs = {7: (np.array([900.0, 1100.0]), np.array([1050.0, 1163.0])), 8: (np.array([1020.0]), np.array([1080.0]))}
+    e, end, who = rotation.climb_events(group, 5, runs)  # the run opened before the group is not a start
+    assert e.tolist() == [4, 20] and end.tolist() == [16, 33] and who.tolist() == [1, 0]
+
+
+def _moving_group(offsets, heights, heading, speed=10.0, steps=200, step=5):
+    """Earth-centred positions (n, steps, 3) and altitudes (n, steps) of members at the fixed
+    (along, across) offsets in m from a centroid that flies at `speed` m/s towards `heading` (rad
+    from east, anticlockwise) from 46 N, 7 E."""
+    lat, lon = np.radians(46.0), np.radians(7.0)
+    east = np.array([-np.sin(lon), np.cos(lon), 0.0])
+    north = np.array([-np.sin(lat) * np.cos(lon), -np.sin(lat) * np.sin(lon), np.cos(lat)])
+    up = np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
+    u = np.cos(heading) * east + np.sin(heading) * north
+    w = -np.sin(heading) * east + np.cos(heading) * north
+    c = 6.37e6 * up + speed * step * np.arange(steps)[:, None] * u
+    xyz = np.stack([c + a * u + b * w for a, b in offsets])
+    return xyz, np.array(heights, float)[:, None] * np.ones(steps)
+
+
+def test_breathing_geometry_projects_the_offsets_along_and_across_the_route_of_the_centroid():
+    xyz, z = _moving_group([(100, 0), (-50, 30), (-50, -30)], [10, 0, -10], heading=np.radians(40))
+    h = breathing.ROUTE_S // 10
+    l_par, l_perp, l_z = breathing.geometry(xyz, z, h)
+    mid = slice(h, 200 - h)
+    assert l_par[mid] == pytest.approx(np.sqrt(15000 / 3), rel=1e-2)  # (100^2 + 50^2 + 50^2) / 3
+    assert l_perp[mid] == pytest.approx(np.sqrt(1800 / 3), rel=1e-2)
+    assert l_z[mid] == pytest.approx(np.sqrt(200 / 3))
+    assert np.isnan(l_par[:h]).all() and np.isnan(l_par[200 - h:]).all()  # the route window leaves the group
+
+
+def test_breathing_geometry_is_nan_where_a_member_has_no_fix_and_the_length_follows_the_route_not_the_axes():
+    xyz, z = _moving_group([(60, 0), (-60, 0)], [0, 0], heading=np.radians(-110))
+    xyz[1, 100] = np.nan
+    l_par, l_perp, _ = breathing.geometry(xyz, z, 60)
+    assert np.isnan(l_par[100]) and np.isnan(l_perp[100]) and np.isfinite(l_par[99])
+    assert l_par[70] == pytest.approx(60.0, rel=1e-2) and l_perp[70] == pytest.approx(0.0, abs=1.0)
+
+
+def test_breathing_entries_need_a_glide_of_a_minute_and_stay_below_half_since():
+    step = 5
+    f = np.r_[np.zeros(20), [0.2] * 4, [0.5] * 6, [0.0] * 5, [0.5] * 3, [0.0] * 14, [1.0] * 3, [0.4] * 2, [0.5] * 3]
+    # 100 s at 0, then 0.5 at 24; 25 s at 0 is too short to re-arm; 70 s at 0 again, then 1 at 52; the return to 0.5 is not an entry
+    assert breathing.entries(f, step).tolist() == [24, 52]
+    assert breathing.entries(np.full(30, 0.5), step).tolist() == []  # never at 0: no entry
+
+
+def test_breathing_autocovariance_of_an_alternating_series_and_of_a_series_with_gaps():
+    y = np.tile([1.0, -1.0], 10)
+    a = breathing.autocovariance(y, 3)
+    assert (a[:, 0] / a[:, 1]).tolist() == pytest.approx([1.0, -1.0, 1.0, -1.0])
+    assert a[1, 1] == 19  # the pairs at lag 1
+    y[4:6] = np.nan  # two gaps of opposite sign: the mean stays 0 and the pairs that touch them leave out
+    b = breathing.autocovariance(y, 2)
+    assert b[1, 1] == 16 and b[0, 1] == 18  # three pairs at lag 1 touch the gaps
+    assert breathing.autocovariance(np.array([1.0, 2.0, 3.0]), 5).shape == (6, 2)  # lags longer than the series
+
+
+def test_breathing_first_zero_of_a_damped_oscillation_and_of_a_series_that_stays_positive():
+    lags = np.arange(40) * 0.5
+    r = np.exp(-lags / 10) * np.cos(2 * np.pi * lags / 9)
+    assert breathing.first_zero(r, lags) == 2.5  # a quarter of the period is 2.25
+    assert np.isnan(breathing.first_zero(np.exp(-lags), lags))
+
+
+def test_breathing_bootstrap_median_follows_the_block_weights_and_the_log_correlation_is_one_for_a_power_law():
+    x, k = np.array([1.0, 2.0, 3.0, 10.0]), np.array([0, 1, 2, 3])
+    m, d = breathing.boot_median(x, k, np.array([[1.0, 1, 1, 1], [0, 0, 0, 4], [3, 0, 0, 1]]))
+    assert m == 2.5 and d.tolist() == [2.0, 10.0, 1.0]
+    a = np.exp(np.random.default_rng(1).normal(size=50))
+    r, dr = breathing.corr_log(a, 3 * a ** 2, np.arange(50) % 5, np.ones((4, 5)))
+    assert r == pytest.approx(1.0) and dr == pytest.approx(np.ones(4))
+
+
+def _retrace(delays, steps=200, step=5):
+    """Earth-centred positions (n, T, 3) of members that retrace one curved path of varying speed,
+    member i at the head's position of t - delays[i] s."""
+    lat, lon = np.radians(46.0), np.radians(7.0)
+    east = np.array([-np.sin(lon), np.cos(lon), 0.0])
+    north = np.array([-np.sin(lat) * np.cos(lon), -np.sin(lat) * np.sin(lon), np.cos(lat)])
+    up = np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
+    path = lambda t: 6.37e6 * up + (8 * t + 2e-3 * t ** 2)[:, None] * east + (0.01 * t ** 2)[:, None] * north
+    t = step * np.arange(steps)
+    return np.stack([path(t - d) for d in delays])
+
+
+def test_breathing_follow_reproduces_members_that_retrace_one_path_with_fixed_delays():
+    xyz = _retrace([0, 20, 45])
+    x = rotation.positions(3, [(1, 0), (2, 1)], np.tile([20.0, 25.0], (200, 1)))  # 1 follows 0 by 20 s, 2 follows 1 by 25 s
+    pred = breathing.follow(xyz, x, 5)
+    assert np.isnan(pred[1, :4]).all() and np.isfinite(pred[1, 4:]).all()  # t - 20 s precedes the group
+    assert np.isnan(pred[2, :9]).all() and np.isfinite(pred[2, 9:]).all()
+    assert pred[:, 9:] == pytest.approx(xyz[:, 9:])
+    z = np.zeros((3, 200))
+    l_par, l_perp, _, p_par, p_perp = breathing.geometry(xyz, z, 60, pred)
+    ok = np.isfinite(p_par)
+    assert ok.sum() == 80 and (np.flatnonzero(ok) >= 60).all()  # route window inside, and the delays inside
+    assert p_par[ok] == pytest.approx(l_par[ok], rel=1e-9) and p_perp[ok] == pytest.approx(l_perp[ok], rel=1e-9)
+    assert (l_par[ok] > 10).all()  # not a trivial zero
+
+
+def test_breathing_follow_interpolates_a_fractional_delay_and_leaves_an_unordered_instant_nan():
+    lat, lon = np.radians(46.0), np.radians(7.0)
+    east = np.array([-np.sin(lon), np.cos(lon), 0.0])
+    up = np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
+    line = lambda t: 6.37e6 * up + 10.0 * t[:, None] * east
+    t = 5.0 * np.arange(50)
+    xyz = np.stack([line(t), line(t - 17.5)])
+    x = rotation.positions(2, [(1, 0)], np.full((50, 1), 17.5))
+    x[10] = np.nan
+    pred = breathing.follow(xyz, x, 5)
+    assert np.isnan(pred[:, 10]).all() and np.isnan(pred[1, :3]).all()
+    keep = np.isfinite(pred[1].sum(axis=1))
+    assert pred[1][keep] == pytest.approx(xyz[1][keep])  # a straight line is exact under linear interpolation
+    assert pred[0][keep] == pytest.approx(xyz[0][keep])
+    xyz2 = xyz.copy()
+    xyz2[1] = line(t - 40.0)  # the follower falls back: the prediction keeps the 17.5 s delay
+    pred2 = breathing.follow(xyz2, x, 5)
+    assert np.linalg.norm(pred2[1, 20] - xyz2[1, 20]) == pytest.approx(10 * 22.5)
