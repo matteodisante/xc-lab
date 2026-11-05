@@ -24,6 +24,7 @@ import json
 import warnings
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 import pandas as pd
 
@@ -45,6 +46,7 @@ SIZES = [str(n) for n in range(2, N_MAX)] + [f"{N_MAX}+", "all"]
 PLOTTED = ("join", "leave", "landing")
 TITLES = {"join": "joins", "leave": "leaves in flight", "landing": "landings"}
 PLOT_SIZES = SIZES[:-1]
+TICKS = (0.02, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5)  # labelled rates on the log axes
 PLOT_MIN_EVENTS = 30  # a line of the figure needs this many events in all
 COLORS = dict(zip(SIZES, ["#2a78d6", "#1baf7a", "#d4a017", "#eb6834", "#c2410c", "#8e5bd0", "#9a9a96", "#0b0b0b"]))
 
@@ -151,28 +153,56 @@ def age_rates(counts, expo, rng):
             **{k: nest(first(v), HOURS, KINDS, SIZES) for k, v in {**by_age, **by_ratio}.items()}}
 
 
+def line(ax, x, q, hour, kind, s, color, label, ls="-"):
+    """One rate against age with its 5-95% band, if it rests on at least PLOT_MIN_EVENTS events."""
+    get = lambda key: np.array(q[key][hour][kind][s], float)
+    if np.nansum(get("counts")) < PLOT_MIN_EVENTS:
+        return
+    ax.fill_between(x, get("band_5"), get("band_95"), color=color, alpha=0.15, lw=0)
+    ax.plot(x, get("rate"), color=color, marker="o", ms=3.5, lw=1.2, ls=ls, label=label)
+
+
 def plot(r, path):
-    """Rate per member per hour against the age of the episode, all day: one line per size class with
-    its 5-95% band, drawn when it rests on at least PLOT_MIN_EVENTS events; panels joins, leaves in
-    flight and landings (shaded: before tau*)."""
-    fig, axes = plt.subplots(1, 3, figsize=(12, 3.6))
+    """Rates per member per hour against the age of the episode, with 5-95% bands. Top: joins and
+    leaves in flight by size, all day (dotted: all sizes). Bottom, pairs: leaves of repeat partners
+    and of one-off pairs; leaves (solid) and landings (dashed) by class of local time. Shaded: before
+    tau*, where leaves and landings cannot occur."""
+    fig, axes = plt.subplots(2, 2, figsize=(10, 7), sharex=True)
     x = np.arange(len(AGES))
-    for ax, kind in zip(axes, PLOTTED):
+    for ax, kind in zip(axes[0], ("join", "leave")):
         for s in PLOT_SIZES + ["all"]:
-            get = lambda key: np.array(r[key]["all day"][kind][s], float)
-            if np.nansum(get("counts")) < PLOT_MIN_EVENTS:
-                continue
-            ax.fill_between(x, get("band_5"), get("band_95"), color=COLORS[s], alpha=0.15, lw=0)
-            ax.plot(x, get("rate"), color=COLORS[s], marker="o", ms=3.5, lw=1.2, ls=":" if s == "all" else "-",
-                    label="all sizes" if s == "all" else s)
-        if kind in LATE:
-            ax.axvspan(-0.5, 1.5, color="#e5e5e5", lw=0)
-            ax.text(0.5, 0.04, r"before $\tau^*$", ha="center", transform=ax.get_xaxis_transform(), color="#52514e")
-        ax.set(yscale="log", xlabel="age of the episode (min)", title=TITLES[kind])
-        ax.set_xticks(x, AGES)
+            line(ax, x, r, "all day", kind, s, COLORS[s], "all sizes" if s == "all" else s, ":" if s == "all" else "-")
+        ax.set_title(TITLES[kind])
+    axes[0, 0].legend(frameon=False, fontsize=7, title="pilots", title_fontsize=7, ncol=2)
+    ax = axes[1, 0]
+    for c, color, label in (("repeat", "#2a78d6", "partners on several days"), ("once", "#eb6834", "pair of one day")):
+        line(ax, x, r["partners"][c], "all day", "leave", "2", color, label)
+    line(ax, x, r, "all day", "leave", "2", "#52514e", "all pairs", ":")
+    ax.set_title("leaves in flight, pairs")
+    ax.legend(frameon=False, fontsize=7)
+    ax = axes[1, 1]
+    for hour, color in zip(HOURS[1:], ("#1baf7a", "#d4a017", "#8e5bd0")):
+        line(ax, x, r, hour, "leave", "2", color, hour)
+        line(ax, x, r, hour, "landing", "2", color, None, "--")
+    ax.plot([], [], color="#52514e", label="leaves")
+    ax.plot([], [], color="#52514e", ls="--", label="landings")
+    ax.set_title("pairs by local time")
+    ax.legend(frameon=False, fontsize=7, ncol=2)
+    for ax in axes.ravel():
+        ax.set(yscale="log")
         ax.minorticks_off()
-    axes[0].set_ylabel("per member per hour")
-    axes[0].legend(frameon=False, fontsize=7, title="pilots", title_fontsize=7, ncol=2)
+        lo, hi = ax.get_ylim()
+        ax.set_yticks([v for v in TICKS if lo <= v <= hi])
+        ax.yaxis.set_major_formatter(FormatStrFormatter("%g"))
+        ax.set_ylim(lo, hi)
+    for ax in axes[1]:
+        ax.set_xticks(x, AGES)
+        ax.set_xlabel("age of the episode (min)")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("per member per hour")
+    for ax in (axes[0, 1], axes[1, 0], axes[1, 1]):
+        ax.axvspan(-0.5, 1.5, color="#e5e5e5", lw=0, zorder=0)
+        ax.text(0.5, 0.04, r"before $\tau^*$", ha="center", transform=ax.get_xaxis_transform(), color="#52514e")
     save(fig, path)
 
 

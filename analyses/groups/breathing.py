@@ -67,6 +67,25 @@ COLORS = {"2": "#8e5ad7", "3": "#eb6834", "4": "#2a78d6", "5+": "#1baf7a", "all"
 NO_RUNS = pd.DataFrame(columns=["flight_id", "segment_id", "t_start", "t_end", "state"])
 
 
+def route(xyz, h):
+    """The horizontal frame at the centroid of the members (`xyz` (n, T, 3), Earth-centred) and the
+    route direction. Returns `flat(d, a, b)`, the (east, north) components of the vectors d
+    (..., b - a, 3) of the instants a..b - 1 in the frame of those instants, and u (T, 2), the unit
+    horizontal displacement of the centroid over 2h instants in the frame at its middle: NaN within
+    h instants of the ends of the group."""
+    steps = xyz.shape[1]
+    c = xyz.mean(axis=0)
+    lon, lat = np.arctan2(c[:, 1], c[:, 0]), np.arctan2(c[:, 2], np.hypot(c[:, 0], c[:, 1]))
+    east = np.column_stack([-np.sin(lon), np.cos(lon), np.zeros(steps)])
+    north = np.column_stack([-np.sin(lat) * np.cos(lon), -np.sin(lat) * np.sin(lon), np.cos(lat)])
+    flat = lambda d, a, b: np.stack([(d * east[a:b]).sum(-1), (d * north[a:b]).sum(-1)], -1)
+    u = np.full((steps, 2), np.nan)
+    if steps > 2 * h:
+        shift = flat(c[2 * h:] - c[:-2 * h], h, steps - h)  # displacement over the window, in the frame at its middle
+        u[h:steps - h] = shift / np.linalg.norm(shift, axis=1)[:, None]
+    return flat, u
+
+
 def geometry(xyz, z, h, predicted=None):
     """The horizontal spread of the members along and across the route of one group. `xyz` (n, T, 3)
     are the Earth-centred positions of the members, `z` (n, T) their altitudes, NaN without a fix;
@@ -75,17 +94,10 @@ def geometry(xyz, z, h, predicted=None):
     L_par_pred, L_perp_pred: (3 or 5, T), NaN where a member has no fix or where an end of the
     route window falls outside the group."""
     n, steps = z.shape
-    c = xyz.mean(axis=0)
-    lon, lat = np.arctan2(c[:, 1], c[:, 0]), np.arctan2(c[:, 2], np.hypot(c[:, 0], c[:, 1]))
-    east = np.column_stack([-np.sin(lon), np.cos(lon), np.zeros(steps)])
-    north = np.column_stack([-np.sin(lat) * np.cos(lon), -np.sin(lat) * np.sin(lon), np.cos(lat)])
-    flat = lambda d, a, b: np.stack([(d * east[a:b]).sum(-1), (d * north[a:b]).sum(-1)], -1)
     rows = 3 if predicted is None else 5
     if steps <= 2 * h:
         return np.full((rows, steps), np.nan)
-    shift = flat(c[2 * h:] - c[:-2 * h], h, steps - h)  # displacement over the window, in the frame at its middle
-    u = np.full((steps, 2), np.nan)
-    u[h:steps - h] = shift / np.linalg.norm(shift, axis=1)[:, None]
+    flat, u = route(xyz, h)
 
     def spread(p):
         offset = flat(p - p.mean(axis=0), 0, steps)  # (n, T, 2)
@@ -97,16 +109,17 @@ def geometry(xyz, z, h, predicted=None):
     return np.array(out + ([] if predicted is None else list(spread(predicted))))
 
 
-def follow(xyz, x, step):
+def follow(xyz, x, step, lead=0.0):
     """The positions (n, T, 3) of the members if each followed the head of the instant along its
     track with its delay: member i at t is where the head, the member of the smallest x, was at
-    t - (x_i - x_head), `x` (T, n) in s, `xyz` (n, T, 3). Linear between grid instants; NaN where
-    that time precedes the group, where the track has no fix, and where x is NaN."""
+    t - (x_i - x_head) + lead (`lead` in s, 0 for the passage itself), `x` (T, n) in s, `xyz`
+    (n, T, 3). Linear between grid instants; NaN where that time falls outside the group, where
+    the track has no fix, and where x is NaN."""
     n, steps = xyz.shape[:2]
     head = x.argmin(axis=1)
-    j = np.arange(steps)[:, None] - (x - x.min(axis=1, keepdims=True)) / step
-    ok = j > -1e-6  # rounding of a delay that reaches the first instant
-    j = np.where(ok, np.maximum(j, 0), 0)
+    j = np.arange(steps)[:, None] - (x - x.min(axis=1, keepdims=True) - lead) / step
+    ok = (j > -1e-6) & (j < steps - 1 + 1e-6)  # rounding of a delay that reaches an end of the group
+    j = np.where(ok, np.clip(j, 0, steps - 1), 0)
     lo = np.floor(j).astype(int)
     w = (j - lo)[..., None]
     a, b = xyz[head[:, None], lo], xyz[head[:, None], np.minimum(lo + 1, steps - 1)]
@@ -143,16 +156,22 @@ def autocovariance(y, lags):
     return np.column_stack([num, den])
 
 
-def one_group(group, real, flight_of, step, runs, tracks, row_of):
-    """The series of one group at its grid instants: the QUANTITIES as an array (8, T)."""
+def observe(group, real, flight_of, step, tracks, row_of):
+    """The members of a group at its grid instants: their positions and altitudes (n, T, 4), NaN
+    without a fix, and the passage times x (T, n) of rotation.positions, NaN without an order."""
     n = len(group.members)
     t = group.t_start + step * np.arange((group.t_end - group.t_start) // step)
     p = np.stack([tracks.at(row_of[f], t)[:, :4] if row_of.get(f) in tracks.values else np.full((len(t), 4), np.nan)
                   for f in group.members])
     edges, delays = group_delays(group, real, flight_of, step)
-    x = positions(n, edges, delays) if len(edges) else np.full((len(t), n), np.nan)
+    return p, positions(n, edges, delays) if len(edges) else np.full((len(t), n), np.nan)
+
+
+def one_group(group, real, flight_of, step, runs, tracks, row_of):
+    """The series of one group at its grid instants: the QUANTITIES as an array (8, T)."""
+    p, x = observe(group, real, flight_of, step, tracks, row_of)
     L = geometry(p[..., :3], p[..., 3], ROUTE_S // (2 * step), follow(p[..., :3], x, step))
-    ratio = np.divide(L[0], L[3], out=np.full(len(t), np.nan), where=L[3] > 0)
+    ratio = np.divide(L[0], L[3], out=np.full(p.shape[1], np.nan), where=L[3] > 0)
     f = climbing(group, step, runs).mean(axis=1)
     return np.array([L[0], L[1], L[2], np.sqrt((x ** 2).mean(axis=1)), L[3], L[4], ratio, f])
 
@@ -170,13 +189,13 @@ def summarize_group(q, step):
     return series, profile, acf
 
 
-def measure(groups, flights, step, p):
-    """Per group of `groups`: its series, entry profiles and autocovariances (summarize_group)."""
-    runs = climb_runs(flights, {f for m in groups["members"] for f in m})
+def observed(groups, flights, p):
+    """The groups of `groups` (rows sorted by date), one at a time, with what observe() reads:
+    (group, real, flight_of, tracks, row_of); the tracks of a date are loaded once."""
     archive = grid.archive()
     by_date = dict(tuple(archive[archive["date"].isin(groups["date"])].groupby("date")))
     flights_of = dict(tuple(flights[flights["date"].isin(groups["date"])].groupby("date")))
-    out = []
+    seen = 0
     for number, (date, day) in enumerate(groups.groupby("date", sort=False)):
         real = pickle.loads((COHESION / "all" / "days" / f"{date}.pkl").read_bytes())["real"]
         mine = flights_of[date]
@@ -187,10 +206,17 @@ def measure(groups, flights, step, p):
         tracks = contacts.Tracks(g, p["step"])
         row_of = {flight_of[fid]: k for k, fid in enumerate(table["flight_id"])}
         for group in day.itertuples():
-            out.append(summarize_group(one_group(group, real, flight_of, step, runs, tracks, row_of), step))
+            seen += 1
+            yield group, real, flight_of, tracks, row_of
         if number % 100 == 0:
-            print(f"{number} dates, {len(out)}/{len(groups)} groups", flush=True)
-    return out
+            print(f"{number} dates, {seen}/{len(groups)} groups", flush=True)
+
+
+def measure(groups, flights, step, p):
+    """Per group of `groups`: its series, entry profiles and autocovariances (summarize_group)."""
+    runs = climb_runs(flights, {f for m in groups["members"] for f in m})
+    return [summarize_group(one_group(group, real, flight_of, step, runs, tracks, row_of), step)
+            for group, real, flight_of, tracks, row_of in observed(groups, flights, p)]
 
 
 def boot_median(x, k, w):
@@ -310,46 +336,40 @@ def summarize(pieces, groups, block, step, rng):
 
 
 def plot(r, path):
-    """Left: median L_par (solid) and its prediction by constant delays (dashed) in each class of f,
-    each relative to its own value at f = 0; middle: the same around the entry of a group in a
-    thermal, relative to before it; right: autocorrelation of L_par (solid), sigma_l (dashed) and f (dotted,
-    all sizes) against the lag."""
+    """Medians with 5-95% bands. Left, 3 pilots: L_par, its prediction by constant delays (dashed),
+    L_perp and L_z in each class of the climbing share f. Middle, 3 pilots: L_par, its prediction and
+    sigma_l around the entry of a group in a thermal, relative to before it. Right: median of
+    L_par over its prediction in each class of f, by size."""
     fig, (a, b, c) = plt.subplots(1, 3, figsize=(13, 3.9))
-    style = {"L_par": "-", "L_par_pred": "--"}
-    names = {"L_par": r"$L_\parallel$ observed", "L_par_pred": r"$L_\parallel$ constant delays"}
-    for size in SIZES[:4]:
-        for name in style:
-            rows = r["by_f"][size][name + "_over_gliding"]
-            v, bd = np.array([x["value"] for x in rows]), np.array([x["band"] for x in rows]).T
-            a.errorbar(np.arange(4) + (SIZES.index(size) - 1.5) * 0.08, v, yerr=[v - bd[0], bd[1] - v], color=COLORS[size],
-                       ls=style[name], marker="o", ms=3, lw=1.1, capsize=2)
-            e = r["entries"][size]
-            if e["entries"]:
-                t = e["offsets_min"]
-                rows = e[name + "_over_before"]
-                b.fill_between(t, *np.array([x["band"] for x in rows]).T, color=COLORS[size], alpha=0.12, lw=0)
-                b.plot(t, [x["value"] for x in rows], color=COLORS[size], ls=style[name], lw=1.2)
-        acf = r["acf"][size]
-        for name, ls in (("L_par", "-"), ("sigma_l", "--")):
-            c.plot(acf["lags_min"], [x["value"] for x in acf[name]], color=COLORS[size], ls=ls, lw=1.2)
-    acf = r["acf"]["all"]
-    c.plot(acf["lags_min"], [x["value"] for x in acf["f"]], color="#333333", ls=":", lw=1.4, label="$f$, all sizes")
-    c.plot([], [], color="#333333", ls="-", label=r"$L_\parallel$")
-    c.plot([], [], color="#333333", ls="--", label=r"$\sigma_\ell$")
-    c.legend(frameon=False, fontsize=8)
-    for size in SIZES[:4]:
-        a.plot([], [], color=COLORS[size], label=f"{size} pilots")
-    for name, ls in style.items():
-        a.plot([], [], color="#333333", ls=ls, label=names[name])
-    a.axhline(1, color="#999999", lw=0.6)
-    a.set_xticks(range(4), ["$f=0$", "$0<f<.5$", r"$.5\leq f<1$", "$f=1$"])
-    a.set(xlabel="climbing share of the members", ylabel="median relative to $f=0$")
-    a.legend(frameon=False, fontsize=8)
+    quantities = (("L_par", "#2a78d6", "-", r"$L_\parallel$"), ("L_par_pred", "#2a78d6", "--", r"$\hat L_\parallel$"),
+                  ("L_perp", "#eb6834", "-", r"$L_\perp$"), ("L_z", "#1baf7a", "-", "$L_z$"))
+    x = np.arange(4)
+    for name, color, ls, label in quantities:
+        rows = r["by_f"]["3"][name]
+        v, bd = np.array([q["value"] for q in rows]), np.array([q["band"] for q in rows]).T
+        a.errorbar(x, v, yerr=[v - bd[0], bd[1] - v], color=color, ls=ls, marker="o", ms=3.5, lw=1.2, capsize=2, label=label)
+    a.set(yscale="log", ylabel="median (m), 3 pilots", xlabel="climbing share of the members")
+    e = r["entries"]["3"]
+    for name, color, ls, label in (("L_par", "#2a78d6", "-", r"$L_\parallel$"), ("L_par_pred", "#2a78d6", "--", r"$\hat L_\parallel$"),
+                                   ("sigma_l", "#8e5bd0", "-", r"$\sigma_\ell$")):
+        rows = e[name + "_over_before"]
+        b.fill_between(e["offsets_min"], *np.array([q["band"] for q in rows]).T, color=color, alpha=0.12, lw=0)
+        b.plot(e["offsets_min"], [q["value"] for q in rows], color=color, ls=ls, lw=1.3, label=label)
     b.axhline(1, color="#999999", lw=0.6)
     b.axvline(0, color="#999999", lw=0.6)
-    b.set(xlabel="time from the group entering a thermal (min)", ylabel="median relative to before the entry")
-    c.axhline(0, color="#999999", lw=0.6)
-    c.set(xlabel="lag (min)", ylabel="autocorrelation")
+    b.set(xlabel="time from the group entering a thermal (min)", ylabel="median relative to before, 3 pilots")
+    for size in SIZES[:4]:
+        nan = {"value": np.nan, "band": [np.nan, np.nan]}  # pairs have no 0 < f < 0.5
+        rows = [r["prediction"][size][k]["ratio"] if k in r["prediction"][size] else nan for k in r["classes"]]
+        v, bd = np.array([q["value"] for q in rows]), np.array([q["band"] for q in rows]).T
+        c.errorbar(x + (SIZES.index(size) - 1.5) * 0.08, v, yerr=[v - bd[0], bd[1] - v], color=COLORS[size],
+                   marker="o", ms=3.5, lw=1.2, capsize=2, label=f"{size} pilots")
+    c.axhline(1, color="#999999", lw=0.6)
+    c.set(xlabel="climbing share of the members", ylabel=r"median $L_\parallel/\hat L_\parallel$")
+    for ax in (a, c):
+        ax.set_xticks(x, ["$f=0$", "$0<f<.5$", r"$.5\leq f<1$", "$f=1$"])
+    for ax in (a, b, c):
+        ax.legend(frameon=False, fontsize=8)
     save(fig, path)
 
 

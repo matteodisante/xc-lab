@@ -244,7 +244,7 @@ def quartiles(d):
 
 
 def plot(r, path):
-    """Left: D(s) with the OU fits; middle: drift of the delay; right: median separation after the first contact."""
+    """Left: D(s) (markers) with the OU fits (lines); middle: drift of the delay; right: median separation after the first contact."""
     fig, (a, b, c) = plt.subplots(1, 3, figsize=(13, 3.9))
     s = np.array(r["lags_s"])
     styles = {"real/2": ("#eb6834", "-", "o", "groups, 2 pilots"), "real/3": ("#c4472a", "-", "s", "groups, 3"),
@@ -254,8 +254,10 @@ def plot(r, path):
     for key, (color, ls, marker, label) in styles.items():
         d, f = r["D"][key], r["fit"][key]
         a.fill_between(s / 60, *d["band"], color=color, alpha=0.15, lw=0)
-        a.plot(s / 60, d["value"], color=color, ls=ls, marker=marker, ms=4, lw=1.2,
+        a.plot(s / 60, d["value"], color=color, ls="none", marker=marker, ms=4,
                label=f"{label}: $1/k$ = {1 / f['k'] / 60:.1f} min")
+        ss = np.geomspace(s.min(), s.max(), 200)  # the fitted D(s) = 2 sigma^2 (1 - exp(-k s)) + c
+        a.plot(ss / 60, 2 * f["sigma"] ** 2 * (1 - np.exp(-f["k"] * ss)) + f["c"], color=color, ls=ls, lw=1.2)
         dr = r["drift"][key]
         ok = np.array(dr["count"]) >= 200
         x = np.array(dr["l_s"])[ok]

@@ -204,7 +204,7 @@ def one_group(group, real, flight_of, step, runs, rng):
         if hi > lo:
             seen, hit = seen + 1, hit + (pilot[k] == who[lo])
             expected += (pilot[k - 1] != who[lo]) / (n - 1)
-    stats = np.r_[tau[:, 0], tau[:, 1], len(pilot) > 0, share, null, 1 / n,
+    stats = np.r_[tau[:, 0], tau[:, 1], len(pilot) > 0, share, null, (len(pilot) > 0) / n,
                   len(pilot) - 1 if len(pilot) else 0, hours(ordered), hours(np.ones(steps, bool)), roles, by_phase,
                   (change & first_min).sum(), hours(ordered & first_min), (change & mid).sum(), hours(ordered & mid),
                   seen, hit, expected]

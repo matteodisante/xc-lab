@@ -16,6 +16,8 @@ import budget  # noqa: E402
 import decompose  # noqa: E402
 import decomposition  # noqa: E402
 import describe  # noqa: E402
+import exits  # noqa: E402
+import glide  # noqa: E402
 import longlags  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
@@ -1553,3 +1555,202 @@ def test_breathing_follow_interpolates_a_fractional_delay_and_leaves_an_unordere
     xyz2[1] = line(t - 40.0)  # the follower falls back: the prediction keeps the 17.5 s delay
     pred2 = breathing.follow(xyz2, x, 5)
     assert np.linalg.norm(pred2[1, 20] - xyz2[1, 20]) == pytest.approx(10 * 22.5)
+
+
+def _frame():
+    """The east, north and up unit vectors at 46 N, 7 E."""
+    lat, lon = np.radians(46.0), np.radians(7.0)
+    east = np.array([-np.sin(lon), np.cos(lon), 0.0])
+    north = np.array([-np.sin(lat) * np.cos(lon), -np.sin(lat) * np.sin(lon), np.cos(lat)])
+    up = np.array([np.cos(lat) * np.cos(lon), np.cos(lat) * np.sin(lon), np.sin(lat)])
+    return east, north, up
+
+
+def test_glide_glides_are_the_long_runs_of_no_climber_between_two_climbs():
+    f = np.r_[[0.5] * 3, np.zeros(30), [1.0] * 4, np.zeros(10), [0.5] * 2, np.zeros(30)]
+    # 150 s between two climbs; 50 s is too short; the last run reaches the end of the group
+    assert glide.glides(f, 5) == [(3, 33)]
+    assert glide.glides(np.r_[np.zeros(30), [0.5] * 3, np.zeros(30), [0.5]], 5) == [(33, 63)]  # the first run has no start
+    assert glide.glides(np.zeros(60), 5) == []
+
+
+def test_glide_cross_track_offset_is_positive_on_the_left_of_a_straight_head_and_zero_on_its_track():
+    east, north, up = _frame()
+    head = lambda t: 6.37e6 * up + 10.0 * t[:, None] * east
+    t = 5.0 * np.arange(200)
+    x = rotation.positions(2, [(1, 0)], np.full((200, 1), 20.0))  # member 1 follows member 0 by 20 s
+    for offset in (40.0, -25.0, 0.0):
+        xyz = np.stack([head(t), head(t - 20.0) + offset * north])  # north is the left of an eastward head
+        d = glide.cross_track(xyz, x, 5)
+        assert d[6:, 0] == pytest.approx(0.0) and d[6:, 1] == pytest.approx(offset, abs=1e-6)
+        assert np.isnan(d[:6, 1]).all()  # the head's velocity at the passage needs the track VEL_S before it
+
+
+def test_glide_cross_track_offset_on_a_turning_head_is_the_distance_to_its_track_not_to_a_fixed_route():
+    east, north, up = _frame()
+    rho, omega = 400.0, 0.025  # a left turn at 10 m/s
+    head = lambda t: (6.37e6 * up + rho * np.sin(omega * t)[:, None] * east + rho * (1 - np.cos(omega * t))[:, None] * north)
+    inward = lambda t: -np.sin(omega * t)[:, None] * east + np.cos(omega * t)[:, None] * north  # the left of the head
+    t = 5.0 * np.arange(200)
+    x = rotation.positions(2, [(1, 0)], np.full((200, 1), 20.0))
+    on_track = glide.cross_track(np.stack([head(t), head(t - 20.0)]), x, 5)
+    assert on_track[6:, 1] == pytest.approx(0.0, abs=0.1)  # 200 m behind along a curve: far from the chord, on the track
+    for offset in (30.0, -30.0):
+        xyz = np.stack([head(t), head(t - 20.0) + offset * inward(t - 20.0)])
+        assert glide.cross_track(xyz, x, 5)[6:, 1] == pytest.approx(offset, abs=0.1)
+
+
+def test_glide_variance_parts_split_the_changes_of_a_constructed_series():
+    a = np.array([1.0, -1, 1, -1, 1, -1, 1, -1])
+    b = np.array([1.0, 1, -1, -1, 1, 1, -1, -1])
+    build = lambda *inc: np.r_[0.0, np.cumsum(inc[0])] + 0.3 * np.arange(len(inc[0]) + 1) * inc[1]  # drift: removed by the glide mean
+    cases = ((a + b, b, [.5, .5, 0, 0, 0, .5, .5, 0]), (2 * a + b, b, [.2, .2, 0, .6, 0, .4, .2, .4]),
+             (2 * a, a, [.25, .25, .5, 0, 1, .5, .5, 0]))  # the last: the two factors move together
+    for y, c, expect in cases:
+        m = glide.variance_parts(build(y, 1), build(a, 1), build(c, 1))
+        assert m[0] == 8 and glide.shares(m) == pytest.approx(expect, nan_ok=True)
+        assert glide.variance_parts(*(np.r_[0.0, np.cumsum(v)] for v in (y, a, c)))[1:] == pytest.approx(m[1:])
+    log_v = np.r_[0.0, np.cumsum(b)]
+    log_v[4] = np.nan  # the two changes that touch a missing value leave out
+    assert glide.variance_parts(*(np.r_[0.0, np.cumsum(v)] for v in (a + b, a)), log_v)[0] == 6
+    assert glide.variance_parts(np.zeros(2), np.zeros(2), np.zeros(2)).tolist() == [0] * 7  # one change: nothing to centre
+    assert glide.variance_parts(*(np.r_[0.0, np.cumsum(v)] for v in (a + b, a, b)), lag=2)[0] == 7
+
+
+def test_glide_one_series_reads_the_instants_of_a_glide_between_two_climbs():
+    east, north, up = _frame()
+    t = 5.0 * np.arange(400)
+    xyz = np.stack([6.37e6 * up + 10.0 * t[:, None] * east, 6.37e6 * up + 10.0 * (t - 20.0)[:, None] * east + 40.0 * north])
+    z = np.stack([np.full(400, 2000.0), np.full(400, 2060.0)])
+    x = rotation.positions(2, [(1, 0)], np.full((400, 1), 20.0))
+    f = np.r_[np.full(100, 0.5), np.zeros(200), np.full(100, 0.5)]
+    [(inst, moments, seconds)] = glide.one_series(xyz, z, x, f, 5)
+    assert seconds == 1000 and inst.shape == (34, 6)
+    assert inst[:, 0] == pytest.approx(np.arange(34) * 0.03) and inst[:3, 1].tolist() == [0, 0.5, 1.0] and inst[-1, 2] == pytest.approx(10 / 60)
+    assert inst[:, 3] == pytest.approx(20.0, rel=1e-3) and inst[:, 4] == pytest.approx(30.0)  # L_perp = 40 / 2, L_z = 60 / 2
+    assert np.isnan(inst[0, 5]) and inst[1:, 5] == pytest.approx(1600.0, rel=1e-6)  # the first passage is before the glide
+    assert moments.shape == (len(glide.DTS), 7) and moments[:, 0].min() > 0
+
+
+def test_exits_thermals_lie_between_two_glides_of_a_minute_and_keep_short_gaps_inside():
+    f = np.r_[np.zeros(12), [0.5] * 4, np.zeros(5), [1.0] * 4, np.zeros(12), [0.5] * 3, np.zeros(6), [0.5] * 2]
+    # a gap of 25 s stays inside the thermal; the glide of 60 s is enough; the last stretch has no glide after it
+    assert exits.thermals(f, 5) == [(0, 12, 25, 37)]
+    assert exits.thermals(np.r_[[0.5] * 3, np.zeros(12), [0.5] * 3, np.zeros(12)], 5) == [(3, 15, 18, 30)]  # no glide before the first stretch
+    assert exits.thermals(np.r_[np.zeros(12), [0.5] * 3, np.zeros(11), [0.5]], 5) == []  # 55 s is not a glide
+    assert exits.thermals(np.zeros(60), 5) == [] and exits.thermals(np.ones(60), 5) == []
+
+
+def test_exits_head_over_is_the_most_frequent_head_and_ties_go_to_the_row_nearest_the_thermal():
+    x = np.array([[0, 5, 9], [0, 5, 9], [np.nan] * 3, [5, 0, 9], [5, 0, 9]])
+    assert exits.head_over(x) == 0 and exits.head_over(x[::-1]) == 1  # 2 against 2: the first row decides
+    assert exits.head_over(x[1:]) == 1 and exits.head_over(np.full((4, 3), np.nan)) == -1  # 2 against 1: the majority
+
+
+def test_exits_exits_read_the_first_entry_and_the_last_exit_of_the_runs_that_overlap_the_thermal():
+    t = 1000.0 + 5 * np.arange(40)
+    z = 1000.0 + 2 * (t - 1000)
+    run = (np.array([1020.0, 1100.0]), np.array([1050.0, 1150.0]))
+    s, n, zs, zn, count = exits.exits(t, z, run, 3, 35)
+    assert (s, n, zs, zn, count) == (1020, 1150, 1040, 1300, 2)  # altitude interpolated at the run ends
+    assert exits.exits(t, z, run, 10, 20)[4] == 0  # [1050, 1100): the run that ends at 1050 is out, the one that starts at 1100 is not in yet
+    assert exits.exits(t, z, run, 10, 21) == (1100, 1150, 1200, 1300, 1)  # it is in when 1100 is the last instant
+    assert exits.exits(t, z, run, 30, 38)[4] == 0 and np.isnan(exits.exits(t, z, run, 30, 38)[1])  # the run ends at 1150, the instant 30
+    z[28:32] = np.nan  # no fix around the end 1150 (instants 1140..1155)
+    assert np.isnan(exits.exits(t, z, run, 3, 35)[3]) and exits.exits(t, z, run, 3, 35)[1] == 1150
+
+
+def _climbs(runs, z, x_before, x_after):
+    """A group of three flights 7, 8, 9 over 100 instants of 5 s from 1000, and what observe() would
+    give: altitudes z (3, 100) and passage times that are x_before up to instant 20 and x_after from 52."""
+    group = SimpleNamespace(members=(7, 8, 9), t_start=1000, t_end=1500, block=3)
+    x = np.full((100, 3), np.nan)
+    x[:20], x[52:] = x_before, x_after
+    p = np.zeros((3, 100, 4))
+    p[..., 3] = z
+    return group, {m: r for m, r in zip(group.members, runs) if r is not None}, (p, x)
+
+
+def test_exits_one_group_finds_the_thermal_its_leaders_and_the_exits_of_each_member(monkeypatch):
+    t = 1000.0 + 5 * np.arange(100)
+    z = np.array([2000.0 + (t - 1000), 1900.0 + (t - 1000), 2100.0 + (t - 1000)])
+    runs = [(np.array([1100.0]), np.array([1200.0])), (np.array([1130.0]), np.array([1260.0])), (np.array([1150.0]), np.array([1220.0]))]
+    group, run, seen = _climbs(runs, z, [0, 30, 60], [40, 0, 80])
+    monkeypatch.setattr(exits, "observe", lambda *a: seen)
+    [r] = exits.one_group(group, None, None, 5, run, None, None)
+    assert r["block"] == 3 and r["n"] == 3 and r["seconds"] == 160 and (r["before"], r["after"]) == (0, 1)
+    assert r["exit_t"].tolist() == [1200, 1260, 1220] and r["entry_t"].tolist() == [1100, 1130, 1150]
+    assert r["exit_z"].tolist() == [2200, 2160, 2320] and r["entry_z"].tolist() == [2100, 2030, 2250] and r["runs"].tolist() == [1, 1, 1]
+    rows = exits.pairs([r], [0])  # leader: member 7
+    assert rows[:, 2].tolist() == [-40, 120] and rows[:, 3].tolist() == [60, 20] and rows[:, 4].tolist() == [100, 100]
+    assert rows[:, 5].tolist() == [-70, 150] and rows[:, 6].tolist() == [30, -30] and rows[:, 7].tolist() == [1, 1] and rows[:, :2].tolist() == [[3, 3]] * 2
+    assert exits.pairs([r], [1])[:, 2].tolist() == [40, 160]  # leader: member 8
+    assert exits.pairs([r], [-1]).shape == (0, 8)
+    assert exits.order([r]).tolist() == [[3, 3, 3, 0, 2, 0, 1, 1, 1]]  # first: 7, highest: 9
+
+
+def test_exits_a_member_without_a_fix_at_its_exit_is_not_a_climber_and_a_leader_that_does_not_climb_gives_no_row(monkeypatch):
+    t = 1000.0 + 5 * np.arange(100)
+    z = np.array([2000.0 + (t - 1000), 1900.0 + (t - 1000), 2100.0 + (t - 1000)])
+    z[1, 50:54] = np.nan
+    runs = [(np.array([1100.0]), np.array([1200.0])), (np.array([1130.0]), np.array([1260.0])), None]  # member 9 has no climb run
+    group, run, seen = _climbs(runs, z, [0, 30, 60], [40, 0, 80])
+    monkeypatch.setattr(exits, "observe", lambda *a: seen)
+    [r] = exits.one_group(group, None, None, 5, run, None, None)
+    assert exits.climbers(r).tolist() == [0] and exits.pairs([r], [0]).shape == (0, 8)
+    assert exits.pairs([r], [1]).shape == (0, 8) and exits.order([r]).shape == (0, 9)
+
+
+def _thermal(exit_t, exit_z, before=0, after=0, block=0):
+    exit_z = np.array(exit_z, float)
+    return {"block": block, "n": len(exit_z), "seconds": 300, "before": before, "after": after, "exit_t": np.array(exit_t, float),
+            "exit_z": exit_z, "entry_t": np.zeros(len(exit_z)), "entry_z": exit_z - 100, "runs": np.ones(len(exit_z))}
+
+
+def test_exits_leader_stats_count_the_shares_with_the_tolerance_and_the_median_over_the_gain():
+    dz = np.array([-50.0, -10, 0, 15, 30, 60])
+    rows = np.column_stack([np.zeros(6), np.full(6, 2), dz, np.arange(6.0) - 2, [100, 100, 50, 200, 200, 200], dz, np.zeros(6), np.ones(6)])
+    r = exits.leader_stats(rows, np.ones((5, 1)))
+    assert r["rows"] == 6 and r["dz"]["value"] == 7.5 and r["dt"]["value"] == 0.5 and r["follower_later"]["value"] == 0.5
+    s = {tol: {k: v["value"] for k, v in r["shares"][str(tol)].items()} for tol in exits.TOLS}
+    assert s[20] == {"above": 2 / 6, "same": 3 / 6, "below": 1 / 6}  # 15 is within 20 m, 30 is not
+    assert s[10] == {"above": 3 / 6, "same": 2 / 6, "below": 1 / 6}  # |-10| <= 10
+    assert s[40] == {"above": 1 / 6, "same": 4 / 6, "below": 1 / 6}
+    assert r["dz_over_gain"]["value"] == pytest.approx(0.075) and r["dz_over_gain"]["rows"] == 5  # the gain 50 m is below MIN_GAIN
+    with np.errstate(all="ignore"):
+        assert exits.leader_stats(np.zeros((0, 8)), np.ones((5, 1)))["rows"] == 0
+
+
+def test_exits_a_leader_drawn_at_random_gives_a_distribution_of_dz_that_is_symmetric():
+    rng = np.random.default_rng(1)
+    ths = [_thermal([0, 60], rng.normal(2000, 100, 2)) for _ in range(5000)]
+    lead = np.array([rng.choice(exits.climbers(r)) for r in ths])
+    rows = exits.pairs(ths, lead)
+    assert len(rows) == 5000 and abs(np.median(rows[:, 2])) < 10 and abs((rows[:, 2] > 20).mean() - (rows[:, 2] < -20).mean()) < 0.05
+    both = np.r_[exits.pairs(ths, np.zeros(5000, int))[:, 2], exits.pairs(ths, np.ones(5000, int))[:, 2]]
+    assert np.median(both) == pytest.approx(0, abs=1) and both.sum() == pytest.approx(0)  # the two orders of a pair are opposite
+
+
+def test_exits_link_compares_the_highest_and_the_first_exit_with_the_head_after_and_with_chance():
+    a = _thermal([1200, 1260, 1220], [2200, 2160, 2320], before=0, after=1)  # first 0, highest 2
+    b = _thermal([1000, 1100], [2000, 2100], before=1, after=0)  # first 0, highest 1
+    r = exits.link_stats(exits.order([a, b]), np.ones((5, 1)))["all"]
+    assert r["thermals"] == 2 and r["with_head_after"] == 2
+    assert r["first_is_head_after"]["share"]["value"] == 0.5 and r["highest_is_head_after"]["share"]["value"] == 0
+    assert r["first_is_head_after"]["expected_members"] == pytest.approx((1 / 3 + 1 / 2) / 2) == pytest.approx(r["highest_is_head_after"]["expected_climbers"])
+    assert r["leader_before"]["climbs"] == 2 and r["leader_before"]["first"]["value"] == 0.5 and r["leader_before"]["highest"]["value"] == 0.5
+    assert r["leader_after"]["first"]["value"] == 0.5 and r["leader_after"]["highest"]["value"] == 0 and r["leader_before"]["expected"] == pytest.approx(5 / 12)
+    assert exits.link_stats(exits.order([a, b]), np.ones((5, 1)))["2"]["thermals"] == 1
+
+
+def test_exits_summarize_runs_on_thermals_and_the_figure_is_written(tmp_path):
+    pair = lambda i: _thermal([0, 60 + 10 * i], [2000, 2000 + 20 * i - 100], before=0, after=i % 3, block=i % 4)  # the head after is member 2 in a third of them: no climber
+    trio = lambda i: _thermal([0, 60, 90 + i], [2000, 2100, 2000 + 20 * i - 100], before=1, after=0, block=i % 4)
+    ths = [pair(i) for i in range(40)] + [trio(i) for i in range(20)]
+    r = exits.summarize(ths, 4, np.random.default_rng(0))
+    assert r["thermals"]["all"]["total"] == 60 and r["thermals"]["3+"]["total"] == 20 and r["thermals"]["2"]["climbers_2plus"] == 40
+    assert r["leaders"]["before"]["2"]["rows"] == 40 and r["leaders"]["before"]["3+"]["rows"] == 40  # 1 follower in a pair, 2 in a trio
+    assert r["leaders"]["after"]["2"]["rows"] == 27  # 13 of the 40 pairs have a head after that does not climb
+    assert r["link"]["all"]["thermals"] == 60 and len(r["hist"]["before"]) == len(exits.DZ_EDGES) - 1 and len(r["dz_by_dt"]["after"]) == len(exits.DT_EDGES) - 1
+    exits.plot(r, tmp_path / "exits.pdf")
+    assert (tmp_path / "exits.pdf").exists()
