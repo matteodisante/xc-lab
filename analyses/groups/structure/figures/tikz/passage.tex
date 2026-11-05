@@ -1,0 +1,29 @@
+% From the delays to the passage times (left); the predicted position and the offset d (right).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \draw[->, ink2] (-0.2,0) -- (4.6,0) node[right, lbl, ink] {$x$ (s)};
+    \foreach \x/\n/\c in {0.6/h/blueI, 2.2/2/orangeJ, 3.8/3/aqua} {
+      \draw[ink2] (\x,-0.07) -- (\x,0.07);
+      \node[pt, fill=\c] (p\n) at (\x,0.95) {};
+      \node[lbl, below] at (\x,-0.07) {$x_\n$};
+    }
+    \draw[ink2] (ph) to[bend left=45] node[above, lbl] {$\ell^*_{2h}$} (p2);
+    \draw[ink2] (p2) to[bend left=45] node[above, lbl] {$\ell^*_{32}$} (p3);
+    \draw[ink2, dashed] (ph) to[bend right=22] node[below, lbl] {$\ell^*_{3h}$} (p3);
+    \node[note, align=center] at (2.2,-0.85) {least squares on the edges:\\ the head $h$ has the smallest $x$};
+  \end{scope}
+  \begin{scope}[xshift=6.6cm, scale=1.3]
+    \draw[track i] (0,0.2) .. controls (1.5,0.9) and (3,0.3) .. (4.6,1.0);
+    \node[pt i] at (4.6,1.0) {};
+    \node[lbl, right] at (4.6,1.0) {$\mathbf r_h(t)$};
+    \node[lbl, blueI, anchor=north west] at (0,0.1) {track of the head};
+    \draw[->, ink2] (2.03,0.59) -- (2.93,0.62) node[right, lbl] {velocity of $h$};
+    \draw[->, ink2] (2.03,0.59) -- (2.01,1.0) node[right, lbl] {$\hat{\mathbf n}$};
+    \draw[orangeJ, dashed] (2.03,0.59) -- (1.93,1.95);
+    \node[hollow j] at (2.03,0.59) {};
+    \node[lbl, anchor=north] at (2.2,0.45) {$\hat{\mathbf r}_i=\mathbf r_h\big(t-(x_i-x_h)\big)$};
+    \node[pt j] at (1.93,1.95) {};
+    \node[lbl, right] at (1.98,1.95) {$\mathbf r_i(t)$};
+    \node[lbl, left, orangeJ] at (1.95,1.45) {$d_i$};
+  \end{scope}
+\end{tikzpicture}

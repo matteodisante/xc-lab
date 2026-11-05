@@ -220,7 +220,11 @@ and landings cannot occur. Lines resting on fewer than 30 events are not drawn.}
   \item \textbf{The clock moves the landings, the age the leaves} (bottom right): within each class
         of local time the leaves of pairs fall alike, while the landings rise only after 15~h.
 \end{itemize}
-The rates carry a memory beyond the size: the longer a pair has lasted, the less it separates.
+\paragraph{What we keep.} Groups take their members in the first minutes of an episode, and
+then the size moves one pilot at a time. The rates carry a memory beyond the size: a pair that has
+flown together for an hour is less likely to split in the next hour than a pair that has just met,
+for pilots who fly together on several days as for those who meet once. Whether flying together
+binds a pair, or the pairs that last were the stable ones from the start, these data cannot tell.
 The balance~\eqref{eq:chain} holds all the same, since it counts the moves between two sizes with
 the rates averaged over the ages.
 
@@ -271,7 +275,7 @@ contact, $i$ following $j$ by $\ell^*_{ij}$,
 \begin{equation}\label{eq:passage}
 \min_{x}\sum_{(i,j)}\big(x_i-x_j-\ell^*_{ij}(t)\big)^2,\qquad \sum_i x_i=0,
 \end{equation}
-over the edges of the configuration, which must connect all the members. $\sigma_\ell$ is the RMS
+over the edges of the configuration, which must connect all the members (Figure~\ref{fig:passage}). $\sigma_\ell$ is the RMS
 of the $x_i$, and the head $h$ is the member of smallest $x$. If every member retraced the head's
 track with its own delay, member $i$ would be where the head was a delay earlier,
 \begin{equation}\label{eq:follow}
@@ -279,8 +283,41 @@ track with its own delay, member $i$ would be where the head was a delay earlier
 \end{equation}
 and $\hat L_\parallel$ follows from the $\hat{\mathbf r}_i$ as $L_\parallel$ from the $\mathbf r_i$.
 At constant delays the length changes with the speed along the route alone: a head that circles in
-a thermal stops on the route, and the followers close in. A group enters a thermal when $f$
-reaches $1/2$ after at least 1~min at $f=0$.
+a thermal stops on the route, and the followers close in (Figure~\ref{fig:accordion}). A group enters a thermal when $f$
+reaches $1/2$ after at least 1~min at $f=0$ (Figure~\ref{fig:timeline}).
+
+\begin{figure}
+\centering
+\input{figures/tikz/passage}
+\caption{Left: the passage times. Each edge of the configuration carries the delay $\ell^*_{ij}$ of
+a pair in contact; the $x_i$ fit them by least squares~\eqref{eq:passage}, and the head $h$ has the
+smallest. Right: the predicted position~\eqref{eq:follow} of a follower, where the head was a delay
+earlier, and its cross-track offset $d_i$~\eqref{eq:offset} along the unit vector $\hat{\mathbf n}$
+to the left of the head's velocity there.}
+\label{fig:passage}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{figures/tikz/accordion}
+\caption{The accordion at a constant delay $\Delta$: position along the route against time. In
+glide the follower is $v\Delta$ behind the head. While the head circles (blue) it stops on the
+route and the follower, still gliding, closes in; while both circle the gap is near zero; it opens
+again as they leave in turn. The delay $\Delta$ stays the same throughout.}
+\label{fig:accordion}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{figures/tikz/timeline}
+\caption{A thermal of a group of three pilots A, B, C. Bars: phases of each member (grey: glide,
+green: climb). Top: the climbing share $f(t)$, in steps of $1/3$. The thermal of the group is the
+stretch with $f>0$ between two glides of all members; the group enters it when $f$ reaches $1/2$
+(dotted). Each member enters at the start of its first climb and leaves at the end of its last
+(black ticks), as A at $t_{\rm in}$ and $t_{\rm out}$; B leaves once, at the end of its second
+climb.}
+\label{fig:timeline}
+\end{figure}
 
 \begin{figure}
 \centering
@@ -351,9 +388,15 @@ of the dates).}
   \item \textbf{Height holds} (right): in glide $L_z$ stays between \StGlZPairsLow{} and
         \StGlZPairsHigh~m in pairs.
 \end{itemize}
-The breathing has two parts: in a thermal an accordion at fixed delays, in glide a spread that
-opens after the thermal and delays that change. We find no fan that opens to search and closes
-before the next thermal.
+\paragraph{What we keep.} A group keeps its spacing in time, and its spacing in space follows.
+In a thermal the head stops to circle and the others reach it, so the group shrinks to a few tens
+of metres along the route and stacks in height; in glide it stretches again to the length its
+delays give at glide speed. On a map the group breathes with the thermals, while its delays, the
+quantity that holds two pilots together (Section~\ref{sec:cohesion}), barely move: the breathing is
+the kinematics of a shared pace. What changes in glide is the line. After a thermal the followers
+drift off the head's line and stay off it, closer to it than two pilots who never met, and the
+length changes because a pilot gains or loses time on the others. We find no fan that opens across
+the route to search and closes before the next thermal.
 
 \subsection{Who leads}\label{sec:leaders}
 
@@ -441,8 +484,6 @@ blocks.}
         adds little (\StRotFirstOverMid{} times the changes of mid-climb), and the new head is the
         first to climb in \StRotFirst\% of the changes, against \StRotFirstExp\% at random.
 \end{itemize}
-The lead passes from pilot to pilot every few minutes, mostly as a group enters or leaves a
-thermal, and no pilot holds it much longer than random hand-overs give.
 
 \paragraph{Leaving a thermal.}\label{sec:exits} Do the followers leave a thermal at the height of
 the leader, below it or above it? A thermal of a group is the stretch between two glides of the
@@ -487,9 +528,13 @@ of $\Delta t$. Bands and bars: 5--95\% of 200 draws of the blocks.}
         definition of the head, the first to pass; the second says that height bought in the
         thermal does not buy the lead.
 \end{itemize}
-A group leaves a thermal together in height and spread out in time: the pilot who stays climbs
-higher, and the one who goes first takes the lead, in line with the head changes of the mixed
-phases.
+\paragraph{What we keep.} The lead passes with the thermals. Pilots form a line along the route,
+and the order of that line renews within a few thermals; no pilot holds the head much longer than
+random hand-overs give, although in pairs the experienced pilot on the higher wing class leads
+more often. The head changes most while the group straddles a thermal. Followers leave a thermal at
+the leader's height, a few metres lower, so a group leaves together in height and spread out in
+time: who stays longer climbs higher, and who leaves first heads the next glide. Height bought in
+the thermal does not buy the lead.
 
 \subsection{With whom}\label{sec:partners}
 

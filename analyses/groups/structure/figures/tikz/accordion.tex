@@ -1,0 +1,17 @@
+% The accordion: position along the route against time, head and follower at a constant delay.
+\begin{tikzpicture}[x=1.15cm,y=0.85cm]
+  \fill[blueI, opacity=0.12] (3,0) rectangle (5,5.2);
+  \fill[orangeJ, opacity=0.12] (4,0) rectangle (6,5.2);
+  \node[lbl, blueI] at (4,6.0) {head circles};
+  \node[lbl, orangeJ] at (5,5.5) {follower circles};
+  \draw[->, ink2] (0,0) -- (9,0) node[right, lbl, ink] {$t$};
+  \draw[->, ink2] (0,0) -- (0,5.4) node[left, lbl, ink, align=right] {position\\along the route};
+  \draw[track i] (0,0) -- (3,2.4) -- (5,2.6) -- (8,5.0);
+  \draw[track j] (1,0) -- (4,2.4) -- (6,2.6) -- (8.5,4.6);
+  \node[lbl, blueI, above left] at (1.9,1.5) {head};
+  \node[lbl, orangeJ, below right] at (2.1,0.85) {follower};
+  \draw[<->, ink] (2,1.6) -- node[above, lbl] {$\Delta$} (3,1.6);
+  \draw[<->, ink] (3,2.4) -- node[below, lbl] {$\Delta$} (4,2.4);
+  \draw[<->, ink] (7,3.4) -- node[right, lbl] {$v\Delta$} (7,4.2);
+  \draw[ink2] (4.5,2.5) -- (4.9,3.6) node[above, note] {gap near 0};
+\end{tikzpicture}

@@ -1,0 +1,24 @@
+% A thermal of a group of three: phases of each member, the climbing share f(t), entries and exits.
+\begin{tikzpicture}[x=1.2cm,y=1cm, row/.style={font=\footnotesize, anchor=east}]
+  \foreach \y/\name/\climbs in {2.2/A/{2/5}, 1.5/B/{2.6/4.2,4.6/5.8}, 0.8/C/{3.1/6.2}} {
+    \fill[light] (0,\y-0.15) rectangle (9,\y+0.15);
+    \foreach \a/\b in \climbs {\fill[aqua] (\a,\y-0.15) rectangle (\b,\y+0.15);}
+    \node[row] at (-0.1,\y) {\name};
+  }
+  \foreach \x/\y in {5/2.2, 5.8/1.5, 6.2/0.8} {\draw[ink, line width=0.9pt] (\x,\y-0.24) -- (\x,\y+0.24);}
+  \node[lbl, above] at (2,2.35) {$t_{\rm in}$};
+  \node[lbl, above] at (5,2.42) {$t_{\rm out}$};
+  \begin{scope}[yshift=3.1cm]
+    \draw[ink2] (0,0) -- (9,0);
+    \draw[muted, dashed] (0,0.45) -- (9,0.45) node[right, lbl] {$f=1/2$};
+    \draw[blueI, thick] (0,0) -| (2,0.3) -| (2.6,0.6) -| (3.1,0.9) -| (4.2,0.6) -| (4.6,0.9) -| (5,0.6)
+      -| (5.8,0.3) -| (6.2,0) -- (9,0);
+    \node[row] at (-0.1,0.45) {$f(t)$};
+  \end{scope}
+  \draw[ink, densely dotted] (2.6,0.5) -- (2.6,4.15) node[above, lbl] {entry of the group};
+  \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (0,0.5) -- node[below=5pt, lbl] {glide before} (1.95,0.5);
+  \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (2.05,0.5) -- node[below=5pt, lbl] {thermal of the group, $f>0$} (6.15,0.5);
+  \draw[decorate, decoration={brace, mirror, amplitude=4pt}, ink2] (6.25,0.5) -- node[below=5pt, lbl] {glide after} (9,0.5);
+  \fill[light] (9.25,2.1) rectangle (9.55,2.3); \node[lbl, right] at (9.55,2.2) {glide};
+  \fill[aqua] (9.25,1.4) rectangle (9.55,1.6); \node[lbl, right] at (9.55,1.5) {climb};
+\end{tikzpicture}

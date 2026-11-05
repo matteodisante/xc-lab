@@ -13,6 +13,27 @@
 \usepackage{enumitem}
 \usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.pathreplacing}
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{aqua}{HTML}{1BAF7A}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{muted}{HTML}{9A9893}
+\definecolor{light}{HTML}{E6E5E1}
+\tikzset{
+  >={Stealth[length=1.8mm]},
+  every picture/.style={line cap=round, line join=round},
+  track i/.style={blueI, line width=1.1pt},
+  track j/.style={orangeJ, line width=1.1pt},
+  pt/.style={circle, inner sep=1.5pt, draw=ink, line width=0.4pt},
+  pt i/.style={pt, fill=blueI},
+  pt j/.style={pt, fill=orangeJ},
+  hollow j/.style={circle, inner sep=1.5pt, draw=orangeJ, fill=white, line width=0.9pt},
+  lbl/.style={font=\footnotesize},
+  note/.style={font=\footnotesize, text=ink2},
+}
 \usepackage[hidelinks]{hyperref}
 % Labels of the note, as gi-<label>; they exist once the note has been compiled.
 \usepackage{xr-hyper}
