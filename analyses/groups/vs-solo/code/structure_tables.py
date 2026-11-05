@@ -187,6 +187,136 @@ def hierarchy_tex():
     macro("StExpRatio", f"{w['experience']['median_ratio']:.1f}")
 
 
+def value(name, x, digits):
+    """A {value, band} as two macros: name and nameBand."""
+    macro(name, f"{x['value']:.{digits}f}")
+    macro(f"{name}Band", f"[{x['band'][0]:.{digits}f}, {x['band'][1]:.{digits}f}]")
+
+
+def age_tex():
+    r = load(MAIN, "age")
+    rate, day = r["rate"], "all day"
+    band = lambda kind, s, i: f"[{r['band_5'][day][kind][s][i]:.2f}, {r['band_95'][day][kind][s][i]:.2f}]"
+    ratio = lambda q, h, kind, s: {"value": q["ratio"][h][kind][s], "band": [q["ratio_5"][h][kind][s], q["ratio_95"][h][kind][s]]}
+    for s, name in (("2", "Two"), ("8+", "Max")):
+        macro(f"StAgeJoin{name}First", f"{rate[day]['join'][s][0]:.2f}")
+        macro(f"StAgeJoin{name}Last", f"{rate[day]['join'][s][-1]:.2f}")
+    macro("StAgeLeaveTwoFirst", f"{rate[day]['leave']['2'][2]:.2f}")
+    macro("StAgeLeaveTwoFirstBand", band("leave", "2", 2))
+    macro("StAgeLeaveTwoLast", f"{rate[day]['leave']['2'][-1]:.2f}")
+    macro("StAgeLeaveTwoLastBand", band("leave", "2", -1))
+    value("StAgeLeaveTwoRatio", ratio(r, day, "leave", "2"), 2)
+    hours = [r["ratio"][h]["leave"]["2"] for h in r["hours"][1:]]
+    macro("StAgeLeaveHoursLow", f"{min(hours):.2f}")
+    macro("StAgeLeaveHoursHigh", f"{max(hours):.2f}")
+    large = [r["ratio"][day]["leave"][s] for s in ("5", "6", "7", "8+")]
+    macro("StAgeLeaveLargeLow", f"{min(large):.2f}")
+    macro("StAgeLeaveLargeHigh", f"{max(large):.2f}")
+    for c, name in (("repeat", "Repeat"), ("once", "Once")):
+        q = r["partners"][c]
+        macro(f"StAge{name}First", f"{q['rate'][day]['leave']['2'][2]:.2f}")
+        value(f"StAge{name}Ratio", ratio(q, day, "leave", "2"), 2)
+    macro("StAgeLandTwoFirst", f"{rate[day]['landing']['2'][2]:.3f}")
+    macro("StAgeLandTwoLast", f"{rate[day]['landing']['2'][-1]:.3f}")
+    value("StAgeLandLate", ratio(r, r["hours"][-1], "landing", "2"), 2)
+    macro("StTauStar", f"{r['tau_star_min']:.1f}")
+
+
+def breathing_tex():
+    r = load(MAIN, "breathing")
+    macro("StBrGroups", num(r["groups"]["all"]["groups"], 0))
+    macro("StBrHours", num(r["groups"]["all"]["hours"], 0))
+    f = r["by_f"]["3"]
+    for key, name in (("L_par", "Par"), ("L_perp", "Perp"), ("L_z", "Z")):
+        macro(f"StBr{name}Glide", f"{f[key][0]['value']:.0f}")
+        macro(f"StBr{name}Half", f"{f[key][2]['value']:.0f}")
+        macro(f"StBr{name}Climb", f"{f[key][3]['value']:.0f}")
+    p = r["prediction"]
+    value("StBrRatioGlide", p["3"]["f = 0"]["ratio"], 2)
+    value("StBrRatioClimb", p["3"]["f = 1"]["ratio"], 2)
+    large = [p["5+"][c]["ratio"]["value"] for c in r["classes"]]
+    macro("StBrRatioLargeLow", f"{min(large):.2f}")
+    macro("StBrRatioLargeHigh", f"{max(large):.2f}")
+    macro("StBrPredShare", pct(r["groups"]["3"]["prediction_share"]))
+    e = r["entries"]["3"]
+    i = e["offsets_min"].index(1.5)
+    macro("StBrEntries", num(e["entries"], 0))
+    value("StBrEntryPar", e["L_par_over_before"][i], 2)
+    value("StBrEntryPred", e["L_par_pred_over_before"][i], 2)
+    value("StBrEntrySigma", e["sigma_l_over_before"][i], 2)
+
+
+def glide_tex():
+    r = load(MAIN, "glide")
+    g = r["glides"]
+    macro("StGlPairs", num(g["pairs"]["glides"], 0))
+    macro("StGlThree", num(g["3+"]["glides"], 0))
+    macro("StGlChance", num(g["chance"]["glides"], 0))
+    macro("StGlMedian", f"{g['pairs']['median_min']:.1f}")
+    for s, name in (("pairs", "Pairs"), ("3+", "Three")):
+        a = r["along"][s]["120"]
+        macro(f"StGlSigma{name}", f"{a['attr_sigma_l']['value']:.2f}")
+        macro(f"StGlV{name}", f"{a['attr_v_head']['value']:.2f}")
+        d = r["profile"][s]["s"]["d_rms"]
+        for i, at in ((0, "Start"), (5, "Mid"), (9, "End")):
+            macro(f"StGlD{name}{at}", f"{d[i]['value']:.0f}")
+        z = [x["value"] for x in r["profile"][s]["s"]["L_z"]]
+        macro(f"StGlZ{name}Low", f"{min(z):.0f}")
+        macro(f"StGlZ{name}High", f"{max(z):.0f}")
+    d = r["profile"]["chance"]["s"]["d_rms"]
+    for i, at in ((0, "Start"), (5, "Mid"), (9, "End")):
+        macro(f"StGlDChance{at}", f"{d[i]['value']:.0f}")
+    value("StGlRatioStart", r["chance_ratio"]["s"][0], 2)
+    value("StGlRatioMid", r["chance_ratio"]["s"][5], 2)
+    value("StGlRatioEnd", r["chance_ratio"]["s"][-1], 2)
+
+
+def rotation_tex():
+    r = load(MAIN, "rotation")
+    g = r["groups"]["all"]
+    macro("StRotGroups", num(g["groups"], 0))
+    macro("StRotHours", num(g["hours"], 0))
+    macro("StRotOrdered", pct(g["ordered_share"]))
+    t = r["tau"]["all"]
+    for lag, name in ((1, "One"), (5, "Five"), (15, "Fifteen"), (30, "Thirty")):
+        value(f"StRotTau{name}", t["tau"][t["lags_min"].index(lag)], 2)
+    h = r["head"]["3"]
+    macro("StRotDominant", pct(h["dominant"]["value"]))
+    macro("StRotDominantBand", band_pct(h["dominant"]["band"], 0))
+    macro("StRotDominantNull", pct(h["dominant_null"]["value"]))
+    macro("StRotDominantNullBand", band_pct(h["dominant_null"]["band"], 0))
+    macro("StRotSpell", f"{h['spell_median_min']:.1f}")
+    value("StRotChanges", r["head"]["all"]["changes_per_hour"], 1)
+    c = r["climbs"]["all"]
+    for key, name in (("gliding", "Gliding"), ("mixed", "Mixed"), ("climbing", "Climbing")):
+        value(f"StRot{name}", c["by_group_phase_per_hour"][key], 1)
+    value("StRotFirstOverMid", c["first_over_mid"], 2)
+    macro("StRotFirst", f"{100 * c['first_climber_new_head']['value']:.1f}")
+    macro("StRotFirstBand", band_pct(c["first_climber_new_head"]["band"]))
+    macro("StRotFirstExp", f"{100 * c['expected_if_any_but_old_head']['value']:.1f}")
+
+
+def exits_tex():
+    r = load(MAIN, "exits")
+    macro("StExThermals", num(r["thermals"]["all"]["climbers_2plus"], 0))
+    a = r["leaders"]["before"]["all"]
+    macro("StExRows", num(a["rows"], 0))
+    value("StExDz", a["dz"], 1)
+    value("StExDzAfter", r["leaders"]["after"]["all"]["dz"], 1)
+    value("StExDgain", a["dgain"], 0)
+    macro("StExDentry", f"{a['dz_entry']['value']:.1f}")
+    macro("StExDt", f"{a['dt']['value']:.0f}")
+    s, n = a["shares"]["20"], r["leaders"]["random"]["all"]["shares"]["20"]
+    macro("StExAbove", pct(s["above"]["value"]))
+    macro("StExBelow", pct(s["below"]["value"]))
+    macro("StExRandomSide", pct((n["above"]["value"] + n["below"]["value"]) / 2))
+    macro("StExLater", pct(a["follower_later"]["value"]))
+    k = r["link"]["all"]
+    macro("StExFirstHead", pct(k["first_is_head_after"]["share"]["value"]))
+    macro("StExHighHead", pct(k["highest_is_head_after"]["share"]["value"]))
+    macro("StExHeadExp", pct(k["highest_is_head_after"]["expected_climbers"]))
+
+
 def main():
     GEN.mkdir(exist_ok=True)
     describe_tex()
@@ -195,6 +325,11 @@ def main():
     chains_tex()
     partners_tex()
     fission_tex()
+    age_tex()
+    breathing_tex()
+    glide_tex()
+    rotation_tex()
+    exits_tex()
     (GEN / "structure_macros.tex").write_text(
         "\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
     print(f"{len(macros)} macros")

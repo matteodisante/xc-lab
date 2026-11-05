@@ -119,8 +119,8 @@ measures:
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/structure/cohesion.pdf}
-\caption{Left: $D(s)$ of groups (by size) and of chance contacts, with $1/k$ of the
-Ornstein--Uhlenbeck fit. Middle: symmetric drift of the delay. Right: median distance at the same
+\caption{Left: $D(s)$ of groups (by size) and of chance contacts (markers), with the
+Ornstein--Uhlenbeck fit (lines) and its $1/k$. Middle: symmetric drift of the delay. Right: median distance at the same
 instant after the first contact, for every pair and for those whose first contact lasts at least
 $\tau^*$. Bands: 5--95\% of 200 draws of the dates.}
 \label{fig:cohesion}
@@ -144,10 +144,89 @@ $\tau^*$. Bands: 5--95\% of 200 draws of the dates.}
 What holds a group together is a shared pace; a spring adds little to it. Whether the shared pace
 is following or the same choices in the same air, the data cannot tell.
 
-\subsection{Who leads}\label{sec:leaders}
+\subsection{Where the sizes come from}\label{sec:fission}
 
-Who is ahead in a group, how often does that change, and who is it? The answer starts from the
-shape of the group.
+Why are most groups pairs, and how do a few grow large? $T(n)$ is the share of the time spent in
+groups of $n$ pilots: the chance that a group seen at a random instant has $n$ pilots. If
+sizes change one pilot at a time, the flux from $n$ to $n+1$ pilots balances the flux back, a
+birth--death chain (Appendix~\ref{app:models}):
+\begin{equation}\label{eq:chain}
+  \frac{T(n+1)}{T(n)}=\frac{g(n)}{l(n+1)},
+\end{equation}
+with $g(n)$ the joins and $l(n)$ the leaves and landings per hour at size $n$
+(Table~\ref{tab:rates}); splits and merges are left out. Per member, $g(n)=a\,n$ and
+$l(n)=\mu\,n^{1-\gamma}$: every member brings in others at rate $a$ and leaves at rate
+$\mu n^{-\gamma}$. We fit these to the rates, without looking at $T$. With $\gamma=0$ the chain
+gives the log-series $T(n)\propto x^n/n$, $x=a/\mu$. For comparison, we fit the form of Bonabeau
+et al.~\cite{bonabeau1999}, $T(n)\propto n^{-\alpha}e^{-n/n_c}$, directly to $T$.
+
+\begin{itemize}
+  \item \textbf{One pilot at a time is enough.} With the measured rates the chain gives $T(n)$ within
+        4\% from 2 to 8 pilots (\StChainThreePred{} against \StChainThreeObs{} at 3 pilots, just outside
+        its band), although splits and merges are \StMultiTwo\% of the changes at 2 pilots and
+        \StMultiMax\% at 8+.
+  \item \textbf{Members join at a constant rate and leave less often in large groups.} Each member
+        brings in others at $a=\StCapitaA$ \StCapitaABand{} per hour, at every size. Each leaves at
+        \StLossTwo{} per hour in a pair and \StLossMax{} at 8+: $\gamma=\StGamma$ \StGammaBand.
+  \item \textbf{The heavy tail comes from staying.} With $\gamma=0$ ($x=\StX$) $T(\StNTop)$ is
+        \StLogSeriesFactor{} times too small; with $\gamma=\StGamma$, \StCapitaFactor{} times. Fitted
+        directly, $\alpha=\StAlpha$ and $n_c=\StNc$.
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{figures/structure/fission.pdf}
+\caption{Left: joins and losses per member per hour by size (mean size of each class; 8+ pooled),
+with $a$ and $\mu n^{-\gamma}$ dashed. Right: $T(n)$ observed (sizes with at least 10~h) and from
+the chain~\eqref{eq:chain} with the measured rates, with the per-capita rates and with $\gamma=0$;
+dashed purple: the form of Bonabeau et al.\ fitted to $T$. Bands: 5--95\%.}
+\label{fig:fission}
+\end{figure}
+
+\paragraph{The age of the episode.}\label{sec:age} The chain takes the rates as functions of the
+size alone. Do they also depend on the age $a$ of the episode, the time since its start? We count
+the groups of size $n$ that end with a join, a leave or a landing at age $a$, over the member-hours
+spent at size $n$ and age $a$ (Figure~\ref{fig:age}). A leave, a landing or a split ends a contact,
+and a contact lasts at least $\tau^*=\StTauStar$~min, so none occurs before that age: their
+member-hours start there. A pilot who has just joined cannot leave for $\tau^*$ either; we keep this
+time in the member-hours, which lowers the rates of young episodes, so a fall of the leaves with
+age is if anything understated. Age goes with the time of day, so every rate is also taken within
+three classes of local time: before 13~h, 13--15~h and after 15~h. Pairs of named paraglider pilots
+are also split into those who share a contact on more than one day and the others
+(Section~\ref{sec:partners}).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/age.pdf}
+\caption{Groups ending per member per hour against the age of the episode, with 5--95\% bands of
+200 draws of the blocks. Top: joins and leaves in flight by size (dotted: all sizes), all day.
+Bottom, pairs: leaves of named pilots who meet on several days and of pairs of one day; leaves
+(solid) and landings (dashed) in three classes of local time. Grey: before $\tau^*$, where leaves
+and landings cannot occur. Lines resting on fewer than 30 events are not drawn.}
+\label{fig:age}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Joins come in the first minutes} (Figure~\ref{fig:age}, top left): in pairs
+        \StAgeJoinTwoFirst{} per member per hour in the first 15~min and \StAgeJoinTwoLast{} after
+        2~h, flat from 15~min on, at every size.
+  \item \textbf{Pairs that have lasted separate less} (top right): from 30--60~min to 2~h and
+        more their leaves fall by a factor \StAgeLeaveTwoRatio{} \StAgeLeaveTwoRatioBand; from 5
+        pilots up they do not change.
+  \item \textbf{Lasting partners explain a small part} (bottom left): pairs who meet on several
+        days leave less, and the fall holds within each kind (factors \StAgeRepeatRatio{} and
+        \StAgeOnceRatio). Other differences among pairs, such as the day or the route, may still
+        select the pairs that last.
+  \item \textbf{The clock moves the landings, the age the leaves} (bottom right): within each class
+        of local time the leaves of pairs fall alike, while the landings rise only after 15~h.
+\end{itemize}
+The rates carry a memory beyond the size: the longer a pair has lasted, the less it separates.
+The balance~\eqref{eq:chain} holds all the same, since it counts the moves between two sizes with
+the rates averaged over the ages.
+
+\subsection{Shape and breathing}\label{sec:shape}
+
+How are the pilots of a group laid out, and how does the layout change along the flight?
 
 \paragraph{Shape.}\label{sec:chains} Inside a group the members are fixed, but the pair intervals
 among them start and end: each edge set is a configuration. A configuration has a density, a
@@ -174,6 +253,111 @@ diameter. Right: $H_\mathrm{loc}(\tau)$ of paragliders in triangles and chains o
 complete and tree graphs of 4 or more (flights in brackets), with 5--95\% bands.}
 \label{fig:chains}
 \end{figure}
+
+\paragraph{Breathing.}\label{sec:breathing} On a map a group stretches and shrinks. We follow the
+groups of 2 pilots or more that last at least 30~min, all members labelled in phases
+(\StBrGroups{} groups, \StBrHours~h). At each instant, with $\mathbf r_i$ the position of member
+$i$, $\mathbf c$ the centroid of the members, $\hat{\mathbf u}$ the horizontal direction of the
+displacement of $\mathbf c$ over 10~min (the route) and $\hat{\mathbf w}$ the horizontal direction
+across it,
+\begin{equation}\label{eq:lengths}
+L_\parallel=\Big[\frac1n\sum_i\big((\mathbf r_i-\mathbf c)\cdot\hat{\mathbf u}\big)^2\Big]^{1/2},
+\qquad
+L_\perp=\Big[\frac1n\sum_i\big((\mathbf r_i-\mathbf c)\cdot\hat{\mathbf w}\big)^2\Big]^{1/2},
+\end{equation}
+$L_z$ is the same for the altitudes, and $f$ is the share of the members climbing. Each pilot
+passes a point of the route at a time $x_i$. From the delays $\ell^*_{ij}(t)$ of the pairs in
+contact, $i$ following $j$ by $\ell^*_{ij}$,
+\begin{equation}\label{eq:passage}
+\min_{x}\sum_{(i,j)}\big(x_i-x_j-\ell^*_{ij}(t)\big)^2,\qquad \sum_i x_i=0,
+\end{equation}
+over the edges of the configuration, which must connect all the members. $\sigma_\ell$ is the RMS
+of the $x_i$, and the head $h$ is the member of smallest $x$. If every member retraced the head's
+track with its own delay, member $i$ would be where the head was a delay earlier,
+\begin{equation}\label{eq:follow}
+\hat{\mathbf r}_i(t)=\mathbf r_h\big(t-(x_i-x_h)\big),
+\end{equation}
+and $\hat L_\parallel$ follows from the $\hat{\mathbf r}_i$ as $L_\parallel$ from the $\mathbf r_i$.
+At constant delays the length changes with the speed along the route alone: a head that circles in
+a thermal stops on the route, and the followers close in. A group enters a thermal when $f$
+reaches $1/2$ after at least 1~min at $f=0$.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/breathing.pdf}
+\caption{Medians with 5--95\% bands of 200 draws of the blocks. Left, 3 pilots: $L_\parallel$,
+$\hat L_\parallel$ (dashed), $L_\perp$ and $L_z$ in classes of the climbing share $f$. Middle, 3
+pilots: $L_\parallel$, $\hat L_\parallel$ and $\sigma_\ell$ around the entry of a group in a thermal
+(at 0), relative to before it. Right: $L_\parallel/\hat L_\parallel$ in classes of $f$, by size
+(pairs have no $0<f<1/2$).}
+\label{fig:breathing}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{In a thermal the group shortens and stacks} (Figure~\ref{fig:breathing}, left): at
+        3 pilots $L_\parallel$ goes from \StBrParGlide~m with all members gliding to
+        \StBrParClimb~m with all climbing, while $L_z$ grows when part of the group climbs.
+  \item \textbf{The delays stay} (middle): at the entry in a thermal $L_\parallel$ falls to
+        \StBrEntryPar{} of its value before within 1.5~min, and $\sigma_\ell$ does not change.
+  \item \textbf{Retracing the head's track explains most of it} (left and right): $\hat L_\parallel$
+        follows $L_\parallel$ in every phase, with $L_\parallel/\hat L_\parallel$ at
+        \StBrRatioGlide{} in glide and \StBrRatioClimb{} with all climbing at 3 pilots. The
+        followers close in a little less than retracing would give, since they do not circle
+        exactly where the head did. The prediction needs an order of all members,
+        \StBrPredShare\% of the instants at 3 pilots.
+\end{itemize}
+
+\paragraph{In glide.}\label{sec:glide} A glide of a group is a stretch with all members gliding
+($f=0$) for at least 2~min between two thermals; $s\in[0,1]$ is the time from its start over its
+duration (\StGlPairs{} glides of pairs and \StGlThree{} of groups of 3 or more, median
+\StGlMedian~min for pairs). Along the route, the changes of $\log L_\parallel$ over $\Delta=120$~s
+split by the share of each factor $k$,
+\begin{equation}\label{eq:shares}
+\frac{\operatorname{Cov}(\Delta\log L_\parallel,\,\Delta\log k)}{\operatorname{Var}(\Delta\log
+L_\parallel)},\qquad k=\sigma_\ell,\ v_h,
+\end{equation}
+with $v_h$ the speed of the head along $\hat{\mathbf u}$ over $\Delta$; at 30~s the noise of the
+measurement dominates. Across the route, the offset of a follower from the head's line is
+\begin{equation}\label{eq:offset}
+d_i(t)=\big(\mathbf r_i(t)-\hat{\mathbf r}_i(t)\big)\cdot\hat{\mathbf n},
+\end{equation}
+with $\hat{\mathbf r}_i$ of~\eqref{eq:follow} and $\hat{\mathbf n}$ the horizontal unit vector to the
+left of the head's velocity at that point. Chance is the same offset for the surrogate pairs whose
+contact lasts at least $\tau^*$, on the glides they share, the pilot ahead taken as head
+(\StGlChance{} glides; bands over the dates).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/glide.pdf}
+\caption{Glides of groups. Left: share~\eqref{eq:shares} of the variance of the changes of
+$\log L_\parallel$ over $\Delta$ carried by $\sigma_\ell$, by $v_h$ and by neither, against
+$\Delta$. Middle: RMS of the cross-track offset $d$ against the time $s$ in the glide, groups and
+chance pairs. Right: median $L_z$ against $s$. Bands: 5--95\% of 200 draws of the blocks (chance:
+of the dates).}
+\label{fig:glide}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Along the route the delays move} (Figure~\ref{fig:glide}, left): $\sigma_\ell$
+        carries \StGlSigmaPairs{} of the variance in pairs and the head's speed \StGlVPairs: a group
+        stretches in glide mostly because a pilot gains or loses time on the others.
+  \item \textbf{Across the route the group opens and stays open} (middle): the RMS of $d$ in pairs
+        grows from \StGlDPairsStart~m at the start of the glide to \StGlDPairsMid~m at mid-glide and
+        does not close before the next thermal. Near $s=0$ the offset needs the head's passage
+        inside the glide, which favours the followers close behind.
+  \item \textbf{Groups hold closer lines than chance pairs} (middle): pairs over chance is
+        \StGlRatioStart{} \StGlRatioStartBand{} at the start and \StGlRatioEnd{}
+        \StGlRatioEndBand{} at the end of the glide.
+  \item \textbf{Height holds} (right): in glide $L_z$ stays between \StGlZPairsLow{} and
+        \StGlZPairsHigh~m in pairs.
+\end{itemize}
+The breathing has two parts: in a thermal an accordion at fixed delays, in glide a spread that
+opens after the thermal and delays that change. We find no fan that opens to search and closes
+before the next thermal.
+
+\subsection{Who leads}\label{sec:leaders}
+
+Who is ahead in a group, how often does that change, and who is it?
 
 \paragraph{Order.} The signed median delay $\ell_{\rm med}$ of a pair interval
 (Appendix~\ref{gi-sec:lag} of the note) says who passes first: the pilot ahead, when the other passes at least
@@ -218,6 +402,95 @@ or the higher wing class. Bars: 5--95\% (blocks).}
 \label{fig:hierarchy}
 \end{figure}
 
+\paragraph{Rotation.}\label{sec:rotation} Does the pilot ahead stay ahead? We follow the groups of
+3 pilots or more that last at least 30~min, all members labelled in phases (\StRotGroups{} groups,
+\StRotHours~h, with an order \StRotOrdered\% of the time). The order at $t$ ranks the passage
+times $x_i$ of~\eqref{eq:passage}, head first. Its memory is the Kendall $\tau$ of the orders at
+$t$ and $t+s$,
+\begin{equation}\label{eq:kendall}
+\tau(s)=\Big\langle\frac{2}{n(n-1)}\sum_{i<j}\operatorname{sgn}\big(x_i(t)-x_j(t)\big)\,
+\operatorname{sgn}\big(x_i(t+s)-x_j(t+s)\big)\Big\rangle_t,
+\end{equation}
+1 for the same order and 0 for independent orders. A head spell is a run of one head, with runs
+shorter than 60~s dropped as for the switches above; chance keeps the spells and draws each new
+head among the other members.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/rotation.pdf}
+\caption{Groups of 3 pilots or more lasting at least 30~min. Left: Kendall
+$\tau$~\eqref{eq:kendall} of the orders at $t$ and $t+s$ against $s$, by size. Middle: time share
+of the most frequent head, observed and with heads at random, with $1/n$. Right: head changes per
+hour by phase of the group (all gliding, some climbing, all climbing) and, at the starts of
+climbs, in the first minute against mid-climb. Bands and bars: 5--95\% of 200 draws of the
+blocks.}
+\label{fig:rotation}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{The order renews in minutes} (Figure~\ref{fig:rotation}, left): $\tau$ falls from
+        \StRotTauOne{} at 1~min to \StRotTauFifteen{} at 15~min, alike at every size, and keeps a
+        weak lasting part (\StRotTauThirty{} at 30~min).
+  \item \textbf{No lasting head} (middle): in groups of 3 the pilot most often ahead holds
+        \StRotDominant\% of the time, against \StRotDominantNull\% with random hand-overs; the
+        head changes \StRotChanges{} times per hour.
+  \item \textbf{The head changes while the group straddles a thermal} (right): \StRotMixed{}
+        changes per hour with some members climbing, against \StRotGliding{} with all gliding and
+        \StRotClimbing{} with all climbing. The noise of $\ell^*$ is largest with all members
+        circling (end of the section), so the excess is not that noise alone. The start of a climb
+        adds little (\StRotFirstOverMid{} times the changes of mid-climb), and the new head is the
+        first to climb in \StRotFirst\% of the changes, against \StRotFirstExp\% at random.
+\end{itemize}
+The lead passes from pilot to pilot every few minutes, mostly as a group enters or leaves a
+thermal, and no pilot holds it much longer than random hand-overs give.
+
+\paragraph{Leaving a thermal.}\label{sec:exits} Do the followers leave a thermal at the height of
+the leader, below it or above it? A thermal of a group is the stretch between two glides of the
+whole group, all members gliding for at least 1~min. Each member that climbs there enters at the
+start of its first climb and leaves at the end of its last, at the heights $z_{\rm in}$ and
+$z_{\rm out}$ and the times $t_{\rm in}$ and $t_{\rm out}$. The leader $l$ is the pilot most often
+ahead (smallest $x$) in the glide before the thermal; for each follower $i$,
+\begin{equation}\label{eq:exit}
+\Delta z=z_{{\rm out},i}-z_{{\rm out},l},\qquad
+\Delta t=t_{{\rm out},i}-t_{{\rm out},l},\qquad
+\Delta g=(z_{\rm out}-z_{\rm in})_i-(z_{\rm out}-z_{\rm in})_l .
+\end{equation}
+The same height means $|\Delta z|\le 20$~m, about ten times the altitude noise of a fix. An offset
+between two loggers enters $\Delta z$ and cancels in $\Delta g$. Chance draws the leader among the
+pilots who climb there. There are \StExThermals{} thermals with two pilots climbing or more and
+\StExRows{} followers; the leader of the glide after the thermal gives the same picture
+(Figure~\ref{fig:exits}).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/exits.pdf}
+\caption{Followers against the leader of the glide before the thermal (orange) and of the glide
+after it (blue). Left: distribution of $\Delta z$~\eqref{eq:exit} (grey: within 20~m), and with the
+leader drawn at random (dotted). Middle: share of the followers leaving above the leader, within
+20~m and below, by size, and with a leader at random (grey). Right: median $\Delta z$ in classes
+of $\Delta t$. Bands and bars: 5--95\% of 200 draws of the blocks.}
+\label{fig:exits}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Followers leave at the leader's height} (left): the median $\Delta z$ is \StExDz~m
+        \StExDzBand, and the follower gains \StExDgain~m \StExDgainBand{} less than the leader,
+        so the few metres are not an offset of the loggers. The spread is as wide as with a leader
+        at random.
+  \item \textbf{Slightly more often below} (middle): \StExBelow\% leave more than 20~m below the
+        leader and \StExAbove\% above, against \StExRandomSide\% each with a leader at random.
+  \item \textbf{Who stays longer leaves higher} (right): $\Delta z$ grows with $\Delta t$ on both
+        sides; the follower leaves later than the leader in \StExLater\% of the cases.
+  \item \textbf{Leaving first leads the next glide, leaving highest does not.} The first to leave
+        is the head of the next glide in \StExFirstHead\% of the thermals, the highest in
+        \StExHighHead\%, against \StExHeadExp\% at random. The first result is close to the
+        definition of the head, the first to pass; the second says that height bought in the
+        thermal does not buy the lead.
+\end{itemize}
+A group leaves a thermal together in height and spread out in time: the pilot who stays climbs
+higher, and the one who goes first takes the lead, in line with the head changes of the mixed
+phases.
+
 \subsection{With whom}\label{sec:partners}
 
 Do pilots choose their partners, or fly with whoever is there? We follow paraglider pilots by their
@@ -246,45 +519,6 @@ two pilots of the same club (each pilot's main club); bars at random: 5--95\% of
 \label{fig:partners}
 \end{figure}
 
-\subsection{Where the sizes come from}\label{sec:fission}
-
-Why are most groups pairs, and how do a few grow large? $T(n)$ is the share of the time spent in
-groups of $n$ pilots: the chance that a group seen at a random instant has $n$ pilots. If
-sizes change one pilot at a time, the flux from $n$ to $n+1$ pilots balances the flux back, a
-birth--death chain (Appendix~\ref{app:models}):
-\begin{equation}\label{eq:chain}
-  \frac{T(n+1)}{T(n)}=\frac{g(n)}{l(n+1)},
-\end{equation}
-with $g(n)$ the joins and $l(n)$ the leaves and landings per hour at size $n$
-(Table~\ref{tab:rates}); splits and merges are left out. Per member, $g(n)=a\,n$ and
-$l(n)=\mu\,n^{1-\gamma}$: every member brings in others at rate $a$ and leaves at rate
-$\mu n^{-\gamma}$. We fit these to the rates, without looking at $T$. With $\gamma=0$ the chain
-gives the log-series $T(n)\propto x^n/n$, $x=a/\mu$. For comparison, we fit the form of Bonabeau
-et al.~\cite{bonabeau1999}, $T(n)\propto n^{-\alpha}e^{-n/n_c}$, directly to $T$.
-
-\begin{itemize}
-  \item \textbf{One pilot at a time is enough.} With the measured rates the chain gives $T(n)$ within
-        4\% from 2 to 8 pilots (\StChainThreePred{} against \StChainThreeObs{} at 3 pilots, just outside
-        its band), although splits and merges are \StMultiTwo\% of the changes at 2 pilots and
-        \StMultiMax\% at 8+.
-  \item \textbf{Members join at a constant rate and leave less often in large groups.} Each member
-        brings in others at $a=\StCapitaA$ \StCapitaABand{} per hour, at every size. Each leaves at
-        \StLossTwo{} per hour in a pair and \StLossMax{} at 8+: $\gamma=\StGamma$ \StGammaBand.
-  \item \textbf{The heavy tail comes from staying.} With $\gamma=0$ ($x=\StX$) $T(\StNTop)$ is
-        \StLogSeriesFactor{} times too small; with $\gamma=\StGamma$, \StCapitaFactor{} times. Fitted
-        directly, $\alpha=\StAlpha$ and $n_c=\StNc$.
-\end{itemize}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{figures/structure/fission.pdf}
-\caption{Left: joins and losses per member per hour by size (mean size of each class; 8+ pooled),
-with $a$ and $\mu n^{-\gamma}$ dashed. Right: $T(n)$ observed (sizes with at least 10~h) and from
-the chain~\eqref{eq:chain} with the measured rates, with the per-capita rates and with $\gamma=0$;
-dashed purple: the form of Bonabeau et al.\ fitted to $T$. Bands: 5--95\%.}
-\label{fig:fission}
-\end{figure}
-
 \subsection{What the data support}\label{sec:conclusions}
 
 \noindent
@@ -297,8 +531,15 @@ dashed purple: the form of Bonabeau et al.\ fitted to $T$. Bands: 5--95\%.}
         kept in contact by chance, and they stay closer after the contact;
   \item the size distribution follows from one pilot joining or leaving at a time; its heavy tail
         from members of larger groups leaving less often;
-  \item the lead changes a few times per hour and goes more often to the experienced pilot on the
-        higher wing;
+  \item the lead changes a few times per hour, mostly as the group enters or leaves a thermal,
+        and goes more often to the experienced pilot on the higher wing; within a group no pilot
+        holds it much longer than random hand-overs give;
+  \item the longer a pair has lasted, the less it separates, beyond lasting partnerships; joins
+        come in the first minutes of an episode;
+  \item in a thermal a group closes up like an accordion at fixed delays; in glide it opens after
+        the thermal, along lines closer than those of chance pairs;
+  \item followers leave a thermal at about the leader's height, a few metres lower; who stays
+        longer leaves higher, and the first to leave leads the next glide;
   \item pilots return to the same partners and to their club mates more than who flies where and
         when explains.
 \end{itemize}
@@ -310,6 +551,10 @@ dashed purple: the form of Bonabeau et al.\ fitted to $T$. Bands: 5--95\%.}
         same way;
   \item that the shape of a group (triangle or chain, complete or tree) changes how its pilots fly;
   \item a social rank from the order in a group: a line along the route is geometry;
+  \item a life cycle of the episode: members do not leave more as it ages;
+  \item that height gained in a thermal gives the lead: the highest to leave heads the next glide
+        as often as chance;
+  \item a fan that opens across the route to search in glide and closes before the next thermal;
   \item that keeping pace means following: the surrogate pairs fly at another hour, so pilots in
         the same air at the same time may share the pace without seeing each other;
   \item pilots are names of the catalog: homonyms join, a pilot who changes name splits.
