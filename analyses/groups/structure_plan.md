@@ -96,6 +96,15 @@ their value at the start; their fluctuation within a glide (coefficient of varia
 scale (autocorrelation). Question for L_perp: does the group fan out across the route while
 searching and close up before the next thermal? Null for L_perp: surrogate pairs on the same terrain,
 or pairs of the same group with times shifted, to be chosen at the design.
+*Done (2026-11-05, `glide.py`, not committed):* 34 917 glides of pairs, 6081 of 3+, 1481 of chance
+contacts (surrogate pairs, bootstrap over dates); median glide about 5 min. Along the route, changes of
+log L_par over 120 s (30 s is noise): delays account for 0.45 (pairs) and 0.61 (3+), head speed 0.11 and
+0.26 (Cov(y, k)/Var(y)). Across: RMS cross-track offset of the followers from the head's track, at
+s = 0.05 / 0.55 / 0.95 of the glide: pairs 107 / 143 / 152 m, 3+ 106 / 160 / 175 m, chance 159 / 180 / 166
+m. The spread grows after the thermal exit and levels off; no closing before the entry; groups
+follow tighter lines than chance pairs early and mid-glide (pairs / chance 0.67 to 0.91). The first
+bin is partly selection (the passage must lie inside the glide). L_z flat in glide: pairs 28-31 m, 3+
+47-52 m.
 
 **B3. Leader rotation (3+).** Who leads, keeps leading? Rank along the string over time; Kendall tau
 of the order against the lag; Markov chain over head, middle, tail; does the head change at the
@@ -116,6 +125,19 @@ becomes head 29.7% [28.8, 30.7] against 26.4%: weak.
 [4.45, 4.77], mixed 8.3 [8.07, 8.56], all climbing 5.9 [5.57, 6.06]. The lead changes most when the
 group straddles a thermal (some in, some out). Climb start against mid-climb: 1.08 [1.02, 1.15], so
 little beyond circling.
+
+**B4. Thermal exits (user's request, 2026-11-05).** Do followers leave a thermal at the same height
+as the leader, below or above? Group thermal: f > 0 between two glides of the whole group. Per
+member: exit altitude and time at the end of its last climb run there. Leader: the head before the
+thermal, and the head of the glide after. dz = z_exit(follower) - z_exit(leader), shares above /
+same / below (tolerance from the GNSS altitude noise), dt, dz over the leader's gain. Null: random
+leader (median 0). Link with rotation: does the highest or the first to leave become the next head?
+Script `exits.py`; in the note with rotation (the lead changes most as a group leaves a thermal).
+*Done (2026-11-05, `exits.py`):* 35 294 thermals with 2+ climbers, 35 694 followers (leader before).
+Median dz -5.7 m [-6.5, -4.9] (leader after: -1.2 m); the gain, free of logger offsets, is 10 m
+smaller for the follower; entry heights equal (+1.3 m). At 20 m: 42% below, 34% above, against 38%
+each with a random leader. dz grows with dt: who stays longer leaves higher. The first to leave heads
+the next glide in 66% (near the definition of the head), the highest in 48%, against 48% at random.
 
 **C. Between groups.** Do pilots use other groups, not only their own? Neighbours: gliders within R at
 the same instant, not in contact.
