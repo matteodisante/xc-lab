@@ -175,6 +175,30 @@ the same instant, not in contact.
 - C3 encounters: when two groups come within R, how often they merge.
 Limit: only uploaded tracks are seen; the density is underestimated and the effect diluted.
 Literature: social information in soaring birds (storks, vultures), to verify.
+*Design (2026-11-06, the user delegated the choice).* C2 dropped: the density is underestimated (only
+uploaded tracks), goes with the quality of the day, and within one site-day few flights remain; C1
+already asks whether others help. C1 marking: share of climb starts with a marker, a glider not in
+contact with the pilot climbing within r of the start in the dt before it; for group members (markers:
+other groups, solo gliders) and solo pilots; r and dt the 90th percentiles of the distance and delay
+between the entries of two members of one group thermal (exits.py), the scale of "same thermal". Null:
+the markers shifted in time by +-s; the share against s shows how long a place keeps climbing, and S is
+where it levels off. Excess over the null is marking or two pilots finding one active thermal; the
+data do not separate them, said in the note. C3 encounters: per close pass within R with headings
+within theta_max of the run, the probability that a pair interval forms within T, against the
+closest distance, for solo-solo, solo-group, group-group; the solo-solo curve is the reference
+(groups absorb if solo-group lies above it, stay closed if group-group lies below).
+*C1 done (2026-11-06, `marking.py`):* 214 395 climb starts of group members, 1 280 161 of solo pilots
+(5 s grid; markers: labelled flights); R = 829 m, DT = 152 s (90th percentiles over 49 557 pairs of
+entries of group thermals); the contact and the pilot's kind are read at t - DT, so a pilot who joins
+its marker still counts. Marked starts: group members 0.245, solo pilots 0.145. "Now" ratio, real over
+the markers shifted by 5 min (the first window that does not overlap): group members 1.02 [1.01, 1.03]
+(other-group markers 0.92 [0.90, 0.93], solo gliders 1.05), solo pilots 1.09 [1.08, 1.09]. A glider
+climbing right then adds little over one that climbed at the same place minutes before or after:
+places keep producing climbs (the share halves in 46 min for group members, 39 for solo pilots, an
+upper bound as shifted markers leave their flights). Marking from within about 1.5 km (DT at glide
+speed) is a few percent at most; marking seen from farther falls in the null too. Dropped: the ratio
+at large shifts (about 2 at 45 min), mostly dilution. Oddity left open: other-group markers below 1
+for group members (groups in file along one route pass a thermal minutes apart?).
 
 **D. Pilot network.** Nodes: named pilots; edges: pair-days. Degree and strength over the number of
 flights; communities against clubs (NMI); assortativity by experience and wing class. Null: the

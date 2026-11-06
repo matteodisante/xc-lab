@@ -20,6 +20,7 @@ import exits  # noqa: E402
 import glide  # noqa: E402
 import headings  # noqa: E402
 import longlags  # noqa: E402
+import marking  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
 import network  # noqa: E402
@@ -1868,3 +1869,121 @@ def test_partners_swaps_keep_each_pilots_partners_without_self_or_double_pairs_a
     assert set(out) != set(pairs)
     clique = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
     assert set(partners.swaps(clique, 100, rng)) == set(clique)
+
+
+def _marking(t, x, flight, group=None, grouped=None):
+    """Starts (group -1 = solo) or climbing fixes of some flights, at times t and positions x on a line."""
+    t = np.atleast_1d(np.array(t, float))
+    xyz = np.column_stack([np.atleast_1d(np.array(x, float)), np.zeros(len(t)), np.zeros(len(t))])
+    flight = np.broadcast_to(flight, t.shape).copy()
+    if group is not None:
+        return SimpleNamespace(t=t, xyz=xyz, flight=flight, group=np.broadcast_to(group, t.shape).copy())
+    return SimpleNamespace(t=t, xyz=xyz, flight=flight, grouped=np.broadcast_to(grouped, t.shape).copy())
+
+
+NO_CODES = np.zeros(0, np.int64)
+
+
+def test_marking_entry_pairs_give_distance_and_delay_of_every_pair_of_climbers():
+    xyz = np.array([[0.0, 0, 0], [300, 400, 0], [0, 0, 1000]])
+    d, w = marking.entry_pairs(np.array([100.0, 80.0, 130.0]), xyz)
+    assert d.tolist() == [500, 1000, np.hypot(300, np.hypot(400, 1000))] and w.tolist() == [20, 30, 50]
+
+
+def test_marking_a_start_next_to_a_marker_climbing_within_dt_is_marked_and_one_after_dt_is_not():
+    start = _marking([1000], [0], 1, group=-1)
+    inside = _marking([900, 940, 1000], [50, 50, 50], 2, grouped=False)  # climbing 100, 60 and 0 s before t
+    assert marking.marked(start, inside, NO_CODES, 100, 120, [0])[0, :, 0].tolist() == [0, 1, 1]  # solo marker, any
+    late = _marking([870], [50], 2, grouped=False)  # 130 s before t: just out of [t - 120, t]
+    assert marking.marked(start, late, NO_CODES, 100, 120, [0]).sum() == 0
+    far = _marking([960], [150], 2, grouped=False)  # in time, beyond R
+    assert marking.marked(start, far, NO_CODES, 100, 120, [0]).sum() == 0
+    after = _marking([1010], [50], 2, grouped=False)  # climbing later than t does not mark the start
+    assert marking.marked(start, after, NO_CODES, 100, 120, [0]).sum() == 0
+
+
+def test_marking_a_marker_of_the_group_or_the_pilot_itself_never_marks_and_the_marker_type_is_read_at_its_instant():
+    start = _marking([1000, 1000], [0, 0], [1, 5], group=[7, -1])  # flight 1 in group 7 with flight 2; flight 5 solo
+    points = _marking([950] * 3, [10] * 3, [1, 2, 3], grouped=[True, True, True])
+    codes = np.array([7 * marking.CODE + 1, 7 * marking.CODE + 2], np.int64)
+    out = marking.marked(start, points, codes, 100, 120, [0])
+    assert out[0, :, 0].tolist() == [1, 0, 1]  # flight 3, of another group, marks; the pilot (1) and its mate (2) do not
+    assert out[1, :, 0].tolist() == [1, 0, 1]  # the solo pilot 5 is marked by 1, 2 and 3 alike
+    assert marking.marked(start, _marking([950], [10], 1, grouped=[True]), codes, 100, 120, [0])[0].sum() == 0
+    mixed = _marking([950, 950], [10, 10], [3, 4], grouped=[True, False])
+    assert marking.marked(_marking([1000], [0], 1, group=-1), mixed, NO_CODES, 100, 120, [0])[0, :, 0].tolist() == [1, 1, 1]
+
+
+def test_marking_the_shift_moves_the_climbing_of_a_marker_out_of_the_window_and_averages_plus_and_minus():
+    start = _marking([1000], [0], 1, group=-1)
+    marker = _marking([940], [20], 2, grouped=False)  # 60 s before t, window dt = 120
+    out = marking.marked(start, marker, NO_CODES, 100, 120, [0, 30, 100, 600])[0, 2]
+    # +30 puts the fix at 970 (in), -30 at 910 (in); +100 at 1040 (out), -100 at 840 (out); 600 out both ways
+    assert out.tolist() == [1, 1, 0, 0]
+    recent = _marking([990], [20], 2, grouped=False)  # 10 s before t: the shift +30 moves it past t, -30 keeps it inside
+    assert marking.marked(start, recent, NO_CODES, 100, 120, [30])[0, 2].tolist() == [0.5]
+
+
+def test_marking_a_marker_shifted_outside_its_flight_marks_nothing():
+    start = _marking([1000], [0], 1, group=-1)
+    marker = _marking([0, 50, 100], [20] * 3, 2, grouped=False)  # its flight lasts from 0 to 100
+    out = marking.marked(start, marker, NO_CODES, 100, 60, [0, 900, 2000, 7200])[0, 2]
+    assert out[0] == 0  # not marked in reality: the marker flew long before
+    assert out[1] == 0.5  # +900: the fixes move to 900..1000, those of 940..1000 are in the window, -900 is out
+    assert out[2] == 0 and out[3] == 0  # shifted past t or before its flight: no fix left
+
+
+def test_marking_one_date_counts_the_starts_by_kind_and_marks_them_with_the_markers_of_the_date():
+    t = 1000 + 5 * np.arange(300)
+    grid = pd.concat([pd.DataFrame({"f": f, "t": t, "X": x + 0.0 * t, "Y": 0.0, "Z": 0.0, "z": 1000.0, "ve": 0.0, "vn": 1.0, "state": 0})
+                      for f, x in ((0, 0.0), (1, 30.0), (2, 5000.0))], ignore_index=True)
+    tracks = marking.contacts.Tracks(grid, 5)
+    row_of = {10: 0, 11: 1, 12: 2}
+    runs = {10: (np.array([1500.0]), np.array([1600.0])), 11: (np.array([1450.0]), np.array([1550.0])), 12: (np.array([1450.0]), np.array([1550.0]))}
+    day = pd.DataFrame({"group_id": [3], "t_start": [1000], "t_end": [2400], "members": [[10, 12]]})
+    mine = pd.DataFrame({"flight": [10, 11, 12]})
+    n, marks, lost = marking.one_date(day, mine, runs, tracks, row_of, 100, 120, [0], 5)
+    assert n.tolist() == [2, 1] and lost.tolist() == [0, 0]  # 10 and 12 in a group at t - 120, 11 solo
+    assert marks[0, 2, 0] == 1  # 10 is marked by 11 (30 m away, climbing since 50 s); 12 is 5 km away
+    assert marks[1, 2, 0] == 0  # 11 starts at 1450: the others climb from 1500 and 1450 (12 is far)
+
+
+def test_marking_half_shift_interpolates_where_the_share_falls_to_half_its_real_value():
+    s = (0, 2, 5, 10, 20)
+    share = np.array([[0.4, 0.4, 0.3, 0.1, 0.0], [0.4, 0.39, 0.38, 0.37, 0.36]])
+    out = marking.half_shift(share, s)
+    assert np.isclose(out[0], 5 + (0.75 - 0.5) / (0.75 - 0.25) * 5) and np.isnan(out[1])  # the second never reaches 0.2
+    assert marking.half_shift(np.array([0.4, 0.2, 0.1, 0.0, 0.0]), (0, 2, 5, 10, 20)) == 2
+
+
+def test_marking_summarize_takes_the_near_shift_from_dt_and_gives_the_now_ratio_and_the_half_shift():
+    s = (0, 2, 5, 10)
+    n = np.tile([[100.0, 100.0]], (20, 1))
+    curve = np.array([0.4, 0.4, 0.2, 0.1])  # share of the starts marked against s
+    marks = np.broadcast_to(n[:, :, None, None] * curve, (20, 2, 3, 4)).copy()
+    out = marking.summarize(n, marks, np.zeros(2, int), 152, np.random.default_rng(0), s)
+    assert out["S_near_min"] == 5  # 120 s < 152 s <= 300 s
+    d = out["summary"]["group"]["any"]
+    assert np.isclose(d["real"]["value"], 0.4) and np.isclose(d["near"]["value"], 0.2) and np.isclose(d["now"]["value"], 2)
+    assert np.isclose(d["s_half"]["value"], 2 + (0.4 - 0.2) / (0.4 - 0.2) * 3) and out["summary"]["all"]["starts"] == 4000
+    assert marking.summarize(n, marks, np.zeros(2, int), 120, np.random.default_rng(0), s)["S_near_min"] == 2  # s >= DT
+
+
+def test_marking_the_contact_and_the_kind_of_the_pilot_are_read_at_t_minus_dt_and_early_starts_are_dropped():
+    t = 1000 + 5 * np.arange(300)
+    grid = pd.concat([pd.DataFrame({"f": f, "t": t, "X": x + 0.0 * t, "Y": 0.0, "Z": 0.0, "z": 1000.0, "ve": 0.0, "vn": 1.0, "state": 0})
+                      for f, x in ((0, 0.0), (1, 30.0))], ignore_index=True)
+    tracks = marking.contacts.Tracks(grid, 5)
+    row_of = {10: 0, 11: 1}
+    runs = {10: (np.array([1500.0, 1030.0]), np.array([1600.0, 1050.0])), 11: (np.array([1450.0]), np.array([1550.0]))}
+    mine = pd.DataFrame({"flight": [10, 11]})
+
+    def run(t_start):
+        day = pd.DataFrame({"group_id": [3], "t_start": [t_start], "t_end": [2400], "members": [[10, 11]]})
+        return marking.one_date(day, mine, runs, tracks, row_of, 100, 120, [0], 5)
+
+    n, marks, lost = run(1450)  # they meet at 1450, after t - dt = 1380 for the start of 10 at 1500
+    assert n.tolist() == [0, 2] and marks[1, 2, 0] == 1  # both solo at t - dt; 11, now the mate of 10, still marks its start (10 does not mark 11: it climbs later)
+    n, marks, lost = run(1300)  # already together at 1380
+    assert n.tolist() == [2, 0] and marks[0, 2, 0] == 0  # both start as group members and neither marks the other
+    assert lost.tolist() == [0, 1]  # the start of 10 at 1030 is within 120 s of the first instant 1000
