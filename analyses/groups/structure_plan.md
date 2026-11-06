@@ -179,6 +179,35 @@ Literature: social information in soaring birds (storks, vultures), to verify.
 **D. Pilot network.** Nodes: named pilots; edges: pair-days. Degree and strength over the number of
 flights; communities against clubs (NMI); assortativity by experience and wing class. Null: the
 configuration model of `partners.py`.
+*Design (agreed 2026-11-06).* Known already (partners.py): repeated partners and same-club pairs above
+chance; D asks what that leaves open. Population and null as partners.py (named paraglider pilots,
+pair-days, configuration model within the site-day pools, which keeps who flies in a group where and
+when). D1 loyalty per pilot, general or a core? k distinct partners over s pair-days, s fixed by the
+null; per pilot the quantile of k_real among the null draws (mid-rank for ties); its histogram is
+uniform without loyalty, shifted if loyalty is general, a spike at 0 over a uniform rest if a core;
+by classes of s. D2 how much of the loyalty clubs hold: the excess of pair-days on repeated pairs
+(real - null) split into same club, different clubs, club unknown. D3 who flies with whom: mean
+partner experience (earlier flights in the catalog at the date, log) against own experience, and the
+same for the wing class (WING of hierarchy.py), real against null; a curve above the null for
+beginners is mentoring, a stronger diagonal is assortativity; for the wing, assortativity may be
+physical (similar speed keeps two gliders together longer), said as a hypothesis. Figure: (a)
+histogram of the quantiles, (b) the excess inside and outside clubs, (c) partner experience against
+own. Communities (Louvain, NMI with clubs) dropped: same question as D2, a less readable number, and a
+new dependency.
+*Done (2026-11-06, `network.py`):* first a fix of the null of partners.py: in 289 pools (27% of the
+pair-days) every TRIES draw held a self or double pair and the draw dropped them, so each draw lost
+about 1300 pair-days and s changed for up to 898 pilots. Such pools are now mixed by degree-preserving
+swaps (SWAPS = 10 per pair; the share of original pairs left levels off at 0.43 from 5); s is fixed in
+every draw. Partners at random: repeat share 26.7% (was 25.7%), same club 24.2% (24.0%); README and test
+updated, the note's partners macros change at the next structure_tables run. D1 (randomized PIT, flat
+without loyalty): share of pilots with q < 0.05 is 0.11, 0.26, 0.58 for s <= 5, 6-14, > 14 (1413, 1100,
+1147 pilots); median k / k_null 1.00, 1.00, 0.91. Loyalty grows with activity: a small core among
+occasional pilots (spike at 0 over a flat rest), the habit of most active ones. D2: excess pair-days
+on repeated pairs 2279 [2212, 2332] same club, 1032 [974, 1106] different clubs (69% / 31%), against 59%
+same club among the null's repeated pair-days: clubs hold a little more than their share; a third of
+the loyalty crosses clubs. D3: experience assortative (corr 0.238 against 0.160-0.172), no mentoring
+(beginners' partners 1.25 against 1.32-1.34 in log10(1 + E)); wing class corr 0.489 against
+0.330-0.339, same class 0.457 against 0.395-0.401.
 
 **Dropped:** degree profile per episode (three episodes in four are pairs, and its shape follows from
 the definition), generic centralities.

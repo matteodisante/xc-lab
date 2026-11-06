@@ -168,8 +168,8 @@ Results in `structure/group_structure.pdf @ 6e45daf`; numbers as macros from
   experienced pilot (58.5%) on the higher wing (64.3%).
 - **`chains.py`**: shape of the configurations (complete, tree, between). Large groups are
   strings; the shape does not change H_loc.
-- **`partners.py`**: pilots return to the same partners (37.6% of pair-days against 25.7% at
-  random) and to club mates (32.1% against 24.0%).
+- **`partners.py`**: pilots return to the same partners (37.6% of pair-days against 26.7% at
+  random) and to club mates (32.1% against 24.2%).
 - **`fission.py`**: the size distribution from a birth-death chain with the measured join and
   leave rates (within 4% from 2 to 8 pilots); the tail is heavy because members of larger groups
   leave less often (γ = 0.30).

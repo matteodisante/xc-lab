@@ -22,6 +22,8 @@ import headings  # noqa: E402
 import longlags  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
+import network  # noqa: E402
+import partners  # noqa: E402
 import isolated  # noqa: E402
 import prepost  # noqa: E402
 import performance  # noqa: E402
@@ -774,12 +776,12 @@ def test_partner_numbers_of_the_readme():
     r = json.loads((tamsd.OUT / "partners.json").read_text())
     o, n = r["observed"], r["null"]
     assert (r["pair_days"], r["pilots"], r["pairs"], r["max_days"]) == (30550, 4525, 22513, 69)
-    assert round(100 * o["repeat_share"], 1) == 37.6 and round(100 * n["repeat_share"]["mean"], 1) == 25.7
-    assert np.round(100 * np.array(n["repeat_share"]["band"]), 1).tolist() == [25.3, 26.0]
-    assert o["repeat_pairs"] == 3437 and round(n["repeat_pairs"]["mean"]) == 2501
-    assert np.round(n["repeat_pairs"]["band"]).tolist() == [2453, 2544]
-    assert round(100 * o["same_club_main"], 1) == 32.1 and round(100 * n["same_club"]["mean"], 1) == 24.0
-    assert np.round(100 * np.array(n["same_club"]["band"]), 1).tolist() == [23.8, 24.2]
+    assert round(100 * o["repeat_share"], 1) == 37.6 and round(100 * n["repeat_share"]["mean"], 1) == 26.7
+    assert np.round(100 * np.array(n["repeat_share"]["band"]), 1).tolist() == [26.5, 27.0]
+    assert o["repeat_pairs"] == 3437 and round(n["repeat_pairs"]["mean"]) == 2677
+    assert np.round(n["repeat_pairs"]["band"]).tolist() == [2644, 2721]
+    assert round(100 * o["same_club_main"], 1) == 32.1 and round(100 * n["same_club"]["mean"], 1) == 24.2
+    assert np.round(100 * np.array(n["same_club"]["band"]), 1).tolist() == [24.0, 24.4]
 
 
 @pytest.mark.skipif(not (tamsd.OUT / "fission.json").exists(), reason="run fission.py first")
@@ -1813,3 +1815,56 @@ def test_exits_summarize_runs_on_thermals_and_the_figure_is_written(tmp_path):
     assert r["link"]["all"]["thermals"] == 60 and len(r["hist"]["before"]) == len(exits.DZ_EDGES) - 1 and len(r["dz_by_dt"]["after"]) == len(exits.DT_EDGES) - 1
     exits.plot(r, tmp_path / "exits.pdf")
     assert (tmp_path / "exits.pdf").exists()
+
+
+def test_network_pit_is_below_every_draw_uniform_under_ties_and_flat_under_the_null():
+    rng = np.random.default_rng(0)
+    assert (network.pit(np.zeros(100, int), np.ones((100, 50), int), rng) < 1 / 51).all()
+    q = network.pit(np.full(20000, 3), np.full((20000, 50), 3), rng)
+    assert q.min() >= 0 and q.max() <= 1 and abs(q.mean() - 0.5) < 0.01
+    draws = rng.integers(0, 4, (20000, 99))  # k from the same law as the draws: k and the draws are exchangeable
+    h = np.histogram(network.pit(rng.integers(0, 4, 20000), draws, rng), np.linspace(0, 1, 11))[0] / 20000
+    assert np.abs(h * 10 - 1).max() < 0.1
+
+
+def test_network_a_pilot_with_one_partner_is_loyal_against_a_null_that_spreads_them():
+    days = pd.DataFrame({"date": np.repeat([f"d{i}" for i in range(10)], 2), "pool": 0,
+                         "p": [0, 2] * 10, "q": [1, 3] * 10})
+    # pilot 0 always meets 1; each day the null redraws a matching of 0, 1, 2, 3
+    pilots = pd.Index([0, 1, 2, 3])
+    k, s = network.distinct(days, pilots)
+    assert (k[0], s[0]) == (1, 10)
+    rng = np.random.default_rng(0)
+    pools = partners.pools_of(days)
+    draws = np.array([network.distinct(partners.null_draw(pools, rng), pilots)[0] for _ in range(200)]).T
+    assert network.pit(k[:1], draws[:1], rng)[0] < 0.05
+    assert (draws.min(0) >= 1).all() and draws[0].mean() > 2
+
+
+def test_network_excess_split_sums_to_the_total_excess():
+    real = np.array([30, 50, 20])
+    draws = np.random.default_rng(1).poisson([20, 45, 25], (100, 3))
+    e = network.excess(real, draws)
+    assert np.isclose(sum(e["excess"]), real.sum() - draws.mean(0).sum())
+    assert np.isclose(sum(e["share"]), 1)
+
+
+def test_network_symmetrised_correlation_of_assortative_and_shuffled_pairs():
+    rng = np.random.default_rng(2)
+    a = rng.normal(size=2000)
+    cls = rng.integers(0, 3, 2000)
+    assert np.isclose(network.mixing(a, a, (cls, cls), 3)["corr"], 1)
+    m = network.mixing(a, rng.permutation(a), (cls, rng.permutation(cls)), 3)
+    assert abs(m["corr"]) < 0.1
+    assert np.isclose(network.mixing(a, a, (cls, cls), 3)["same"], 1)
+
+
+def test_partners_swaps_keep_each_pilots_partners_without_self_or_double_pairs_and_leave_a_clique():
+    rng = np.random.default_rng(0)
+    pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (3, 4), (4, 5), (5, 6), (2, 6)]
+    out = partners.swaps(pairs, 200, rng)
+    assert (np.bincount(np.ravel(out), minlength=7) == np.bincount(np.ravel(pairs), minlength=7)).all()
+    assert all(a < b for a, b in out) and len(set(out)) == len(out)
+    assert set(out) != set(pairs)
+    clique = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+    assert set(partners.swaps(clique, 100, rng)) == set(clique)
