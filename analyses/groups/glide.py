@@ -147,9 +147,10 @@ def chance_series(on, off, series, r, flight_i, flight_j, row_i, row_j, step, tr
     return p, x, np.concatenate(both, axis=1).mean(axis=1)
 
 
-def measure(groups, flights, dates, step, p, tau_star):
-    """The glides of the groups of `groups` and of the chance contacts of the `dates`: a list of
-    (kind, block, glides), a block being an episode block for a group and a date for a chance pair."""
+def measure(groups, flights, dates, step, p, tau_star, per_series=one_series):
+    """What `per_series(xyz, z, x, f, step)` returns for each group of `groups` and each chance contact
+    of the `dates`: a list of (kind, block, result), a block being an episode block for a group and a
+    date for a chance pair."""
     runs = climb_runs(flights, set(flights.loc[flights["labelled"] & flights["date"].isin(dates), "flight"]))
     archive = grid.archive()
     by_date = dict(tuple(archive[archive["date"].isin(dates)].groupby("date")))
@@ -175,7 +176,7 @@ def measure(groups, flights, dates, step, p, tau_star):
         for group in (day.itertuples() if day is not None else []):
             xyz, x = observe(group, cached["real"], flight_of, step, tracks, row_of)
             f = climbing(group, step, runs).mean(axis=1)
-            out.append(("pairs" if len(group.members) == 2 else "3+", group.block, one_series(xyz[..., :3], xyz[..., 3], x, f, step)))
+            out.append(("pairs" if len(group.members) == 2 else "3+", group.block, per_series(xyz[..., :3], xyz[..., 3], x, f, step)))
         if chance:
             run = pickle.loads((LABELS / "days" / f"{date}.pkl").read_bytes())
             ids = run["table"]["flight_id"].to_numpy()
@@ -185,7 +186,7 @@ def measure(groups, flights, dates, step, p, tau_star):
                 r = shift[c[0], c[1]]
                 tracks.shifted(row[c[1]], r, ("shift", row[c[1]]))
                 xyz, x, f = chance_series(c[2], c[3], c[4:], r, flight_of[c[0]], flight_of[c[1]], row[c[0]], row[c[1]], step, tracks, runs)
-                out.append(("chance", date, one_series(xyz[..., :3], xyz[..., 3], x, f, step)))
+                out.append(("chance", date, per_series(xyz[..., :3], xyz[..., 3], x, f, step)))
         if number % 100 == 0:
             print(f"{number}/{len(dates)} dates, {len(out)} units", flush=True)
     return out

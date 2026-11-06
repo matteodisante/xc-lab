@@ -59,6 +59,33 @@ who responds to whom? In glide only (circling dominates the heading):
 `C_ij(tau) = < u_i(t) . u_j(t+tau) >`, u the unit horizontal velocity; the tau of the maximum gives
 who follows and with what delay (Nagy et al. 2010). Cross-check with the sign of l*: agreement makes the
 leadership result stronger. Null: surrogate pairs. Not done: correlation length (groups of 2--8).
+*Design (agreed 2026-11-06).* Trap: pilots strung along one track turn at the same places, so the
+heading peak sits at tau = l* with no interaction, and the sign check with l* holds almost by
+definition. The question becomes: in glide, does the follower turn at the same place as the head
+(tau_max = l*: retracing, or the same air) or at the same time (tau_max short and independent of l*:
+a response to seeing the other)? Quantity: dtheta_i(t) = theta_i(t) - route direction of the glide
+(theta: horizontal heading on the 5 s grid of glide.py, enough to tell tau = l*, tens of s, from
+a few s; 1 Hz only if a short-tau peak appears); C_ij(tau) = corr(dtheta_i(t), dtheta_j(t + tau)), tau > 0 when j
+follows i; tau_max and C_max per pair-glide; l* = median delay of the pair in that glide. Second
+signal dv (horizontal speed about its glide mean), same code, kept only if it differs. Population:
+the glides of glide.py (pairs, every pair of the 3+ groups, chance pairs). Tau range from the
+measured |l*| in glide (95th percentile). Null: chance pairs in the same |l*| class. Figure:
+tau_max against l* (medians per class with bands, line 1:1), real against chance; beside it the
+mean C(tau) for two or three l* classes. Reading: no peak above the null, independent lines; slope
+1 and real = chance, the same air; slope 1 with C_max real > chance, retracing; slope < 1 or a
+short-tau peak absent in chance pairs, a response. The directed "who responds to whom" network in
+3+ only if a response appears (else it repeats B3).
+*Done (2026-11-06, `headings.py`):* 47 215 real pair-glides (pairs and every pair of the 3+ groups),
+1041 chance; TAU_MAX 120 s (95th percentile of l, which the contact window delta = 120 s bounds),
+l classes cut at 10, 30, 65 s. The pooled heading peak sits at tau = l in every class (pairs 1.6, 17,
+46, 84 s at l = 5, 20, 45, 100 s; the speed peak the same and closer): the follower turns and changes
+speed where the head did, not when; no short-tau peak, C(0) is the tail of the peak. Heading C(l):
+pairs 0.36 to 0.19 as l grows, 3+ 0.33 to 0.29 (the tail keeps the head's line through the members
+between), chance 0.04 and 0.11 at l = 5, 20 s, 0.32 and 0.21 at 50, 107 s: close pilots share the
+line more than chance, far ones as much as the place gives. Speed: real above chance at every l, but a
+chance pair passes r later, in changed air, so it is no sign of interaction. The per-pair slope of
+tau_max on l (0.28) is not used: single peaks are noisy. No response, so no directed network.
+Figure: C(tau - l) of the pairs by class, and C(l) by kind.
 
 **B1. Rates by episode age.** Do joins and leaves depend on the age a of the episode, beyond the size n?
 `g(n, a)`, `l(n, a)` per member per hour, a in minutes from the start. Flat in a: the chain stands.

@@ -18,6 +18,7 @@ import decomposition  # noqa: E402
 import describe  # noqa: E402
 import exits  # noqa: E402
 import glide  # noqa: E402
+import headings  # noqa: E402
 import longlags  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
@@ -1630,6 +1631,64 @@ def test_glide_one_series_reads_the_instants_of_a_glide_between_two_climbs():
     assert inst[:, 3] == pytest.approx(20.0, rel=1e-3) and inst[:, 4] == pytest.approx(30.0)  # L_perp = 40 / 2, L_z = 60 / 2
     assert np.isnan(inst[0, 5]) and inst[1:, 5] == pytest.approx(1600.0, rel=1e-6)  # the first passage is before the glide
     assert moments.shape == (len(glide.DTS), 7) and moments[:, 0].min() > 0
+
+
+def _zigzag(steps, d=0):
+    """The Earth-centred track (T, 3) at 5 s of a head that goes east at 10 m/s and turns at
+    random, delayed by d grid steps."""
+    east, north, up = _frame()
+    heading = np.cumsum(np.random.default_rng(1).normal(0, 0.35, steps + 50))
+    v = 10.0 * np.column_stack([np.cos(heading), np.sin(heading)]) * 5.0
+    p = np.vstack([np.zeros(2), np.cumsum(v, axis=0)])[25 - d:25 - d + steps]
+    return 6.37e6 * up + p[:, :1] * east + p[:, 1:] * north
+
+
+def _pair_glide(follower, delay_steps):
+    """The pair-glide records of a head and a follower between two climbs, the first ahead."""
+    t = 200
+    xyz = np.stack([_zigzag(t), follower(t)])
+    x = rotation.positions(2, [(1, 0)], np.full((t, 1), 5.0 * delay_steps))
+    f = np.r_[np.full(20, 0.5), np.zeros(t - 40), np.full(20, 0.5)]
+    return headings.one_series(xyz, np.full((2, t), 2000.0), x, f, 5)
+
+
+def test_headings_a_follower_that_retraces_the_head_peaks_at_the_delay():
+    [(l, n, S, tau)] = _pair_glide(lambda t: _zigzag(t, 12), 12)  # 60 s behind on the same track
+    assert l == pytest.approx(60) and tau[0] == 60
+    pooled = headings.correlation(S.astype(float))
+    assert headings.peak(pooled, 5)[0][0] == pytest.approx(60, abs=0.1) and pooled[0].max() > 0.99
+
+
+def test_headings_a_follower_that_copies_the_heading_at_the_same_time_peaks_at_zero():
+    east, north, up = _frame()
+    sideways = lambda t: _zigzag(t) + 500.0 * north  # same velocity as the head, 500 m to the side
+    [(l, n, S, tau)] = _pair_glide(sideways, 12)  # the delays say that it is 60 s behind
+    assert l == pytest.approx(60) and tau[0] == 0
+    assert headings.peak(headings.correlation(S.astype(float)), 5)[0][0] == pytest.approx(0, abs=0.1)
+
+
+def test_headings_the_pooled_correlation_from_the_sums_is_the_pearson_correlation_of_the_centred_series():
+    rng = np.random.default_rng(3)
+    series = [(rng.normal(size=(2, m)), rng.normal(size=(2, m))) for m in (40, 70, 55)]
+    sums = [headings.lagged_sums(x, x * 0.5 + y, 3, 5)[1] for x, y in series]
+    pooled = headings.correlation(np.sum(sums, axis=0))
+    for lag in (-3, 0, 2):
+        a, b = [], []
+        for x, y in series:
+            y = x * 0.5 + y
+            lo, hi = max(0, -lag), min(x.shape[1], x.shape[1] - lag)
+            a.append(x[:, lo:hi] - x[:, lo:hi].mean(axis=1, keepdims=True))
+            b.append(y[:, lo + lag:hi + lag] - y[:, lo + lag:hi + lag].mean(axis=1, keepdims=True))
+        for q in range(2):
+            assert pooled[q, lag + 3] == pytest.approx(np.corrcoef(np.concatenate([u[q] for u in a]), np.concatenate([u[q] for u in b]))[0, 1])
+    assert headings.lagged_sums(series[0][0][:, :20], series[0][1][:, :20], 3, 5)[0].tolist() == [0] * 7  # 20 instants are 100 s, an overlap of 120 s needs 24
+
+
+def test_headings_wrapping_keeps_the_angle_in_minus_pi_exclusive_to_pi_inclusive():
+    a = np.array([-np.pi, np.pi, 3 * np.pi, -3 * np.pi, 0.1, -0.1 - 2 * np.pi, 2 * np.pi])
+    w = headings.wrap(a)
+    assert w == pytest.approx([np.pi, np.pi, np.pi, np.pi, 0.1, -0.1, 0.0])
+    assert (w > -np.pi).all() and (w <= np.pi).all()
 
 
 def test_exits_thermals_lie_between_two_glides_of_a_minute_and_keep_short_gaps_inside():
