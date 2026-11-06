@@ -1,0 +1,31 @@
+% Thermal marking: the start of a climb, the radius R_m and the window [t - T_m, t] (left, map);
+% the same test in time, with the marker as it is and shifted by s (right).
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \begin{scope}
+    \draw[ink2, dashed] (3,1.8) circle (1.5);
+    \draw[track j] (0,0.6) .. controls (1.2,1.0) and (2,1.9) .. (3,1.8);
+    \node[lbl, orangeJ, anchor=north west] at (0,0.5) {pilot};
+    \node[hollow j] at (3,1.8) {};
+    \node[lbl, orangeJ, above] at (3,1.95) {start};
+    \draw[<->, ink] (3,1.8) -- node[above, sloped, lbl] {$R_{\rm m}$} (1.94,0.74);
+    \draw[track i] (6,0.2) .. controls (5,0.5) and (4.2,1.2) .. (3.9,2.4);
+    \draw[track i] (3.9,2.7) circle (0.3);
+    \node[lbl, blueI, right] at (4.25,2.7) {marker climbing};
+    \node[note, align=center] at (3,-0.4) {map: a climb of another glider\\within $R_{\rm m}$ of the start};
+  \end{scope}
+  \begin{scope}[xshift=8.2cm]
+    \fill[blueI, opacity=0.10] (3.3,0) rectangle (5,2.7);
+    \node[lbl, above] at (4.15,2.7) {window};
+    \draw[->, ink2] (0,0) -- (6.5,0) node[right, lbl, ink] {time};
+    \draw[ink2] (3.3,-0.07) -- (3.3,0.07) node[below=0.1cm, lbl, ink] {$t-T_{\rm m}$};
+    \draw[ink2] (5,-0.07) -- (5,0.07) node[below=0.1cm, lbl, ink] {$t$};
+    \fill[light] (0.2,1.85) rectangle (6.3,2.15);
+    \fill[blueI] (3.8,1.85) rectangle (4.5,2.15);
+    \node[lbl, blueI, anchor=south west] at (0.2,2.2) {marker};
+    \fill[light] (0.2,0.55) rectangle (6.3,0.85);
+    \draw[blueI, fill=white, line width=0.9pt] (5.5,0.55) rectangle (6.2,0.85);
+    \node[lbl, blueI, anchor=south west] at (0.2,0.9) {marker shifted by $s$};
+    \draw[->, ink2] (4.5,1.5) -- node[above, lbl] {$s$} (5.5,1.5);
+    \node[note, align=center] at (3.1,-0.95) {time: the climb of the marker\\falls in the window, shifted it does not};
+  \end{scope}
+\end{tikzpicture}

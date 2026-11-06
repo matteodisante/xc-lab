@@ -30,3 +30,6 @@ drawn at random, 2 of its 8 orientations are cyclic.
 \emph{degrees} (the number of edges of each node) of a given one: each node gets as many half-edges
 as its degree, and the half-edges are paired at random~\cite{newman2010}. It keeps how many
 partners each pilot had and changes only who they were.
+Where the half-edges cannot be paired without a node meeting itself or twice the same node, the
+pairs are mixed by swaps instead: two pairs $(a,b)$ and $(c,d)$ become $(a,d)$ and $(c,b)$ when
+that makes neither, which keeps every degree.

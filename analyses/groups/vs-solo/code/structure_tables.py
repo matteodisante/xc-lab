@@ -317,6 +317,113 @@ def exits_tex():
     macro("StExHeadExp", pct(k["highest_is_head_after"]["expected_climbers"]))
 
 
+def headings_tex():
+    r = load(MAIN, "headings")
+    c, p = r["classes"], r["params"]
+    macro("StHdGlides", num(r["measured"]["n_real"], 0))
+    macro("StHdChance", num(sum(x["n"] for x in c["chance"]), 0))
+    macro("StHdTauMax", str(p["tau_max"]))
+    for edge, name in zip(p["l_edges"], ("One", "Two", "Three")):
+        macro(f"StHdEdge{name}", f"{edge:.0f}")
+    for i, name in enumerate(("One", "Two", "Three", "Four")):
+        macro(f"StHdL{name}", f"{c['pairs'][i]['l_median']['value']:.0f}")
+        macro(f"StHdPeak{name}", sig(c["pairs"][i]["heading"]["tau_max"]["value"]))
+        macro(f"StHdLChance{name}", f"{c['chance'][i]['l_median']['value']:.0f}")
+        value(f"StHdCChance{name}", c["chance"][i]["heading"]["C_at_l"], 2)
+    for i, name in ((0, "One"), (2, "Three"), (3, "Four")):
+        value(f"StHdCPair{name}", c["pairs"][i]["heading"]["C_at_l"], 2)
+    value("StHdCThreeFour", c["3+"][3]["heading"]["C_at_l"], 2)
+    macro("StHdLThreeFour", f"{c['3+'][3]['l_median']['value']:.0f}")
+    for k in macros:
+        if k.startswith("StHdC"):
+            macros[k] = macros[k].replace("-", "$-$")
+    macro("StHdSpeedGap", str(int(np.ceil(max(abs(x["speed"]["tau_max"]["value"] - x["l_median"]["value"]) for x in c["pairs"])))))
+
+
+def marking_tex():
+    r = load(MAIN, "marking")
+    p, m, s = r["params"], r["measured"], r["summary"]
+    macro("StMkR", f"{p['R_m']:.0f}")
+    macro("StMkDT", f"{p['DT_s']:.0f}")
+    macro("StMkPercentile", str(p["percentile"]))
+    macro("StMkPairs", num(m["pairs"], 0))
+    macro("StMkNear", f"{r['S_near_min']:g}")
+    macro("StMkGroupStarts", num(s["group"]["starts"], 0))
+    macro("StMkSoloStarts", num(s["solo"]["starts"], 0))
+    macro("StMkShareGroup", pct(s["group"]["any"]["real"]["value"], 1))
+    macro("StMkShareSolo", pct(s["solo"]["any"]["real"]["value"], 1))
+    value("StMkNowGroup", s["group"]["any"]["now"], 2)
+    value("StMkNowGroupOther", s["group"]["group"]["now"], 2)
+    value("StMkNowGroupSolo", s["group"]["solo"]["now"], 2)
+    value("StMkNowSolo", s["solo"]["any"]["now"], 2)
+    macro("StMkHalfGroup", f"{s['group']['any']['s_half']['value']:.0f}")
+    macro("StMkHalfSolo", f"{s['solo']['any']['s_half']['value']:.0f}")
+    speed = load(MAIN, "performance")["solo"]["glide speed (km/h)"]["value"]
+    macro("StMkGlideSpeed", f"{speed:.0f}")
+    macro("StMkReach", f"{p['DT_s'] * speed / 3600:.1f}")
+
+
+def encounters_tex():
+    r = load(MAIN, "encounters")
+    a, p, m = r["summary"]["all"], r["params"], r["summary"]
+    macro("StEnR", f"{p['R_ENC_m']:.0f}")
+    macro("StEnBins", str(p["n_bins"]))
+    macro("StEnBin", f"{p['R_ENC_m'] / p['n_bins']:.0f}")
+    macro("StEnTheta", f"{p['theta_max']:.0f}")
+    macro("StEnDelta", f"{p['delta_s']:.0f}")
+    macro("StEnEpsZ", f"{p['eps_z']:.0f}")
+    for kind, name in (("solo-solo", "SoloSolo"), ("solo-group", "SoloGroup"), ("group-group", "GroupGroup")):
+        macro(f"StEnPasses{name}", num(a["passes"][kind], 0))
+        macro(f"StEnShare{name}", pct(a["share"][kind]["value"], 1))
+    macro("StEnBelowSoloSolo", pct(m["below"]["share"]["solo-solo"]["value"], 1))
+    macro("StEnAboveSoloSolo", pct(m["above"]["share"]["solo-solo"]["value"], 1))
+    macro("StEnNearGroupGroup", pct(a["curve"]["group-group"][0]["value"]))
+    macro("StEnFarGroupGroup", pct(a["curve"]["group-group"][-1]["value"]))
+    for kind, name in (("solo-group", "SoloGroup"), ("group-group", "GroupGroup")):
+        value(f"StEnRatio{name}", a["ratio"][kind], 2)
+        value(f"StEnObsExp{name}", a["obs_exp"][kind], 2)
+        value(f"StEnAbove{name}", m["above"]["obs_exp"][kind], 2)
+    value("StEnSoloPair", a["size"]["solo-pair"], 2)
+    value("StEnSoloThree", a["size"]["solo-3+"], 2)
+
+
+def network_tex():
+    r = load(MAIN, "network")
+    m, d1, d2, d3, par = r["measured"], r["d1"], r["d2"], r["d3"], r["params"]
+    macro("StNwDraws", str(par["N_NULL"]))
+    macro("StNwTries", str(par["TRIES"]))
+    macro("StNwQLow", f"{par['Q_LOW']:g}")
+    macro("StNwSMin", str(par["S_MIN"]))
+    macro("StNwPilots", num(m["pilots_s_min"], 0))
+    macro("StNwEdgeLow", str(m["s_edges"][0]))
+    macro("StNwEdgeHigh", str(m["s_edges"][1]))
+    for c, name in zip(d1, ("Few", "Mid", "Many")):
+        macro(f"StNwPilots{name}", num(c["pilots"], 0))
+        macro(f"StNwLow{name}", pct(c["low"]))
+        macro(f"StNwRatio{name}", f"{c['median_ratio']:.2f}")
+    macro("StNwRatioNullMany", f"{d1[-1]['median_ratio_null']:.2f}")
+    real, null = d2["real"], d2["null_mean"]
+    for i, name in enumerate(("Same", "Diff")):
+        macro(f"StNwExcess{name}", num(d2["excess"][i], 0))
+        macro(f"StNwExcess{name}Band", f"[{num(d2['excess_band'][0][i], 0)}, {num(d2['excess_band'][1][i], 0)}]")
+        macro(f"StNwShare{name}", pct(d2["share"][i]))
+    macro("StNwNullSame", pct(null[0] / sum(null)))
+    macro("StNwRealSame", pct(real[0] / sum(real)))
+    for key, name in (("x", "X"), ("wing", "Wing")):
+        d = d3[key]
+        macro(f"StNwCorr{name}", f"{d['real']['corr']:.2f}")
+        value(f"StNwCorr{name}Null", {"value": d["null"]["corr"]["mean"], "band": d["null"]["corr"]["band"]}, 2)
+        if key == "wing":
+            macro("StNwSameWing", pct(d["real"]["same"]))
+            macro("StNwSameWingNull", pct(d["null"]["same"]["mean"]))
+            macro("StNwSameWingNullBand", band_pct(d["null"]["same"]["band"], 0))
+    x = d3["x"]
+    macro("StNwBeginner", f"{x['real']['mean'][0]:.2f}")
+    value("StNwBeginnerNull", {"value": x["null"]["mean"]["mean"][0], "band": [x["null"]["mean"]["band"][0][0], x["null"]["mean"]["band"][1][0]]}, 2)
+    macro("StNwVeteran", f"{x['real']['mean'][-1]:.2f}")
+    value("StNwVeteranNull", {"value": x["null"]["mean"]["mean"][-1], "band": [x["null"]["mean"]["band"][0][-1], x["null"]["mean"]["band"][1][-1]]}, 2)
+
+
 def main():
     GEN.mkdir(exist_ok=True)
     describe_tex()
@@ -330,6 +437,10 @@ def main():
     glide_tex()
     rotation_tex()
     exits_tex()
+    headings_tex()
+    marking_tex()
+    encounters_tex()
+    network_tex()
     (GEN / "structure_macros.tex").write_text(
         "\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")
     print(f"{len(macros)} macros")

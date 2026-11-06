@@ -1,6 +1,7 @@
 \section{What we find}\label{sec:structure}
 
-What do the groups look like on the archive, and what holds them together? The groups are those
+What do the groups look like on the archive, and how far do pilots depend on each other: in a pair,
+in a group, between groups and from one day to the next? The groups are those
 labelled by the method of the note \emph{Group flights in free flight}, with its chosen values,
 $\delta=2$~min and $q=0.1$: 21.7\% of the paraglider flights and 6.9\% of the hang-glider
 flights fly in a group at some point, in 17\,169 episodes (Table~\ref{gi-tab:q} of the note).
@@ -8,9 +9,142 @@ Chance is the null model of Section~\ref{gi-sec:null} of the note; bands are 5--
 of the dependency blocks, or of the dates where the captions say so. Graph terms are defined in
 Appendix~\ref{app:graphs}, the two models in Appendix~\ref{app:models}. The report
 \emph{Group and solo flights} (\texttt{analyses/groups/vs-solo}) compares the motion
-of pilots in a group and alone; some results here refer to it.
+of pilots in a group and alone; some results here refer to it. The section goes from two pilots to
+the group, to what lies between groups and to the pilots across days. In short: pilots in contact
+keep a shared pace and the same line, the lead passes with the thermals, the gliders around a group
+add little beyond their number, and pilots come back to the same partners and clubs
+(Section~\ref{sec:conclusions}).
 
-\subsection{What the groups are}\label{sec:sizes}
+
+\subsection{Two pilots}\label{sec:pilots}
+
+Two questions about the pilots of a pair in contact. Do they keep the same pace
+(Section~\ref{sec:cohesion})? And in glide, does the follower turn where the head turned or when
+it turned (Section~\ref{sec:headings})?
+
+\subsubsection{What keeps two pilots together}\label{sec:group-structure}\label{sec:cohesion}
+
+Do two pilots in a group keep the same pace, or are they pulled back to each other? We follow the
+delay $\ell^*(t)$ inside each contact (Appendix~\ref{gi-sec:lag} of the note), leaving out the instants with either
+pilot in a search. Groups are the \StCohReal{} pair intervals of pilots who took off within 10~km;
+chance is the \StCohChance{} contacts of the surrogate pairs, two pilots who never saw each other,
+and the \StCohChanceLong{} of these that last at least $\tau^*$, selected as the groups are. Three
+measures:
+\begin{itemize}
+  \item $D(s)=\langle(\ell(t+s)-\ell(t))^2\rangle$, the mean square change of the delay after $s$,
+        fitted by an Ornstein--Uhlenbeck process, $D(s)=2\sigma^2(1-e^{-ks})+c$: $1/k$ is how long
+        the delay remembers its value, $\sigma$ its spread, $2k\sigma^2$ how fast it wanders;
+  \item the drift $\langle\ell(t+60~\mathrm{s})-\ell(t)\rangle/60~\mathrm{s}$ at each $\ell$, made
+        symmetric since the order of a pair is arbitrary: the pull back to $\ell=0$, a spring $-k\ell$
+        near 0;
+  \item the distance between the two pilots at the same instant after their first contact. Two
+        independent pilots separate as twice the displacement variance of one, since the drift along
+        the route cancels in their difference; the surrogate pairs give this baseline on the same
+        terrain.
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/cohesion.pdf}
+\caption{Left: $D(s)$ of groups (by size) and of chance contacts (markers), with the
+Ornstein--Uhlenbeck fit (lines) and its $1/k$. Middle: symmetric drift of the delay. Right: median distance at the same
+instant after the first contact, for every pair and for those whose first contact lasts at least
+$\tau^*$. Bands: 5--95\% of 200 draws of the dates.}
+\label{fig:cohesion}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Groups keep the same pace.} Their delay wanders at $2k\sigma^2=\StQReal$ \StQRealBand~s$^2$/s,
+        against \StQChanceLong{} \StQChanceLongBand{} for chance contacts as long and \StQChance{}
+        \StQChanceBand{} for all of them; its spread is $\sigma=\StSigmaReal$~s \StSigmaRealBand, against
+        \StSigmaChance~s \StSigmaChanceBand. Size does not matter: $2k\sigma^2=\StQTwo$, \StQThree{} and
+        \StQFour~s$^2$/s at 2, 3 and 4+ pilots.
+  \item \textbf{They are not pulled back much harder.} The delay forgets itself in $1/k=\StOuReal$~min
+        \StOuRealBand, against \StOuChance~min \StOuChanceBand{} by chance; the drift gives \StDriftReal~min
+        \StDriftRealBand{} against \StDriftChance~min \StDriftChanceBand. Most of the pull is the
+        selection: a contact that lasts keeps $|\ell|\le\delta$ by definition.
+  \item \textbf{They stay together after the contact that selected them.} When the first contact lasts
+        at least $\tau^*$, the two pilots are \StSepRealLongSixty~km apart 60~min later (median), against
+        \StSepChanceLongSixty~km by chance; \StSepRealLongTwoHours{} against \StSepChanceLongTwoHours~km
+        after 2~h. Over every first contact, \StSepRealThirty{} against \StSepChanceThirty~km after 30~min.
+\end{itemize}
+What holds a group together is a shared pace; a spring adds little to it. Whether the shared pace
+is following or the same choices in the same air, the data cannot tell.
+
+\subsubsection{Where and when they turn}\label{sec:headings}
+
+Does the follower turn where the head turned, or when? In glide two pilots in contact fly along
+one route, and a follower who retraces the head's track turns at the same places, a delay $\ell$
+later, without seeing the head. A follower who answers the head's turns would turn within seconds
+of them, whatever $\ell$. The lag of the peak of the correlation between the two headings tells the
+two apart.
+
+We take the glides of the paragraph \emph{In glide} (Section~\ref{sec:glide}), on the 5~s grid,
+for the pairs of two, for every pair of members of the groups of 3 or more, and for the surrogate
+pairs: \StHdGlides{} pair-glides in groups and \StHdChance{} of chance. The heading $\theta_i(t)$
+of a pilot is the direction of its horizontal velocity, the displacement between the neighbouring
+instants. With $\theta_{\rm route}$ the direction of the displacement of the centroid from the
+start to the end of the glide and $\varphi_i$ the difference wrapped to $(-\pi,\pi]$, the pair
+$(i,j)$ is oriented so that $i$ is ahead ($\ell\ge 0$, the median over the glide of $x_j-x_i$
+of~\eqref{eq:passage}), and
+\begin{equation}\label{eq:heading}
+\varphi_i(t)=\theta_i(t)-\theta_{\rm route},\qquad
+C(\tau)=\operatorname{corr}_t\big(\varphi_i(t),\,\varphi_j(t+\tau)\big),
+\end{equation}
+over the instants where both exist inside the glide, $\tau>0$ when $j$ follows $i$. The curves of a
+class of $\ell$ are pooled over its pair-glides, as the sum of the products over the square root
+of the product of the sums of squares, so a long glide weighs more. The classes are cut at
+\StHdEdgeOne, \StHdEdgeTwo{} and \StHdEdgeThree~s, the quartiles of $\ell$, and $\tau$ runs to
+$\pm\StHdTauMax$~s, the 95th percentile of $\ell$. We write $C(\ell)$ for the pooled $C$ read at
+$\tau=\ell$ of the median $\ell$ of the class. The same is done for the horizontal speed. Chance is
+the surrogate pairs, two pilots who never saw each other, in classes of $\ell$ of their own
+(median delays \StHdLChanceOne, \StHdLChanceTwo, \StHdLChanceThree{} and \StHdLChanceFour~s).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/headings.pdf}
+\caption{Headings in glide. Left: pooled $C(\tau)$~\eqref{eq:heading} of the pairs of two by class of
+the median delay $\ell$, against $\tau-\ell$; a follower who retraces the head's track peaks at 0,
+one who turns when the head turns at $-\ell$ (ticks). Right: pooled $C(\ell)$ against $\ell$ for
+the pairs, the pairs of members of groups of 3 or more, and the surrogate pairs. Bands: 5--95\% of
+200 draws of the dependency blocks (chance: of the dates).}
+\label{fig:headings}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{The follower turns where the head turned} (Figure~\ref{fig:headings}, left): in
+        pairs the peak sits at $\tau=\StHdPeakOne$, \StHdPeakTwo, \StHdPeakThree{} and
+        \StHdPeakFour~s for $\ell=\StHdLOne$, \StHdLTwo, \StHdLThree{} and \StHdLFour~s. There is no
+        second peak at short $\tau$: $C(0)$ is the tail of the peak. The speed peaks at the same
+        lags, within \StHdSpeedGap~s of $\ell$ in every class.
+  \item \textbf{Close pilots share the line more than chance} (right): $C(\ell)$ of the pairs falls
+        from \StHdCPairOne{} \StHdCPairOneBand{} at $\ell=\StHdLOne$~s to \StHdCPairFour{}
+        \StHdCPairFourBand{} at \StHdLFour~s. Chance pairs give \StHdCChanceOne{}
+        \StHdCChanceOneBand{} and \StHdCChanceTwo{} \StHdCChanceTwoBand{} at \StHdLChanceOne{} and
+        \StHdLChanceTwo~s, but \StHdCChanceThree{} \StHdCChanceThreeBand{} and \StHdCChanceFour{}
+        \StHdCChanceFourBand{} at \StHdLChanceThree{} and \StHdLChanceFour~s, as high as the pairs
+        (\StHdCPairThree{} at \StHdLThree~s): far apart in time, the place alone gives the line.
+  \item \textbf{In larger groups the line is kept farther} (right): between members
+        \StHdLThreeFour~s apart $C(\ell)$ stays at \StHdCThreeFour{} \StHdCThreeFourBand, against
+        \StHdCPairFour{} in pairs, as if each member retraced the one ahead of it.
+\end{itemize}
+The 5~s grid is enough to tell a delay of tens of seconds from a short one: in the classes with
+$\ell$ of \StHdLTwo~s or more, a response at a short lag would be a second peak near $\tau=0$, and
+there is none. Since no response appears, we do not build a directed network of who answers whom: it
+would repeat the order of Section~\ref{sec:leaders}.
+
+\paragraph{What we keep.} Pilots of a pair keep a shared pace (Section~\ref{sec:cohesion}), and in
+glide they share it through the line: the follower turns at the places where the head turned, the
+delay later, and shows no turn at short delays. Pairs that fly close share the line more than
+chance pairs do, and at delays of \StHdLChanceThree~s and more the place alone gives as much. Retracing and
+the same air give the same signal here, so the data still cannot tell following from flying in
+the same air.
+
+\subsection{The group}\label{sec:group}
+
+How large and lasting are the groups, how are they laid out, and who leads?
+
+\subsubsection{What the groups are}\label{sec:sizes}
 
 How large are the groups, how long do they last, and how do they change? We count episodes and
 groups (Section~\ref{gi-sec:groups} of the note) by number and by duration; an episode lasts from the start of
@@ -95,56 +229,7 @@ Appendix~\ref{app:evidence}): there is no phase where groups preferentially form
 \GroupShareNoon\% of a group flight's time at \GroupShareNoonHour~h, \GroupShareMorning\% at 9~h,
 \GroupShareEvening\% at 18~h (Figure~\ref{fig:hours} in Appendix~\ref{app:evidence}).
 
-\subsection{What keeps two pilots together}\label{sec:group-structure}\label{sec:cohesion}
-
-Do two pilots in a group keep the same pace, or are they pulled back to each other? We follow the
-delay $\ell^*(t)$ inside each contact (Appendix~\ref{gi-sec:lag} of the note), leaving out the instants with either
-pilot in a search. Groups are the \StCohReal{} pair intervals of pilots who took off within 10~km;
-chance is the \StCohChance{} contacts of the surrogate pairs, two pilots who never saw each other,
-and the \StCohChanceLong{} of these that last at least $\tau^*$, selected as the groups are. Three
-measures:
-\begin{itemize}
-  \item $D(s)=\langle(\ell(t+s)-\ell(t))^2\rangle$, the mean square change of the delay after $s$,
-        fitted by an Ornstein--Uhlenbeck process, $D(s)=2\sigma^2(1-e^{-ks})+c$: $1/k$ is how long
-        the delay remembers its value, $\sigma$ its spread, $2k\sigma^2$ how fast it wanders;
-  \item the drift $\langle\ell(t+60~\mathrm{s})-\ell(t)\rangle/60~\mathrm{s}$ at each $\ell$, made
-        symmetric since the order of a pair is arbitrary: the pull back to $\ell=0$, a spring $-k\ell$
-        near 0;
-  \item the distance between the two pilots at the same instant after their first contact. Two
-        independent pilots separate as twice the displacement variance of one, since the drift along
-        the route cancels in their difference; the surrogate pairs give this baseline on the same
-        terrain.
-\end{itemize}
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figures/structure/cohesion.pdf}
-\caption{Left: $D(s)$ of groups (by size) and of chance contacts (markers), with the
-Ornstein--Uhlenbeck fit (lines) and its $1/k$. Middle: symmetric drift of the delay. Right: median distance at the same
-instant after the first contact, for every pair and for those whose first contact lasts at least
-$\tau^*$. Bands: 5--95\% of 200 draws of the dates.}
-\label{fig:cohesion}
-\end{figure}
-
-\begin{itemize}
-  \item \textbf{Groups keep the same pace.} Their delay wanders at $2k\sigma^2=\StQReal$ \StQRealBand~s$^2$/s,
-        against \StQChanceLong{} \StQChanceLongBand{} for chance contacts as long and \StQChance{}
-        \StQChanceBand{} for all of them; its spread is $\sigma=\StSigmaReal$~s \StSigmaRealBand, against
-        \StSigmaChance~s \StSigmaChanceBand. Size does not matter: $2k\sigma^2=\StQTwo$, \StQThree{} and
-        \StQFour~s$^2$/s at 2, 3 and 4+ pilots.
-  \item \textbf{They are not pulled back much harder.} The delay forgets itself in $1/k=\StOuReal$~min
-        \StOuRealBand, against \StOuChance~min \StOuChanceBand{} by chance; the drift gives \StDriftReal~min
-        \StDriftRealBand{} against \StDriftChance~min \StDriftChanceBand. Most of the pull is the
-        selection: a contact that lasts keeps $|\ell|\le\delta$ by definition.
-  \item \textbf{They stay together after the contact that selected them.} When the first contact lasts
-        at least $\tau^*$, the two pilots are \StSepRealLongSixty~km apart 60~min later (median), against
-        \StSepChanceLongSixty~km by chance; \StSepRealLongTwoHours{} against \StSepChanceLongTwoHours~km
-        after 2~h. Over every first contact, \StSepRealThirty{} against \StSepChanceThirty~km after 30~min.
-\end{itemize}
-What holds a group together is a shared pace; a spring adds little to it. Whether the shared pace
-is following or the same choices in the same air, the data cannot tell.
-
-\subsection{Where the sizes come from}\label{sec:fission}
+\subsubsection{Where the sizes come from}\label{sec:fission}
 
 Why are most groups pairs, and how do a few grow large? $T(n)$ is the share of the time spent in
 groups of $n$ pilots: the chance that a group seen at a random instant has $n$ pilots. If
@@ -228,7 +313,7 @@ binds a pair, or the pairs that last were the stable ones from the start, these 
 The balance~\eqref{eq:chain} holds all the same, since it counts the moves between two sizes with
 the rates averaged over the ages.
 
-\subsection{Shape and breathing}\label{sec:shape}
+\subsubsection{Shape and breathing}\label{sec:shape}
 
 How are the pilots of a group laid out, and how does the layout change along the flight?
 
@@ -398,7 +483,7 @@ drift off the head's line and stay off it, closer to it than two pilots who neve
 length changes because a pilot gains or loses time on the others. We find no fan that opens across
 the route to search and closes before the next thermal.
 
-\subsection{Who leads}\label{sec:leaders}
+\subsubsection{Who leads}\label{sec:leaders}
 
 Who is ahead in a group, how often does that change, and who is it?
 
@@ -536,14 +621,177 @@ the leader's height, a few metres lower, so a group leaves together in height an
 time: who stays longer climbs higher, and who leaves first heads the next glide. Height bought in
 the thermal does not buy the lead.
 
-\subsection{With whom}\label{sec:partners}
+\subsection{Between groups}\label{sec:between}
+
+Do pilots use the gliders around them that are not in their group, and do groups join each other?
+The neighbours are the other gliders of the date, not in contact with the pilot. We ask two things:
+whether a pilot starts to climb where another glider is climbing (marking), and how often two
+gliders that come close join (encounters). Only uploaded tracks are seen, so the neighbours are
+undercounted and every effect is diluted. We do not study the advantage of the group against the
+number of neighbours: that number counts uploaded tracks only, goes with the quality of the day, and
+within one site-day too few flights remain to compare.
+
+\subsubsection{Thermal marking}\label{sec:marking}
+
+When a pilot starts a climb, was a glider outside its group already climbing there? The start of a
+climb is the first instant of a climb run of a flight labelled in phases, with its position, on
+the 5~s grid. The start at $t$ is \emph{marked} if a marker, a labelled flight of the date that is
+not the pilot and not in its group, is in a climb run at some instant of the window
+$[t-T_{\rm m},t]$ at a horizontal distance of at most $R_{\rm m}$ from the position of the start
+(Figure~\ref{fig:marking-scheme}). The kind of the pilot, group member or solo, and the group of the
+markers are read at $t-T_{\rm m}$: a glider that joins the pilot after that still counts, while one
+in contact at $t$ would be excluded exactly when it climbs in the same thermal. A marker is of
+another group or solo as at its climbing instant. We take $R_{\rm m}=\StMkR$~m and
+$T_{\rm m}=\StMkDT$~s as the \StMkPercentile{}th percentiles of the distance and of the delay between
+the entries of two members of a thermal of a group (\StMkPairs{} pairs of entries, as in
+Section~\ref{sec:exits}): the scale of the same thermal.
+
+\begin{figure}
+\centering
+\input{figures/tikz/marking}
+\caption{The test of a marked start. Left, on the map: the pilot (orange) starts a climb at the
+hollow point; a glider outside its group (blue) climbing within $R_{\rm m}$ of it marks the start.
+Right, in time: the climb of the marker must fall in the window $[t-T_{\rm m},t]$ (solid); with the
+marker shifted by $s$ (hollow) it no longer does.}
+\label{fig:marking-scheme}
+\end{figure}
+
+A marked start alone does not show marking: places keep producing climbs, so a glider that climbed
+there some minutes before or after would mark it too. Chance shifts the tracks and the climb runs
+of the markers in time by $+s$ and by $-s$, both averaged, the pilot unchanged. Calling $m(s)$ the
+share of marked starts with the markers shifted by $s$ ($m(0)$ is the observed share), we read two
+numbers:
+\begin{equation}\label{eq:now}
+\text{now}=\frac{m(0)}{m(s_{\rm n})},\qquad s_{\rm n}=\StMkNear~\text{min},
+\end{equation}
+and $s_{1/2}$, the shift at which $m$ falls to half of $m(0)$. The shift $s_{\rm n}$ is the
+smallest of our grid of shifts whose window does not overlap the observed one: the ratio says how
+much a glider climbing right then adds over one that climbed there minutes before or after.
+$s_{1/2}$ says how long a place keeps producing climbs.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/marking.pdf}
+\caption{Thermal marking. Left: share $m(s)$ of the climb starts marked against the shift $s$ of the
+markers, for group members and for solo pilots; dashed: $s_{\rm n}$; dotted and crosses: half of
+$m(0)$ and $s_{1/2}$. Right: the ratio~\eqref{eq:now} by kind of marker. Bands and bars: 5--95\% of
+200 draws of the dates.}
+\label{fig:marking}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Group members meet a marker more often than solo pilots} (Figure~\ref{fig:marking},
+        left): of \StMkGroupStarts{} climb starts of group members \StMkShareGroup\% are marked,
+        and of \StMkSoloStarts{} of solo pilots \StMkShareSolo\%. The shifted markers give nearly as
+        many.
+  \item \textbf{A glider climbing right then adds little} (right): the ratio~\eqref{eq:now} is
+        \StMkNowSolo{} \StMkNowSoloBand{} for solo pilots and \StMkNowGroup{} \StMkNowGroupBand{} for
+        group members. For group members, markers of another group give \StMkNowGroupOther{}
+        \StMkNowGroupOtherBand{} and solo gliders \StMkNowGroupSolo{} \StMkNowGroupSoloBand. The value
+        below 1 stays open; one possibility is that groups flying one after the other along a route
+        pass a thermal minutes apart, which the shifted markers keep.
+  \item \textbf{Places keep producing climbs} (left): $m$ halves at $s_{1/2}=\StMkHalfGroup$~min for
+        group members and \StMkHalfSolo~min for solo pilots. The shifted markers also leave their
+        flights, so $s_{1/2}$ is an upper bound.
+\end{itemize}
+Limits. An excess over the null would be marking or two pilots finding one active thermal; the data
+do not separate them. The test sees marking only from within about \StMkReach~km, the distance a
+glider covers at \StMkGlideSpeed~km/h, the glide speed of solo pilots, in $T_{\rm m}$. A marker
+seen from farther or longer ago is not tested: the ratio at large shifts grows mostly because the
+shifted markers leave their flights, so we do not use it.
+
+\subsubsection{Encounters}\label{sec:encounters}
+
+When two gliders not in contact come close, how often do they join? A \emph{pass} is a maximal run
+of grid instants at which two flights are within a horizontal distance $R_{\rm e}=\StEnR$~m, with no
+pair interval of the run; $R_{\rm e}$ is the 95th percentile of the distance of the two flights at
+the start of the pair intervals, beyond which few contacts begin. Runs of one pair separated by
+less than the gap of the method are one. We keep the genuine approaches (the two were at least
+$R_{\rm e}$ apart the instant before), the first meeting of the two units that day (no earlier contact between them),
+and those with headings within $\theta_{\max}=\StEnTheta^\circ$ at the closest instant, since the
+method links only gliders on similar headings. The unit of a glider is its group at the start of the
+pass, or itself if solo, so a group meeting a glider is one pass and not one per member; $d_{\min}$
+is the closest distance of a pair of members, and the height difference is that of the same pair
+at that instant. The pass is \emph{joined} if a pair interval between a
+member of one unit and a member of the other starts during the pass or within $\delta=\StEnDelta$~s
+after its end: a contact that the method dates to the pass, since the glider behind reaches the
+place of the other within $\delta$. There are \StEnPassesSoloSolo{}
+passes of two solo gliders, \StEnPassesSoloGroup{} of a solo glider and a group and
+\StEnPassesGroupGroup{} of two groups.
+
+We follow $P(\text{joined})$ against $d_{\min}$ in \StEnBins{} bins of $\StEnBin$~m, with solo-solo as the
+reference: groups attract if solo-group lies above it, and keep closed if group-group lies below.
+Two ratios to the reference are read. The first, $\rho_x$, is the standardised ratio
+\begin{equation}\label{eq:standard}
+\rho_x=\frac{\sum_b w_b\,P_x(b)}{\sum_b w_b\,P_{ss}(b)},\qquad x=\text{solo-group, group-group},
+\end{equation}
+with $P_x(b)$ the share joined in the bin $b$ of $d_{\min}$ and $w_b$ the number of solo-solo
+passes in it, so that the types are compared at the same distances. The second answers the number
+of gliders: a unit of $n$ gliders meeting one of $m$ offers $nm$ pairs, and joins more often than two
+solo gliders without any attraction. With $p(d_{\min})$ the solo-solo share joined in the bin, the
+expected joins are
+\begin{equation}\label{eq:chances}
+E=\sum_{\text{passes}}\Big[1-\big(1-p(d_{\min})\big)^{nm}\Big],
+\end{equation}
+and we read the observed joins over $E$. Members fly together, so their chances are not
+independent and $E$ is an upper bound on the part that the number of gliders gives alone: a ratio
+above 1 is a lower bound on what is left.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/encounters.pdf}
+\caption{Encounters of gliders not in contact. Left: share of the passes joined against the closest
+distance $d_{\min}$, by type. Right: for solo-group and group-group, the standardised
+ratio~\eqref{eq:standard} to solo-solo (full) and the observed joins over the independent
+chances~\eqref{eq:chances} (open). Bands and bars: 5--95\% of 200 draws of the dates.}
+\label{fig:encounters}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Groups are joined more often} (Figure~\ref{fig:encounters}, left): the share joined
+        is \StEnShareSoloSolo\% for solo-solo, \StEnShareSoloGroup\% for solo-group and
+        \StEnShareGroupGroup\% for group-group. It is flat in $d_{\min}$ for solo-solo and falls
+        steeply for the others: for group-group \StEnNearGroupGroup\% below \StEnBin~m and
+        \StEnFarGroupGroup\% at $R_{\rm e}$.
+  \item \textbf{Most of it is the size of the target} (right): the standardised ratios are
+        \StEnRatioSoloGroup{} \StEnRatioSoloGroupBand{} for solo-group and \StEnRatioGroupGroup{}
+        \StEnRatioGroupGroupBand{} for group-group; over the independent chances they are
+        \StEnObsExpSoloGroup{} \StEnObsExpSoloGroupBand{} and \StEnObsExpGroupGroup{}
+        \StEnObsExpGroupGroupBand. Only a pair draws a solo glider a little more than its number gives
+        (\StEnSoloPair{} \StEnSoloPairBand), a group of 3 or more does not (\StEnSoloThree{}
+        \StEnSoloThreeBand).
+  \item \textbf{Joining needs the same level}: of the solo-solo passes, \StEnBelowSoloSolo\% are
+        joined when the height difference is at most $\varepsilon_z=\StEnEpsZ$~m and
+        \StEnAboveSoloSolo\% above it. Above $\varepsilon_z$ the joins over the independent
+        chances, taken in that class, are \StEnAboveSoloGroup{} \StEnAboveSoloGroupBand{} for
+        solo-group and \StEnAboveGroupGroup{} \StEnAboveGroupGroupBand{} for group-group.
+\end{itemize}
+
+\paragraph{What we keep.} The gliders around a group add little for its pilots in these data.
+A glider climbing right then adds little to the chance that a pilot starts to climb where it
+climbs (ratios \StMkNowGroup{} and \StMkNowSolo), over a glider that climbed there minutes before
+or after: places keep producing climbs, and that is what the shifted markers keep. Groups are
+joined more often than solo gliders, and almost all of the excess is the number of gliders that a
+group offers: a pair draws a solo glider a little more than its number gives, a group of 3 or more
+draws one no more, and two groups join as often as their numbers give. Only uploaded tracks are
+seen, so a marker or a glider that was not uploaded is missing.
+
+\subsection{Pilots across days}\label{sec:days}
+
+The names of the catalog link the flights of one pilot on different days. Do pilots choose their
+partners (Section~\ref{sec:partners}), is that loyalty the habit of every pilot or of a core, how
+much of it do the clubs hold, and who flies with whom (Section~\ref{sec:network})?
+
+\subsubsection{With whom}\label{sec:partners}
 
 Do pilots choose their partners, or fly with whoever is there? We follow paraglider pilots by their
 name in the catalog (anonymised ones left out). Two pilots are partners on a day when their
 flights share a pair interval: a \emph{pair-day}. Chance keeps who flies in a group where and
 when: within each site-day (takeoffs within 3~km, joined when a pair interval links two sites),
 the partners are redrawn at random, each pilot keeping its number of partners that day (a
-configuration model; 100 draws). There are \StPairDays{} pair-days among \StPilots{} pilots and
+configuration model; \StNwDraws{} draws). Where each of \StNwTries{} attempts to redraw a pool holds a pilot paired
+with itself or the same pair twice, the pairs of the pool are mixed by swaps that keep every degree, so
+each pilot keeps its number of pair-days in every draw. There are \StPairDays{} pair-days among \StPilots{} pilots and
 \StPairs{} pairs; one pair flew together on \StMaxDays{} days (Figure~\ref{fig:partners}).
 \begin{itemize}
   \item \textbf{Pilots return to the same partners:} \StRepeatObs\% of the pair-days are on pairs
@@ -564,47 +812,150 @@ two pilots of the same club (each pilot's main club); bars at random: 5--95\% of
 \label{fig:partners}
 \end{figure}
 
+\paragraph{Habitual leaders.} Pilots also differ in how they lead: some lead or follow in most of
+their pairs, more than roles at random give: \HabitualExtreme\% lead in at most 20\% or at least 80\% of
+their roles, against \HabitualExtremeNull\% expected (Section~\ref{sec:leaders},
+Figure~\ref{fig:habitual} in Appendix~\ref{app:evidence}).
+
+\subsubsection{Loyalty, clubs and likeness}\label{sec:network}
+
+What does the loyalty above look like pilot by pilot, how much of it do the clubs hold, and who
+flies with whom? The population and the null are those of Section~\ref{sec:partners}: the
+pair-days of named paraglider pilots, and the partners redrawn within each pool of site-days
+(\StNwDraws{} draws) with every pilot keeping its number $s$ of pair-days. Seen as a graph, the
+pilots are the nodes and the pair-days the edges.
+
+\paragraph{Loyalty of each pilot.} For the \StNwPilots{} pilots with $s\ge\StNwSMin$ pair-days, $k$
+is the number of distinct partners over their $s$ pair-days, in the data and in each draw. The
+randomized probability integral transform of the data among the $N$ draws is
+\begin{equation}\label{eq:pit}
+q=\frac{\#\{k_{\rm draw}<k\}+U\,\big(\#\{k_{\rm draw}=k\}+1\big)}{N+1},\qquad U\sim\mathrm{Uniform}(0,1).
+\end{equation}
+Without loyalty $k$ and the draws are exchangeable and $q$ is uniform, with density 1; loyalty,
+fewer distinct partners than at random, moves $q$ toward 0. A general habit shifts the whole
+histogram; a core of loyal pilots makes a spike at 0 over a flat rest. We split the pilots by their
+$s$: $s\le\StNwEdgeLow$, $\StNwEdgeLow<s\le\StNwEdgeHigh$ and $s>\StNwEdgeHigh$.
+
+\paragraph{Clubs.} A pair is repeated if it meets on two or more days. The excess of pair-days on
+repeated pairs is the observed number minus the mean of the null, split by whether the two flights
+of the day are of the same club or of different clubs (the club is unknown for a negligible share).
+
+\paragraph{Likeness.} The experience $E$ of a pilot is its number of earlier flights in the catalog
+at the date, taken as $x=\log_{10}(1+E)$ as in Section~\ref{sec:leaders}. Each pair-day counts in
+both directions. We follow the mean $x$ of the partner against the own $x$ in deciles, and the
+Pearson correlation of $x$ across the two ends. The same is done for the wing class (A~=~1 to
+competition~=~5), with the share of pair-days in the same class. A curve above the null for
+beginners would be mentoring; a steeper curve than the null is assortativity.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/network.pdf}
+\caption{Pilots across days. Left: histogram of the quantile $q$~\eqref{eq:pit} of the distinct
+partners, by class of the number of pair-days of the pilot; grey line: no loyalty. Middle: excess of
+pair-days on repeated pairs, observed minus partners at random, inside and outside clubs.
+Right: mean $x$ of the partner against own $x$, observed and with partners at random. Bars and
+band: 5--95\% of the \StNwDraws{} draws of the null; the observed values are points.}
+\label{fig:network}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Loyalty grows with activity} (Figure~\ref{fig:network}, left): the share of pilots
+        with $q<\StNwQLow$, \StNwQLow{} without loyalty, is \StNwLowFew\%, \StNwLowMid\% and
+        \StNwLowMany\% in the three classes (\StNwPilotsFew, \StNwPilotsMid{} and \StNwPilotsMany{}
+        pilots). Among the occasional pilots a spike at 0 over a flat rest, a small core; among the
+        most active the whole histogram moves, with the median $k$ at \StNwRatioMany{} of its null
+        value (\StNwRatioFew{} and \StNwRatioMid{} in the other classes, \StNwRatioNullMany{} in the
+        draws).
+  \item \textbf{Clubs hold most of the loyalty} (middle): the excess is
+        \StNwExcessSame{} \StNwExcessSameBand{} pair-days inside the same club and
+        \StNwExcessDiff{} \StNwExcessDiffBand{} between clubs, \StNwShareSame\% and \StNwShareDiff\%
+        of it. Of the pair-days on repeated pairs \StNwRealSame\% are inside a club, against
+        \StNwNullSame\% in the null: the clubs hold a little more than their share, and a third of the
+        loyalty crosses clubs.
+  \item \textbf{Pilots fly with pilots of their own experience} (right): the correlation of $x$
+        across the two ends is \StNwCorrX, against \StNwCorrXNull{} \StNwCorrXNullBand{} at random.
+        There is no mentoring: the partners of the least experienced decile have $x=\StNwBeginner$,
+        against \StNwBeginnerNull{} \StNwBeginnerNullBand{} at random, and \StNwVeteran{} against
+        \StNwVeteranNull{} \StNwVeteranNullBand{} in the most experienced.
+  \item \textbf{The wing class is more alike still}: the correlation is \StNwCorrWing{} against
+        \StNwCorrWingNull{} \StNwCorrWingNullBand, and \StNwSameWing\% of the pair-days are in one
+        class, against \StNwSameWingNull\% \StNwSameWingNullBand. Similar wings may keep two gliders
+        together longer through their speed: a hypothesis that these data do not test.
+\end{itemize}
+
+\paragraph{What we keep.} Pilots come back to the same partners, and the return is not the same for
+everyone: a small core among the occasional pilots, the habit of most among the active ones. Clubs
+hold most of it and a third crosses them. Pilots fly with pilots of a similar experience and
+wing class more than who flies where and when gives, and beginners do not fly with the most
+experienced more than chance gives. The names of the catalog are the limit: homonyms join, and a
+pilot who changes name splits.
+
 \subsection{What the data support}\label{sec:conclusions}
 
-\noindent
-\begin{minipage}[t]{0.49\textwidth}
-\textbf{Supported}
+\paragraph{Two pilots} (Section~\ref{sec:pilots}).
+\begin{itemize}
+  \item group pilots keep the same pace: their delay wanders half as fast as that of two pilots
+        kept in contact by chance, and they stay closer after the contact;
+  \item in glide the follower turns where the head turned, the delay later (a peak at
+        $\tau=\StHdPeakThree$~s for $\ell=\StHdLThree$~s), and no response at short lags appears;
+        close pilots share the line more than chance pairs do;
+  \item not supported: a spring that pulls pilots back, since the pull is about that of chance
+        contacts selected the same way.
+\end{itemize}
+
+\paragraph{The group} (Section~\ref{sec:group}).
 \begin{itemize}
   \item groups are mostly pairs; large ones are strings along the route that change members every
         few minutes, while the episode lasts about an hour;
-  \item group pilots keep the same pace: their delay wanders half as fast as that of two pilots
-        kept in contact by chance, and they stay closer after the contact;
   \item the size distribution follows from one pilot joining or leaving at a time; its heavy tail
         from members of larger groups leaving less often;
-  \item the lead changes a few times per hour, mostly as the group enters or leaves a thermal,
-        and goes more often to the experienced pilot on the higher wing; within a group no pilot
-        holds it much longer than random hand-overs give;
   \item the longer a pair has lasted, the less it separates, beyond lasting partnerships; joins
         come in the first minutes of an episode;
   \item in a thermal a group closes up like an accordion at fixed delays; in glide it opens after
         the thermal, along lines closer than those of chance pairs;
+  \item the lead changes a few times per hour, mostly as the group enters or leaves a thermal,
+        and goes more often to the experienced pilot on the higher wing; within a group no pilot
+        holds it much longer than random hand-overs give;
   \item followers leave a thermal at about the leader's height, a few metres lower; who stays
         longer leaves higher, and the first to leave leads the next glide;
-  \item pilots return to the same partners and to their club mates more than who flies where and
-        when explains.
+  \item not supported: that the shape of a group (triangle or chain, complete or tree) changes how
+        its pilots fly; a social rank from the order in a group, since a line along the route is
+        geometry; a life cycle of the episode, since members do not leave more as it ages; that
+        height gained in a thermal gives the lead; a fan that opens across the route to search in
+        glide and closes before the next thermal.
 \end{itemize}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\textbf{Not supported}
+
+\paragraph{Between groups} (Section~\ref{sec:between}).
 \begin{itemize}
-  \item a spring that pulls pilots back: the pull is about that of chance contacts selected the
-        same way;
-  \item that the shape of a group (triangle or chain, complete or tree) changes how its pilots fly;
-  \item a social rank from the order in a group: a line along the route is geometry;
-  \item a life cycle of the episode: members do not leave more as it ages;
-  \item that height gained in a thermal gives the lead: the highest to leave heads the next glide
-        as often as chance;
-  \item a fan that opens across the route to search in glide and closes before the next thermal;
-  \item that keeping pace means following: the surrogate pairs fly at another hour, so pilots in
-        the same air at the same time may share the pace without seeing each other;
-  \item pilots are names of the catalog: homonyms join, a pilot who changes name splits.
+  \item a glider climbing right then adds little to the chance that a pilot starts to climb where
+        it climbs: the ratio to markers shifted by \StMkNear~min is \StMkNowGroup{} for group
+        members and \StMkNowSolo{} for solo pilots;
+  \item groups are joined more often than solo gliders, and almost all of the excess is the number
+        of gliders a group offers: over independent chances \StEnObsExpSoloGroup{} for solo-group and
+        \StEnObsExpGroupGroup{} for group-group passes.
 \end{itemize}
-\end{minipage}
+
+\paragraph{Pilots across days} (Section~\ref{sec:days}).
+\begin{itemize}
+  \item pilots return to the same partners and to their club mates more than who flies where and
+        when explains; loyalty is a small core among the occasional pilots and the habit of most
+        of the active ones, and \StNwShareDiff\% of its excess pair-days cross clubs;
+  \item pilots fly with pilots of a similar experience and wing class more than chance gives, and
+        beginners are not paired with veterans more than chance gives.
+\end{itemize}
+
+\paragraph{What the data cannot tell.}
+\begin{itemize}
+  \item whether the shared pace is following: the surrogate pairs fly at another hour, and a
+        follower who retraces the head's track gives the same signal as two pilots in the same air;
+  \item whether a start that follows a marker is marking or two pilots finding one active thermal;
+        the test sees marking only from within about \StMkReach~km, and only uploaded tracks are
+        seen, so the neighbours are undercounted and the effects diluted;
+  \item whether the likeness in wing class is physical, similar speeds keeping two gliders
+        together longer;
+  \item who a pilot is beyond the name of the catalog: homonyms join, a pilot who changes name
+        splits.
+\end{itemize}
 
 \medskip
 One caveat: in a thermal the altitude fixes $\ell^*(t)$ to about a turn, 20~s

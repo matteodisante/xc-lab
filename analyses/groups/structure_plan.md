@@ -249,6 +249,15 @@ the loyalty crosses clubs. D3: experience assortative (corr 0.238 against 0.160-
 **Dropped:** degree profile per episode (three episodes in four are pairs, and its shape follows from
 the definition), generic centralities.
 
+## Note (2026-11-07)
+
+Every study of the plan is in the note, ordered as the outline: Two pilots (cohesion, headings), The
+group (unchanged), Between groups (marking, encounters, with a TikZ scheme of the marking test),
+Pilots across days (partners with the new null, habitual leaders pointer, network);
+"What the data support" rewritten by part with what the data cannot tell. Numbers through
+`structure_tables.py` (`StHd*`, `StMk*`, `StEn*`, `StNw*`). Not compiled: the user compiles and reads.
+Open, left as they are: other-group markers below 1 for group members (C1).
+
 ## Order and workflow
 
 Step 0, then B1 and B3, B2, A2, D, C. For each study: design and review with Opus; implementation in a

@@ -16,7 +16,7 @@ The note studies the groups in themselves: not the method that builds them (that
 - `group_structure.pdf`, built from `group_structure.tex` and `sections/`: the note. It reads the
   labels of the note `methods/group-identification` as `gi-<label>` (package `xr-hyper`), which exist once
   that note has been compiled; the note reads this one as `gs-<label>`.
-- `sections/structure.tex`: the study; appendices `graphs.tex` (graph terms of shape and order),
+- `sections/structure.tex`: the study, in four parts (two pilots, the group, between groups, pilots across days); appendices `graphs.tex` (graph terms of shape and order),
   `models.tex` (Ornstein–Uhlenbeck and birth–death chain), `evidence.tex` (phase, hour, habitual
   leaders).
 - `figures/structure/`: copies of the figures of the analyses. `assessment_structure.pdf` is read
@@ -26,6 +26,6 @@ The numbers are macros written by the scripts of `..`
 (`vs-solo/generated/macros.tex` and `structure_macros.tex`).
 
 ```bash
-cp ../out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission,age,breathing,glide,rotation,exits}.pdf figures/structure/   # after the analyses
+cp ../out/d120_eh500_ez300_th45_g120_q0.1/{mechanisms_phases,mechanisms_hours,cohesion,chains,hierarchy,mechanisms_habitual,partners,fission,age,breathing,glide,rotation,exits,headings,marking,encounters,network}.pdf figures/structure/   # after the analyses
 latexmk -pdf group_structure.tex
 ```
