@@ -199,6 +199,19 @@ upper bound as shifted markers leave their flights). Marking from within about 1
 speed) is a few percent at most; marking seen from farther falls in the null too. Dropped: the ratio
 at large shifts (about 2 at 45 min), mostly dilution. Oddity left open: other-group markers below 1
 for group members (groups in file along one route pass a thermal minutes apart?).
+*C3 done (2026-11-06, `encounters.py`):* unit passes (a group or a solo glider; pair passes of the same
+two units that overlap are one) within R_ENC = 1946 m (95th percentile of the distance at the start of
+the pair intervals), runs closer than the run's gap merged, genuine approaches only (R_ENC apart the
+instant before), no earlier contact between the units that day, headings within theta_max at the
+closest pair: 172 361 solo-solo, 44 050 solo-group, 4410 group-group. Joined: a pair interval between
+the units starts during the pass or within delta after it. Shares joined 0.011, 0.037, 0.091; flat in
+d_min for solo-solo, steeply falling for the others (group-group 0.20 below 243 m, 0.02 at 1.9 km).
+Ratios to solo-solo (standardised over d_min) 3.05 [2.88, 3.21] and 7.33 [6.64, 8.13], but a unit pass
+offers n*m member pairs: against independent chances, 1 - (1 - p_ss)^(nm), an upper bound on the
+mechanical part, solo-group 1.23 [1.16, 1.29] (solo-pair 1.42 [1.33, 1.51], solo-3+ 1.05 [0.97, 1.12]),
+group-group 1.04 [0.96, 1.15]. Groups are larger targets; beyond their number only pairs draw a solo
+pilot a little more. Joining needs the same level (|dz| above eps_z: ratios below 1). Dropped first
+versions: single flights as units (n*m passes per encounter) and a join window T = 1.7 h.
 
 **D. Pilot network.** Nodes: named pilots; edges: pair-days. Degree and strength over the number of
 flights; communities against clubs (NMI); assortativity by experience and wing class. Null: the

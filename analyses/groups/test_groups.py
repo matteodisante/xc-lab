@@ -16,6 +16,7 @@ import budget  # noqa: E402
 import decompose  # noqa: E402
 import decomposition  # noqa: E402
 import describe  # noqa: E402
+import encounters  # noqa: E402
 import exits  # noqa: E402
 import glide  # noqa: E402
 import headings  # noqa: E402
@@ -1987,3 +1988,129 @@ def test_marking_the_contact_and_the_kind_of_the_pilot_are_read_at_t_minus_dt_an
     n, marks, lost = run(1300)  # already together at 1380
     assert n.tolist() == [2, 0] and marks[0, 2, 0] == 0  # both start as group members and neither marks the other
     assert lost.tolist() == [0, 1]  # the start of 10 at 1030 is within 120 s of the first instant 1000
+
+
+def encounter_points():
+    """Close points of one pair (key 7) at 100-140 s and 300-320 s with a pair interval at [120, 135)."""
+    t = np.r_[np.arange(100, 145, 5), np.arange(300, 325, 5)]
+    d = np.r_[np.linspace(900, 100, 9), [500, 400, 300, 200, 100]]
+    return np.full(len(t), 7), t, d, {7: np.array([[120, 135]])}
+
+
+def test_encounters_a_pass_is_the_run_of_instants_within_the_radius_without_a_pair_interval():
+    key, t, d, iv = encounter_points()
+    p = encounters.passes(key, t, d, iv, 5, 10)
+    assert p["start"].tolist() == [100, 135, 300] and p["end"].tolist() == [115, 140, 320]  # the interval cuts the first run
+    assert p["d"].tolist() == [d[3], d[8], 100.0] and (t[p["i"]] == [115, 140, 320]).all()  # the closest point of each run
+    assert encounters.passes(key, t, d, {}, 5, 10)["start"].tolist() == [100, 300]
+
+
+def test_encounters_runs_of_a_pair_separated_by_less_than_the_gap_are_one_pass():
+    key, t, d, iv = encounter_points()
+    assert encounters.passes(key, t, d, iv, 5, 15)["start"].tolist() == [100, 135, 300]  # 15 s missing at the interval: not less than 15
+    p = encounters.passes(key, t, d, iv, 5, 16)
+    assert p["start"].tolist() == [100, 300] and p["end"].tolist() == [140, 320]
+    assert encounters.passes(key, t, d, iv, 5, 156)["start"].tolist() == [100]  # 155 s missing before 300
+    assert encounters.passes(key, t, d, iv, 5, 155)["start"].tolist() == [100, 300]
+    two = encounters.passes(np.r_[key, key + 1], np.r_[t, t], np.r_[d, d], {}, 5, 1000)
+    assert two["start"].tolist() == [100, 100]  # never across two pairs
+
+
+def test_encounters_an_approach_starts_from_afar_with_both_flights_there_at_the_instant_before():
+    f, t = np.array([0, 0, 1, 1]), np.array([95, 100, 95, 100])
+    xyz = np.array([[0.0, 0, 0], [0, 0, 0], [3000, 0, 0], [100, 0, 0]])
+    assert encounters.genuine(xyz, f, t, np.array([1]), np.array([3]), 2000, 5).tolist() == [True]
+    xyz[2] = [100, 0, 0]  # already close at 95 s: two gliders that start together
+    assert encounters.genuine(xyz, f, t, np.array([1]), np.array([3]), 2000, 5).tolist() == [False]
+    f, t = np.array([0, 0, 1]), np.array([95, 100, 100])  # no position of the second at 95 s
+    assert encounters.genuine(xyz[:3], f, t, np.array([1]), np.array([2]), 2000, 5).tolist() == [False]
+
+
+def test_encounters_the_pair_passes_of_two_units_that_overlap_are_one_unit_pass_of_its_closest_pair():
+    ua, ub = np.array([3, 3, 3, 4, -6]), np.array([-6, -6, -6, -6, 3])  # unit 3 (a group) and the solo -6, in either order
+    start, end = np.array([100, 150, 400, 100, 255]), np.array([200, 260, 450, 120, 300])
+    d = np.array([300.0, 100, 50, 10, 200])
+    closest, s, e = encounters.merge_units(ua, ub, start, end, d)
+    assert closest.tolist() == [1, 2, 3] and s.tolist() == [100, 400, 100] and e.tolist() == [300, 450, 120]
+    assert encounters.merge_units(ua[:0], ub[:0], start[:0], end[:0], d[:0])[0].size == 0
+
+
+def encounter_date(delta=120, intervals=None, groups=None):
+    """One date, flights 10 and 11 side by side (100 m apart, 300 m of altitude) on the same heading:
+    11 comes from 5000 m behind at 50 m/s until it is level with 10 at 1100 s; the pass is its
+    time within 2000 m, from 1065 s."""
+    t = np.arange(1000, 1305, 5)
+    ya = 10.0 * (t - 1000)
+    yb = ya - np.maximum(5000 - 50.0 * (t - 1000), 0)
+    g = pd.concat([pd.DataFrame({"f": f, "t": t, "X": x, "Y": y, "Z": 0.0, "z": z}) for f, x, y, z in ((0, 0.0, ya, 1000.0), (1, 100.0, yb, 1300.0))])
+    day = pd.DataFrame(groups or {"group_id": [], "t_start": [], "t_end": [], "members": []})
+    p = {"step": 5, "gap": 120, "theta_max": 45.0, "delta": delta}
+    return encounters.one_date(g.reset_index(drop=True), np.array([10, 11]), intervals or {}, day, 2000.0, p)
+
+
+def test_encounters_joined_needs_an_interval_during_the_pass_or_within_delta_after_its_end():
+    key = 10 * encounters.PAIR + 11
+    cut = {key: np.array([[1150, 1400]])}  # the interval cuts the pass at 1145 and covers the rest of the tracks
+    out, c = encounter_date(intervals=cut)
+    assert out["type"].tolist() == [0] and out["d"].tolist() == [100.0] and np.allclose(out["dz"], 300)
+    assert out["joined"].tolist() == [True] and c.tolist()[:4] == [1, 0, 0, 1]  # 1150 is within 120 s of 1145
+    assert encounter_date(5, cut)[0]["joined"].tolist() == [True]  # 1150 = 1145 + 5
+    assert encounter_date(4, cut)[0]["joined"].tolist() == [False]
+    assert encounter_date()[0]["joined"].tolist() == [False]  # never joins
+    out, c = encounter_date(intervals={key: np.array([[1150, 1250]])})  # a break shorter than the gap does not end the pass
+    assert c.tolist()[:4] == [1, 0, 0, 1] and out["joined"].tolist() == [True]
+
+
+def test_encounters_an_earlier_interval_between_the_units_makes_the_pass_no_first_approach():
+    out, c = encounter_date(intervals={10 * encounters.PAIR + 11: np.array([[1000, 1040]])})
+    assert len(out["d"]) == 0 and c[encounters.COUNTS.index("not_first_approach")] == 1
+
+
+def test_encounters_the_units_are_the_groups_of_the_first_instant_and_any_member_pair_can_join():
+    row = {"group_id": [3], "t_start": [900], "t_end": [2000], "members": [[10, 12]]}
+    out, c = encounter_date(intervals={11 * encounters.PAIR + 12: np.array([[1200, 1300]])}, groups=row)
+    assert out["type"].tolist() == [1] and out["joined"].tolist() == [True]  # 12, a member of 10's group, links to 11
+    out, c = encounter_date(groups={**row, "members": [[10, 11]]})
+    assert len(out["d"]) == 0 and c[encounters.COUNTS.index("same_unit")] == 1  # two members of one group
+
+
+def test_encounters_the_heading_comes_from_the_neighbouring_instants_and_the_close_pairs_from_one_instant():
+    f, t = np.repeat([0, 1], 3), np.tile([0, 5, 10], 2)
+    xyz = np.array([[0, 0, 0], [10, 0, 0], [20, 0, 0], [0, 0, 0], [0, 10, 0], [0, 20, 0]], float)
+    u = encounters.heading(xyz, f, t, np.array([1, 4, 0]), 5)
+    assert u[:2].tolist() == [[20, 0, 0], [0, 20, 0]] and np.isnan(u[2]).all()  # none at the first instant of a flight
+    assert np.allclose(encounters.angle(u[:1], u[1:2]), 90) and np.isnan(encounters.angle(u[:1], np.zeros((1, 3))))
+    g = pd.DataFrame({"f": [0, 1, 2, 3], "t": [0, 0, 5, 5], "X": [0.0, 100, 50, 5000], "Y": 0.0, "Z": 0.0})
+    a, b, dist = encounters.close_points(g, 200, 5)
+    assert list(zip(a, b)) == [(0, 1), ] and np.allclose(dist, 100)  # row 2 is at another instant, row 3 is far
+
+
+def test_encounters_the_standardisation_weighs_the_bins_with_the_solo_solo_passes():
+    n = np.array([[10.0, 10, 10], [5, 15, 0], [1, 1, 1]])  # solo-solo, solo-group, group-group; the third bin has no solo-group
+    j = np.array([[1.0, 3, 9], [1, 9, 0], [0, 0, 0]])
+    assert np.isclose(encounters.standardised(n, j, 1), (10 * 0.2 + 10 * 0.6) / (10 * 0.1 + 10 * 0.3))  # 2, where the crude ratio is 2.5
+    q = {"date": np.zeros(3, int), "type": np.zeros(3, int), "d": np.full(3, 100.0), "dz": np.array([0, 400, 0.0]),
+         "joined": np.array([True, True, False]), "n": np.ones(3, int), "m": np.ones(3, int)}
+    nk, jk = encounters.tally(q, 1, 800.0, 300.0, np.array([1]))  # 100 m is the second of 8 bins of 100 m
+    assert nk[0, 0, :, 1, 0].tolist() == [2, 1] and jk[0, 0, :, 1, 0].tolist() == [1, 1]  # |dz| below / above eps_z
+    nk, jk = np.zeros((20, 3, 2, encounters.N_BINS, 1)), np.zeros((20, 3, 2, encounters.N_BINS, 1))
+    nk[...] = 100
+    jk[:, 0], jk[:, 1], jk[:, 2] = 10, 20, 5
+    out = encounters.summarize(nk, jk, np.array([1]), np.random.default_rng(0))["all"]
+    assert out["passes"]["solo-solo"] == 20 * 2 * 8 * 100 and np.isclose(out["share"]["solo-group"]["value"], 0.2)
+    assert np.isclose(out["ratio"]["solo-group"]["value"], 2) and np.isclose(out["ratio"]["group-group"]["band"][1], 0.5)
+
+
+def test_encounters_the_expected_joins_are_the_independent_chances_of_the_member_pairs():
+    ks = np.array([1, 2, 6])
+    nk, jk = np.zeros((3, 2, encounters.N_BINS, 3)), np.zeros((3, 2, encounters.N_BINS, 3))
+    nk[0, :, 0, 0], jk[0, :, 0, 0] = 100, 10  # solo-solo: P = 0.1 in the first bin, both |dz| classes
+    nk[1, 0, 0, 1], jk[1, 0, 0, 1] = 50, 19  # solo-group of 2: 1 - 0.9^2 = 0.19 expected each, 9.5 in all
+    nk[1, 1, 0, 2], jk[1, 1, 0, 2] = 10, 4  # solo-group of 6, |dz| above: 1 - 0.9^6 = 0.4686
+    nk[1, 1, 3, 1], jk[1, 1, 3, 1] = 5, 5  # a bin without solo-solo passes: left out of both sums
+    ratio, obs, exp = encounters.over_expected(nk, jk, ks, 1, (0, 1), True)
+    assert np.isclose(exp, 50 * 0.19 + 10 * (1 - 0.9 ** 6)) and obs == 23 and np.isclose(ratio, 23 / exp)
+    assert np.isclose(encounters.over_expected(nk, jk, ks, 1, (0,), False)[0], 2)  # 19 over 9.5 in the |dz| below class
+    assert np.isclose(encounters.over_expected(nk, jk, ks, 1, (0, 1), True, ks == 2)[0], 2)  # the groups of 2
+    assert np.isclose(encounters.over_expected(nk, jk, ks, 1, (0, 1), True, ks >= 3)[0], 4 / (10 * (1 - 0.9 ** 6)))
+    assert np.isclose(encounters.over_expected(nk, jk, ks, 0, (0, 1), True)[0], 1)  # solo-solo against itself
