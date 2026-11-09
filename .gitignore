@@ -12,6 +12,9 @@ out/
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+*.bbl
+*.blg
+*Notes.bib
 *.nav
 *.snm
 *.vrb

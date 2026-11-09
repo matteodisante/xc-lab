@@ -1,0 +1,68 @@
+\documentclass[aps,prl,onecolumn,superscriptaddress,nofootinbib]{revtex4-2}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\input{../vs-solo/generated/comparisons/macros.tex}
+\let\tauStar\relax
+\input{../vs-solo/generated/macros.tex}
+\input{../vs-solo/generated/structure_macros.tex}
+\input{generated/macros.tex}
+
+\newcommand{\pending}[1]{\textcolor{red}{[#1]}}
+\newcommand{\Hloc}{H_\mathrm{loc}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\begin{document}
+
+\title{Supplemental Material: Together, glider pilots find the way}
+\maketitle
+
+\section{Data}
+\pending{The FFVL archive, cleaning, loggers of at most \LtLoggerMax~s, the opening of a flight and
+the threshold \MinOpening; source: vs-solo/comparisons, sections flights, declared, opening.}
+
+\section{Phases}
+\pending{The labelling of Ref.~\cite{Vilpellet2026} at 1~Hz, tracks up to 5~s splined to 1~s;
+climb, search, transition.}
+
+\section{Groups}
+\pending{The identification rule step by step, with one scheme: contacts on the path within
+\LtDeltaMin~min, \LtEpsH~m, \LtEpsZ~m, headings within \LtTheta$^\circ$ in glide; the time-shift
+null model and the choice of $\tau^* = \tauStar$~min at \LtNullShare\%; configurations, groups,
+episodes; source: methods/group-identification/group\_identification.tex.}
+
+\section{Persistence}
+\pending{Time-averaged MSD on a 10-s grid, $H$ and $\Hloc$ within $\pm 0.25$ decades, pieces of at
+least $\tau/0.8$, equal weight per flight; the datasets 1000 and 2760.}
+
+\section{Uncertainty}
+\pending{Two-way bootstrap of pilots and blocks~\cite{Cameron2011}, the coverage check on synthetic
+data (\CovNewMin--\CovNewMax\%); source: comparisons, appendix H.}
+
+\section{The three designs}
+\pending{Raw; same route (route match, calipers, the counts, selection $A - S|A$); same flight
+(windows, $D_\mathrm{in}$, $D_\mathrm{out}$, $g$, $d_w$, window length, controls); the opposite
+signs of glide speed and height lost per km between the same-route and same-flight designs.}
+
+\section{Tail of transitions}
+\pending{Hill estimator~\cite{Hill1975}, the threshold~\cite{Clauset2009}, bands; descriptors of
+the long transitions.}
+
+\section{Terrain}
+\pending{Hammond classes~\cite{Hammond1964} in the computer version of Ref.~\cite{Dikau1991} on the
+IGN BD ALTI at 25~m resampled to 200~m; the class of a piece; flights that change class.}
+
+\section{Group structure}
+\pending{Leaders and wing, heading correlations, marking of places, encounters, partners, with
+their null models.}
+
+\section{Robustness}
+\pending{Calipers, radius and cover, years left out, experience, group size, hang gliders.}
+
+\bibliography{letter}
+
+\end{document}
