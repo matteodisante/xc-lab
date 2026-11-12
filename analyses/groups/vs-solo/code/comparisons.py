@@ -115,6 +115,8 @@ LABEL = {HK: r"$\Hloc(1000~\mathrm{s})$", HQ: r"$\Hloc(1840~\mathrm{s})$", "time
 DIG = {HK: 3, HQ: 3, FITK: 3, FITT: 3, "time in climb (%)": 1, "time in search (%)": 1, "searches that end in a climb (%)": 1,
        "climbs per hour": 2, "climb rate (m/s)": 2, "glide speed (km/h)": 1, "height lost per km of glide (m/km)": 0}
 DDIG = {**DIG, "climb rate (m/s)": 3, "climbs per hour": 2}  # digits of a difference
+XC = "cross-country speed over 30 min (km/h)"  # not in STAT7: only the runs that measured it have it
+TAG[XC], LABEL[XC], DIG[XC], DDIG[XC] = "Xc", XC, 1, 1
 DS = {"1000": "One", "2760": "Two", "longest": "Long"}  # dataset tags of the macros: to 1000 s, to 2760 s, the longest lag
 POP = ("S", "A", "G")
 POPTEX = {"S": r"$\Sl$", "A": r"$\A$", "G": r"$\G$"}
@@ -126,6 +128,11 @@ CALIPER_TEXT = {"month1_hour1_class": r"month $\pm1$, hour $\pm1$, same class", 
 CELL_TEXT = {"none": r"$\emptyset$", "R": "R", "T": "T", "R+T": "RT", "W": "W", "R+W": "RW", "T+W": "TW", "R+T+W": "RTW"}
 LEVELS = ("beginners", "experienced", "all")
 GAPTAG = {"G - S": "", "A - S": "AS", "G - A": "GA"}  # the raw gaps of raw.py and their macro suffixes
+
+
+def with_xc(entry):
+    """STAT7, and XC when `entry` (a dict by statistic) has it."""
+    return [*STAT7, *([XC] if XC in entry else [])]
 
 
 def piece(x):
@@ -229,6 +236,14 @@ def raw_tex(r):
         for phase, tag in PHASE.items():
             macro(f"RawRuns{tag}{p}", num(r["survival"][p][phase]["runs"], 0))
     macro("NBoot", num(r["n_boot"], 0))
+    if "xc" in r:  # on the pieces of at least performance.XC_S / SUPPORT s
+        for p in POP:
+            x = r["xc"][p]
+            macro(f"RawXcFlights{p}", num(x["flights"], 0))
+            mac_value(f"RawStatXc{p}", x["average first"][XC], DIG[XC])
+            macro(f"RawSumXc{p}", num(x["ratio of sums"][XC]["value"], DIG[XC]))
+        for gap, tag in GAPTAG.items():
+            mac_value(f"RawGapXc{tag}", r["xc gaps"][gap], DDIG[XC], True)
 
 
 def counts_tex(c):
@@ -277,7 +292,7 @@ def matched_tex(m):
     for side, tag in SIDES.items():
         n = a["counts"]["G" if side in ("G", "S|G") else "A"]
         sd = a["sides"][side]
-        for q in (HK, HQ, FITK, FITT, *STAT7):
+        for q in (HK, HQ, FITK, FITT, *with_xc(sd)):
             mac_value(f"MatSide{TAG[q]}{tag}", sd[q], DIG[q])
         pieces = n["pieces"] if side in ("G", "A") else n["controls"]
         macro(f"MatSidePieces{tag}", num(pieces, 0))
@@ -288,7 +303,7 @@ def matched_tex(m):
     dn = {"G - S|G": ("G", r"$\G-\Sl\mid\G$"), "A - S|A": ("A", r"$\A-\Sl\mid\A$"), "(G - S|G) - (A - S|A)": ("D", "difference")}
     lines.append(r"\midrule")
     for k, (tag, text) in dn.items():
-        for q in (HK, HQ, FITK, FITT, *STAT7):
+        for q in (HK, HQ, FITK, FITT, *with_xc(d[k])):
             mac_value(f"MatDelta{TAG[q]}{tag}", d[k][q], DDIG[q], True)
             macro(f"MatDelta{TAG[q]}{tag}Years", bracket(d[k][q]["years"], DDIG[q], True))
         lines.append(f"{text} & & {cell(d[k][FITK], 3, True)} & {cell(d[k][HK], 3, True)} & {cell(d[k][HQ], 3, True)} \\\\")
@@ -310,6 +325,10 @@ def matched_tex(m):
     for k, (tag, _) in dn.items():
         macro(f"MatZero{tag}", num(sum(zero_in(d[k][q]) for q in QUANT), 0))
     macro("MatNQuant", num(len(QUANT), 0))
+    for p in ("G", "A"):
+        if a.get("xc counts", {}).get(p):
+            for k, v in a["xc counts"][p].items():
+                macro(f"MatXc{k.capitalize()}{p}", num(v, 0))
     rob = m["robustness"]
     macro("MatRobLines", num(len(rob), 0))
     same = rob["main"]["long T"]  # the lines of the main long series share its window; the others are cut shorter
@@ -428,7 +447,7 @@ def prepost_tex(p, m):
     d = p["differences"]
     CMP = {"D_in": "In", "D_out": "Out", "post - pre": "PP", "g": "G", "d w": "Dw", "ctrlA2 - ctrlA1": "CA", "ctrlS2 - ctrlS1": "CS"}
     for k, tag in CMP.items():
-        for q in (HK, *STAT7):
+        for q in (HK, *with_xc(d[k])):
             mac_value(f"Pre{tag}{TAG[q]}", d[k][q], DDIG[q], True)
         macro(f"PreEventsMSD{tag}", num(d[k]["events (MSD)"], 0))
         macro(f"PreEventsPhase{tag}", num(d[k]["events (phase)"], 0))
@@ -447,6 +466,29 @@ def prepost_tex(p, m):
         macro(f"PreVsInside{t}", "yes" if d2[q]["band"][0] <= g[q]["value"] <= d2[q]["band"][1] else "no")
         lines.append(f"{LABEL[q]} & {cell(g[q], DDIG[q], True)} & {cell(d2[q], DDIG[q], True)} & {signed(diff, DDIG[q])} & {'yes' if g[q]['value'] * d2[q]['value'] > 0 else 'no'} \\\\")
     write("prepost_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    if "mock" in p:
+        mock_tex(p["mock"])
+
+
+def mock_tex(m):
+    """Macros of the mock events of prepost.py: per variant ("Site" in the names of the same-site one), the effects of
+    the mock events (Mock: g and d w), of the real events that have one (MockSubset) and their difference (Net)."""
+    macro("PreMockK", num(m["mocks per event"], 0))
+    macro("PreMockPool", num(m["pool per event"], 0))
+    macro("PreMockCaliper", CALIPER_TEXT[m["caliper"]])
+    for variant, v in m["variants"].items():
+        s, c = ("Site" if variant == "same site" else ""), v["counts"]
+        macro(f"PreMock{s}Events", num(c["mock events (MSD)"], 0))
+        macro(f"PreMock{s}RealEvents", num(c["real events with a mock event (MSD)"], 0))
+        macro(f"PreMock{s}RealAll", num(c["real events with the four windows (MSD)"], 0))
+        macro(f"PreMock{s}Flights", num(c["solo flights (MSD)"], 0))
+        macro(f"PreMock{s}EventsPhase", num(c["mock events (phase)"], 0))
+        macro(f"PreMock{s}RealEventsPhase", num(c["real events with a mock event (phase)"], 0))
+        for kind, key, effects in (("Mock", "mock", {"G": "g", "Dw": "d w"}), ("Net", "real minus mock", {"G": "g"}),
+                                   ("MockSubset", "real events with a mock", {"G": "g"})):
+            for tag, effect in effects.items():
+                for q in (x for x in (HK, *STAT7, XC) if x in v[key][effect]):
+                    mac_value(f"Pre{kind}{s}{tag}{TAG[q]}", v[key][effect][q], DDIG[q], True)
 
 
 def summary_tex(r, m, p):

@@ -30,6 +30,10 @@ logarithm, the slopes and the ratios taken after the means:
     phases   the seven statistics of raw.STATISTICS on the pieces and segments of dataset `1000` that have
              phase time: r = n / T and q = d / T per unit, the control side the mean of r and of q over the
              controls of a piece, stat = sum_g w_g rbar_g / sum_g w_g qbar_g;
+    xc       the cross-country speed over performance.XC_S (the straight-line distance covered in 30 min from every
+             origin, as performance.py) on the pieces and segments of at least performance.XC_S / SUPPORT s, a subset
+             of dataset `1000` (the pieces and controls of the other statistics are those of dataset `1000`);
+             r = xc_m / T and q = origins / T per unit, like the phases, from the positions of each piece or segment;
     survival of climbs, searches that end in a climb and glides (level "all"): the runs of a piece weigh 1,
              those of a control 1 / (controls of its piece), and the bootstrap weights on top.
 
@@ -53,6 +57,7 @@ import budget
 import curves
 import isolated
 import longlags
+import performance
 import raw
 import route
 import survival
@@ -249,6 +254,7 @@ LONG_T = 2760  # s: the longest lag of the long series
 LAGS = longlags.LONG_LAGS[longlags.LONG_LAGS <= LONG_T]
 QUOTED = (1000, 1840)  # s: the lags of the quoted H_loc, on the main and on the long series
 NAMES = list(raw.STATISTICS)
+XC = raw.XC  # on the pieces and segments of at least performance.XC_S / SUPPORT s (xc_series)
 SIDES = ("G", "S|G", "A", "S|A")
 CONTRASTS = ("G - S|G", "A - S|A", "(G - S|G) - (A - S|A)")
 SIDE_STYLE = {"G": (COLORS["group"], "-"), "S|G": (COLORS["solo"], "-"), "A": (COLORS["group_solo"], "-"), "S|A": ("#16427a", "--")}
@@ -299,6 +305,14 @@ class Context:
         return T, np.hstack([np.where(ok, r, 0.0), np.where(ok, q, 0.0)])
 
 
+def xc_of(pos):
+    """The straight-line distance covered in performance.XC_S from every origin of the 10-s positions `pos`, summed,
+    and the number of origins: 0, 0 for a track shorter than that."""
+    k = performance.XC_S // GRID_S
+    d = np.hypot(*(pos[k:].astype(float) - pos[:-k]).T) if len(pos) > k else np.zeros(0)
+    return d.sum(), len(d)
+
+
 class Measured:
     """The MSD at LAGS and the rates of the pieces and of the control segments of the rows `wanted` of a match
     table (the row labels of the table index them)."""
@@ -311,9 +325,13 @@ class Measured:
         g = self.piece
         self.msd_g = np.array([isolated.msd_of(pos(k), LAGS) for k in g])
         self.msd_s = np.array([isolated.msd_of(pos(k, a, b + 1), LAGS) for k, a, b in zip(s, i, j)])
+        self.xc_g = np.array([xc_of(pos(k)) for k in g])
+        self.xc_s = np.array([xc_of(pos(k, a, b + 1)) for k, a, b in zip(s, i, j)])
         self.win_g = (tr["flight"][g], tr["start"][g], tr["start"][g] + (tr["n"][g] - 1) * GRID_S)
         self.win_s = (tr["flight"][s], tr["start"][s] + i * GRID_S, tr["start"][s] + j * GRID_S)
         (self.T_g, self.rq_g), (self.T_s, self.rq_s) = ctx.rates(*self.win_g), ctx.rates(*self.win_s)
+        self.xc_rq_g, self.xc_rq_s = (np.divide(xc, T[:, None], out=np.zeros_like(xc), where=(T > 0)[:, None])
+                                      for xc, T in ((self.xc_g, self.T_g), (self.xc_s, self.T_s)))
 
     def at(self, sel):
         """Positions of the pieces of `sel` (sorted unique) and of its rows in the arrays."""
@@ -371,17 +389,30 @@ def phase_series(ctx, M, sel, years):
     stat = scale * sum_g w_g rbar_g / sum_g w_g qbar_g. Arrays (draws, statistics)."""
     sel = phased(M, sel)
     _, pos, rows = M.at(sel)
-    boot, year = run_engine(ctx, sel, M.rq_g[pos], M.rq_s[rows], years)
-    k = len(NAMES)
+    return ratio_series(ctx, sel, M.rq_g[pos], M.rq_s[rows], ctx.scale, len(pos), years)
+
+
+def ratio_series(ctx, sel, a, b, scale, pieces, years):
+    """The ratio estimator of phase_series for the units of `sel` with the columns (r, q) `a` (pieces) and `b`
+    (controls) of the statistics of `scale`."""
+    boot, year = run_engine(ctx, sel, a, b, years)
+    k = len(scale)
 
     def ratios(sums):
         if sums is None:
             return None
         with np.errstate(invalid="ignore", divide="ignore"):
-            return {"group": (ctx.scale[:, None] * sums[0][:k] / sums[0][k:]).T,
-                    "control": (ctx.scale[:, None] * sums[1][:k] / sums[1][k:]).T}
+            return {"group": (scale[:, None] * sums[0][:k] / sums[0][k:]).T, "control": (scale[:, None] * sums[1][:k] / sums[1][k:]).T}
 
-    return {"pieces": int(len(pos)), "controls": int(len(sel)), "boot": ratios(boot), "year": ratios(year)}
+    return {"pieces": int(pieces), "controls": int(len(sel)), "boot": ratios(boot), "year": ratios(year)}
+
+
+def xc_series(ctx, M, sel, years):
+    """The cross-country speed (XC) of the pieces of `sel` and of their controls, as phase_series; `sel` holds the
+    rows whose piece and segment last at least performance.XC_S / SUPPORT s, those with phase time on both sides count."""
+    sel = phased(M, sel)
+    _, pos, rows = M.at(sel)
+    return ratio_series(ctx, sel, M.xc_rq_g[pos], M.xc_rq_s[rows], np.array([performance.STATS[XC][2]]), len(pos), years)
 
 
 def window_runs(ctx, flight, a, b):
@@ -446,6 +477,8 @@ def estimate(ctx, M, table, side, line, levels=LEVEL_NAMES, years=True, survival
         e = {"main": msd_series(ctx, M, main, 1000, years) if len(main) else None, "long_T": T,
              "long": msd_series(ctx, M, of_level(select(t, T, **line), level), T, years) if T else None,
              "phases": phase_series(ctx, M, main, years) if len(main) else None}
+        long_xc = of_level(select(t, performance.XC_S, **line), level)
+        e["xc"] = xc_series(ctx, M, long_xc, years) if len(long_xc) else None
         used = phased(M, main) if len(main) else main
         e["counts"] = counts_of(ctx, main, used, e["long"], side)
         if survival_too and len(main):
@@ -485,6 +518,8 @@ def draws(e):
         for j, name in enumerate(NAMES):
             out[name] = {w: tuple(None if r is None else r[w][:, j] for r in (e["phases"]["boot"], e["phases"]["year"]))
                          for w in ("group", "control")}
+    if e.get("xc") is not None:
+        out[XC] = {w: tuple(None if r is None else r[w][:, 0] for r in (e["xc"]["boot"], e["xc"]["year"])) for w in ("group", "control")}
     return out
 
 
@@ -639,6 +674,7 @@ def run_stats(ctx, table, tables_rho, chosen, tag):
         d = contrasts(g, a)
         result["levels"][level] = {
             "counts": {s: est[s][level]["counts"] for s in ("G", "A")},
+            "xc counts": {s: {k: est[s][level]["xc"][k] for k in ("pieces", "controls")} if est[s][level]["xc"] else None for s in ("G", "A")},
             "long T": {s: est[s][level]["long_T"] for s in ("G", "A")},
             "sides": {label: {m: quoted(draws_[m][which]) for m in draws_} | {"curves": {
                 key: curve_of(est[s][level][key], which) for key in ("main", "long") if est[s][level][key]}}

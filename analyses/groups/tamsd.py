@@ -135,8 +135,9 @@ def _job(flight, fixes, spans, lags, shortest):
     return flight, pieces(fixes, spans, lags, shortest)
 
 
-def measure(discipline, flights, spans, lags=LAGS, shortest=TAU_MAX / SUPPORT):
-    """Pieces of every flight of one discipline, from one pass over its fixes."""
+def measure(discipline, flights, spans, lags=LAGS, shortest=TAU_MAX / SUPPORT, job=_job):
+    """Pieces of every flight of one discipline, from one pass over its fixes; `job` (a module-level function
+    with the arguments of `_job`) returns the pieces of one flight, in the format of `pieces`."""
     ids = flights.loc[flights["discipline"] == discipline].set_index("flight_id")["flight"]
     by_flight = dict(tuple(spans.groupby("flight")))
     rows = []
@@ -151,7 +152,7 @@ def measure(discipline, flights, spans, lags=LAGS, shortest=TAU_MAX / SUPPORT):
             flight = ids.get(str(fixes["flight_id"].iat[0]))
             if flight is None or flight not in by_flight:
                 continue
-            pending.add(pool.submit(_job, flight, fixes, by_flight[flight], lags, shortest))
+            pending.add(pool.submit(job, flight, fixes, by_flight[flight], lags, shortest))
             if len(pending) >= 4 * os.cpu_count():
                 done, pending = wait(pending, return_when=FIRST_COMPLETED)
                 for future in done:

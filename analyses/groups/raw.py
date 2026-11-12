@@ -25,6 +25,7 @@ import curves
 import decompose
 import isolated
 import longlags
+import performance
 import survival
 import tamsd
 import twoway
@@ -43,6 +44,8 @@ STATISTICS = ("time in climb (%)", "time in search (%)", "searches that end in a
 DIGITS = {"time in climb (%)": 1, "time in search (%)": 1, "searches that end in a climb (%)": 1,
           "climbs per hour": 2, "climb rate (m/s)": 2, "glide speed (km/h)": 1, decompose.SINK: 0}
 SOURCES = ("b", "p")  # the terms of budget.py and of performance.py (isolated.phase_stats)
+XC = decompose.XC  # the cross-country speed: on the pieces of at least performance.XC_S / SUPPORT s, from the "x" terms
+XC_DEFS = {"x": {XC: performance.STATS[XC]}}
 SURVIVAL_PHASES = {"climb": "climb", "search": "search that ends in a climb", "transition": "glide"}
 GAPS = {"G - S": ("group", "solo"), "A - S": ("group_solo", "solo"), "G - A": ("group", "group_solo")}
 GAP_COLORS = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
@@ -90,10 +93,10 @@ def unit_terms(tables, defs, pieces):
     return pd.Series(time, index=flights), out
 
 
-def phase_statistics(tables, defs, pieces, block, counts):
-    """The seven statistics of one population on its pieces: the new estimator and the ratio of sums, each
-    with the value and its band over the draws `counts`; and, as "draws", the value and the draws of the new
-    estimator (rows), for the gaps."""
+def phase_statistics(tables, defs, pieces, block, counts, names=STATISTICS):
+    """The `names` (the seven statistics, or XC with XC_DEFS) of one population on its pieces: the new estimator and
+    the ratio of sums, each with the value and its band over the draws `counts`; and, as "draws", the value and the
+    draws of the new estimator (rows), for the gaps."""
     time, sums = unit_terms(tables, defs, pieces)
     time = time[time > 0]
     result = {"flights": int(len(time)), "phase time (h)": float(time.sum() / 3600)}
@@ -106,9 +109,9 @@ def phase_statistics(tables, defs, pieces, block, counts):
             draws.append(pd.DataFrame(d, columns=list(stats)))
         value, draws = pd.concat(value), pd.concat(draws, axis=1)
         result[key] = {name: {"value": float(value[name]), "band": twoway.band(float(value[name]), draws[name].to_numpy())}
-                       for name in STATISTICS}
+                       for name in names}
         if key == "average first":
-            result["draws"] = np.vstack([value[list(STATISTICS)].to_numpy(), draws[list(STATISTICS)].to_numpy()])
+            result["draws"] = np.vstack([value[list(names)].to_numpy(), draws[list(names)].to_numpy()])
     return result
 
 
@@ -240,6 +243,8 @@ if __name__ == "__main__":
         stats[pop] = phase_statistics(tables, defs, pieces, code, counts)
         surv[pop] = survival_curves(tables["b"][tables["b"]["phase"].ne("search") | tables["b"]["found"].eq(1)],
                                     pieces, code, counts)
+    xc = {pop: phase_statistics(tables, XC_DEFS, pieces_of(p, pop, performance.XC_S), code, counts, (XC,)) for pop in POPS}
+    xc_draws = {pop: x.pop("draws") for pop, x in xc.items()}
     budget.plot({pop: {n: stats[pop]["average first"][n] for n in STATISTICS} for pop in POPS}, OUT / "raw_statistics.pdf",
                 {n: (None, None, None, DIGITS[n]) for n in STATISTICS}, "Open paragliders: the seven phase statistics",
                 {pop: NAMES[pop] for pop in POPS}, COLORS)
@@ -254,6 +259,8 @@ if __name__ == "__main__":
         "phase gaps": {gap: {n: twoway.quote(draws[a][:, j] - draws[b][:, j]) for j, n in enumerate(STATISTICS)}
                        for gap, (a, b) in GAPS.items()},
         "phase statistics": {POPS[pop]: s for pop, s in stats.items()},
+        "xc": {POPS[pop]: x for pop, x in xc.items()},
+        "xc gaps": {gap: twoway.quote(xc_draws[a][:, 0] - xc_draws[b][:, 0]) for gap, (a, b) in GAPS.items()},
         "survival": {POPS[pop]: s for pop, s in surv.items()}, "n_boot": tamsd.N_BOOT, "cells": int(len(pilot))}
     (OUT / "raw.json").write_text(json.dumps(result, indent=1))
     for name, d in result["datasets"].items():

@@ -317,13 +317,14 @@ TERMS = sorted({(src, c) for src, num, den, _ in PHASES.values() for c in (num, 
 
 def run_terms(flights):
     """The terms of the runs of the paragliders, by flight and instant of the middle of the run on
-    the flight clock: the frames of budget.py ("b") and of performance.py ("p")."""
+    the flight clock: the frames of budget.py ("b") and of performance.py ("p"), and the cross-country pieces of
+    performance.py ("x": xc_m and xc_origins, t_mid the middle of the piece)."""
     numbers = flights.loc[flights["discipline"] == "para", ["flight_id", "flight"]].astype({"flight_id": str})
     runs = pd.read_parquet(RUNS["para"]).astype({"flight_id": str}).merge(numbers, on="flight_id")
     b = budget.columns(runs)
     b = b.assign(t_mid=(b["t_start"] + b["t_end"]) / 2, search_s=b["found_s"] + b["vain_s"])
     p = pd.read_parquet(CACHE / "performance_terms.parquet")
-    return {"b": b, "p": p[p["xc_origins"] == 0]}
+    return {"b": b, "p": p[p["xc_origins"] == 0], "x": p[p["xc_origins"] > 0]}
 
 
 def window_sums(table, terms, flight, a, b):

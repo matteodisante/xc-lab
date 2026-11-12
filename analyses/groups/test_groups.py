@@ -2114,3 +2114,301 @@ def test_encounters_the_expected_joins_are_the_independent_chances_of_the_member
     assert np.isclose(encounters.over_expected(nk, jk, ks, 1, (0, 1), True, ks == 2)[0], 2)  # the groups of 2
     assert np.isclose(encounters.over_expected(nk, jk, ks, 1, (0, 1), True, ks >= 3)[0], 4 / (10 * (1 - 0.9 ** 6)))
     assert np.isclose(encounters.over_expected(nk, jk, ks, 0, (0, 1), True)[0], 1)  # solo-solo against itself
+
+
+# ---- mock events: the placebo of g
+
+def _mock_world():
+    """One real event (flight 1, group stretch 4000-9000 s, windows of 2400 s) and solo flights around it."""
+    W = 2400
+    events = pd.DataFrame({"episode": [5, 6], "flight": [1, 2], "t_in": [4000.0, 4000.0], "t_out": [9000.0, 9000.0]})
+    solo = pd.DataFrame({  # the four windows need [1600, 11400] in one solo stretch
+        "flight": [10, 11, 12, 13, 14, 15, 16, 17, 17, 18, 19],
+        "a": [0.0, 2000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6500.0, 0.0, 1600.0],
+        "b": [12000.0, 12000.0, 11000.0, 12000.0, 12000.0, 12000.0, 12000.0, 6000.0, 12000.0, 12000.0, 11400.0]})
+    june = _utc("2020-06-15 08:00")[0]
+    utc0 = {1: june, 2: june, 10: june, 11: june, 12: june, 13: june, 14: _utc("2020-12-15 08:00")[0], 15: june + 5 * 3600,
+            16: _utc("2020-07-15 09:30")[0], 17: june, 18: june, 19: june}
+    kind = {f: "B" for f in utc0} | {13: "D", 2: np.nan}
+    info = pd.DataFrame({"utc0": pd.Series(utc0), "kind": pd.Series(kind), "site": pd.Series({f: int(f == 18) for f in utc0} | {1: 0})})
+    return W, events, solo, info
+
+
+def test_mock_events_need_the_four_windows_in_one_solo_stretch_and_the_calipers():
+    W, events, solo, info = _mock_world()
+    rng = np.random.default_rng(0)
+    d = prepost.mock_draws(events, solo, info, W, "month2_hour2_class", rng, first_id=100)
+    # 11 starts too late, 12 ends too early, 13 has another wing class, 14 is six months away, 15 five hours,
+    # 17 has a gap between two stretches; 19 fits exactly; 16 is a month and 1.5 h away, within month 2 and hour 2
+    assert sorted(d["flight"]) == [10, 16, 18, 19] and (d["real"] == 5).all() and (d["real_flight"] == 1).all()
+    assert sorted(d["rank"]) == [0, 1, 2, 3] and d["id"].tolist() == [100, 101, 102, 103]
+    assert (d["t_in"] == 4000).all() and (d["t_out"] == 9000).all()  # flight 2 has no wing level: no mock
+    site = prepost.mock_draws(events, solo, info, W, "month2_hour2_class", rng, same_site=True)
+    assert sorted(site["flight"]) == [10, 16, 19]  # 18 took off elsewhere
+    tight = prepost.mock_draws(events, solo, info, W, "month1_hour1_class", rng)
+    assert sorted(tight["flight"]) == [10, 18, 19]  # 16 is 1.5 h away: the hour caliper of 1 h rejects it
+    assert sorted(prepost.mock_draws(events, solo, info, W, "month2_hour2_class", rng, pool=2)["flight"]) in ([10, 16], [10, 18], [10, 19], [16, 18], [16, 19], [18, 19])
+
+
+def test_mock_draws_are_reproducible_and_stay_under_the_pool():
+    W, events, solo, info = _mock_world()
+    a = prepost.mock_draws(events, solo, info, W, "month2_hour2_class", np.random.default_rng(3), pool=3)
+    b = prepost.mock_draws(events, solo, info, W, "month2_hour2_class", np.random.default_rng(3), pool=3)
+    assert a.equals(b) and len(a) == 3
+
+
+def test_mock_windows_sit_at_the_flight_clock_times_of_the_real_event():
+    W = 2400
+    draws = pd.DataFrame({"real": [5], "real_flight": [1], "flight": [10], "t_in": [4000.0], "t_out": [9000.0], "rank": [0], "id": [77]})
+    w = prepost.mock_windows(draws, W)
+    assert list(w[["flight", "population", "episode", "a", "b"]].itertuples(index=False, name=None)) == [
+        (10, "pre", 77, 1600.0, 4000.0), (10, "start", 77, 4000.0, 6400.0), (10, "end", 77, 6600.0, 9000.0), (10, "post", 77, 9000.0, 11400.0)]
+    # the real windows of the same event, as windows() places them
+    spans = pd.DataFrame({"flight": [1, 1, 1], "population": ["group_solo", "group", "group_solo"], "episode": [-1, 5, -1],
+                          "a": [0.0, 4000.0, 9000.0], "b": [4000.0, 9000.0, 12000.0]})
+    real = prepost.windows(spans, np.random.default_rng(0), W)
+    real = real[real["population"].isin(prepost.STAGES)]
+    assert real.sort_values("a")[["a", "b"]].to_numpy().tolist() == w.sort_values("a")[["a", "b"]].to_numpy().tolist()
+    assert prepost.event_times(real)[["flight", "t_in", "t_out"]].to_numpy().tolist() == [[1, 4000.0, 9000.0]]
+
+
+def test_event_times_keep_the_events_with_the_four_windows():
+    wins = pd.DataFrame({"flight": [1] * 4 + [2] * 3, "population": ["pre", "start", "end", "post", "start", "end", "post"],
+                         "episode": [1] * 4 + [2] * 3, "a": [0.0, 10.0, 20.0, 30.0, 0.0, 5.0, 8.0], "b": [10.0, 20.0, 30.0, 40.0, 5.0, 8.0, 12.0]})
+    e = prepost.event_times(wins)
+    assert e[["episode", "flight", "t_in", "t_out"]].to_numpy().tolist() == [[1, 1, 10.0, 30.0]]
+
+
+def test_valid_mocks_keep_the_first_of_each_real_event_that_have_four_windows():
+    draws = pd.DataFrame({"real": [5, 5, 5, 5, 6], "id": [10, 11, 12, 13, 14], "rank": [0, 1, 2, 3, 0]})
+    ok = lambda i, stages=prepost.STAGES: [(i, s) for s in stages]
+    pieces = [x for i in (10, 12, 13, 14) for x in ok(i)] + ok(11, ("pre", "start"))  # 11 lacks end and post
+    p = {"episode": np.array([x[0] for x in pieces]), "population": np.array([x[1] for x in pieces])}
+    assert prepost.valid_mocks(draws, p, keep=2)["id"].tolist() == [10, 12, 14]
+
+
+def test_events_of_a_group_weigh_one_together():
+    event = np.array([0, 0, 1, 1, 2, 2])
+    group = np.array([7, 7, 7, 7, 8, 8])
+    assert prepost.shares(event, group, np.ones(6, bool)).tolist() == [0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
+    assert prepost.shares(event, group, event != 1).tolist() == [1.0, 1.0, 0.0, 0.0, 1.0, 1.0]
+
+
+def test_mock_phase_statistics_weigh_the_mocks_of_one_real_event_as_one_event():
+    stats = {"climbs per hour": budget.STATS["climbs per hour"]}
+    rows = [(i, s, real, v) for i, real, v in ((10, 7, 1.0), (11, 7, 3.0), (12, 8, 5.0)) for s in prepost.STAGES]
+    meta = pd.DataFrame(rows, columns=["episode", "population", "real", "value"]).assign(flight=lambda m: m["episode"], block=0)
+    r, q = pd.DataFrame({"climbs per hour": meta["value"] / 3600}), pd.DataFrame({"climbs per hour": np.full(len(meta), 1 / 3600)})
+    counts = np.ones((2, 1), np.int32)
+    got, events = prepost.phase_on(meta, r, q, counts, prepost.STAGES, stats, group=meta["real"].to_numpy())
+    assert events == 3 and got["pre"]["values"][0, 0] == pytest.approx((0.5 * 1 + 0.5 * 3 + 5) / 2)
+    plain, _ = prepost.phase_on(meta, r, q, counts, prepost.STAGES, stats)
+    assert plain["pre"]["values"][0, 0] == pytest.approx(3.0)
+    only, events = prepost.phase_on(meta, r, q, counts, prepost.STAGES, stats, only=(meta["real"] == 8).to_numpy())
+    assert events == 1 and only["pre"]["values"][0, 0] == pytest.approx(5.0)
+
+
+def test_window_job_adds_the_distance_in_the_cross_country_time_to_the_sums_and_the_origins():
+    t = np.arange(0, 3001, 10.0)
+    fixes = pd.DataFrame({"segment_id": 0, "t": t, "E": 5.0 * t, "N": 0.0})  # 5 m/s east
+    spans = pd.DataFrame({"population": ["post"], "episode": [3], "a": [100.0], "b": [2500.0]})
+    lags = prepost.window_lags(2400)
+    flight, (piece,) = prepost.window_job(9, fixes, spans, lags, 2390)
+    k = performance.XC_S // 10
+    assert flight == 9 and piece[:2] == ("post", 3) and piece[7][-1] == 240 - k and piece[6][-1] == pytest.approx(5.0 * performance.XC_S * (240 - k))
+    assert len(piece[6]) == len(lags) + 1 and piece[6][list(lags).index(1000)] == pytest.approx(5000.0**2 * (240 - 100))
+    brief = pd.DataFrame({"population": ["post"], "episode": [3], "a": [100.0], "b": [1100.0]})  # shorter than the displacement
+    piece = prepost.window_job(9, fixes, brief, lags, 990)[1][0]
+    assert piece[7][-1] == 0 and piece[6][-1] == 0
+
+
+def _walk(rng, correlation_time):
+    """A flight of 14 400 s on the 10-s grid: constant speed, heading with steps of variance 2 dt / the correlation
+    time (a function of the flight clock)."""
+    t = np.arange(0, 14401, 10.0)
+    phi = np.cumsum(np.sqrt(20 / correlation_time(t)) * rng.standard_normal(len(t))) + rng.uniform(0, 2 * np.pi)
+    return pd.DataFrame({"segment_id": 0, "t": t, "E": np.cumsum(100 * np.cos(phi)), "N": np.cumsum(100 * np.sin(phi))})
+
+
+def _toy(flat, mid, group, seed, n_real=400, n_solo=300, size=40, mock_phase=True):
+    """Real flights with a group stretch of two windows and solo flights, all on one profile of the persistence along
+    the flight clock (correlation time flat + mid (1 - u^2), u = -1 at takeoff and +1 at landing); in the group
+    stretch it is multiplied by `group`. Returns prepost.mock_results on the MSD and on a phase rate (+0.5 climbs per
+    hour in the start and end windows when group != 1), the lags and the number of mock events."""
+    W, lags, T = prepost.OPEN_WINDOW_S, prepost.window_lags(prepost.OPEN_WINDOW_S), 14400
+    rng = np.random.default_rng(seed)
+    u = lambda t: (t - T / 2) / (T / 2)
+    profile = lambda t: flat + mid * (1 - u(t) ** 2)
+    fixes, spans = {}, []
+    for f in range(n_real):
+        t_in = 3600 + rng.uniform(0, 1800)
+        t_out = t_in + 2 * W
+        fixes[f] = _walk(rng, lambda t: profile(t) * np.where((t >= t_in) & (t < t_out), group, 1.0))
+        spans += [(f, "group_solo", -1, 0.0, t_in), (f, "group", f, t_in, t_out), (f, "group_solo", -1, t_out, float(T))]
+    for f in range(n_real, n_real + n_solo):
+        fixes[f] = _walk(rng, profile)
+        spans.append((f, "solo", -1, 0.0, float(T)))
+    spans = pd.DataFrame(spans, columns=["flight", "population", "episode", "a", "b"])
+    n = n_real + n_solo
+    info = pd.DataFrame({"utc0": _utc("2020-06-15 08:00")[0] + rng.uniform(0, 3600, n), "kind": "B", "site": 0}, index=np.arange(n))
+    wins = prepost.windows(spans, rng, W)
+    wins = wins[wins["population"].isin(prepost.STAGES)]
+    events = prepost.event_times(wins)
+    draws = prepost.mock_draws(events, spans[spans["population"] == "solo"], info, W, "month2_hour2_class", np.random.default_rng(2), first_id=1000)
+
+    def measure(w):  # tamsd.measure on the synthetic fixes: the pieces of the windows `w`, MSD columns only
+        rows = [(f, *x) for f, one in w.groupby("flight") for x in prepost.window_job(f, fixes[f], one, lags, W - tamsd.GRID_S)[1]]
+        got = dict(zip(["flight", "population", "episode", "start", "duration", "mid_e", "mid_n", "sums", "origins"],
+                       map(np.array, zip(*rows))))
+        return got | {"sums": got["sums"][:, :-1], "origins": got["origins"][:, :-1]}
+
+    cell, of_pilot, of_block = twoway.cell_codes(np.arange(n), np.arange(n))  # one resampling cell per flight
+    block = pd.Series(cell, index=np.arange(n))
+    counts = twoway.counts(of_pilot, of_block, np.random.default_rng(1), size=size)
+    p = measure(wins)
+    pm = measure(prepost.mock_windows(draws, W))
+    kept = prepost.valid_mocks(draws, pm)
+    units = decompose.msd_units(p, "episode", None, block)
+    m_units, m_group = prepost.mock_units(pm, kept, block)
+    # phase: one rate per window, higher by 0.5 in the two group windows when there is a group effect
+    stats = {"climbs per hour": budget.STATS["climbs per hour"]}
+    pr = np.random.default_rng(4)
+    rate = lambda w, inside: pd.DataFrame({"climbs per hour": (pr.uniform(1, 2, len(w)) + 0.5 * inside * (group != 1.0)) / 3600})
+    flat_q = lambda w: pd.DataFrame({"climbs per hour": np.full(len(w), 1 / 3600)})
+    meta = wins.assign(block=block.reindex(wins["flight"]).to_numpy()).reset_index(drop=True)
+    m_wins = prepost.mock_windows(kept, W)
+    by_id = kept.set_index("id")
+    m_meta = m_wins.assign(block=block.reindex(by_id["real_flight"].reindex(m_wins["episode"])).to_numpy(),
+                           real=by_id["real"].reindex(m_wins["episode"]).to_numpy())
+    real = SimpleNamespace(units=units, id=pd.factorize(p["episode"])[1][units.stratum], meta=meta,
+                           r=rate(meta, meta["population"].isin(("start", "end"))), q=flat_q(meta))
+    mock = SimpleNamespace(units=m_units, group=m_group, meta=m_meta, r=rate(m_meta, 0), q=flat_q(m_meta))
+    if not mock_phase:  # no mock window has phase time
+        mock = SimpleNamespace(units=m_units, group=m_group, meta=m_meta.iloc[:0], r=mock.r.iloc[:0], q=mock.q.iloc[:0])
+    return prepost.mock_results(real, mock, stats, counts, lags), lags, len(kept)
+
+
+def _quoted(entry, key="H_loc(1000 s)"):
+    return entry[key]["value"], entry[key]["band"]
+
+
+def test_a_profile_along_the_flight_gives_g_with_no_group_effect_and_the_mock_events_show_it():
+    out, lags, mocks = _toy(flat=100.0, mid=3000.0, group=1.0, seed=0)
+    c = out["counts"]
+    assert c["real events with the four windows (MSD)"] == 400 and c["real events with a mock event (MSD)"] == 400
+    assert c["mock events (MSD)"] == mocks == 2000 and c["solo flights (MSD)"] <= 300
+    g, (lo, hi) = _quoted(out["real events with a mock"]["g"])
+    gm, _ = _quoted(out["mock"]["g"])
+    net, (nlo, nhi) = _quoted(out["real minus mock"]["g"])
+    assert lo > 0.005 and g == pytest.approx(0.012, abs=0.004)  # an inverted U of H alone makes g clearly positive
+    assert gm == pytest.approx(g, abs=0.004) and abs(net) < 0.004 and nlo < 0 < nhi  # the mock events give the same g
+    # the difference is the difference of the draws, and the net effects are those of D_in and D_out
+    assert net == pytest.approx(g - gm, abs=1e-12)
+    for n in prepost.MOCK_EFFECTS:
+        assert out["real minus mock"][n]["H_loc(1000 s)"]["value"] == pytest.approx(
+            out["real events with a mock"][n]["H_loc(1000 s)"]["value"] - out["mock"][n]["H_loc(1000 s)"]["value"], abs=1e-12)
+    d_in, d_out, dw = (out["mock"][k]["H_loc(1000 s)"]["value"] for k in ("D_in", "D_out", "d w"))
+    assert gm == pytest.approx((d_in + d_out) / 2, abs=1e-12) and dw == pytest.approx((d_in - d_out) / 2, abs=1e-12)
+    ph = out["real minus mock"]["g"]["climbs per hour"]  # a phase rate with no effect: the difference holds 0
+    assert ph["band"][0] < 0 < ph["band"][1]
+
+
+def test_a_group_effect_on_a_flat_profile_is_in_g_and_not_in_the_mock_events():
+    out, lags, _ = _toy(flat=800.0, mid=0.0, group=4.0, seed=0)
+    g, (lo, hi) = _quoted(out["real events with a mock"]["g"])
+    gm, (mlo, mhi) = _quoted(out["mock"]["g"])
+    net, (nlo, nhi) = _quoted(out["real minus mock"]["g"])
+    assert lo > 0.05 and g == pytest.approx(0.1, abs=0.03)
+    assert abs(gm) < 0.01 and mlo < 0.01 and net == pytest.approx(g - gm, abs=1e-12) and nlo > 0.05
+    ph, mph = out["real events with a mock"]["g"]["climbs per hour"], out["mock"]["g"]["climbs per hour"]
+    assert ph["value"] == pytest.approx(0.5, abs=0.15) and abs(mph["value"]) < 0.1  # the rate: real events carry the effect
+
+
+# ---- cross-country speed in the three designs
+
+XC_NAME = "cross-country speed over 30 min (km/h)"
+
+
+def test_xc_of_a_track_is_the_distance_covered_in_the_displacement_time_summed_over_the_origins():
+    k = performance.XC_S // 10
+    pos = np.column_stack([5.0 * np.arange(0, 240) * 10, np.zeros(240)])  # 5 m/s
+    assert matched.xc_of(pos) == (pytest.approx(5.0 * performance.XC_S * (240 - k)), 240 - k)
+    assert matched.xc_of(pos[:k]) == (0.0, 0)  # too short for one origin
+
+
+def test_raw_cross_country_speed_averages_first_over_the_flights_of_the_pieces_long_enough():
+    scale = 3.6 / performance.XC_S
+    b = pd.DataFrame({"flight": [1, 2, 3], "t_mid": [500.0, 500.0, 500.0], "s": [100.0, 200.0, 50.0]})
+    x = pd.DataFrame({"flight": [1, 2], "t_mid": [1500.0, 1500.0], "xc_m": [450000.0, 720000.0], "xc_origins": [50.0, 40.0]})
+    pieces = (np.array([1, 2]), np.array([0.0, 0.0]), np.array([3000.0, 3000.0]))  # flight 3 has no piece long enough
+    out = raw.phase_statistics({"b": b, "x": x}, raw.XC_DEFS, pieces, pd.Series([0, 1, 2], index=[1, 2, 3]),
+                               np.ones((3, 3), np.int32), (XC_NAME,))
+    first, total = out["average first"][XC_NAME]["value"], out["ratio of sums"][XC_NAME]["value"]
+    assert out["flights"] == 2 and first == pytest.approx(scale * (450000 / 100 + 720000 / 200) / (50 / 100 + 40 / 200))
+    assert total == pytest.approx(scale * 1170000 / 90) and out["draws"].shape == (4, 1)
+    assert set(out["average first"]) == {XC_NAME}
+
+
+def test_matched_cross_country_speed_is_the_ratio_estimator_on_the_pieces_and_their_controls():
+    ctx = object.__new__(matched.Context)
+    ctx.tracks, ctx.universe, ctx.boot = {"flight": np.array([0, 1, 2, 3])}, np.arange(4), (_ones, 1)
+    M = object.__new__(matched.Measured)
+    M.piece, M.rows = np.array([0, 1]), np.array([4, 5])  # pieces 0, 1 (flights 0, 1) and one control each (tracks 2, 3)
+    M.T_g, M.T_s = np.array([100.0, 200.0]), np.array([100.0, 100.0])
+    xc_g, xc_s = np.array([[450000.0, 50], [720000.0, 40]]), np.array([[300000.0, 60], [0.0, 0.0]])
+    M.xc_rq_g, M.xc_rq_s = xc_g / M.T_g[:, None], xc_s / M.T_s[:, None]
+    sel = pd.DataFrame({"piece": [0, 1], "solo": [2, 3]}, index=[4, 5])
+    out = matched.xc_series(ctx, M, sel, years=False)
+    scale = 3.6 / performance.XC_S
+    assert out["pieces"] == 2 and out["controls"] == 2
+    assert out["boot"]["group"][0, 0] == pytest.approx(scale * (4500 + 3600) / (0.5 + 0.2))
+    assert out["boot"]["control"][0, 0] == pytest.approx(scale * (3000 + 0) / (0.6 + 0))  # per-unit rates, the zero control counts 0 of both
+
+
+def test_prepost_window_rates_add_the_cross_country_speed_of_each_window():
+    defs = raw.stat_defs()
+    rng = np.random.default_rng(3)
+    base = {"flight": [1, 1], "t_mid": [5.0, 15.0]}
+    b = pd.DataFrame(base | {c: rng.integers(1, 9, 2).astype(float) for st in defs["b"].values() for c in (*st[:2], "s")} | {"s": [2.0, 4.0]})
+    p = pd.DataFrame(base | {c: rng.integers(1, 9, 2).astype(float) for st in defs["p"].values() for c in st[:2]})
+    wins = pd.DataFrame({"flight": [1, 1], "population": ["pre", "start"], "episode": [0, 0], "a": [0.0, 10.0], "b": [10.0, 20.0]})
+    xc = pd.DataFrame({"flight": [1], "population": ["start"], "episode": [0], "xc_m": [300.0], "xc_origins": [10.0]})
+    block = pd.Series([0], index=[1])
+    meta, r, q, stats = prepost.window_rates({"b": b, "p": p}, wins, block, defs, xc)
+    assert list(stats) == [*raw.STATISTICS, XC_NAME] and list(r.columns) == list(stats)
+    assert r[XC_NAME].tolist() == [0.0, 300.0 / 4] and q[XC_NAME].tolist() == [0.0, 10.0 / 4]  # a window with no cross-country piece gives 0
+    _, r7, _, stats7 = prepost.window_rates({"b": b, "p": p}, wins, block, defs)
+    assert list(stats7) == list(raw.STATISTICS) and (r7.to_numpy() == r[list(raw.STATISTICS)].to_numpy()).all()
+
+
+def test_the_mock_and_cross_country_macros_come_from_the_keys_when_they_are_present():
+    sys.path.insert(0, str(Path(__file__).parent / "vs-solo" / "code"))
+    import comparisons
+
+    out, _, _ = _toy(flat=100.0, mid=3000.0, group=1.0, seed=0, n_real=60, n_solo=40)
+    entry = json.loads(json.dumps(out, default=int))
+    comparisons.macros.clear()
+    comparisons.mock_tex({"caliper": "month2_hour2_class", "mocks per event": 5, "pool per event": 10,
+                          "variants": {"any site": entry, "same site": entry}})
+    m, num, signed = comparisons.macros, comparisons.num, comparisons.signed
+    k = "H_loc(1000 s)"
+    assert m["PreMockGHK"] == signed(entry["mock"]["g"][k]["value"], 3) and m["PreMockSiteGHK"] == m["PreMockGHK"]
+    assert m["PreNetGHK"] == signed(entry["real minus mock"]["g"][k]["value"], 3) and m["PreNetGHKBand"].startswith("[")
+    assert m["PreMockSubsetGHK"] == signed(entry["real events with a mock"]["g"][k]["value"], 3)
+    assert m["PreMockDwHK"] == signed(entry["mock"]["d w"][k]["value"], 3) and "PreMockDwHKBand" in m
+    assert m["PreMockEvents"] == num(entry["counts"]["mock events (MSD)"], 0) and m["PreMockFlights"] == num(entry["counts"]["solo flights (MSD)"], 0)
+    assert m["PreMockRealEvents"] == num(entry["counts"]["real events with a mock event (MSD)"], 0)
+    assert not [x for x in m if x.endswith("Xc")]  # no cross-country statistic in these results: no macro
+    entry["mock"]["g"][comparisons.XC] = entry["mock"]["g"][k]
+    comparisons.mock_tex({"caliper": "month2_hour2_class", "mocks per event": 5, "pool per event": 10, "variants": {"any site": entry}})
+    assert m["PreMockGXc"] == signed(entry["mock"]["g"][k]["value"], 1)
+
+
+
+def test_mock_results_leave_out_the_phase_statistics_when_no_mock_window_has_phase_time():
+    out, lags, _ = _toy(flat=100.0, mid=3000.0, group=1.0, seed=0, n_real=40, n_solo=30, mock_phase=False)
+    c = out["counts"]
+    assert c["mock events (MSD)"] > 0 and c["mock events (phase)"] == 0 and c["real events with a mock event (phase)"] == 0
+    for key in ("mock", "real events with a mock", "real minus mock"):
+        g = out[key]["g"]
+        assert "H_loc(1000 s)" in g and "climbs per hour" not in g and g["events (phase)"] == 0

@@ -28,7 +28,17 @@ windows, and, on the events that have all four, D_in = start - pre, D_out = end 
     g   = (D_in + D_out) / 2    the group effect, free of a drift linear in time
     d w = (D_in - D_out) / 2    the drift over one window
 
-with the bands of twoway.py (the same draws of pilots, blocks and cells for every quantity).
+with the bands of twoway.py (the same draws of pilots, blocks and cells for every quantity). Windows of at least
+performance.XC_S / SUPPORT s also give the cross-country speed (performance.XC_S), from the windows' own positions.
+
+Mock events, the placebo of g: a profile of H along the flight (low after takeoff and before landing) makes g
+nonzero with no group effect. For every real event with the four windows, up to MOCKS solo flights (population
+"solo": flights never in a group) are drawn at random, where the four windows fit at the same flight-clock times
+inside one solo stretch, under the calipers of matched.py (month, local hour of the middle of the event, same wing
+class or level; the caliper matched.py chose, or --caliper NAME), and, in a second variant, also the same takeoff site
+(route.SITE_LINK). They are measured and compared like the real windows. A mock event takes the resampling cell of its
+real event and the mocks of one real event weigh one event. The result key "mock" gives D_in, D_out, g and d w of the
+mock events, of the real events that have one, and their difference (real - mock), with the counts.
 
     uv run python prepost.py --open [--window SECONDS] [--sample N] [--recompute]    # after tamsd.py and performance.py --open
     uv run python prepost.py --open --redraw [--window SECONDS]    # the forest plot again from the JSON
@@ -36,6 +46,7 @@ with the bands of twoway.py (the same draws of pilots, blocks and cells for ever
 
 import json
 import sys
+from types import SimpleNamespace
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,12 +57,16 @@ import curves
 import decompose
 import isolated
 import longlags
+import matched
+import performance
 import raw
+import route
 import tamsd
 import twoway
 import zones
 from blocks import with_takeoffs
-from tamsd import (CACHE, COLORS, FIXES, LABELS, LAGS, N_BOOT, OPEN, OUT, SEED, read_flights, read_pieces, save,
+from common.msd import tamsd_sums
+from tamsd import (CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OPEN, OUT, SEED, read_flights, read_pieces, save,
                    save_pieces, stretches)
 
 WINDOW_S = 1260  # s, the shortest window: the 1250 s of a piece of the TA-MSD on the 10-s grid; --window SECONDS
@@ -76,6 +91,11 @@ FOREST_LABELS = {"D_in": "D_in = start - pre", "D_out": "D_out = end - post", "p
                  "g": "g = (D_in + D_out) / 2", "d w": "d w = (D_in - D_out) / 2",
                  "ctrlA2 - ctrlA1": "control, group flights alone", "ctrlS2 - ctrlS1": "control, solo flights"}
 STATS = {**decompose.BUDGET, **{k: v for k, v in decompose.PERFORMANCE.items() if k != decompose.XC}}
+XC = decompose.XC  # the cross-country speed, measured on the windows themselves (window_job)
+MOCKS = 5  # mock events drawn per real event
+MOCK_POOL = 2 * MOCKS  # solo flights measured per real event: the first MOCKS that have the four windows are kept
+MOCK_VARIANTS = {"any site": False, "same site": True}  # name: whether the solo flight also took off at the site (route.SITE_LINK)
+MOCK_EFFECTS = ("g", "d w", "D_in", "D_out")
 
 
 def windows(spans, rng, width=WINDOW_S):
@@ -241,16 +261,31 @@ def drift_free(d_in, d_out):
     return (d_in + d_out) / 2, (d_in - d_out) / 2
 
 
-def curves_on(units, counts, labels, lags):
+def shares(event, group, keep):
+    """Per row: 1 / (the events of its `group` among the rows of `keep`), so that the events of a group weigh one
+    together; 0 outside `keep`."""
+    k = pd.factorize(group)[0]
+    first = pd.Series(k[keep]).groupby(pd.factorize(event)[0][keep]).first()
+    n = np.bincount(first.to_numpy(), minlength=k.max() + 1)
+    out = np.zeros(len(event))
+    out[keep] = 1.0 / n[k[keep]]
+    return out
+
+
+def curves_on(units, counts, labels, lags, group=None, only=None):
     """Per population of `labels`, on the events that have them all (unit = window, weight 1 or the count of its
     block): the ensemble MSD and, as `values`, H_loc at every lag, the fitted H and H_loc(QUOTED_LAG) with its
     window cut at QUOTED_LAG as on dataset `1000` of the other points, in rows (point estimate, then one row per
-    draw of `counts`); windows, flights; and the events."""
+    draw of `counts`); windows, flights; and the events. `only`: mask over the units that limits the events;
+    `group`: the group of each unit (the real event of a mock one), whose events weigh one together."""
     keep = events_with(units.population, units.stratum, labels)
+    if only is not None:
+        keep = keep & only
+    share = np.ones(len(keep)) if group is None else shares(units.stratum, group, keep)
     out = {}
     for label in labels:
         m = keep & (units.population == label)
-        w = np.vstack([np.ones(m.sum()), counts[:, units.block[m]]]).astype(float)
+        w = np.vstack([np.ones(m.sum()), counts[:, units.block[m]]]).astype(float) * share[m]
         with np.errstate(invalid="ignore"):  # a draw may keep none of the windows
             msd = (w @ units.values[m]) / w.sum(axis=1)[:, None]
         h, f = zones.curve(msd, lags)
@@ -261,22 +296,30 @@ def curves_on(units, counts, labels, lags):
     return out, int(np.unique(units.stratum[keep]).size)
 
 
-def phase_on(meta, r, q, counts, labels, stats):
+def phase_on(meta, r, q, counts, labels, stats, group=None, only=None):
     """The same for the statistics of `stats` by the estimator that averages first: windows `meta` (flight,
-    population, episode, block) with their rates r and q (budget.unit_rates); `values` has one column per statistic."""
+    population, episode, block) with their rates r and q (budget.unit_rates); `values` has one column per statistic.
+    `only`, `group`: as in curves_on."""
     keep = events_with(meta["population"].to_numpy(), meta["episode"].to_numpy(), labels)
+    if only is not None:
+        keep = keep & only
+    share = None if group is None else shares(meta["episode"].to_numpy(), group, keep)
     out = {}
     for label in labels:
         m = keep & (meta["population"] == label).to_numpy()
-        value, draws = budget.mean_ratios(r[m], q[m], meta["block"].to_numpy()[m], counts, stats)
+        rm, qm = r[m], q[m]
+        if share is not None:
+            rm, qm = rm.mul(share[m], axis=0), qm.mul(share[m], axis=0)
+        value, draws = budget.mean_ratios(rm, qm, meta["block"].to_numpy()[m], counts, stats)
         out[label] = {"values": np.vstack([value.to_numpy(), draws]), "windows": int(m.sum()),
                       "flights": int(meta["flight"][m].nunique())}
     return out, int(meta["episode"][keep].nunique())
 
 
-def window_rates(tables, wins, block, stats_by_source):
+def window_rates(tables, wins, block, stats_by_source, xc=None):
     """Per window of `wins` (flight, a, b): its phase time T_u from the runs that lie in it by their middle, and
-    r_u, q_u of every statistic (budget.unit_rates), keeping the windows with T_u > 0; returns (meta, r, q, stats)."""
+    r_u, q_u of every statistic (budget.unit_rates), keeping the windows with T_u > 0; returns (meta, r, q, stats).
+    `xc` (flight, population, episode, xc_m, xc_origins: window_job) adds the cross-country speed of each window."""
     flight, a, b = (wins[c].to_numpy() for c in ("flight", "a", "b"))
     time = pd.Series(isolated.window_sums(tables["b"], ["s"], flight, a, b)[:, 0])
     rates, stats = [], {}
@@ -288,6 +331,10 @@ def window_rates(tables, wins, block, stats_by_source):
     stats = {n: stats[n] for n in raw.STATISTICS}
     r = pd.concat([x[0] for x in rates], axis=1)[list(stats)]
     q = pd.concat([x[1] for x in rates], axis=1)[list(stats)]
+    if xc is not None:
+        terms = wins[["flight", "population", "episode"]].merge(xc, how="left", on=["flight", "population", "episode"])
+        rx, qx = budget.unit_rates(terms[["xc_m", "xc_origins"]].fillna(0.0), np.arange(len(wins)), time, {XC: performance.STATS[XC]})
+        stats, r, q = {**stats, XC: performance.STATS[XC]}, pd.concat([r, rx], axis=1), pd.concat([q, qx], axis=1)
     ok = (time > 0).to_numpy()
     meta = wins.assign(block=block.reindex(wins["flight"]).to_numpy(int))[ok].reset_index(drop=True)
     return meta, r[ok].reset_index(drop=True), q[ok].reset_index(drop=True), stats
@@ -339,6 +386,16 @@ def draw_curves(curves_by_label, stem, title):
     curves.figures(drawn, stem, title)
 
 
+def describe(m, p, lags, stats):
+    """One entry of the result from an effect on the MSD and one on the phase statistics (values, events, windows,
+    flights; None when no event has phase time): the counts, Delta H_loc(QUOTED_LAG), Delta H and Delta H_loc at every
+    lag, and the statistics."""
+    p, quoted = (p, True) if p is not None else ((None, 0, 0, 0), False)
+    return {"events (MSD)": m[1], "windows (MSD)": m[2], "flights (MSD)": m[3],
+            "events (phase)": p[1], "windows (phase)": p[2], "flights (phase)": p[3],
+            **describe_msd(m, lags), **({s: twoway.quote(p[0][:, j]) for j, s in enumerate(stats)} if quoted else {})}
+
+
 def open_analysis(units, meta, r, q, stats, counts, lags):
     """Everything of the open mode as a dict: window curves, differences of the MSD statistics and of the phase
     statistics, with bands from `counts`."""
@@ -354,11 +411,154 @@ def open_analysis(units, meta, r, q, stats, counts, lags):
             "windows": c["windows"], "flights": c["flights"], **{s: twoway.quote(c["values"][:, j])
                                                                    for j, s in enumerate(stats)}} for l, c in got.items()}}
     for name in m:
-        result["differences"][name] = {
-            "events (MSD)": m[name][1], "windows (MSD)": m[name][2], "flights (MSD)": m[name][3],
-            "events (phase)": p[name][1], "windows (phase)": p[name][2], "flights (phase)": p[name][3],
-            **describe_msd(m[name], lags), **{s: twoway.quote(p[name][0][:, j]) for j, s in enumerate(stats)}}
+        result["differences"][name] = describe(m[name], p[name], lags, stats)
     return result
+
+
+def window_job(flight, fixes, spans, lags, shortest):
+    """tamsd.pieces of the windows `spans`, with one more column in the sums and the origins: the straight-line
+    distance covered in performance.XC_S from every origin, summed, and the number of origins."""
+    k = performance.XC_S // GRID_S
+    found = tamsd.pieces(fixes, spans, lags, shortest)
+    far = [np.hypot(*(pos[k:] - pos[:-k]).T) if len(pos) > k else np.zeros(0) for _, _, pos in tamsd.grids(fixes, spans, shortest)]
+    return flight, [(*f[:6], np.r_[f[6], d.sum()], np.r_[f[7], len(d)]) for f, d in zip(found, far)]
+
+
+def xc_table(p):
+    """The windows of the pieces `p` of window_job with their cross-country terms."""
+    return pd.DataFrame({"flight": p["flight"], "population": p["population"], "episode": p["episode"],
+                         "xc_m": p["sums"][:, -1], "xc_origins": p["origins"][:, -1]})
+
+
+# ---- mock events: the windows of the real events at the same flight-clock times in flights that never fly in a group
+
+def event_times(wins):
+    """The events of `wins` that have the four STAGES: episode, flight, t_in and t_out (start and end of the group
+    stretch, flight clock)."""
+    w = wins[wins["population"].isin(STAGES)]
+    n = w.groupby("episode")["population"].nunique()
+    w = w[w["episode"].isin(n.index[n == len(STAGES)])]
+    start, end = (w[w["population"] == k].set_index("episode") for k in ("start", "end"))
+    return pd.DataFrame({"flight": start["flight"], "t_in": start["a"], "t_out": end["b"]}).rename_axis("episode").reset_index()
+
+
+def mock_info(flights, caliper):
+    """Per flight (index): utc0, the wing class or level of matched.CALIPERS[caliper] (NaN where matched.select does
+    not match) and the site of its takeoff (route.site_frames)."""
+    cls = isolated.wing_class(flights)
+    level = isolated.levels(flights)
+    kind = cls.where(cls.index.isin(level.index)) if matched.CALIPERS[caliper][2] == "class" else level.reindex(cls.index)
+    f = flights.set_index("flight")
+    site = route.site_frames(f["lat0"].to_numpy(float), f["lon0"].to_numpy(float))[0]
+    return pd.DataFrame({"utc0": f["utc0"], "kind": kind.reindex(f.index), "site": site}, index=f.index)
+
+
+def mock_draws(events, solo, info, width, caliper, rng, same_site=False, pool=MOCK_POOL, first_id=0):
+    """For each event of `events` (event_times), up to `pool` solo flights in random order (`rank`), as rows real,
+    real_flight, flight, t_in, t_out, rank and an `id` from `first_id`. A solo flight is eligible when its four
+    windows at the flight-clock times of the event, [t_in - w, t_out + w], lie in one of its solo stretches `solo`
+    (flight, a, b), its takeoff is another flight's and, under matched.CALIPERS[caliper], the month and the local
+    hour of the middle of the event are within the caliper and the wing class (or level) is the same; with
+    `same_site`, also the takeoff site (`info`: mock_info)."""
+    month, hour, _ = matched.CALIPERS[caliper]
+    sf, sa, sb = (solo[c].to_numpy() for c in ("flight", "a", "b"))
+    rows = []
+    for e in events.itertuples():
+        kind = info.at[e.flight, "kind"]
+        if pd.isna(kind):
+            continue
+        f = np.unique(sf[(sa <= e.t_in - width) & (sb >= e.t_out + width)])
+        f = f[f != e.flight]
+        mine = info.loc[f]
+        ok = (mine["kind"] == kind).to_numpy()
+        if same_site:
+            ok = ok & (mine["site"] == info.at[e.flight, "site"]).to_numpy()
+        f, mine = f[ok], mine[ok]
+        if len(f):
+            mid = (e.t_in + e.t_out) / 2
+            real = np.full(len(f), info.at[e.flight, "utc0"] + mid)
+            near = (matched.month_gap(real, mine["utc0"].to_numpy() + mid) <= month) \
+                & (matched.hour_gap(real, mine["utc0"].to_numpy() + mid) <= hour + 1e-9)
+            rows += [(e.episode, e.flight, x, e.t_in, e.t_out, k) for k, x in enumerate(rng.permutation(f[near])[:pool])]
+    out = pd.DataFrame(rows, columns=["real", "real_flight", "flight", "t_in", "t_out", "rank"])
+    return out.assign(id=first_id + np.arange(len(out)))
+
+
+def mock_windows(draws, width):
+    """The windows (flight, population, episode = id, a, b) of the mock events of `draws`, as windows() places
+    those of a real event."""
+    w = float(width)
+    parts = {"pre": (draws["t_in"] - w, draws["t_in"]), "start": (draws["t_in"], draws["t_in"] + w),
+             "end": (draws["t_out"] - w, draws["t_out"]), "post": (draws["t_out"], draws["t_out"] + w)}
+    return pd.concat([pd.DataFrame({"flight": draws["flight"], "population": k, "episode": draws["id"], "a": a, "b": b})
+                      for k, (a, b) in parts.items()], ignore_index=True)
+
+
+def valid_mocks(draws, p, keep=MOCKS):
+    """The mock events of `draws` that have the four windows among the measured pieces `p`, the first `keep` of each
+    real event (the rows of `draws` are in random order within it)."""
+    got = pd.DataFrame({"id": p["episode"], "population": p["population"]}).drop_duplicates().groupby("id")["population"].nunique()
+    return draws[draws["id"].isin(got.index[got == len(STAGES)])].groupby("real").head(keep)
+
+
+def mock_units(p, mocks, block):
+    """MSD units of the windows of `mocks` (valid_mocks) in the pieces `p`, with the resampling cell of the real
+    event of each, and the real event of each unit. `block`: the cell of each flight."""
+    q = {k: v[np.isin(p["episode"], mocks["id"])] for k, v in p.items()}
+    units = decompose.msd_units(q, "episode", None, block)
+    ids = pd.factorize(q["episode"])[1][units.stratum]  # the event of each stratum, as decompose.strata codes them
+    by_id = mocks.set_index("id")
+    units.block = block.reindex(by_id["real_flight"].reindex(ids)).to_numpy()
+    return units, by_id["real"].reindex(ids).to_numpy()
+
+
+def mock_rates(tables, wins, mocks, block, defs, xc=None):
+    """window_rates of the mock windows `wins`, with the cell and the real event of each."""
+    meta, r, q, stats = window_rates(tables, wins, block, defs, xc)
+    by_id = mocks.set_index("id")
+    return (meta.assign(block=block.reindex(by_id["real_flight"].reindex(meta["episode"])).to_numpy(),
+                        real=by_id["real"].reindex(meta["episode"]).to_numpy()), r, q, stats)
+
+
+def with_mock(population, event, group):
+    """The groups (real events) that have a mock event with every STAGE."""
+    return np.unique(np.asarray(group)[events_with(population, event, STAGES)])
+
+
+def n_events(population, event):
+    """How many events have a window in every STAGE."""
+    return int(np.unique(event[events_with(population, event, STAGES)]).size)
+
+
+def mock_results(real, mock, stats, counts, lags):
+    """The effects of the mock events and of the real events that have one (the same draws of `counts`): per effect
+    of MOCK_EFFECTS the entry of `differences` for the mock events, for those real events and their difference
+    (real - mock); and the counts. `real`: units, id (the event of each unit), meta, r, q; `mock`: the same with
+    `group` (units) and meta["real"] (windows): the real event of each. Without a mock event that has phase time
+    the phase statistics are left out."""
+    ids = (with_mock(mock.units.population, mock.units.stratum, mock.group),
+           with_mock(mock.meta["population"].to_numpy(), mock.meta["episode"].to_numpy(), mock.meta["real"]) if len(mock.meta) else [])
+    on = {"mock": (lambda labels: curves_on(mock.units, counts, labels, lags, group=mock.group),
+                   lambda labels: phase_on(mock.meta, mock.r, mock.q, counts, labels, stats, group=mock.meta["real"].to_numpy())),
+          "real": (lambda labels: curves_on(real.units, counts, labels, lags, only=np.isin(real.id, ids[0])),
+                   lambda labels: phase_on(real.meta, real.r, real.q, counts, labels, stats,
+                                           only=real.meta["episode"].isin(ids[1]).to_numpy()))}
+    got = {k: (effects(f[0], {}, STAGES), effects(f[1], {}, STAGES) if len(ids[1]) else None) for k, f in on.items()}
+    entry = lambda e, n: describe(e[0][n], e[1][n] if e[1] else None, lags, stats)
+    net = {n: tuple(None if got["mock"][i] is None else (got["real"][i][n][0] - got["mock"][i][n][0], *got["real"][i][n][1:])
+                    for i in (0, 1)) for n in MOCK_EFFECTS}
+    msd = got["mock"][0]["g"]
+    phase = lambda k: got[k][1]["g"] if got[k][1] else (None, 0, 0, 0)
+    return {"counts": {"real events with the four windows (MSD)": n_events(real.units.population, real.units.stratum),
+                       "real events with a mock event (MSD)": got["real"][0]["g"][1], "mock events (MSD)": msd[1],
+                       "mock windows (MSD)": msd[2], "solo flights (MSD)": msd[3],
+                       "real events with the four windows (phase)":
+                           n_events(real.meta["population"].to_numpy(), real.meta["episode"].to_numpy()) if len(real.meta) else 0,
+                       "real events with a mock event (phase)": phase("real")[1], "mock events (phase)": phase("mock")[1],
+                       "solo flights (phase)": phase("mock")[3]},
+            "mock": {n: entry(got["mock"], n) for n in MOCK_EFFECTS},
+            "real events with a mock": {n: entry(got["real"], n) for n in MOCK_EFFECTS},
+            "real minus mock": {n: describe(*net[n], lags, stats) for n in MOCK_EFFECTS}}
 
 
 def forest(result, path, width):
@@ -380,6 +580,26 @@ def draw_delta(result, lags, path, title):
         if r["label"] != FOREST_LABELS["g"]:
             r["band"] = None
     curves.delta_figure(left, right, path, title)
+
+
+def mock_caliper():
+    """The caliper of the mock events: --caliper NAME, or the one matched.py chose (matched_counts.json); None when
+    neither exists, and the mock events are left out."""
+    if "--caliper" in sys.argv:
+        return sys.argv[sys.argv.index("--caliper") + 1]
+    path = OUT / "matched_counts.json"
+    return json.loads(path.read_text())["chosen caliper"]["name"] if path.exists() else None
+
+
+def mock_draws_of(wins, spans, flights, width, caliper):
+    """{variant: mock_draws} for the real events of `wins`, from the solo stretches of `spans`; one generator, so
+    the draws do not depend on the order of the variants' use."""
+    events, info, rng = event_times(wins), mock_info(flights, caliper), np.random.default_rng([SEED, 1])
+    solo, out, first = spans[spans["population"] == "solo"], {}, 2 * len(spans)  # the episodes of `windows` are below
+    for variant, same in MOCK_VARIANTS.items():
+        out[variant] = mock_draws(events, solo, info, width, caliper, rng, same, first_id=first)
+        first += len(out[variant])
+    return out
 
 
 def run_open(flights, membership, summary, width, sample=None, recompute=False):
@@ -407,8 +627,35 @@ def run_open(flights, membership, summary, width, sample=None, recompute=False):
     wins = wins.merge(measured, on=["flight", "population", "episode"])
     tables = isolated.run_terms(flights)
     defs = raw.stat_defs()
-    meta, r, q, stats = window_rates(tables, wins, block, defs)
+    caliper = mock_caliper()
+    draws = mock_draws_of(wins, spans, flights, width, caliper) if caliper else {}
+    xc_on = width >= performance.XC_S / tamsd.SUPPORT  # the 30-min displacement needs a piece of XC_S / SUPPORT s
+    if draws or xc_on:  # one more pass over the fixes: the mock windows and the cross-country terms of every window
+        every = pd.concat([wins, *[mock_windows(d, width) for d in draws.values()]], ignore_index=True)
+        name = f"prepost_windows_{width}_lag{lags.max()}_{caliper}_{MOCKS}x{MOCK_POOL}{tag}.npz" if caliper else \
+            f"prepost_windows_{width}_lag{lags.max()}{tag}.npz"
+        window_file = CACHE / name
+        if recompute or not window_file.exists():
+            found = tamsd.measure("para", flights, every, lags, width - tamsd.GRID_S, job=window_job)
+            np.savez(window_file, **{f"para/{k}": v for k, v in found.items()})
+        pw = read_pieces(window_file)["para"]
+        xc = xc_table(pw) if xc_on else None
+    else:
+        xc = None
+    meta, r, q, stats = window_rates(tables, wins, block, defs, xc)
     result = open_analysis(units, meta, r, q, stats, counts, lags)
+    if draws:
+        msd_pieces = {**pw, "sums": pw["sums"][:, :-1], "origins": pw["origins"][:, :-1]}
+        real = SimpleNamespace(units=units, id=pd.factorize(p["episode"])[1][units.stratum], meta=meta, r=r, q=q)
+        result["mock"] = {"caliper": caliper, "mocks per event": MOCKS, "pool per event": MOCK_POOL, "variants": {}}
+        for variant, d in draws.items():
+            kept = valid_mocks(d, msd_pieces)
+            if kept.empty:
+                continue
+            m_units, m_group = mock_units(msd_pieces, kept, block)
+            m_meta, m_r, m_q, _ = mock_rates(tables, mock_windows(kept, width), kept, block, defs, xc)
+            mock = SimpleNamespace(units=m_units, group=m_group, meta=m_meta, r=m_r, q=m_q)
+            result["mock"]["variants"][variant] = mock_results(real, mock, stats, counts, lags)
     result |= {"window_s": width, "lags": lags.tolist(), "n_boot": N_BOOT, "windows made": made,
                "windows measured": wins["population"].value_counts().to_dict(),
                "windows with phase time": meta["population"].value_counts().to_dict()}
@@ -436,6 +683,9 @@ if __name__ == "__main__":
         tamsd.folders()
         sample = int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else None
         out = run_open(flights, membership, summary, width, sample, "--recompute" in sys.argv)
+        for variant, v in out.get("mock", {}).get("variants", {}).items():
+            print("mock", variant, v["counts"], {k: [round(v[k]["g"]["H_loc(1000 s)"]["value"], 4),
+                  np.round(v[k]["g"]["H_loc(1000 s)"]["band"], 4).tolist()] for k in ("mock", "real events with a mock", "real minus mock")})
         for name, d in out["differences"].items():
             print(name, {k: d[k] for k in d if k.startswith(("events", "windows"))},
                   {k: [round(d[k]["value"], 4), np.round(d[k]["band"], 4).tolist()] for k in d if k != "dH_loc" and isinstance(d[k], dict)})

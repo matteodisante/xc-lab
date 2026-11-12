@@ -1,5 +1,5 @@
 \newcommand{\BelowEvery}{16}
-\newcommand{\BelowFixed}{18}
+\newcommand{\BelowFixed}{19}
 \newcommand{\BelowLongest}{26}
 \newcommand{\CovDraws}{400}
 \newcommand{\CovNewMax}{99}
@@ -392,7 +392,7 @@
 \newcommand{\FlightsAll}{154\,598}
 \newcommand{\FlightsClosed}{87\,484}
 \newcommand{\FlightsEvery}{66\,845}
-\newcommand{\FlightsFixed}{57\,799}
+\newcommand{\FlightsFixed}{53\,109}
 \newcommand{\FlightsLongest}{6\,785}
 \newcommand{\FlightsNeither}{269}
 \newcommand{\FlightsOpen}{66\,845}
@@ -505,6 +505,15 @@
 \newcommand{\MatDeltaSinkG}{$+$6}
 \newcommand{\MatDeltaSinkGBand}{[$+$2, $+$10]}
 \newcommand{\MatDeltaSinkGYears}{[$+$4, $+$7]}
+\newcommand{\MatDeltaXcA}{$-$0.0}
+\newcommand{\MatDeltaXcABand}{[$-$0.8, $+$0.8]}
+\newcommand{\MatDeltaXcAYears}{[$-$0.2, $+$0.4]}
+\newcommand{\MatDeltaXcD}{$+$1.3}
+\newcommand{\MatDeltaXcDBand}{[$+$0.4, $+$2.2]}
+\newcommand{\MatDeltaXcDYears}{[$+$0.7, $+$1.5]}
+\newcommand{\MatDeltaXcG}{$+$1.2}
+\newcommand{\MatDeltaXcGBand}{[$+$0.7, $+$1.8]}
+\newcommand{\MatDeltaXcGYears}{[$+$1.1, $+$1.4]}
 \newcommand{\MatHour}{2}
 \newcommand{\MatLevelAllAHK}{$+$0.006}
 \newcommand{\MatLevelAllDHK}{$+$0.004}
@@ -666,16 +675,28 @@
 \newcommand{\MatSideSinkSABand}{[62, 74]}
 \newcommand{\MatSideSinkSG}{62}
 \newcommand{\MatSideSinkSGBand}{[57, 67]}
+\newcommand{\MatSideXcA}{16.5}
+\newcommand{\MatSideXcABand}{[15.5, 17.5]}
+\newcommand{\MatSideXcG}{17.7}
+\newcommand{\MatSideXcGBand}{[17.2, 18.3]}
+\newcommand{\MatSideXcSA}{16.5}
+\newcommand{\MatSideXcSABand}{[15.6, 17.4]}
+\newcommand{\MatSideXcSG}{16.5}
+\newcommand{\MatSideXcSGBand}{[15.9, 17.1]}
 \newcommand{\MatWithMatchA}{3\,851}
 \newcommand{\MatWithMatchG}{6\,018}
+\newcommand{\MatXcControlsA}{588}
+\newcommand{\MatXcControlsG}{1\,976}
+\newcommand{\MatXcPiecesA}{368}
+\newcommand{\MatXcPiecesG}{1\,127}
 \newcommand{\MatZeroA}{5}
 \newcommand{\MatZeroD}{8}
 \newcommand{\MatZeroG}{2}
 \newcommand{\MedianEvery}{0.32}
-\newcommand{\MedianFixed}{0.30}
+\newcommand{\MedianFixed}{0.29}
 \newcommand{\MedianFixedA}{0.23}
-\newcommand{\MedianFixedG}{0.28}
-\newcommand{\MedianFixedS}{0.31}
+\newcommand{\MedianFixedG}{0.29}
+\newcommand{\MedianFixedS}{0.30}
 \newcommand{\MedianLongest}{0.23}
 \newcommand{\MedianLongestA}{0.19}
 \newcommand{\MedianLongestG}{0.29}
@@ -732,6 +753,8 @@
 \newcommand{\PreCASearchBand}{[$-$0.5, $+$0.3]}
 \newcommand{\PreCASink}{$+$2}
 \newcommand{\PreCASinkBand}{[$+$1, $+$3]}
+\newcommand{\PreCAXc}{$+$0.9}
+\newcommand{\PreCAXcBand}{[$+$0.5, $+$1.2]}
 \newcommand{\PreCSClimb}{$-$1.1}
 \newcommand{\PreCSClimbBand}{[$-$1.3, $-$0.9]}
 \newcommand{\PreCSCph}{$-$0.44}
@@ -748,6 +771,8 @@
 \newcommand{\PreCSSearchBand}{[$-$0.6, $-$0.2]}
 \newcommand{\PreCSSink}{$+$3}
 \newcommand{\PreCSSinkBand}{[$+$2, $+$3]}
+\newcommand{\PreCSXc}{$+$1.1}
+\newcommand{\PreCSXcBand}{[$+$1.0, $+$1.2]}
 \newcommand{\PreDwClimb}{$-$0.8}
 \newcommand{\PreDwClimbBand}{[$-$1.4, $-$0.3]}
 \newcommand{\PreDwCph}{$-$0.21}
@@ -764,6 +789,8 @@
 \newcommand{\PreDwSearchBand}{[$+$0.1, $+$0.9]}
 \newcommand{\PreDwSink}{$+$4}
 \newcommand{\PreDwSinkBand}{[$+$2, $+$5]}
+\newcommand{\PreDwXc}{$+$0.0}
+\newcommand{\PreDwXcBand}{[$-$0.3, $+$0.3]}
 \newcommand{\PreEvents}{1\,595}
 \newcommand{\PreEventsMSDCA}{5\,205}
 \newcommand{\PreEventsMSDCS}{26\,175}
@@ -807,6 +834,8 @@
 \newcommand{\PreGSearchBand}{[$-$1.4, $-$0.4]}
 \newcommand{\PreGSink}{$-$5}
 \newcommand{\PreGSinkBand}{[$-$7, $-$4]}
+\newcommand{\PreGXc}{$+$1.4}
+\newcommand{\PreGXcBand}{[$+$1.0, $+$1.8]}
 \newcommand{\PreHKEnd}{0.926}
 \newcommand{\PreHKPost}{0.899}
 \newcommand{\PreHKPre}{0.899}
@@ -827,8 +856,169 @@
 \newcommand{\PreInSearchBand}{[$-$1.0, $+$0.3]}
 \newcommand{\PreInSink}{$-$2}
 \newcommand{\PreInSinkBand}{[$-$4, $+$0]}
+\newcommand{\PreInXc}{$+$1.4}
+\newcommand{\PreInXcBand}{[$+$0.8, $+$1.9]}
 \newcommand{\PreLags}{24}
 \newcommand{\PreMaxLag}{1\,840}
+\newcommand{\PreMockCaliper}{month $\pm2$, hour $\pm2$, same class}
+\newcommand{\PreMockDwClimb}{$-$1.3}
+\newcommand{\PreMockDwClimbBand}{[$-$1.6, $-$1.0]}
+\newcommand{\PreMockDwCph}{$-$0.26}
+\newcommand{\PreMockDwCphBand}{[$-$0.31, $-$0.21]}
+\newcommand{\PreMockDwFound}{$-$1.3}
+\newcommand{\PreMockDwFoundBand}{[$-$2.0, $-$0.7]}
+\newcommand{\PreMockDwGlide}{$-$0.1}
+\newcommand{\PreMockDwGlideBand}{[$-$0.3, $+$0.0]}
+\newcommand{\PreMockDwHK}{$+$0.001}
+\newcommand{\PreMockDwHKBand}{[$-$0.001, $+$0.003]}
+\newcommand{\PreMockDwRate}{$-$0.001}
+\newcommand{\PreMockDwRateBand}{[$-$0.008, $+$0.006]}
+\newcommand{\PreMockDwSearch}{$+$0.0}
+\newcommand{\PreMockDwSearchBand}{[$-$0.2, $+$0.2]}
+\newcommand{\PreMockDwSink}{$+$1}
+\newcommand{\PreMockDwSinkBand}{[$+$0, $+$2]}
+\newcommand{\PreMockDwXc}{$+$0.3}
+\newcommand{\PreMockDwXcBand}{[$+$0.2, $+$0.5]}
+\newcommand{\PreMockEvents}{7\,666}
+\newcommand{\PreMockEventsPhase}{5\,580}
+\newcommand{\PreMockFlights}{4\,716}
+\newcommand{\PreMockGClimb}{$+$1.0}
+\newcommand{\PreMockGClimbBand}{[$+$0.7, $+$1.3]}
+\newcommand{\PreMockGCph}{$+$0.02}
+\newcommand{\PreMockGCphBand}{[$-$0.04, $+$0.09]}
+\newcommand{\PreMockGFound}{$+$0.7}
+\newcommand{\PreMockGFoundBand}{[$-$0.1, $+$1.5]}
+\newcommand{\PreMockGGlide}{$+$0.5}
+\newcommand{\PreMockGGlideBand}{[$+$0.3, $+$0.7]}
+\newcommand{\PreMockGHK}{$+$0.000}
+\newcommand{\PreMockGHKBand}{[$-$0.002, $+$0.003]}
+\newcommand{\PreMockGRate}{$+$0.031}
+\newcommand{\PreMockGRateBand}{[$+$0.022, $+$0.040]}
+\newcommand{\PreMockGSearch}{$-$0.2}
+\newcommand{\PreMockGSearchBand}{[$-$0.5, $+$0.0]}
+\newcommand{\PreMockGSink}{$-$1}
+\newcommand{\PreMockGSinkBand}{[$-$1, $+$0]}
+\newcommand{\PreMockGXc}{$+$0.2}
+\newcommand{\PreMockGXcBand}{[$+$0.0, $+$0.4]}
+\newcommand{\PreMockK}{5}
+\newcommand{\PreMockPool}{10}
+\newcommand{\PreMockRealAll}{1\,595}
+\newcommand{\PreMockRealEvents}{1\,534}
+\newcommand{\PreMockRealEventsPhase}{1\,121}
+\newcommand{\PreMockSiteDwClimb}{$-$0.7}
+\newcommand{\PreMockSiteDwClimbBand}{[$-$1.1, $-$0.4]}
+\newcommand{\PreMockSiteDwCph}{$-$0.17}
+\newcommand{\PreMockSiteDwCphBand}{[$-$0.24, $-$0.10]}
+\newcommand{\PreMockSiteDwFound}{$-$0.3}
+\newcommand{\PreMockSiteDwFoundBand}{[$-$1.1, $+$0.5]}
+\newcommand{\PreMockSiteDwGlide}{$+$0.0}
+\newcommand{\PreMockSiteDwGlideBand}{[$-$0.2, $+$0.2]}
+\newcommand{\PreMockSiteDwHK}{$+$0.001}
+\newcommand{\PreMockSiteDwHKBand}{[$-$0.002, $+$0.004]}
+\newcommand{\PreMockSiteDwRate}{$+$0.007}
+\newcommand{\PreMockSiteDwRateBand}{[$-$0.003, $+$0.018]}
+\newcommand{\PreMockSiteDwSearch}{$-$0.0}
+\newcommand{\PreMockSiteDwSearchBand}{[$-$0.2, $+$0.2]}
+\newcommand{\PreMockSiteDwSink}{$+$3}
+\newcommand{\PreMockSiteDwSinkBand}{[$+$2, $+$4]}
+\newcommand{\PreMockSiteDwXc}{$+$0.4}
+\newcommand{\PreMockSiteDwXcBand}{[$+$0.2, $+$0.6]}
+\newcommand{\PreMockSiteEvents}{6\,166}
+\newcommand{\PreMockSiteEventsPhase}{4\,268}
+\newcommand{\PreMockSiteFlights}{3\,339}
+\newcommand{\PreMockSiteGClimb}{$+$0.7}
+\newcommand{\PreMockSiteGClimbBand}{[$+$0.3, $+$1.1]}
+\newcommand{\PreMockSiteGCph}{$+$0.09}
+\newcommand{\PreMockSiteGCphBand}{[$-$0.00, $+$0.17]}
+\newcommand{\PreMockSiteGFound}{$+$0.5}
+\newcommand{\PreMockSiteGFoundBand}{[$-$0.5, $+$1.5]}
+\newcommand{\PreMockSiteGGlide}{$+$0.6}
+\newcommand{\PreMockSiteGGlideBand}{[$+$0.4, $+$0.8]}
+\newcommand{\PreMockSiteGHK}{$+$0.003}
+\newcommand{\PreMockSiteGHKBand}{[$-$0.001, $+$0.006]}
+\newcommand{\PreMockSiteGRate}{$+$0.029}
+\newcommand{\PreMockSiteGRateBand}{[$+$0.017, $+$0.040]}
+\newcommand{\PreMockSiteGSearch}{$-$0.1}
+\newcommand{\PreMockSiteGSearchBand}{[$-$0.4, $+$0.2]}
+\newcommand{\PreMockSiteGSink}{$+$0}
+\newcommand{\PreMockSiteGSinkBand}{[$-$1, $+$1]}
+\newcommand{\PreMockSiteGXc}{$+$0.1}
+\newcommand{\PreMockSiteGXcBand}{[$-$0.2, $+$0.4]}
+\newcommand{\PreMockSiteRealAll}{1\,595}
+\newcommand{\PreMockSiteRealEvents}{1\,382}
+\newcommand{\PreMockSiteRealEventsPhase}{974}
+\newcommand{\PreMockSubsetGClimb}{$+$2.8}
+\newcommand{\PreMockSubsetGClimbBand}{[$+$2.0, $+$3.6]}
+\newcommand{\PreMockSubsetGCph}{$+$0.37}
+\newcommand{\PreMockSubsetGCphBand}{[$+$0.22, $+$0.52]}
+\newcommand{\PreMockSubsetGFound}{$+$2.8}
+\newcommand{\PreMockSubsetGFoundBand}{[$+$1.1, $+$4.5]}
+\newcommand{\PreMockSubsetGGlide}{$+$1.2}
+\newcommand{\PreMockSubsetGGlideBand}{[$+$0.9, $+$1.6]}
+\newcommand{\PreMockSubsetGHK}{$+$0.028}
+\newcommand{\PreMockSubsetGHKBand}{[$+$0.021, $+$0.034]}
+\newcommand{\PreMockSubsetGRate}{$+$0.043}
+\newcommand{\PreMockSubsetGRateBand}{[$+$0.022, $+$0.064]}
+\newcommand{\PreMockSubsetGSearch}{$-$0.9}
+\newcommand{\PreMockSubsetGSearchBand}{[$-$1.4, $-$0.4]}
+\newcommand{\PreMockSubsetGSink}{$-$5}
+\newcommand{\PreMockSubsetGSinkBand}{[$-$7, $-$4]}
+\newcommand{\PreMockSubsetGXc}{$+$1.4}
+\newcommand{\PreMockSubsetGXcBand}{[$+$1.0, $+$1.8]}
+\newcommand{\PreMockSubsetSiteGClimb}{$+$2.9}
+\newcommand{\PreMockSubsetSiteGClimbBand}{[$+$2.1, $+$3.8]}
+\newcommand{\PreMockSubsetSiteGCph}{$+$0.34}
+\newcommand{\PreMockSubsetSiteGCphBand}{[$+$0.19, $+$0.50]}
+\newcommand{\PreMockSubsetSiteGFound}{$+$2.9}
+\newcommand{\PreMockSubsetSiteGFoundBand}{[$+$1.0, $+$4.7]}
+\newcommand{\PreMockSubsetSiteGGlide}{$+$1.2}
+\newcommand{\PreMockSubsetSiteGGlideBand}{[$+$0.8, $+$1.6]}
+\newcommand{\PreMockSubsetSiteGHK}{$+$0.029}
+\newcommand{\PreMockSubsetSiteGHKBand}{[$+$0.023, $+$0.036]}
+\newcommand{\PreMockSubsetSiteGRate}{$+$0.048}
+\newcommand{\PreMockSubsetSiteGRateBand}{[$+$0.025, $+$0.071]}
+\newcommand{\PreMockSubsetSiteGSearch}{$-$1.2}
+\newcommand{\PreMockSubsetSiteGSearchBand}{[$-$1.7, $-$0.6]}
+\newcommand{\PreMockSubsetSiteGSink}{$-$5}
+\newcommand{\PreMockSubsetSiteGSinkBand}{[$-$7, $-$3]}
+\newcommand{\PreMockSubsetSiteGXc}{$+$1.5}
+\newcommand{\PreMockSubsetSiteGXcBand}{[$+$1.0, $+$1.9]}
+\newcommand{\PreNetGClimb}{$+$1.8}
+\newcommand{\PreNetGClimbBand}{[$+$1.0, $+$2.7]}
+\newcommand{\PreNetGCph}{$+$0.35}
+\newcommand{\PreNetGCphBand}{[$+$0.19, $+$0.51]}
+\newcommand{\PreNetGFound}{$+$2.1}
+\newcommand{\PreNetGFoundBand}{[$+$0.3, $+$4.0]}
+\newcommand{\PreNetGGlide}{$+$0.7}
+\newcommand{\PreNetGGlideBand}{[$+$0.3, $+$1.2]}
+\newcommand{\PreNetGHK}{$+$0.027}
+\newcommand{\PreNetGHKBand}{[$+$0.021, $+$0.034]}
+\newcommand{\PreNetGRate}{$+$0.012}
+\newcommand{\PreNetGRateBand}{[$-$0.011, $+$0.035]}
+\newcommand{\PreNetGSearch}{$-$0.7}
+\newcommand{\PreNetGSearchBand}{[$-$1.3, $-$0.2]}
+\newcommand{\PreNetGSink}{$-$5}
+\newcommand{\PreNetGSinkBand}{[$-$7, $-$3]}
+\newcommand{\PreNetGXc}{$+$1.2}
+\newcommand{\PreNetGXcBand}{[$+$0.7, $+$1.6]}
+\newcommand{\PreNetSiteGClimb}{$+$2.2}
+\newcommand{\PreNetSiteGClimbBand}{[$+$1.2, $+$3.1]}
+\newcommand{\PreNetSiteGCph}{$+$0.26}
+\newcommand{\PreNetSiteGCphBand}{[$+$0.08, $+$0.43]}
+\newcommand{\PreNetSiteGFound}{$+$2.3}
+\newcommand{\PreNetSiteGFoundBand}{[$+$0.2, $+$4.5]}
+\newcommand{\PreNetSiteGGlide}{$+$0.6}
+\newcommand{\PreNetSiteGGlideBand}{[$+$0.1, $+$1.1]}
+\newcommand{\PreNetSiteGHK}{$+$0.026}
+\newcommand{\PreNetSiteGHKBand}{[$+$0.019, $+$0.034]}
+\newcommand{\PreNetSiteGRate}{$+$0.019}
+\newcommand{\PreNetSiteGRateBand}{[$-$0.006, $+$0.045]}
+\newcommand{\PreNetSiteGSearch}{$-$1.1}
+\newcommand{\PreNetSiteGSearchBand}{[$-$1.7, $-$0.5]}
+\newcommand{\PreNetSiteGSink}{$-$6}
+\newcommand{\PreNetSiteGSinkBand}{[$-$8, $-$4]}
+\newcommand{\PreNetSiteGXc}{$+$1.4}
+\newcommand{\PreNetSiteGXcBand}{[$+$0.8, $+$1.9]}
 \newcommand{\PreOrigins}{56}
 \newcommand{\PreOutClimb}{$+$3.6}
 \newcommand{\PreOutClimbBand}{[$+$2.7, $+$4.6]}
@@ -846,6 +1036,8 @@
 \newcommand{\PreOutSearchBand}{[$-$2.0, $-$0.7]}
 \newcommand{\PreOutSink}{$-$9}
 \newcommand{\PreOutSinkBand}{[$-$11, $-$7]}
+\newcommand{\PreOutXc}{$+$1.3}
+\newcommand{\PreOutXcBand}{[$+$0.9, $+$1.8]}
 \newcommand{\PrePPClimb}{$-$2.2}
 \newcommand{\PrePPClimbBand}{[$-$3.0, $-$1.4]}
 \newcommand{\PrePPCph}{$-$0.61}
@@ -862,6 +1054,8 @@
 \newcommand{\PrePPSearchBand}{[$-$0.4, $+$1.0]}
 \newcommand{\PrePPSink}{$+$9}
 \newcommand{\PrePPSinkBand}{[$+$6, $+$11]}
+\newcommand{\PrePPXc}{$+$0.6}
+\newcommand{\PrePPXcBand}{[$+$0.1, $+$1.2]}
 \newcommand{\PreVsGapClimb}{$-$0.2}
 \newcommand{\PreVsGapCph}{$-$0.37}
 \newcommand{\PreVsGapFound}{$+$0.4}
@@ -1031,6 +1225,12 @@
 \newcommand{\RawGapSinkBand}{[$-$19, $-$17]}
 \newcommand{\RawGapSinkGA}{$-$12}
 \newcommand{\RawGapSinkGABand}{[$-$13, $-$11]}
+\newcommand{\RawGapXc}{$+$1.4}
+\newcommand{\RawGapXcAS}{$+$1.0}
+\newcommand{\RawGapXcASBand}{[$+$0.6, $+$1.3]}
+\newcommand{\RawGapXcBand}{[$+$1.0, $+$1.7]}
+\newcommand{\RawGapXcGA}{$+$0.4}
+\newcommand{\RawGapXcGABand}{[$+$0.1, $+$0.7]}
 \newcommand{\RawGlideMedianG}{201}
 \newcommand{\RawGlideMedianS}{201}
 \newcommand{\RawHKCutLongS}{0.909}
@@ -1139,6 +1339,12 @@
 \newcommand{\RawStatSinkGBand}{[81, 84]}
 \newcommand{\RawStatSinkS}{100}
 \newcommand{\RawStatSinkSBand}{[100, 101]}
+\newcommand{\RawStatXcA}{21.5}
+\newcommand{\RawStatXcABand}{[21.0, 21.9]}
+\newcommand{\RawStatXcG}{21.9}
+\newcommand{\RawStatXcGBand}{[21.5, 22.3]}
+\newcommand{\RawStatXcS}{20.5}
+\newcommand{\RawStatXcSBand}{[20.2, 20.7]}
 \newcommand{\RawSumClimbA}{32.0}
 \newcommand{\RawSumClimbG}{36.4}
 \newcommand{\RawSumClimbS}{34.2}
@@ -1160,9 +1366,15 @@
 \newcommand{\RawSumSinkA}{89}
 \newcommand{\RawSumSinkG}{82}
 \newcommand{\RawSumSinkS}{96}
+\newcommand{\RawSumXcA}{22.3}
+\newcommand{\RawSumXcG}{22.7}
+\newcommand{\RawSumXcS}{21.3}
 \newcommand{\RawTauLong}{11\,450}
 \newcommand{\RawTauOne}{1\,000}
 \newcommand{\RawTauTwo}{2\,760}
+\newcommand{\RawXcFlightsA}{5\,463}
+\newcommand{\RawXcFlightsG}{7\,823}
+\newcommand{\RawXcFlightsS}{26\,336}
 \newcommand{\StrictShare}{26}
 \newcommand{\Stricter}{0.5}
 \newcommand{\TakeoffHighFlights}{35\,698}
