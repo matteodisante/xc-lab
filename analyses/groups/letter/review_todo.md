@@ -3,6 +3,28 @@
 Review of `letter.tex` (title since this review: "Good company is a good route"). This file lists what was fixed and
 what is still open, in priority order. Paths are relative to `xc-lab/analyses/groups/`.
 
+## Remaining work, in order (state at commit 57efdac, 2026-11-12)
+
+Everything below this list is a record: items marked Result or Decided are done, do not redo
+them. `analyses/groups/intergroup_plan.md` is executed (report section "Point 7"); read it only
+as background.
+
+1. Compile the letter (only when the author asks): `latexmk -pdf letter.tex` in `letter/`. Check
+   length (PRL: about 3750 words plus figures), that Tables I and II fit one column, no undefined
+   references. If too long, move Fig. `survival` to the supplement first, then shorten "How a
+   group holds a route".
+2. Compile the report in place (only when the author asks): `latexmk -pdf
+   group_vs_solo_comparisons.tex` in `vs-solo/comparisons/`; it already compiles in a temporary
+   folder (37 pages).
+3. Fig. 1 of the letter (item 5 below): design with the author first, then code in
+   `letter/code/figures.py`.
+4. Write `supplement.tex`: every section is still a red placeholder; the sentences moved out of the
+   letter are already there. Turn each section into text and one table, macros only.
+5. Number density of the letter (item 5 of the list below, "Number density").
+6. Smaller points (item 6 below): terrain gain relative to the headroom, the "$-$0.000" format of
+   `\PreCAHK`, a paraglider-only episode count, the venue.
+7. Report only, optional: the open variants of the inter-group analysis (item 4c below).
+
 ## Rules for whoever works on this
 
 - Every number reaches the text through a macro. Never type a number, never edit `generated/` by
