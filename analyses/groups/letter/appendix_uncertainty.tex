@@ -9,9 +9,10 @@ a block of its own.
 To first order an estimate $\hat\theta$ is a sum of terms $\psi_k$ over the units $k$ of the data
 (flights, pieces or events). Two terms are correlated when their units share a pilot $p$ or
 a block $b$, so
-\begin{equation}
-V=\sum_{k,l}\psi_k\psi_l\,\mathbf{1}[p_k=p_l\ \text{or}\ b_k=b_l]=V_P+V_B-V_C ,
-\end{equation}
+\begin{multline}
+V=\sum_{k,l}\psi_k\psi_l\,\mathbf{1}[p_k=p_l\ \text{or}\ b_k=b_l]\\
+=V_P+V_B-V_C ,
+\end{multline}
 where $V_P$ sums the pairs of units with the same pilot, $V_B$ those with the same block, and $V_C$
 those with the same pilot and block, which $V_P$ and $V_B$ both count~\cite{Cameron2011}. Each term
 is the variance of a one-way cluster bootstrap. We resample with replacement the pilots, the blocks

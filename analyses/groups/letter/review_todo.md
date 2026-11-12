@@ -5,6 +5,18 @@ what is still open, in priority order. Paths are relative to `xc-lab/analyses/gr
 
 ## Remaining work, in order (state at commit 57efdac, 2026-11-12)
 
+**Decided and done later on 2026-11-12.** Venue: J. R. Soc. Interface. Fig. 1: one column, (a) map
+of one paraglider episode, (b) membership strip with the four same-flight windows; the designs stay
+in Table I. Compiled: letter 5 pages, about 3630 word-equivalents with the appendices, no
+undefined references, so Fig. `survival` stays; report 37 pages, no errors. Fig. 1 and the
+supplement were then handed to Sonnet agents.
+Done the same day: Fig. 1 (`figures.py: design`, one 3-member episode, 3215 s); `supplement.tex`
+written (12 sections, 10 tables, 9 pages); `letter.tex` moved to a J. R. Soc. Interface layout on
+`article` (initial submission is format-free; no downloaded template), abstract kept as it is by
+the author's choice, 9 pages; "Measuring persistence" now says phases exist on 1 Hz flights only.
+Open for the author: affiliation, email, funding, acknowledgements, keywords, the two `\pending`
+of the supplement (track cleaning, robustness variants), the direction of flight on Fig. 1.
+
 Everything below this list is a record: items marked Result or Decided are done, do not redo
 them. `analyses/groups/intergroup_plan.md` is executed (report section "Point 7"); read it only
 as background.

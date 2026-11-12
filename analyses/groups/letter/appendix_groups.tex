@@ -4,12 +4,12 @@ Two flights are in contact when one passes where the other passes, within a dela
 $\delta=\LtDeltaMin$~min before or after. Write $\mathbf{x}$ for the horizontal position, $z$ for
 the altitude and $\mathbf{h}$ for the heading. A correspondence between flights $i$ and $j$ is a
 pair of instants $(t,t')$ with
-\begin{equation}
-|t'-t|\le\delta,\quad
-\|\mathbf{x}_i(t)-\mathbf{x}_j(t')\|<\varepsilon_h,\quad
-|z_i(t)-z_j(t')|<\varepsilon_z,\quad
+\begin{align}
+&|t'-t|\le\delta,\qquad
+\|\mathbf{x}_i(t)-\mathbf{x}_j(t')\|<\varepsilon_h,\nonumber\\
+&|z_i(t)-z_j(t')|<\varepsilon_z,\qquad
 \angle\bigl(\mathbf{h}_i(t),\mathbf{h}_j(t')\bigr)<\theta ,
-\end{equation}
+\end{align}
 where $\varepsilon_h=\LtEpsH$~m, $\varepsilon_z=\LtEpsZ$~m and $\theta=\LtTheta^\circ$. The heading
 condition applies only when both pilots are in glide: in a climb or a search the heading turns.
 The flights are in contact at $t$ when $t$ belongs to a correspondence $(t,t')$ or $(t',t)$.

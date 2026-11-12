@@ -1,8 +1,13 @@
-\documentclass[aps,prl,twocolumn,superscriptaddress,nofootinbib]{revtex4-2}
+\documentclass[11pt,a4paper]{article}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage[margin=2.5cm]{geometry}
 \usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{lineno}
+\usepackage{cite}
 
 % Numbers: the macros of the two group reports and the letter's own (code/macros.py).
 \input{../vs-solo/generated/comparisons/macros.tex}
@@ -17,11 +22,13 @@
 \newcommand{\Hloc}{H_\mathrm{loc}}
 
 \begin{document}
+\linenumbers
 
 \title{Good company is a good route}
+\author{Authors\\ \small\pending{affiliations}}
+\date{}
 
-\author{Matteo Di Sante}
-\affiliation{\pending{affiliation}}
+\maketitle
 
 \begin{abstract}
 Soaring pilots and birds travel across country by chaining invisible, short-lived thermals, and
@@ -39,7 +46,12 @@ the pilot ahead. The gain grows with the relief, from plains and hills to high m
 gives a pilot the route, and on that route it makes them faster.
 \end{abstract}
 
-\maketitle
+
+\noindent\textbf{Keywords:} soaring flight, collective behaviour, social information, superdiffusion, paragliding
+
+\noindent\textbf{Author for correspondence:}, \pending{email}
+
+\section{Introduction}
 
 Thermal soaring turns the atmosphere into an energy landscape~\cite{Shepard2013}: a bird or a
 glider gains height by circling in rising air and spends it gliding to the next
@@ -69,13 +81,21 @@ a group. Together they point to one reading: company gives a pilot the route, an
 makes them faster.
 
 \begin{figure}[t]
-\placeholder{Fig.~1. (a) One group episode on a map: solo and group stretches coloured, climbs
-marked. (b) Its membership over time. (c) The three designs: raw, same route, same flight.}
-\caption{\pending{caption.}}
+\centering
+\includegraphics[width=0.6\textwidth]{figures/design.pdf}
+\caption{One group of three paragliders. (a) Track of the focal pilot, grey while alone and orange
+in the group, with the climbs as dots and the other members as thin brown lines; east and north
+are measured from the point where the focal pilot joins the group. (b) Time strip: the four windows
+of the same-flight design, each \PreWindow~s long (before, start, end, after), and the time each pilot
+spends in the group with the focal pilot (shaded).}
 \label{fig:design}
 \end{figure}
 
-\textit{Data and groups.} The French free-flight federation (FFVL) keeps the tracks of the
+\section{Data and methods}
+
+\subsection{Data and groups}
+
+The French free-flight federation (FFVL) keeps the tracks of the
 cross-country flights its pilots declare. We use the \LtFlights{} paraglider flights recorded
 between \LtFirstYear{} and \LtLastYear{} with a logger of at most \LtLoggerMax~s. Two pilots are
 in contact when one passes where the other passed shortly before, on a similar heading, and the
@@ -87,19 +107,23 @@ through other pilots, with the same members over an interval. Then \LtGroupShare
 group time of these flights (G), the same flights while alone (A) and the flights never in a
 group (S).
 
-\textit{Measuring persistence.} Every flight is split into climbs, searches and transitions by the
-labelling of Ref.~\cite{Vilpellet2026}. Persistence is read from the time-averaged mean squared
+\subsection{Measuring persistence}
+
+Every flight logged at 1~Hz is split into climbs, searches and transitions by the
+labelling of Ref.~\cite{Vilpellet2026}; the statistics of phases rest on these flights (electronic
+supplementary material). Persistence is read from the time-averaged mean squared
 displacement of the horizontal position through its local exponent
 \begin{equation}
 \Hloc(\tau) = \frac{1}{2}\,\frac{d \ln \mathrm{MSD}(\tau)}{d \ln \tau},
 \end{equation}
 which is $1/2$ for diffusion and 1 for straight flight~\cite{Metzler2014}. The comparisons use the
-flights that end away from their takeoff, since closed circuits bend the MSD at long lags [SM]. All
+flights that end away from their takeoff, since closed circuits bend the MSD at long lags (electronic supplementary material). All
 bands are 90\% intervals of a bootstrap over pilots and over episodes and site-days, combined as
 in Ref.~\cite{Cameron2011} (Appendix~\ref{app:bands}); on synthetic data with no group effect they
 cover zero in \CovNewMin--\CovNewMax\% of the cases.
 
-\begin{figure*}[t]
+\begin{figure}[t]
+\centering
 \includegraphics[width=\textwidth]{figures/persistence.pdf}
 \caption{Persistence of group flight against solo flight by time lag $\tau$, in three designs;
 bands are 90\% intervals. (a) Raw: group time against solo flights (G $-$ S), and the same flights
@@ -110,9 +134,10 @@ and at exit, and the drift along the flight $d_w = (D_\mathrm{in} - D_\mathrm{ou
 $\Hloc(1000~\mathrm{s})$ before the group, at its start, at its end and after it. The dotted line
 marks $\tau = \RawGapCross$~s, where G $-$ S turns positive.}
 \label{fig:persistence}
-\end{figure*}
+\end{figure}
 
-\begin{table}[b]
+\begin{table}[t]
+\centering
 \caption{Change of $\Hloc(1000~\mathrm{s})$ in the three designs, with 90\% bands. S$|$G and S$|$A
 are the solo pieces matched to G and to A; the difference of the two contrasts is the effect of the
 group at fixed route and pilot. In the same flight, $g$ is the change in the group free of a linear
@@ -120,10 +145,10 @@ drift and $d_w$ the drift over one window. Mock events are the same four windows
 times of flight in flights never in a group, in the same season, at the same hour and on a wing of
 the same class; the last row is $g$ minus its value on the mock events.}
 \label{tab:persistence}
-\begin{ruledtabular}
 \begin{tabular}{llr}
+\toprule
 Design & Contrast & $\Delta\Hloc(1000~\mathrm{s})$ \\
-\hline
+\midrule
 Raw & G $-$ S & \RawGapHK{} \RawGapHKBand \\
 Same route & G $-$ S$|$G & \MatDeltaHKG{} \MatDeltaHKGBand \\
  & A $-$ S$|$A & \MatDeltaHKA{} \MatDeltaHKABand \\
@@ -133,11 +158,15 @@ Same flight & $g$ & \PreGHK{} \PreGHKBand \\
  & drift $d_w$ & \PreDwHK{} \PreDwHKBand \\
  & mock events & \PreMockGHK{} \PreMockGHKBand \\
  & $g$ minus mock & \PreNetGHK{} \PreNetGHKBand \\
+\bottomrule
 \end{tabular}
-\end{ruledtabular}
 \end{table}
 
-\textit{Raw comparison.} Below \RawGapCross~s pilots in a group are slightly less persistent than
+\section{Results}
+
+\subsection{Raw comparison}
+
+Below \RawGapCross~s pilots in a group are slightly less persistent than
 solo pilots; beyond, they are more persistent (Fig.~\ref{fig:persistence}a,
 Table~\ref{tab:persistence}). The crossover is the duration of one leg: the median glide lasts
 \RawGlideMedianG~s and the median climb \RawClimbMedianG~s, in G as in S. Over a manoeuvre the group
@@ -145,21 +174,25 @@ costs a little; over the succession of thermals that makes a route, it pays. Gro
 faster: over 30 min it progresses at \RawStatXcG~km/h, against \RawStatXcS~km/h for solo flights.
 These gaps mix the group with the route, the day and the pilot.
 
-\textit{Same route.} We matched every piece of group flight to pieces of solo flights along the same
-route, in the same season, at the same hour and on a wing of the same class [SM]. On the same route
+\subsection{Same route}
+
+We matched every piece of group flight to pieces of solo flights along the same
+route, in the same season, at the same hour and on a wing of the same class (electronic supplementary material). On the same route
 the gap at 1000~s falls to \MatDeltaHKG{} (Fig.~\ref{fig:persistence}b). The same flights while
 alone, matched in the same way, keep part of this gap against their own solo pieces, clearly so at
-longer lags [SM]. The effect of the group at fixed route and pilot is the difference of the two, and
+longer lags (electronic supplementary material). The effect of the group at fixed route and pilot is the difference of the two, and
 it cannot be told from zero, at 1000~s as at longer lags (Table~\ref{tab:persistence}). Speed
 behaves otherwise: at fixed route and pilot the group still gains \MatDeltaXcD{}
 \MatDeltaXcDBand~km/h of cross-country speed over 30 min, on the pieces long enough to measure it
-[SM]. In a wider
+(electronic supplementary material). In a wider
 match on the route alone, over all flights, fixing the route removes \RouteExplained\% of the gap
-between the matched pieces and the solo flights of their site, day and hour [SM].
+between the matched pieces and the solo flights of their site, day and hour (electronic supplementary material).
 
-\textit{Same flight.} Within one flight the pilot and the day are fixed, and the route changes with
+\subsection{Same flight}
+
+Within one flight the pilot and the day are fixed, and the route changes with
 the company. In the flights that join a group and later leave it, we cut four windows of
-\PreWindow~s: before the group, at its start, at its end and after it [SM]. The changes at entry,
+\PreWindow~s: before the group, at its start, at its end and after it (electronic supplementary material). The changes at entry,
 $D_\mathrm{in}$, and at exit, $D_\mathrm{out}$, have a mean $g = (D_\mathrm{in} + D_\mathrm{out})/2$
 free of any linear drift along the flight, and a half difference $d_w = (D_\mathrm{in} -
 D_\mathrm{out})/2$ that measures this drift. Persistence at 1000~s rises by $g = \PreGHK$ in the
@@ -167,10 +200,12 @@ group and returns to its level when the pilot leaves (Fig.~\ref{fig:persistence}
 compatible with zero. Mock events, the same four windows placed at the same times of flight in
 flights never in a group, show no jump (Table~\ref{tab:persistence}): the course of a flight does
 not produce it. Cross-country speed over 30 min rises by \PreGXc~km/h in the group, \PreNetGXc~km/h
-net of the mock events [SM]. The band of the effect at fixed route stays below this jump: most of
+net of the mock events (electronic supplementary material). The band of the effect at fixed route stays below this jump: most of
 the jump is the line the group flies.
 
-\textit{Long glides.} The transitions between climbs last longer in group time
+\subsection{Long glides}
+
+The transitions between climbs last longer in group time
 (Fig.~\ref{fig:survival}). We compare the tails of their durations through the Hill
 estimator~\cite{Hill1975},
 \begin{equation}
@@ -179,34 +214,36 @@ estimator~\cite{Hill1975},
 of the survival $P(X>x)\sim x^{-\mu}$ over the $n$ durations $x_i$ above $x_\mathrm{min}$. We read
 every population at one threshold, $x_\mathrm{min} = \TlXmin$~s, chosen on S by the
 Kolmogorov--Smirnov distance~\cite{Clauset2009}; the bands are those of Appendix~\ref{app:bands} at
-fixed threshold, and the index changes with the threshold [SM]. Raw, the tail of group time is
+fixed threshold, and the index changes with the threshold (electronic supplementary material). Raw, the tail of group time is
 heavier, $\hat\mu = \TlRawMuG$ against \TlRawMuS{} for solo flights (Table~\ref{tab:tail}). The other
 two designs do not confirm it. On the same route the effect of the group on $\hat\mu$ cannot be told
 from zero, with a wide band. Within the flight, the transitions flown entirely in a group have the
 index of those flown before and after it; the heavy tail of group time comes from the transitions
-that cross the start or the end of a group [SM]. The long transitions of a group cost less height
-per km, and so do those of solo pilots on the same route [SM]: a long, cheap glide belongs to the
+that cross the start or the end of a group (electronic supplementary material). The long transitions of a group cost less height
+per km, and so do those of solo pilots on the same route (electronic supplementary material): a long, cheap glide belongs to the
 line.
 
 \begin{figure}[t]
-\includegraphics[width=\columnwidth]{figures/survival.pdf}
+\centering
+\includegraphics[width=0.7\textwidth]{figures/survival.pdf}
 \caption{Survival of the durations of the transitions between climbs in solo flights (S), group
 flights while alone (A) and group time (G), raw design, with 90\% bands. The dotted line marks the
 threshold $x_\mathrm{min} = \TlXmin$~s of the Hill estimator.}
 \label{fig:survival}
 \end{figure}
 
-\begin{table}[b]
+\begin{table}[t]
+\centering
 \caption{Hill index $\hat\mu$ of the durations of the transitions above $x_\mathrm{min} = \TlXmin$~s,
 with 90\% bands at fixed threshold. Same route: the effect of the group at fixed route and pilot, in
 analogy with Table~\ref{tab:persistence}. Same flight: transitions flown entirely before, in and
 after a group, and the change in the group against the mean of before and after. After a group the
-long transitions include the final glides to landing, so before and after differ [SM].}
+long transitions include the final glides to landing, so before and after differ (electronic supplementary material).}
 \label{tab:tail}
-\begin{ruledtabular}
 \begin{tabular}{llr}
+\toprule
 Design & Population or contrast & $\hat\mu$ \\
-\hline
+\midrule
 Raw & S & \TlRawMuS{} \TlRawMuSBand \\
  & A & \TlRawMuA{} \TlRawMuABand \\
  & G & \TlRawMuG{} \TlRawMuGBand \\
@@ -215,27 +252,30 @@ Same flight & before & \TlFlightMuBefore{} \TlFlightMuBeforeBand \\
  & in group & \TlFlightMuIn{} \TlFlightMuInBand \\
  & after & \TlFlightMuAfter{} \TlFlightMuAfterBand \\
  & in $-$ mean(before, after) & \TlFlightDeltaIn{} \TlFlightDeltaInBand \\
+\bottomrule
 \end{tabular}
-\end{ruledtabular}
 \end{table}
 
-\textit{How a group holds a route.} Lift is tied to places: a place where a glider climbed keeps
+\subsection{How a group holds a route}
+
+Lift is tied to places: a place where a glider climbed keeps
 producing climbs for about \StMkHalfGroup~min, and a glider climbing there now raises the rate of
 new climbs by a factor of only \StMkNowGroup{} over one that climbed there five minutes earlier
-[SM]. A route is a chain of such places. Groups fly it as files: the pilot ahead changes
+(electronic supplementary material). A route is a chain of such places. Groups fly it as files: the pilot ahead changes
 \StSwitches{} times per hour, and the lead goes more often to the more experienced pilot and to the
-higher wing class [SM]. Followers turn where the leader turned: the correlation of the headings of a
+higher wing class (electronic supplementary material). Followers turn where the leader turned: the correlation of the headings of a
 pair peaks at a time lag equal to their delay along the route, at every delay, with no second peak
 near zero lag (Fig.~\ref{fig:how}a). A follower retraces the line and does not answer the leader's
-turns, and surrogate pairs, who never saw each other, correlate as much at the longer delays [SM].
+turns, and surrogate pairs, who never saw each other, correlate as much at the longer delays (electronic supplementary material).
 Groups form mostly as chance meetings on such lines: pairs attract only \StEnSoloPair{} times more
-than independent meetings [SM]. On the line the phases of flight change (Fig.~\ref{fig:how}b).
+than independent meetings (electronic supplementary material). On the line the phases of flight change (Fig.~\ref{fig:how}b).
 Within the flight, joining a group raises the time in climb and the share of searches that end in a
 climb, and glides become faster by \PreGGlide~km/h and flatter by \PreGSink~m per km. At fixed route
 and pilot the glides no longer change, while the gain in climb time remains, \MatDeltaClimbD{}
-percentage points, together with the gain in speed [SM].
+percentage points, together with the gain in speed (electronic supplementary material).
 
-\begin{figure*}[t]
+\begin{figure}[t]
+\centering
 \includegraphics[width=\textwidth]{figures/how.pdf}
 \caption{How the group helps. (a) Correlation of the headings of two pilots of a pair in glide,
 against the time lag $\tau$ minus their delay $\ell$ along the route, for four classes of delay:
@@ -244,19 +284,23 @@ statistics in the group, $g$, as a percentage of their level outside it (the mea
 before and after), with 90\% bands. (c) $\Delta\Hloc(1000~\mathrm{s})$ by terrain class, raw
 (G $-$ S) and within the same flight ($g$); darker for higher relief.}
 \label{fig:how}
-\end{figure*}
+\end{figure}
 
-\textit{Terrain.} If the route is what a group gives, the gain should be largest where the route is
+\subsection{Terrain}
+
+If the route is what a group gives, the gain should be largest where the route is
 hard to find. We classed every point of every flight by the local relief within about 10~km,
 following Hammond's landform classes~\cite{Hammond1964} as computed from an elevation
-model~\cite{Dikau1991} [SM]. The gain grows with the relief (Fig.~\ref{fig:how}c): raw, from
+model~\cite{Dikau1991} (electronic supplementary material). The gain grows with the relief (Fig.~\ref{fig:how}c): raw, from
 \LtTerRawLow{} in plains and hills to \LtTerRawHigh{} in high mountains. Within the same flight it
-is clear in mountains and not resolved in plains and hills, where few events are available [SM].
+is clear in mountains and not resolved in plains and hills, where few events are available (electronic supplementary material).
 Alone, a pilot in plains and hills already flies nearly straight, with $\Hloc(1000~\mathrm{s}) =
 \LtTerHlocSLow$ against \LtTerHlocSHigh{} in high mountains, so there is less to gain there; in high
 mountains, where the relief bends the route, the group straightens it most.
 
-\textit{Discussion.} Two features of the effect tie it to the route. It appears only beyond one
+\section{Discussion}
+
+Two features of the effect tie it to the route. It appears only beyond one
 leg, where the choice of the next thermal matters, and it lasts as long as the group. Faster glides
 are what speed-to-fly theory prescribes when the next climb is surer or
 stronger~\cite{MacCready1954,Cochrane1999}, and what vultures do when others reveal the next
@@ -268,14 +312,20 @@ group that gathers on it. Either way, for a pilot the group is where the route i
 flight with itself, before, during and after a group, could measure the value of company for
 soaring birds tagged in flocks.
 
-\begin{acknowledgments}
-\pending{FFVL for the tracks; supervisors; funding.}
-\end{acknowledgments}
-
-\bibliography{letter}
-
 \appendix
+\makeatletter
+\renewcommand{\@seccntformat}[1]{Appendix \csname the#1\endcsname.\quad}
+\makeatother
 \input{appendix_groups}
 \input{appendix_uncertainty}
+
+\section*{Acknowledgements}
+\pending{FFVL for the tracks; supervisors; funding.}
+
+\section*{Funding}
+\pending{funding}
+
+\bibliographystyle{vancouver}
+\bibliography{letter}
 
 \end{document}

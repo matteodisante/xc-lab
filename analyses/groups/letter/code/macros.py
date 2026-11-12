@@ -20,8 +20,13 @@ HERE = Path(__file__).resolve().parents[1]
 GROUPS = HERE.parent
 sys.path.insert(0, str(GROUPS))
 from blocks import SITE_M  # noqa: E402
+from longlags import FIXED_LAG  # noqa: E402
 from openflights import MIN_OPENING  # noqa: E402
-from tamsd import H_MAX  # noqa: E402
+from performance import XC_S  # noqa: E402
+from raw import DATASET_LAGS  # noqa: E402
+from route import MATCH_S  # noqa: E402
+from tail_designs import KS_GRID  # noqa: E402
+from tamsd import H_MAX, HALF_DECADE, SUPPORT, TAU_MAX  # noqa: E402
 RUNS = Path("/Volumes/SSD_DISANTE/xc-lab/group-identification/runs")
 MIN_FLIGHTS_YEAR = 100  # the period starts at the first year with at least this many flights
 LONG = "2000 s"  # the class of tail.py's descriptors that the letter calls the long transitions
@@ -59,6 +64,27 @@ def macros(run):
         "LtPairShare": f"{100 * summary['group hours by size']['n2'] / summary['hours in a group']:.0f}",
         "LtFirstYear": str(busy.min()),
         "LtLastYear": str(busy.max()),
+    }
+
+
+def method_macros(folder):
+    """The constants of the MSD method that the supplement states: window of the local exponent, support
+    rule, lags and datasets, cross-country speed, matching grid, scan of the Hill threshold."""
+    short_window = min(int(f.stem.split("_")[1]) for f in folder.glob("prepost_[0-9]*.json"))
+    return {
+        "LtDecade": f"{HALF_DECADE:g}",
+        "LtSupport": f"{SUPPORT:g}",
+        "LtTauOne": str(TAU_MAX),
+        "LtTauTwo": str(FIXED_LAG),
+        "LtLagOne": str(DATASET_LAGS[0]),
+        "LtLagTwo": str(DATASET_LAGS[1]),
+        "LtXcMin": f"{XC_S / 60:g}",
+        "LtXcS": str(XC_S),
+        "LtMatchStep": str(MATCH_S),
+        "LtKsN": str(len(KS_GRID)),
+        "LtKsLow": f"{KS_GRID[0]:.0f}",
+        "LtKsHigh": f"{KS_GRID[-1]:.0f}",
+        "LtWinShortShare": f"{TAU_MAX / short_window:.2f}",
     }
 
 
@@ -131,7 +157,7 @@ def main():
     parser.add_argument("--run", default="d120_eh500_ez300_th45_g120_q0.1")
     run = parser.parse_args().run
     folder = GROUPS / "out" / run / f"open_min{MIN_OPENING:g}"
-    values = macros(run) | tail_macros(folder) | terrain_macros(folder)
+    values = macros(run) | method_macros(folder) | tail_macros(folder) | terrain_macros(folder)
     out = HERE / "generated" / "macros.tex"
     out.parent.mkdir(exist_ok=True)
     out.write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in values.items()))
