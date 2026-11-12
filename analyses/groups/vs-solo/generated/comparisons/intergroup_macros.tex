@@ -1,0 +1,1226 @@
+\newcommand{\IgBinLow}{0.5}
+\newcommand{\IgBinLowTwo}{1}
+\newcommand{\IgBins}{0.5, 1, 2, 5, 10 and 20}
+\newcommand{\IgCellFiveGroupAheadFlights}{5\,152}
+\newcommand{\IgCellFiveGroupAheadH}{0.914}
+\newcommand{\IgCellFiveGroupAheadHBand}{[0.910, 0.917]}
+\newcommand{\IgCellFiveGroupAheadPieces}{6\,160}
+\newcommand{\IgCellFiveGroupAheadPilots}{2\,142}
+\newcommand{\IgCellFiveGroupAloneFlights}{2\,480}
+\newcommand{\IgCellFiveGroupAloneH}{0.920}
+\newcommand{\IgCellFiveGroupAloneHBand}{[0.916, 0.924]}
+\newcommand{\IgCellFiveGroupAlonePieces}{2\,859}
+\newcommand{\IgCellFiveGroupAlonePilots}{1\,145}
+\newcommand{\IgCellFiveGroupBehindFlights}{538}
+\newcommand{\IgCellFiveGroupBehindH}{0.942}
+\newcommand{\IgCellFiveGroupBehindHBand}{[0.935, 0.949]}
+\newcommand{\IgCellFiveGroupBehindPieces}{557}
+\newcommand{\IgCellFiveGroupBehindPilots}{395}
+\newcommand{\IgCellFiveGroupMixedFlights}{3\,788}
+\newcommand{\IgCellFiveGroupMixedH}{0.917}
+\newcommand{\IgCellFiveGroupMixedHBand}{[0.913, 0.921]}
+\newcommand{\IgCellFiveGroupMixedPieces}{4\,252}
+\newcommand{\IgCellFiveGroupMixedPilots}{1\,599}
+\newcommand{\IgCellFiveSoloAheadFlights}{14\,654}
+\newcommand{\IgCellFiveSoloAheadH}{0.886}
+\newcommand{\IgCellFiveSoloAheadHBand}{[0.884, 0.889]}
+\newcommand{\IgCellFiveSoloAheadPieces}{16\,671}
+\newcommand{\IgCellFiveSoloAheadPilots}{3\,811}
+\newcommand{\IgCellFiveSoloAloneFlights}{19\,218}
+\newcommand{\IgCellFiveSoloAloneH}{0.911}
+\newcommand{\IgCellFiveSoloAloneHBand}{[0.909, 0.913]}
+\newcommand{\IgCellFiveSoloAlonePieces}{19\,950}
+\newcommand{\IgCellFiveSoloAlonePilots}{3\,334}
+\newcommand{\IgCellFiveSoloBehindFlights}{1\,333}
+\newcommand{\IgCellFiveSoloBehindH}{0.919}
+\newcommand{\IgCellFiveSoloBehindHBand}{[0.915, 0.923]}
+\newcommand{\IgCellFiveSoloBehindPieces}{1\,353}
+\newcommand{\IgCellFiveSoloBehindPilots}{877}
+\newcommand{\IgCellFiveSoloMixedFlights}{17\,103}
+\newcommand{\IgCellFiveSoloMixedH}{0.895}
+\newcommand{\IgCellFiveSoloMixedHBand}{[0.892, 0.897]}
+\newcommand{\IgCellFiveSoloMixedPieces}{17\,724}
+\newcommand{\IgCellFiveSoloMixedPilots}{3\,749}
+\newcommand{\IgCellOneGroupAheadFlights}{1\,365}
+\newcommand{\IgCellOneGroupAheadH}{0.910}
+\newcommand{\IgCellOneGroupAheadHBand}{[0.903, 0.917]}
+\newcommand{\IgCellOneGroupAheadPieces}{1\,493}
+\newcommand{\IgCellOneGroupAheadPilots}{923}
+\newcommand{\IgCellOneGroupAloneFlights}{5\,052}
+\newcommand{\IgCellOneGroupAloneH}{0.920}
+\newcommand{\IgCellOneGroupAloneHBand}{[0.916, 0.923]}
+\newcommand{\IgCellOneGroupAlonePieces}{5\,917}
+\newcommand{\IgCellOneGroupAlonePilots}{1\,873}
+\newcommand{\IgCellOneGroupBehindFlights}{39}
+\newcommand{\IgCellOneGroupBehindH}{0.906}
+\newcommand{\IgCellOneGroupBehindHBand}{[0.876, 0.935]}
+\newcommand{\IgCellOneGroupBehindPieces}{39}
+\newcommand{\IgCellOneGroupBehindPilots}{38}
+\newcommand{\IgCellOneGroupMixedFlights}{5\,461}
+\newcommand{\IgCellOneGroupMixedH}{0.917}
+\newcommand{\IgCellOneGroupMixedHBand}{[0.913, 0.920]}
+\newcommand{\IgCellOneGroupMixedPieces}{6\,379}
+\newcommand{\IgCellOneGroupMixedPilots}{2\,105}
+\newcommand{\IgCellOneSoloAheadFlights}{2\,747}
+\newcommand{\IgCellOneSoloAheadH}{0.890}
+\newcommand{\IgCellOneSoloAheadHBand}{[0.884, 0.895]}
+\newcommand{\IgCellOneSoloAheadPieces}{2\,929}
+\newcommand{\IgCellOneSoloAheadPilots}{1\,553}
+\newcommand{\IgCellOneSoloAloneFlights}{31\,841}
+\newcommand{\IgCellOneSoloAloneH}{0.905}
+\newcommand{\IgCellOneSoloAloneHBand}{[0.903, 0.907]}
+\newcommand{\IgCellOneSoloAlonePieces}{33\,315}
+\newcommand{\IgCellOneSoloAlonePilots}{4\,377}
+\newcommand{\IgCellOneSoloBehindFlights}{137}
+\newcommand{\IgCellOneSoloBehindH}{0.925}
+\newcommand{\IgCellOneSoloBehindHBand}{[0.914, 0.936]}
+\newcommand{\IgCellOneSoloBehindPieces}{137}
+\newcommand{\IgCellOneSoloBehindPilots}{129}
+\newcommand{\IgCellOneSoloMixedFlights}{17\,667}
+\newcommand{\IgCellOneSoloMixedH}{0.890}
+\newcommand{\IgCellOneSoloMixedHBand}{[0.887, 0.892]}
+\newcommand{\IgCellOneSoloMixedPieces}{19\,317}
+\newcommand{\IgCellOneSoloMixedPilots}{4\,009}
+\newcommand{\IgCellTenGroupAheadFlights}{6\,335}
+\newcommand{\IgCellTenGroupAheadH}{0.913}
+\newcommand{\IgCellTenGroupAheadHBand}{[0.910, 0.917]}
+\newcommand{\IgCellTenGroupAheadPieces}{7\,741}
+\newcommand{\IgCellTenGroupAheadPilots}{2\,381}
+\newcommand{\IgCellTenGroupAloneFlights}{1\,725}
+\newcommand{\IgCellTenGroupAloneH}{0.922}
+\newcommand{\IgCellTenGroupAloneHBand}{[0.917, 0.927]}
+\newcommand{\IgCellTenGroupAlonePieces}{1\,989}
+\newcommand{\IgCellTenGroupAlonePilots}{875}
+\newcommand{\IgCellTenGroupBehindFlights}{763}
+\newcommand{\IgCellTenGroupBehindH}{0.944}
+\newcommand{\IgCellTenGroupBehindHBand}{[0.938, 0.950]}
+\newcommand{\IgCellTenGroupBehindPieces}{805}
+\newcommand{\IgCellTenGroupBehindPilots}{511}
+\newcommand{\IgCellTenGroupMixedFlights}{2\,984}
+\newcommand{\IgCellTenGroupMixedH}{0.916}
+\newcommand{\IgCellTenGroupMixedHBand}{[0.912, 0.920]}
+\newcommand{\IgCellTenGroupMixedPieces}{3\,293}
+\newcommand{\IgCellTenGroupMixedPilots}{1\,313}
+\newcommand{\IgCellTenSoloAheadFlights}{20\,643}
+\newcommand{\IgCellTenSoloAheadH}{0.887}
+\newcommand{\IgCellTenSoloAheadHBand}{[0.884, 0.889]}
+\newcommand{\IgCellTenSoloAheadPieces}{23\,520}
+\newcommand{\IgCellTenSoloAheadPilots}{4\,372}
+\newcommand{\IgCellTenSoloAloneFlights}{14\,944}
+\newcommand{\IgCellTenSoloAloneH}{0.912}
+\newcommand{\IgCellTenSoloAloneHBand}{[0.910, 0.915]}
+\newcommand{\IgCellTenSoloAlonePieces}{15\,489}
+\newcommand{\IgCellTenSoloAlonePilots}{2\,929}
+\newcommand{\IgCellTenSoloBehindFlights}{2\,289}
+\newcommand{\IgCellTenSoloBehindH}{0.922}
+\newcommand{\IgCellTenSoloBehindHBand}{[0.919, 0.925]}
+\newcommand{\IgCellTenSoloBehindPieces}{2\,324}
+\newcommand{\IgCellTenSoloBehindPilots}{1\,216}
+\newcommand{\IgCellTenSoloMixedFlights}{14\,017}
+\newcommand{\IgCellTenSoloMixedH}{0.899}
+\newcommand{\IgCellTenSoloMixedHBand}{[0.896, 0.901]}
+\newcommand{\IgCellTenSoloMixedPieces}{14\,365}
+\newcommand{\IgCellTenSoloMixedPilots}{3\,258}
+\newcommand{\IgCellTwoGroupAheadFlights}{3\,023}
+\newcommand{\IgCellTwoGroupAheadH}{0.913}
+\newcommand{\IgCellTwoGroupAheadHBand}{[0.909, 0.917]}
+\newcommand{\IgCellTwoGroupAheadPieces}{3\,442}
+\newcommand{\IgCellTwoGroupAheadPilots}{1\,601}
+\newcommand{\IgCellTwoGroupAloneFlights}{3\,838}
+\newcommand{\IgCellTwoGroupAloneH}{0.921}
+\newcommand{\IgCellTwoGroupAloneHBand}{[0.917, 0.924]}
+\newcommand{\IgCellTwoGroupAlonePieces}{4\,453}
+\newcommand{\IgCellTwoGroupAlonePilots}{1\,561}
+\newcommand{\IgCellTwoGroupBehindFlights}{176}
+\newcommand{\IgCellTwoGroupBehindH}{0.929}
+\newcommand{\IgCellTwoGroupBehindHBand}{[0.917, 0.942]}
+\newcommand{\IgCellTwoGroupBehindPieces}{182}
+\newcommand{\IgCellTwoGroupBehindPilots}{157}
+\newcommand{\IgCellTwoGroupMixedFlights}{5\,014}
+\newcommand{\IgCellTwoGroupMixedH}{0.916}
+\newcommand{\IgCellTwoGroupMixedHBand}{[0.912, 0.920]}
+\newcommand{\IgCellTwoGroupMixedPieces}{5\,751}
+\newcommand{\IgCellTwoGroupMixedPilots}{1\,944}
+\newcommand{\IgCellTwoSoloAheadFlights}{7\,199}
+\newcommand{\IgCellTwoSoloAheadH}{0.888}
+\newcommand{\IgCellTwoSoloAheadHBand}{[0.884, 0.891]}
+\newcommand{\IgCellTwoSoloAheadPieces}{7\,917}
+\newcommand{\IgCellTwoSoloAheadPilots}{2\,787}
+\newcommand{\IgCellTwoSoloAloneFlights}{26\,213}
+\newcommand{\IgCellTwoSoloAloneH}{0.907}
+\newcommand{\IgCellTwoSoloAloneHBand}{[0.905, 0.909]}
+\newcommand{\IgCellTwoSoloAlonePieces}{27\,281}
+\newcommand{\IgCellTwoSoloAlonePilots}{3\,952}
+\newcommand{\IgCellTwoSoloBehindFlights}{419}
+\newcommand{\IgCellTwoSoloBehindH}{0.915}
+\newcommand{\IgCellTwoSoloBehindHBand}{[0.908, 0.922]}
+\newcommand{\IgCellTwoSoloBehindPieces}{422}
+\newcommand{\IgCellTwoSoloBehindPilots}{350}
+\newcommand{\IgCellTwoSoloMixedFlights}{18\,836}
+\newcommand{\IgCellTwoSoloMixedH}{0.891}
+\newcommand{\IgCellTwoSoloMixedHBand}{[0.889, 0.893]}
+\newcommand{\IgCellTwoSoloMixedPieces}{20\,078}
+\newcommand{\IgCellTwoSoloMixedPilots}{4\,042}
+\newcommand{\IgClassFiveGroupAhead}{6\,160}
+\newcommand{\IgClassFiveGroupAlone}{2\,859}
+\newcommand{\IgClassFiveGroupBehind}{557}
+\newcommand{\IgClassFiveGroupMixed}{4\,252}
+\newcommand{\IgClassFiveSoloAhead}{16\,671}
+\newcommand{\IgClassFiveSoloAlone}{19\,950}
+\newcommand{\IgClassFiveSoloBehind}{1\,353}
+\newcommand{\IgClassFiveSoloMixed}{17\,724}
+\newcommand{\IgClassOneGroupAhead}{1\,493}
+\newcommand{\IgClassOneGroupAlone}{5\,917}
+\newcommand{\IgClassOneGroupBehind}{39}
+\newcommand{\IgClassOneGroupMixed}{6\,379}
+\newcommand{\IgClassOneSoloAhead}{2\,929}
+\newcommand{\IgClassOneSoloAlone}{33\,315}
+\newcommand{\IgClassOneSoloBehind}{137}
+\newcommand{\IgClassOneSoloMixed}{19\,317}
+\newcommand{\IgClassTenGroupAhead}{7\,741}
+\newcommand{\IgClassTenGroupAlone}{1\,989}
+\newcommand{\IgClassTenGroupBehind}{805}
+\newcommand{\IgClassTenGroupMixed}{3\,293}
+\newcommand{\IgClassTenSoloAhead}{23\,520}
+\newcommand{\IgClassTenSoloAlone}{15\,489}
+\newcommand{\IgClassTenSoloBehind}{2\,324}
+\newcommand{\IgClassTenSoloMixed}{14\,365}
+\newcommand{\IgClassTwoGroupAhead}{3\,442}
+\newcommand{\IgClassTwoGroupAlone}{4\,453}
+\newcommand{\IgClassTwoGroupBehind}{182}
+\newcommand{\IgClassTwoGroupMixed}{5\,751}
+\newcommand{\IgClassTwoSoloAhead}{7\,917}
+\newcommand{\IgClassTwoSoloAlone}{27\,281}
+\newcommand{\IgClassTwoSoloBehind}{422}
+\newcommand{\IgClassTwoSoloMixed}{20\,078}
+\newcommand{\IgConFiveBothFlight}{$+$0.008}
+\newcommand{\IgConFiveBothFlightBand}{[$-$0.015, $+$0.030]}
+\newcommand{\IgConFiveBothFlights}{61}
+\newcommand{\IgConFiveBothRaw}{$+$0.003}
+\newcommand{\IgConFiveBothRawBand}{[$-$0.001, $+$0.007]}
+\newcommand{\IgConFiveCrowdFlight}{$-$0.012}
+\newcommand{\IgConFiveCrowdFlightBand}{[$-$0.044, $+$0.020]}
+\newcommand{\IgConFiveCrowdFlights}{43}
+\newcommand{\IgConFiveCrowdRaw}{$+$0.008}
+\newcommand{\IgConFiveCrowdRawBand}{[$+$0.004, $+$0.012]}
+\newcommand{\IgConFiveInfoGroupFlight}{$-$0.052}
+\newcommand{\IgConFiveInfoGroupFlightBand}{[$-$0.108, $+$0.005]}
+\newcommand{\IgConFiveInfoGroupFlights}{79}
+\newcommand{\IgConFiveInfoGroupRaw}{$-$0.028}
+\newcommand{\IgConFiveInfoGroupRawBand}{[$-$0.035, $-$0.021]}
+\newcommand{\IgConFiveInfoSoloFlight}{$-$0.047}
+\newcommand{\IgConFiveInfoSoloFlightBand}{[$-$0.073, $-$0.021]}
+\newcommand{\IgConFiveInfoSoloFlights}{157}
+\newcommand{\IgConFiveInfoSoloRaw}{$-$0.032}
+\newcommand{\IgConFiveInfoSoloRawBand}{[$-$0.036, $-$0.028]}
+\newcommand{\IgConFiveInterFlight}{$+$0.016}
+\newcommand{\IgConFiveInterFlightBand}{[$-$0.005, $+$0.036]}
+\newcommand{\IgConFiveInterFlights}{177}
+\newcommand{\IgConFiveInterRaw}{$-$0.024}
+\newcommand{\IgConFiveInterRawBand}{[$-$0.027, $-$0.022]}
+\newcommand{\IgConFiveIntraFlight}{$+$0.011}
+\newcommand{\IgConFiveIntraFlightBand}{[$-$0.008, $+$0.030]}
+\newcommand{\IgConFiveIntraFlights}{143}
+\newcommand{\IgConFiveIntraRaw}{$+$0.009}
+\newcommand{\IgConFiveIntraRawBand}{[$+$0.005, $+$0.013]}
+\newcommand{\IgConOneBothFlight}{$+$0.027}
+\newcommand{\IgConOneBothFlightBand}{[$-$0.001, $+$0.055]}
+\newcommand{\IgConOneBothFlights}{163}
+\newcommand{\IgConOneBothRaw}{$+$0.005}
+\newcommand{\IgConOneBothRawBand}{[$-$0.001, $+$0.012]}
+\newcommand{\IgConOneCrowdFlight}{$+$0.001}
+\newcommand{\IgConOneCrowdFlightBand}{[$-$0.074, $+$0.076]}
+\newcommand{\IgConOneCrowdFlights}{13}
+\newcommand{\IgConOneCrowdRaw}{$+$0.020}
+\newcommand{\IgConOneCrowdRawBand}{[$+$0.009, $+$0.031]}
+\newcommand{\IgConOneInfoGroupFlight}{$-$0.240}
+\newcommand{\IgConOneInfoGroupFlightBand}{[$-$0.240, $-$0.240]}
+\newcommand{\IgConOneInfoGroupFlights}{1}
+\newcommand{\IgConOneInfoGroupRaw}{$+$0.004}
+\newcommand{\IgConOneInfoGroupRawBand}{[$-$0.025, $+$0.034]}
+\newcommand{\IgConOneInfoSoloFlight}{$-$0.062}
+\newcommand{\IgConOneInfoSoloFlightBand}{[$-$0.153, $+$0.029]}
+\newcommand{\IgConOneInfoSoloFlights}{6}
+\newcommand{\IgConOneInfoSoloRaw}{$-$0.035}
+\newcommand{\IgConOneInfoSoloRawBand}{[$-$0.047, $-$0.024]}
+\newcommand{\IgConOneInterFlight}{$+$0.003}
+\newcommand{\IgConOneInterFlightBand}{[$-$0.027, $+$0.032]}
+\newcommand{\IgConOneInterFlights}{273}
+\newcommand{\IgConOneInterRaw}{$-$0.015}
+\newcommand{\IgConOneInterRawBand}{[$-$0.020, $-$0.010]}
+\newcommand{\IgConOneIntraFlight}{$+$0.023}
+\newcommand{\IgConOneIntraFlightBand}{[$+$0.015, $+$0.031]}
+\newcommand{\IgConOneIntraFlights}{1\,693}
+\newcommand{\IgConOneIntraRaw}{$+$0.015}
+\newcommand{\IgConOneIntraRawBand}{[$+$0.012, $+$0.018]}
+\newcommand{\IgConTenBothFlight}{$+$0.007}
+\newcommand{\IgConTenBothFlightBand}{[$-$0.036, $+$0.051]}
+\newcommand{\IgConTenBothFlights}{27}
+\newcommand{\IgConTenBothRaw}{$+$0.001}
+\newcommand{\IgConTenBothRawBand}{[$-$0.003, $+$0.005]}
+\newcommand{\IgConTenCrowdFlight}{$+$0.023}
+\newcommand{\IgConTenCrowdFlightBand}{[$-$0.010, $+$0.056]}
+\newcommand{\IgConTenCrowdFlights}{50}
+\newcommand{\IgConTenCrowdRaw}{$+$0.010}
+\newcommand{\IgConTenCrowdRawBand}{[$+$0.007, $+$0.013]}
+\newcommand{\IgConTenInfoGroupFlight}{$-$0.051}
+\newcommand{\IgConTenInfoGroupFlightBand}{[$-$0.090, $-$0.011]}
+\newcommand{\IgConTenInfoGroupFlights}{118}
+\newcommand{\IgConTenInfoGroupRaw}{$-$0.030}
+\newcommand{\IgConTenInfoGroupRawBand}{[$-$0.036, $-$0.024]}
+\newcommand{\IgConTenInfoSoloFlight}{$-$0.030}
+\newcommand{\IgConTenInfoSoloFlightBand}{[$-$0.054, $-$0.007]}
+\newcommand{\IgConTenInfoSoloFlights}{192}
+\newcommand{\IgConTenInfoSoloRaw}{$-$0.035}
+\newcommand{\IgConTenInfoSoloRawBand}{[$-$0.038, $-$0.032]}
+\newcommand{\IgConTenInterFlight}{$+$0.005}
+\newcommand{\IgConTenInterFlightBand}{[$-$0.021, $+$0.030]}
+\newcommand{\IgConTenInterFlights}{135}
+\newcommand{\IgConTenInterRaw}{$-$0.026}
+\newcommand{\IgConTenInterRawBand}{[$-$0.028, $-$0.023]}
+\newcommand{\IgConTenIntraFlight}{$+$0.004}
+\newcommand{\IgConTenIntraFlightBand}{[$-$0.024, $+$0.032]}
+\newcommand{\IgConTenIntraFlights}{66}
+\newcommand{\IgConTenIntraRaw}{$+$0.010}
+\newcommand{\IgConTenIntraRawBand}{[$+$0.005, $+$0.014]}
+\newcommand{\IgConTwoBothFlight}{$+$0.018}
+\newcommand{\IgConTwoBothFlightBand}{[$-$0.005, $+$0.041]}
+\newcommand{\IgConTwoBothFlights}{168}
+\newcommand{\IgConTwoBothRaw}{$+$0.006}
+\newcommand{\IgConTwoBothRawBand}{[$+$0.001, $+$0.010]}
+\newcommand{\IgConTwoCrowdFlight}{$+$0.048}
+\newcommand{\IgConTwoCrowdFlightBand}{[$-$0.004, $+$0.101]}
+\newcommand{\IgConTwoCrowdFlights}{46}
+\newcommand{\IgConTwoCrowdRaw}{$+$0.008}
+\newcommand{\IgConTwoCrowdRawBand}{[$+$0.001, $+$0.015]}
+\newcommand{\IgConTwoInfoGroupFlight}{$-$0.114}
+\newcommand{\IgConTwoInfoGroupFlightBand}{[$-$0.317, $+$0.088]}
+\newcommand{\IgConTwoInfoGroupFlights}{22}
+\newcommand{\IgConTwoInfoGroupRaw}{$-$0.016}
+\newcommand{\IgConTwoInfoGroupRawBand}{[$-$0.029, $-$0.003]}
+\newcommand{\IgConTwoInfoSoloFlight}{$-$0.018}
+\newcommand{\IgConTwoInfoSoloFlightBand}{[$-$0.055, $+$0.019]}
+\newcommand{\IgConTwoInfoSoloFlights}{47}
+\newcommand{\IgConTwoInfoSoloRaw}{$-$0.027}
+\newcommand{\IgConTwoInfoSoloRawBand}{[$-$0.034, $-$0.020]}
+\newcommand{\IgConTwoInterFlight}{$+$0.009}
+\newcommand{\IgConTwoInterFlightBand}{[$-$0.012, $+$0.031]}
+\newcommand{\IgConTwoInterFlights}{302}
+\newcommand{\IgConTwoInterRaw}{$-$0.020}
+\newcommand{\IgConTwoInterRawBand}{[$-$0.023, $-$0.016]}
+\newcommand{\IgConTwoIntraFlight}{$+$0.021}
+\newcommand{\IgConTwoIntraFlightBand}{[$+$0.007, $+$0.034]}
+\newcommand{\IgConTwoIntraFlights}{705}
+\newcommand{\IgConTwoIntraRaw}{$+$0.014}
+\newcommand{\IgConTwoIntraRawBand}{[$+$0.010, $+$0.017]}
+\newcommand{\IgEdgeFive}{10}
+\newcommand{\IgEdgeFour}{5}
+\newcommand{\IgEdgeOne}{0.5}
+\newcommand{\IgEdgeSix}{20}
+\newcommand{\IgEdgeThree}{2}
+\newcommand{\IgEdgeTwo}{1}
+\newcommand{\IgEventsSearchGroup}{57\,629}
+\newcommand{\IgEventsSearchSolo}{334\,582}
+\newcommand{\IgEventsSinkGroup}{84\,666}
+\newcommand{\IgEventsSinkSolo}{496\,167}
+\newcommand{\IgEventsSpeedGroup}{84\,666}
+\newcommand{\IgEventsSpeedSolo}{496\,167}
+\newcommand{\IgFHigh}{0.5}
+\newcommand{\IgFLow}{0.1}
+\newcommand{\IgGapHigh}{12.3}
+\newcommand{\IgGapLow}{0.3}
+\newcommand{\IgGapMed}{2.5}
+\newcommand{\IgGapNone}{33}
+\newcommand{\IgGapOtherHigh}{15.3}
+\newcommand{\IgGapOtherLow}{0.5}
+\newcommand{\IgGapOtherMed}{4.6}
+\newcommand{\IgGapOtherNone}{73}
+\newcommand{\IgGapSoloHigh}{12.7}
+\newcommand{\IgGapSoloLow}{0.4}
+\newcommand{\IgGapSoloMed}{2.8}
+\newcommand{\IgGapSoloNone}{35}
+\newcommand{\IgGroupMinutes}{518\,103}
+\newcommand{\IgGroups}{15\,931}
+\newcommand{\IgHBins}{2, 5, 10 and 20}
+\newcommand{\IgHEdgeFour}{20}
+\newcommand{\IgHEdgeOne}{2}
+\newcommand{\IgHEdgeThree}{10}
+\newcommand{\IgHEdgeTwo}{5}
+\newcommand{\IgHlocGroupAA}{0.913}
+\newcommand{\IgHlocGroupAABand}{[0.909, 0.917]}
+\newcommand{\IgHlocGroupAAPieces}{3\,401}
+\newcommand{\IgHlocGroupAB}{0.914}
+\newcommand{\IgHlocGroupABBand}{[0.909, 0.919]}
+\newcommand{\IgHlocGroupABPieces}{2\,728}
+\newcommand{\IgHlocGroupAC}{0.912}
+\newcommand{\IgHlocGroupACBand}{[0.907, 0.918]}
+\newcommand{\IgHlocGroupACPieces}{1\,569}
+\newcommand{\IgHlocGroupAD}{0.912}
+\newcommand{\IgHlocGroupADBand}{[0.907, 0.918]}
+\newcommand{\IgHlocGroupADPieces}{1\,407}
+\newcommand{\IgHlocGroupAE}{0.924}
+\newcommand{\IgHlocGroupAEBand}{[0.920, 0.927]}
+\newcommand{\IgHlocGroupAEPieces}{4\,723}
+\newcommand{\IgHlocGroupBA}{0.914}
+\newcommand{\IgHlocGroupBABand}{[0.910, 0.918]}
+\newcommand{\IgHlocGroupBAPieces}{3\,746}
+\newcommand{\IgHlocGroupBB}{0.918}
+\newcommand{\IgHlocGroupBBBand}{[0.913, 0.922]}
+\newcommand{\IgHlocGroupBBPieces}{3\,311}
+\newcommand{\IgHlocGroupBC}{0.919}
+\newcommand{\IgHlocGroupBCBand}{[0.914, 0.924]}
+\newcommand{\IgHlocGroupBCPieces}{1\,968}
+\newcommand{\IgHlocGroupBD}{0.914}
+\newcommand{\IgHlocGroupBDBand}{[0.908, 0.919]}
+\newcommand{\IgHlocGroupBDPieces}{1\,463}
+\newcommand{\IgHlocGroupBE}{0.921}
+\newcommand{\IgHlocGroupBEBand}{[0.917, 0.925]}
+\newcommand{\IgHlocGroupBEPieces}{3\,340}
+\newcommand{\IgHlocGroupDiffA}{$-$0.001}
+\newcommand{\IgHlocGroupDiffABand}{[$-$0.004, $+$0.002]}
+\newcommand{\IgHlocGroupDiffB}{$-$0.004}
+\newcommand{\IgHlocGroupDiffBBand}{[$-$0.008, $-$0.000]}
+\newcommand{\IgHlocGroupDiffC}{$-$0.007}
+\newcommand{\IgHlocGroupDiffCBand}{[$-$0.012, $-$0.001]}
+\newcommand{\IgHlocGroupDiffD}{$-$0.001}
+\newcommand{\IgHlocGroupDiffDBand}{[$-$0.008, $+$0.006]}
+\newcommand{\IgHlocGroupDiffE}{$+$0.003}
+\newcommand{\IgHlocGroupDiffEBand}{[$-$0.001, $+$0.006]}
+\newcommand{\IgHlocSoloAA}{0.888}
+\newcommand{\IgHlocSoloAABand}{[0.884, 0.891]}
+\newcommand{\IgHlocSoloAAPieces}{7\,779}
+\newcommand{\IgHlocSoloAB}{0.885}
+\newcommand{\IgHlocSoloABBand}{[0.883, 0.888]}
+\newcommand{\IgHlocSoloABPieces}{8\,765}
+\newcommand{\IgHlocSoloAC}{0.887}
+\newcommand{\IgHlocSoloACBand}{[0.885, 0.890]}
+\newcommand{\IgHlocSoloACPieces}{6\,853}
+\newcommand{\IgHlocSoloAD}{0.893}
+\newcommand{\IgHlocSoloADBand}{[0.891, 0.896]}
+\newcommand{\IgHlocSoloADPieces}{6\,048}
+\newcommand{\IgHlocSoloAE}{0.910}
+\newcommand{\IgHlocSoloAEBand}{[0.908, 0.912]}
+\newcommand{\IgHlocSoloAEPieces}{26\,253}
+\newcommand{\IgHlocSoloBA}{0.890}
+\newcommand{\IgHlocSoloBABand}{[0.887, 0.893]}
+\newcommand{\IgHlocSoloBAPieces}{7\,642}
+\newcommand{\IgHlocSoloBB}{0.887}
+\newcommand{\IgHlocSoloBBBand}{[0.885, 0.890]}
+\newcommand{\IgHlocSoloBBPieces}{9\,903}
+\newcommand{\IgHlocSoloBC}{0.890}
+\newcommand{\IgHlocSoloBCBand}{[0.888, 0.893]}
+\newcommand{\IgHlocSoloBCPieces}{8\,172}
+\newcommand{\IgHlocSoloBD}{0.897}
+\newcommand{\IgHlocSoloBDBand}{[0.895, 0.900]}
+\newcommand{\IgHlocSoloBDPieces}{6\,656}
+\newcommand{\IgHlocSoloBE}{0.910}
+\newcommand{\IgHlocSoloBEBand}{[0.908, 0.912]}
+\newcommand{\IgHlocSoloBEPieces}{23\,325}
+\newcommand{\IgHlocSoloDiffA}{$-$0.002}
+\newcommand{\IgHlocSoloDiffABand}{[$-$0.005, $-$0.000]}
+\newcommand{\IgHlocSoloDiffB}{$-$0.002}
+\newcommand{\IgHlocSoloDiffBBand}{[$-$0.004, $-$0.000]}
+\newcommand{\IgHlocSoloDiffC}{$-$0.003}
+\newcommand{\IgHlocSoloDiffCBand}{[$-$0.005, $-$0.001]}
+\newcommand{\IgHlocSoloDiffD}{$-$0.004}
+\newcommand{\IgHlocSoloDiffDBand}{[$-$0.006, $-$0.002]}
+\newcommand{\IgHlocSoloDiffE}{$-$0.000}
+\newcommand{\IgHlocSoloDiffEBand}{[$-$0.001, $+$0.001]}
+\newcommand{\IgLenHigh}{1\,261}
+\newcommand{\IgLenLow}{32}
+\newcommand{\IgLenMed}{277}
+\newcommand{\IgLenNone}{0}
+\newcommand{\IgMeetSearchGroup}{none}
+\newcommand{\IgMeetSearchGroupDefined}{no}
+\newcommand{\IgMeetSearchSolo}{10}
+\newcommand{\IgMeetSearchSoloDefined}{yes}
+\newcommand{\IgMeetSinkGroup}{10}
+\newcommand{\IgMeetSinkGroupDefined}{yes}
+\newcommand{\IgMeetSinkSolo}{none}
+\newcommand{\IgMeetSinkSoloDefined}{no}
+\newcommand{\IgMeetSpeedGroup}{none}
+\newcommand{\IgMeetSpeedGroupDefined}{no}
+\newcommand{\IgMeetSpeedSolo}{10}
+\newcommand{\IgMeetSpeedSoloDefined}{yes}
+\newcommand{\IgMinDefined}{80}
+\newcommand{\IgMinDisp}{500}
+\newcommand{\IgMinEvents}{100}
+\newcommand{\IgMinutesA}{1\,067\,002}
+\newcommand{\IgMinutesGPieces}{974\,604}
+\newcommand{\IgMinutesS}{4\,955\,583}
+\newcommand{\IgPhFiveBothClimbFlight}{$+$6.5}
+\newcommand{\IgPhFiveBothClimbFlightBand}{[$+$3.5, $+$9.4]}
+\newcommand{\IgPhFiveBothClimbFlights}{47}
+\newcommand{\IgPhFiveBothClimbRaw}{$-$0.3}
+\newcommand{\IgPhFiveBothClimbRawBand}{[$-$1.1, $+$0.4]}
+\newcommand{\IgPhFiveBothFoundFlight}{$+$11.5}
+\newcommand{\IgPhFiveBothFoundFlightBand}{[$+$3.4, $+$19.6]}
+\newcommand{\IgPhFiveBothFoundFlights}{43}
+\newcommand{\IgPhFiveBothFoundRaw}{$+$7.5}
+\newcommand{\IgPhFiveBothFoundRawBand}{[$+$6.7, $+$8.4]}
+\newcommand{\IgPhFiveBothGlideFlight}{$+$0.4}
+\newcommand{\IgPhFiveBothGlideFlightBand}{[$-$1.1, $+$1.8]}
+\newcommand{\IgPhFiveBothGlideFlights}{47}
+\newcommand{\IgPhFiveBothGlideRaw}{$-$1.3}
+\newcommand{\IgPhFiveBothGlideRawBand}{[$-$1.9, $-$0.8]}
+\newcommand{\IgPhFiveBothSinkFlight}{$-$4}
+\newcommand{\IgPhFiveBothSinkFlightBand}{[$-$12, $+$4]}
+\newcommand{\IgPhFiveBothSinkFlights}{47}
+\newcommand{\IgPhFiveBothSinkRaw}{$-$20}
+\newcommand{\IgPhFiveBothSinkRawBand}{[$-$22, $-$19]}
+\newcommand{\IgPhFiveCrowdClimbFlight}{$+$5.9}
+\newcommand{\IgPhFiveCrowdClimbFlightBand}{[$+$0.3, $+$11.5]}
+\newcommand{\IgPhFiveCrowdClimbFlights}{30}
+\newcommand{\IgPhFiveCrowdClimbRaw}{$-$1.8}
+\newcommand{\IgPhFiveCrowdClimbRawBand}{[$-$2.7, $-$0.9]}
+\newcommand{\IgPhFiveCrowdFoundFlight}{$+$14.0}
+\newcommand{\IgPhFiveCrowdFoundFlightBand}{[$-$1.0, $+$29.1]}
+\newcommand{\IgPhFiveCrowdFoundFlights}{19}
+\newcommand{\IgPhFiveCrowdFoundRaw}{$-$1.2}
+\newcommand{\IgPhFiveCrowdFoundRawBand}{[$-$2.6, $+$0.3]}
+\newcommand{\IgPhFiveCrowdGlideFlight}{$+$0.7}
+\newcommand{\IgPhFiveCrowdGlideFlightBand}{[$-$2.1, $+$3.4]}
+\newcommand{\IgPhFiveCrowdGlideFlights}{30}
+\newcommand{\IgPhFiveCrowdGlideRaw}{$+$1.5}
+\newcommand{\IgPhFiveCrowdGlideRawBand}{[$+$0.9, $+$2.1]}
+\newcommand{\IgPhFiveCrowdSinkFlight}{$+$6}
+\newcommand{\IgPhFiveCrowdSinkFlightBand}{[$-$5, $+$16]}
+\newcommand{\IgPhFiveCrowdSinkFlights}{30}
+\newcommand{\IgPhFiveCrowdSinkRaw}{$-$4}
+\newcommand{\IgPhFiveCrowdSinkRawBand}{[$-$6, $-$2]}
+\newcommand{\IgPhFiveInfoGroupClimbFlight}{$+$0.3}
+\newcommand{\IgPhFiveInfoGroupClimbFlightBand}{[$-$2.8, $+$3.3]}
+\newcommand{\IgPhFiveInfoGroupClimbFlights}{57}
+\newcommand{\IgPhFiveInfoGroupClimbRaw}{$-$4.8}
+\newcommand{\IgPhFiveInfoGroupClimbRawBand}{[$-$6.1, $-$3.4]}
+\newcommand{\IgPhFiveInfoGroupFoundFlight}{$+$2.4}
+\newcommand{\IgPhFiveInfoGroupFoundFlightBand}{[$-$7.6, $+$12.4]}
+\newcommand{\IgPhFiveInfoGroupFoundFlights}{46}
+\newcommand{\IgPhFiveInfoGroupFoundRaw}{$+$1.5}
+\newcommand{\IgPhFiveInfoGroupFoundRawBand}{[$-$0.8, $+$3.8]}
+\newcommand{\IgPhFiveInfoGroupGlideFlight}{$-$2.0}
+\newcommand{\IgPhFiveInfoGroupGlideFlightBand}{[$-$3.6, $-$0.3]}
+\newcommand{\IgPhFiveInfoGroupGlideFlights}{57}
+\newcommand{\IgPhFiveInfoGroupGlideRaw}{$-$5.3}
+\newcommand{\IgPhFiveInfoGroupGlideRawBand}{[$-$6.3, $-$4.2]}
+\newcommand{\IgPhFiveInfoGroupSinkFlight}{$+$7}
+\newcommand{\IgPhFiveInfoGroupSinkFlightBand}{[$-$4, $+$17]}
+\newcommand{\IgPhFiveInfoGroupSinkFlights}{57}
+\newcommand{\IgPhFiveInfoGroupSinkRaw}{$-$4}
+\newcommand{\IgPhFiveInfoGroupSinkRawBand}{[$-$8, $-$1]}
+\newcommand{\IgPhFiveInfoSoloClimbFlight}{$+$2.7}
+\newcommand{\IgPhFiveInfoSoloClimbFlightBand}{[$+$0.3, $+$5.2]}
+\newcommand{\IgPhFiveInfoSoloClimbFlights}{113}
+\newcommand{\IgPhFiveInfoSoloClimbRaw}{$-$2.5}
+\newcommand{\IgPhFiveInfoSoloClimbRawBand}{[$-$3.4, $-$1.6]}
+\newcommand{\IgPhFiveInfoSoloFoundFlight}{$+$2.2}
+\newcommand{\IgPhFiveInfoSoloFoundFlightBand}{[$-$4.7, $+$9.2]}
+\newcommand{\IgPhFiveInfoSoloFoundFlights}{94}
+\newcommand{\IgPhFiveInfoSoloFoundRaw}{$+$2.6}
+\newcommand{\IgPhFiveInfoSoloFoundRawBand}{[$+$1.2, $+$4.1]}
+\newcommand{\IgPhFiveInfoSoloGlideFlight}{$-$0.5}
+\newcommand{\IgPhFiveInfoSoloGlideFlightBand}{[$-$1.7, $+$0.7]}
+\newcommand{\IgPhFiveInfoSoloGlideFlights}{113}
+\newcommand{\IgPhFiveInfoSoloGlideRaw}{$-$4.4}
+\newcommand{\IgPhFiveInfoSoloGlideRawBand}{[$-$5.0, $-$3.8]}
+\newcommand{\IgPhFiveInfoSoloSinkFlight}{$-$0}
+\newcommand{\IgPhFiveInfoSoloSinkFlightBand}{[$-$7, $+$6]}
+\newcommand{\IgPhFiveInfoSoloSinkFlights}{113}
+\newcommand{\IgPhFiveInfoSoloSinkRaw}{$+$1}
+\newcommand{\IgPhFiveInfoSoloSinkRawBand}{[$-$1, $+$3]}
+\newcommand{\IgPhFiveInterClimbFlight}{$+$4.6}
+\newcommand{\IgPhFiveInterClimbFlightBand}{[$+$2.6, $+$6.5]}
+\newcommand{\IgPhFiveInterClimbFlights}{131}
+\newcommand{\IgPhFiveInterClimbRaw}{$-$4.2}
+\newcommand{\IgPhFiveInterClimbRawBand}{[$-$4.7, $-$3.8]}
+\newcommand{\IgPhFiveInterFoundFlight}{$+$7.4}
+\newcommand{\IgPhFiveInterFoundFlightBand}{[$+$1.9, $+$12.8]}
+\newcommand{\IgPhFiveInterFoundFlights}{122}
+\newcommand{\IgPhFiveInterFoundRaw}{$+$1.5}
+\newcommand{\IgPhFiveInterFoundRawBand}{[$+$0.9, $+$2.0]}
+\newcommand{\IgPhFiveInterGlideFlight}{$+$0.4}
+\newcommand{\IgPhFiveInterGlideFlightBand}{[$-$0.9, $+$1.7]}
+\newcommand{\IgPhFiveInterGlideFlights}{131}
+\newcommand{\IgPhFiveInterGlideRaw}{$-$2.9}
+\newcommand{\IgPhFiveInterGlideRawBand}{[$-$3.3, $-$2.5]}
+\newcommand{\IgPhFiveInterSinkFlight}{$-$11}
+\newcommand{\IgPhFiveInterSinkFlightBand}{[$-$17, $-$5]}
+\newcommand{\IgPhFiveInterSinkFlights}{131}
+\newcommand{\IgPhFiveInterSinkRaw}{$-$3}
+\newcommand{\IgPhFiveInterSinkRawBand}{[$-$4, $-$2]}
+\newcommand{\IgPhFiveIntraClimbFlight}{$+$4.9}
+\newcommand{\IgPhFiveIntraClimbFlightBand}{[$+$2.7, $+$7.1]}
+\newcommand{\IgPhFiveIntraClimbFlights}{108}
+\newcommand{\IgPhFiveIntraClimbRaw}{$+$3.7}
+\newcommand{\IgPhFiveIntraClimbRawBand}{[$+$2.9, $+$4.5]}
+\newcommand{\IgPhFiveIntraFoundFlight}{$+$4.8}
+\newcommand{\IgPhFiveIntraFoundFlightBand}{[$-$1.2, $+$10.7]}
+\newcommand{\IgPhFiveIntraFoundFlights}{100}
+\newcommand{\IgPhFiveIntraFoundRaw}{$+$3.3}
+\newcommand{\IgPhFiveIntraFoundRawBand}{[$+$2.2, $+$4.4]}
+\newcommand{\IgPhFiveIntraGlideFlight}{$+$0.8}
+\newcommand{\IgPhFiveIntraGlideFlightBand}{[$-$0.6, $+$2.2]}
+\newcommand{\IgPhFiveIntraGlideFlights}{108}
+\newcommand{\IgPhFiveIntraGlideRaw}{$+$2.6}
+\newcommand{\IgPhFiveIntraGlideRawBand}{[$+$2.0, $+$3.2]}
+\newcommand{\IgPhFiveIntraSinkFlight}{$-$16}
+\newcommand{\IgPhFiveIntraSinkFlightBand}{[$-$36, $+$4]}
+\newcommand{\IgPhFiveIntraSinkFlights}{108}
+\newcommand{\IgPhFiveIntraSinkRaw}{$-$12}
+\newcommand{\IgPhFiveIntraSinkRawBand}{[$-$14, $-$10]}
+\newcommand{\IgPhOneBothClimbFlight}{$+$10.2}
+\newcommand{\IgPhOneBothClimbFlightBand}{[$+$7.7, $+$12.7]}
+\newcommand{\IgPhOneBothClimbFlights}{121}
+\newcommand{\IgPhOneBothClimbRaw}{$-$0.1}
+\newcommand{\IgPhOneBothClimbRawBand}{[$-$1.1, $+$0.9]}
+\newcommand{\IgPhOneBothFoundFlight}{$+$12.2}
+\newcommand{\IgPhOneBothFoundFlightBand}{[$+$6.3, $+$18.2]}
+\newcommand{\IgPhOneBothFoundFlights}{109}
+\newcommand{\IgPhOneBothFoundRaw}{$+$8.5}
+\newcommand{\IgPhOneBothFoundRawBand}{[$+$7.1, $+$9.9]}
+\newcommand{\IgPhOneBothGlideFlight}{$+$1.9}
+\newcommand{\IgPhOneBothGlideFlightBand}{[$+$0.7, $+$3.0]}
+\newcommand{\IgPhOneBothGlideFlights}{121}
+\newcommand{\IgPhOneBothGlideRaw}{$-$2.5}
+\newcommand{\IgPhOneBothGlideRawBand}{[$-$3.2, $-$1.8]}
+\newcommand{\IgPhOneBothSinkFlight}{$-$27}
+\newcommand{\IgPhOneBothSinkFlightBand}{[$-$33, $-$20]}
+\newcommand{\IgPhOneBothSinkFlights}{121}
+\newcommand{\IgPhOneBothSinkRaw}{$-$26}
+\newcommand{\IgPhOneBothSinkRawBand}{[$-$28, $-$23]}
+\newcommand{\IgPhOneCrowdClimbFlight}{$-$2.8}
+\newcommand{\IgPhOneCrowdClimbFlightBand}{[$-$12.3, $+$6.8]}
+\newcommand{\IgPhOneCrowdClimbFlights}{8}
+\newcommand{\IgPhOneCrowdClimbRaw}{$-$2.4}
+\newcommand{\IgPhOneCrowdClimbRawBand}{[$-$5.3, $+$0.4]}
+\newcommand{\IgPhOneCrowdFoundFlight}{$-$17.1}
+\newcommand{\IgPhOneCrowdFoundFlightBand}{[$-$50.1, $+$15.8]}
+\newcommand{\IgPhOneCrowdFoundFlights}{6}
+\newcommand{\IgPhOneCrowdFoundRaw}{$-$3.8}
+\newcommand{\IgPhOneCrowdFoundRawBand}{[$-$10.7, $+$3.0]}
+\newcommand{\IgPhOneCrowdGlideFlight}{$+$2.7}
+\newcommand{\IgPhOneCrowdGlideFlightBand}{[$-$5.6, $+$11.0]}
+\newcommand{\IgPhOneCrowdGlideFlights}{8}
+\newcommand{\IgPhOneCrowdGlideRaw}{$+$2.4}
+\newcommand{\IgPhOneCrowdGlideRawBand}{[$+$0.2, $+$4.7]}
+\newcommand{\IgPhOneCrowdSinkFlight}{$-$13}
+\newcommand{\IgPhOneCrowdSinkFlightBand}{[$-$40, $+$15]}
+\newcommand{\IgPhOneCrowdSinkFlights}{8}
+\newcommand{\IgPhOneCrowdSinkRaw}{$-$13}
+\newcommand{\IgPhOneCrowdSinkRawBand}{[$-$21, $-$6]}
+\newcommand{\IgPhOneInfoGroupClimbFlight}{n/a}
+\newcommand{\IgPhOneInfoGroupClimbFlightBand}{n/a}
+\newcommand{\IgPhOneInfoGroupClimbFlights}{0}
+\newcommand{\IgPhOneInfoGroupClimbRaw}{$-$2.2}
+\newcommand{\IgPhOneInfoGroupClimbRawBand}{[$-$6.7, $+$2.4]}
+\newcommand{\IgPhOneInfoGroupFoundFlight}{n/a}
+\newcommand{\IgPhOneInfoGroupFoundFlightBand}{n/a}
+\newcommand{\IgPhOneInfoGroupFoundFlights}{0}
+\newcommand{\IgPhOneInfoGroupFoundRaw}{$+$3.3}
+\newcommand{\IgPhOneInfoGroupFoundRawBand}{[$-$4.7, $+$11.4]}
+\newcommand{\IgPhOneInfoGroupGlideFlight}{n/a}
+\newcommand{\IgPhOneInfoGroupGlideFlightBand}{n/a}
+\newcommand{\IgPhOneInfoGroupGlideFlights}{0}
+\newcommand{\IgPhOneInfoGroupGlideRaw}{$-$3.8}
+\newcommand{\IgPhOneInfoGroupGlideRawBand}{[$-$6.4, $-$1.2]}
+\newcommand{\IgPhOneInfoGroupSinkFlight}{n/a}
+\newcommand{\IgPhOneInfoGroupSinkFlightBand}{n/a}
+\newcommand{\IgPhOneInfoGroupSinkFlights}{0}
+\newcommand{\IgPhOneInfoGroupSinkRaw}{$-$9}
+\newcommand{\IgPhOneInfoGroupSinkRawBand}{[$-$18, $-$1]}
+\newcommand{\IgPhOneInfoSoloClimbFlight}{$+$3.8}
+\newcommand{\IgPhOneInfoSoloClimbFlightBand}{[$-$12.1, $+$19.8]}
+\newcommand{\IgPhOneInfoSoloClimbFlights}{6}
+\newcommand{\IgPhOneInfoSoloClimbRaw}{$-$0.6}
+\newcommand{\IgPhOneInfoSoloClimbRawBand}{[$-$3.5, $+$2.2]}
+\newcommand{\IgPhOneInfoSoloFoundFlight}{$+$10.1}
+\newcommand{\IgPhOneInfoSoloFoundFlightBand}{[$-$60.6, $+$80.8]}
+\newcommand{\IgPhOneInfoSoloFoundFlights}{4}
+\newcommand{\IgPhOneInfoSoloFoundRaw}{$+$5.9}
+\newcommand{\IgPhOneInfoSoloFoundRawBand}{[$-$1.1, $+$12.8]}
+\newcommand{\IgPhOneInfoSoloGlideFlight}{$+$6.5}
+\newcommand{\IgPhOneInfoSoloGlideFlightBand}{[$-$0.5, $+$13.5]}
+\newcommand{\IgPhOneInfoSoloGlideFlights}{6}
+\newcommand{\IgPhOneInfoSoloGlideRaw}{$-$4.8}
+\newcommand{\IgPhOneInfoSoloGlideRawBand}{[$-$7.0, $-$2.5]}
+\newcommand{\IgPhOneInfoSoloSinkFlight}{$+$13}
+\newcommand{\IgPhOneInfoSoloSinkFlightBand}{[$-$11, $+$37]}
+\newcommand{\IgPhOneInfoSoloSinkFlights}{6}
+\newcommand{\IgPhOneInfoSoloSinkRaw}{$+$5}
+\newcommand{\IgPhOneInfoSoloSinkRawBand}{[$-$3, $+$13]}
+\newcommand{\IgPhOneInterClimbFlight}{$+$7.4}
+\newcommand{\IgPhOneInterClimbFlightBand}{[$+$5.6, $+$9.3]}
+\newcommand{\IgPhOneInterClimbFlights}{200}
+\newcommand{\IgPhOneInterClimbRaw}{$-$3.1}
+\newcommand{\IgPhOneInterClimbRawBand}{[$-$3.8, $-$2.4]}
+\newcommand{\IgPhOneInterFoundFlight}{$+$8.2}
+\newcommand{\IgPhOneInterFoundFlightBand}{[$+$2.9, $+$13.6]}
+\newcommand{\IgPhOneInterFoundFlights}{165}
+\newcommand{\IgPhOneInterFoundRaw}{$+$2.0}
+\newcommand{\IgPhOneInterFoundRawBand}{[$+$1.0, $+$3.1]}
+\newcommand{\IgPhOneInterGlideFlight}{$-$0.9}
+\newcommand{\IgPhOneInterGlideFlightBand}{[$-$1.9, $+$0.2]}
+\newcommand{\IgPhOneInterGlideFlights}{200}
+\newcommand{\IgPhOneInterGlideRaw}{$-$2.3}
+\newcommand{\IgPhOneInterGlideRawBand}{[$-$2.8, $-$1.9]}
+\newcommand{\IgPhOneInterSinkFlight}{$-$12}
+\newcommand{\IgPhOneInterSinkFlightBand}{[$-$17, $-$6]}
+\newcommand{\IgPhOneInterSinkFlights}{200}
+\newcommand{\IgPhOneInterSinkRaw}{$-$8}
+\newcommand{\IgPhOneInterSinkRawBand}{[$-$10, $-$7]}
+\newcommand{\IgPhOneIntraClimbFlight}{$+$5.1}
+\newcommand{\IgPhOneIntraClimbFlightBand}{[$+$4.3, $+$5.8]}
+\newcommand{\IgPhOneIntraClimbFlights}{1\,188}
+\newcommand{\IgPhOneIntraClimbRaw}{$+$3.6}
+\newcommand{\IgPhOneIntraClimbRawBand}{[$+$3.0, $+$4.2]}
+\newcommand{\IgPhOneIntraFoundFlight}{$+$6.3}
+\newcommand{\IgPhOneIntraFoundFlightBand}{[$+$4.5, $+$8.2]}
+\newcommand{\IgPhOneIntraFoundFlights}{1\,070}
+\newcommand{\IgPhOneIntraFoundRaw}{$+$4.7}
+\newcommand{\IgPhOneIntraFoundRawBand}{[$+$4.0, $+$5.5]}
+\newcommand{\IgPhOneIntraGlideFlight}{$+$1.3}
+\newcommand{\IgPhOneIntraGlideFlightBand}{[$+$0.9, $+$1.6]}
+\newcommand{\IgPhOneIntraGlideFlights}{1\,187}
+\newcommand{\IgPhOneIntraGlideRaw}{$+$2.6}
+\newcommand{\IgPhOneIntraGlideRawBand}{[$+$2.2, $+$3.1]}
+\newcommand{\IgPhOneIntraSinkFlight}{$-$14}
+\newcommand{\IgPhOneIntraSinkFlightBand}{[$-$17, $-$11]}
+\newcommand{\IgPhOneIntraSinkFlights}{1\,187}
+\newcommand{\IgPhOneIntraSinkRaw}{$-$14}
+\newcommand{\IgPhOneIntraSinkRawBand}{[$-$15, $-$13]}
+\newcommand{\IgPhTenBothClimbFlight}{$+$6.0}
+\newcommand{\IgPhTenBothClimbFlightBand}{[$-$0.4, $+$12.3]}
+\newcommand{\IgPhTenBothClimbFlights}{18}
+\newcommand{\IgPhTenBothClimbRaw}{$-$0.2}
+\newcommand{\IgPhTenBothClimbRawBand}{[$-$0.9, $+$0.5]}
+\newcommand{\IgPhTenBothFoundFlight}{$-$1.7}
+\newcommand{\IgPhTenBothFoundFlightBand}{[$-$16.3, $+$13.0]}
+\newcommand{\IgPhTenBothFoundFlights}{16}
+\newcommand{\IgPhTenBothFoundRaw}{$+$7.4}
+\newcommand{\IgPhTenBothFoundRawBand}{[$+$6.6, $+$8.2]}
+\newcommand{\IgPhTenBothGlideFlight}{$-$0.3}
+\newcommand{\IgPhTenBothGlideFlightBand}{[$-$3.4, $+$2.8]}
+\newcommand{\IgPhTenBothGlideFlights}{18}
+\newcommand{\IgPhTenBothGlideRaw}{$-$0.9}
+\newcommand{\IgPhTenBothGlideRawBand}{[$-$1.5, $-$0.4]}
+\newcommand{\IgPhTenBothSinkFlight}{$-$5}
+\newcommand{\IgPhTenBothSinkFlightBand}{[$-$18, $+$7]}
+\newcommand{\IgPhTenBothSinkFlights}{18}
+\newcommand{\IgPhTenBothSinkRaw}{$-$20}
+\newcommand{\IgPhTenBothSinkRawBand}{[$-$21, $-$18]}
+\newcommand{\IgPhTenCrowdClimbFlight}{$+$5.4}
+\newcommand{\IgPhTenCrowdClimbFlightBand}{[$+$1.3, $+$9.6]}
+\newcommand{\IgPhTenCrowdClimbFlights}{33}
+\newcommand{\IgPhTenCrowdClimbRaw}{$-$0.2}
+\newcommand{\IgPhTenCrowdClimbRawBand}{[$-$0.8, $+$0.5]}
+\newcommand{\IgPhTenCrowdFoundFlight}{$+$17.1}
+\newcommand{\IgPhTenCrowdFoundFlightBand}{[$+$7.2, $+$27.0]}
+\newcommand{\IgPhTenCrowdFoundFlights}{27}
+\newcommand{\IgPhTenCrowdFoundRaw}{$-$1.5}
+\newcommand{\IgPhTenCrowdFoundRawBand}{[$-$2.5, $-$0.4]}
+\newcommand{\IgPhTenCrowdGlideFlight}{$+$0.0}
+\newcommand{\IgPhTenCrowdGlideFlightBand}{[$-$2.7, $+$2.7]}
+\newcommand{\IgPhTenCrowdGlideFlights}{33}
+\newcommand{\IgPhTenCrowdGlideRaw}{$+$1.9}
+\newcommand{\IgPhTenCrowdGlideRawBand}{[$+$1.4, $+$2.4]}
+\newcommand{\IgPhTenCrowdSinkFlight}{$-$7}
+\newcommand{\IgPhTenCrowdSinkFlightBand}{[$-$20, $+$5]}
+\newcommand{\IgPhTenCrowdSinkFlights}{33}
+\newcommand{\IgPhTenCrowdSinkRaw}{$-$3}
+\newcommand{\IgPhTenCrowdSinkRawBand}{[$-$4, $-$1]}
+\newcommand{\IgPhTenInfoGroupClimbFlight}{$+$0.7}
+\newcommand{\IgPhTenInfoGroupClimbFlightBand}{[$-$2.0, $+$3.5]}
+\newcommand{\IgPhTenInfoGroupClimbFlights}{91}
+\newcommand{\IgPhTenInfoGroupClimbRaw}{$-$4.5}
+\newcommand{\IgPhTenInfoGroupClimbRawBand}{[$-$5.7, $-$3.3]}
+\newcommand{\IgPhTenInfoGroupFoundFlight}{$+$0.4}
+\newcommand{\IgPhTenInfoGroupFoundFlightBand}{[$-$7.2, $+$8.1]}
+\newcommand{\IgPhTenInfoGroupFoundFlights}{77}
+\newcommand{\IgPhTenInfoGroupFoundRaw}{$+$0.7}
+\newcommand{\IgPhTenInfoGroupFoundRawBand}{[$-$1.3, $+$2.6]}
+\newcommand{\IgPhTenInfoGroupGlideFlight}{$-$1.9}
+\newcommand{\IgPhTenInfoGroupGlideFlightBand}{[$-$3.2, $-$0.7]}
+\newcommand{\IgPhTenInfoGroupGlideFlights}{91}
+\newcommand{\IgPhTenInfoGroupGlideRaw}{$-$5.6}
+\newcommand{\IgPhTenInfoGroupGlideRawBand}{[$-$6.5, $-$4.7]}
+\newcommand{\IgPhTenInfoGroupSinkFlight}{$+$4}
+\newcommand{\IgPhTenInfoGroupSinkFlightBand}{[$-$4, $+$12]}
+\newcommand{\IgPhTenInfoGroupSinkFlights}{91}
+\newcommand{\IgPhTenInfoGroupSinkRaw}{$-$3}
+\newcommand{\IgPhTenInfoGroupSinkRawBand}{[$-$6, $-$0]}
+\newcommand{\IgPhTenInfoSoloClimbFlight}{$+$3.9}
+\newcommand{\IgPhTenInfoSoloClimbFlightBand}{[$+$1.6, $+$6.2]}
+\newcommand{\IgPhTenInfoSoloClimbFlights}{131}
+\newcommand{\IgPhTenInfoSoloClimbRaw}{$-$3.9}
+\newcommand{\IgPhTenInfoSoloClimbRawBand}{[$-$4.6, $-$3.3]}
+\newcommand{\IgPhTenInfoSoloFoundFlight}{$+$3.4}
+\newcommand{\IgPhTenInfoSoloFoundFlightBand}{[$-$2.5, $+$9.3]}
+\newcommand{\IgPhTenInfoSoloFoundFlights}{112}
+\newcommand{\IgPhTenInfoSoloFoundRaw}{$+$3.0}
+\newcommand{\IgPhTenInfoSoloFoundRawBand}{[$+$1.9, $+$4.0]}
+\newcommand{\IgPhTenInfoSoloGlideFlight}{$-$1.4}
+\newcommand{\IgPhTenInfoSoloGlideFlightBand}{[$-$2.5, $-$0.2]}
+\newcommand{\IgPhTenInfoSoloGlideFlights}{131}
+\newcommand{\IgPhTenInfoSoloGlideRaw}{$-$4.7}
+\newcommand{\IgPhTenInfoSoloGlideRawBand}{[$-$5.2, $-$4.1]}
+\newcommand{\IgPhTenInfoSoloSinkFlight}{$-$1}
+\newcommand{\IgPhTenInfoSoloSinkFlightBand}{[$-$7, $+$6]}
+\newcommand{\IgPhTenInfoSoloSinkFlights}{131}
+\newcommand{\IgPhTenInfoSoloSinkRaw}{$+$1}
+\newcommand{\IgPhTenInfoSoloSinkRawBand}{[$-$1, $+$3]}
+\newcommand{\IgPhTenInterClimbFlight}{$+$5.7}
+\newcommand{\IgPhTenInterClimbFlightBand}{[$+$3.3, $+$8.1]}
+\newcommand{\IgPhTenInterClimbFlights}{98}
+\newcommand{\IgPhTenInterClimbRaw}{$-$4.1}
+\newcommand{\IgPhTenInterClimbRawBand}{[$-$4.6, $-$3.6]}
+\newcommand{\IgPhTenInterFoundFlight}{$+$7.6}
+\newcommand{\IgPhTenInterFoundFlightBand}{[$+$1.7, $+$13.4]}
+\newcommand{\IgPhTenInterFoundFlights}{92}
+\newcommand{\IgPhTenInterFoundRaw}{$+$1.5}
+\newcommand{\IgPhTenInterFoundRawBand}{[$+$1.0, $+$2.0]}
+\newcommand{\IgPhTenInterGlideFlight}{$+$0.7}
+\newcommand{\IgPhTenInterGlideFlightBand}{[$-$0.7, $+$2.0]}
+\newcommand{\IgPhTenInterGlideFlights}{98}
+\newcommand{\IgPhTenInterGlideRaw}{$-$2.8}
+\newcommand{\IgPhTenInterGlideRawBand}{[$-$3.2, $-$2.4]}
+\newcommand{\IgPhTenInterSinkFlight}{$-$4}
+\newcommand{\IgPhTenInterSinkFlightBand}{[$-$10, $+$3]}
+\newcommand{\IgPhTenInterSinkFlights}{98}
+\newcommand{\IgPhTenInterSinkRaw}{$-$2}
+\newcommand{\IgPhTenInterSinkRawBand}{[$-$3, $-$1]}
+\newcommand{\IgPhTenIntraClimbFlight}{$+$3.6}
+\newcommand{\IgPhTenIntraClimbFlightBand}{[$+$0.7, $+$6.6]}
+\newcommand{\IgPhTenIntraClimbFlights}{45}
+\newcommand{\IgPhTenIntraClimbRaw}{$+$3.4}
+\newcommand{\IgPhTenIntraClimbRawBand}{[$+$2.4, $+$4.3]}
+\newcommand{\IgPhTenIntraFoundFlight}{$+$7.4}
+\newcommand{\IgPhTenIntraFoundFlightBand}{[$-$1.0, $+$15.8]}
+\newcommand{\IgPhTenIntraFoundFlights}{42}
+\newcommand{\IgPhTenIntraFoundRaw}{$+$3.7}
+\newcommand{\IgPhTenIntraFoundRawBand}{[$+$2.3, $+$5.1]}
+\newcommand{\IgPhTenIntraGlideFlight}{$+$1.2}
+\newcommand{\IgPhTenIntraGlideFlightBand}{[$-$1.2, $+$3.6]}
+\newcommand{\IgPhTenIntraGlideFlights}{45}
+\newcommand{\IgPhTenIntraGlideRaw}{$+$2.6}
+\newcommand{\IgPhTenIntraGlideRawBand}{[$+$1.9, $+$3.3]}
+\newcommand{\IgPhTenIntraSinkFlight}{$-$32}
+\newcommand{\IgPhTenIntraSinkFlightBand}{[$-$81, $+$18]}
+\newcommand{\IgPhTenIntraSinkFlights}{45}
+\newcommand{\IgPhTenIntraSinkRaw}{$-$13}
+\newcommand{\IgPhTenIntraSinkRawBand}{[$-$15, $-$11]}
+\newcommand{\IgPhTwoBothClimbFlight}{$+$6.9}
+\newcommand{\IgPhTwoBothClimbFlightBand}{[$+$4.6, $+$9.2]}
+\newcommand{\IgPhTwoBothClimbFlights}{126}
+\newcommand{\IgPhTwoBothClimbRaw}{$-$0.5}
+\newcommand{\IgPhTwoBothClimbRawBand}{[$-$1.3, $+$0.3]}
+\newcommand{\IgPhTwoBothFoundFlight}{$+$10.0}
+\newcommand{\IgPhTwoBothFoundFlightBand}{[$+$4.1, $+$15.9]}
+\newcommand{\IgPhTwoBothFoundFlights}{111}
+\newcommand{\IgPhTwoBothFoundRaw}{$+$8.5}
+\newcommand{\IgPhTwoBothFoundRawBand}{[$+$7.5, $+$9.4]}
+\newcommand{\IgPhTwoBothGlideFlight}{$+$1.2}
+\newcommand{\IgPhTwoBothGlideFlightBand}{[$+$0.3, $+$2.2]}
+\newcommand{\IgPhTwoBothGlideFlights}{126}
+\newcommand{\IgPhTwoBothGlideRaw}{$-$1.7}
+\newcommand{\IgPhTwoBothGlideRawBand}{[$-$2.2, $-$1.1]}
+\newcommand{\IgPhTwoBothSinkFlight}{$-$19}
+\newcommand{\IgPhTwoBothSinkFlightBand}{[$-$24, $-$13]}
+\newcommand{\IgPhTwoBothSinkFlights}{126}
+\newcommand{\IgPhTwoBothSinkRaw}{$-$24}
+\newcommand{\IgPhTwoBothSinkRawBand}{[$-$26, $-$22]}
+\newcommand{\IgPhTwoCrowdClimbFlight}{$+$5.2}
+\newcommand{\IgPhTwoCrowdClimbFlightBand}{[$+$0.8, $+$9.5]}
+\newcommand{\IgPhTwoCrowdClimbFlights}{31}
+\newcommand{\IgPhTwoCrowdClimbRaw}{$-$2.7}
+\newcommand{\IgPhTwoCrowdClimbRawBand}{[$-$4.3, $-$1.1]}
+\newcommand{\IgPhTwoCrowdFoundFlight}{$+$6.1}
+\newcommand{\IgPhTwoCrowdFoundFlightBand}{[$-$7.5, $+$19.7]}
+\newcommand{\IgPhTwoCrowdFoundFlights}{23}
+\newcommand{\IgPhTwoCrowdFoundRaw}{$-$1.7}
+\newcommand{\IgPhTwoCrowdFoundRawBand}{[$-$4.3, $+$0.8]}
+\newcommand{\IgPhTwoCrowdGlideFlight}{$+$2.7}
+\newcommand{\IgPhTwoCrowdGlideFlightBand}{[$+$0.4, $+$4.9]}
+\newcommand{\IgPhTwoCrowdGlideFlights}{31}
+\newcommand{\IgPhTwoCrowdGlideRaw}{$+$1.5}
+\newcommand{\IgPhTwoCrowdGlideRawBand}{[$+$0.4, $+$2.6]}
+\newcommand{\IgPhTwoCrowdSinkFlight}{$-$10}
+\newcommand{\IgPhTwoCrowdSinkFlightBand}{[$-$23, $+$3]}
+\newcommand{\IgPhTwoCrowdSinkFlights}{31}
+\newcommand{\IgPhTwoCrowdSinkRaw}{$-$10}
+\newcommand{\IgPhTwoCrowdSinkRawBand}{[$-$13, $-$6]}
+\newcommand{\IgPhTwoInfoGroupClimbFlight}{$+$5.8}
+\newcommand{\IgPhTwoInfoGroupClimbFlightBand}{[$+$2.1, $+$9.5]}
+\newcommand{\IgPhTwoInfoGroupClimbFlights}{17}
+\newcommand{\IgPhTwoInfoGroupClimbRaw}{$-$2.4}
+\newcommand{\IgPhTwoInfoGroupClimbRawBand}{[$-$4.5, $-$0.3]}
+\newcommand{\IgPhTwoInfoGroupFoundFlight}{$-$1.3}
+\newcommand{\IgPhTwoInfoGroupFoundFlightBand}{[$-$22.2, $+$19.6]}
+\newcommand{\IgPhTwoInfoGroupFoundFlights}{15}
+\newcommand{\IgPhTwoInfoGroupFoundRaw}{$-$0.8}
+\newcommand{\IgPhTwoInfoGroupFoundRawBand}{[$-$5.0, $+$3.5]}
+\newcommand{\IgPhTwoInfoGroupGlideFlight}{$-$5.6}
+\newcommand{\IgPhTwoInfoGroupGlideFlightBand}{[$-$8.7, $-$2.5]}
+\newcommand{\IgPhTwoInfoGroupGlideFlights}{17}
+\newcommand{\IgPhTwoInfoGroupGlideRaw}{$-$4.9}
+\newcommand{\IgPhTwoInfoGroupGlideRawBand}{[$-$6.1, $-$3.6]}
+\newcommand{\IgPhTwoInfoGroupSinkFlight}{$+$6}
+\newcommand{\IgPhTwoInfoGroupSinkFlightBand}{[$-$17, $+$30]}
+\newcommand{\IgPhTwoInfoGroupSinkFlights}{17}
+\newcommand{\IgPhTwoInfoGroupSinkRaw}{$-$7}
+\newcommand{\IgPhTwoInfoGroupSinkRawBand}{[$-$12, $-$3]}
+\newcommand{\IgPhTwoInfoSoloClimbFlight}{$+$4.1}
+\newcommand{\IgPhTwoInfoSoloClimbFlightBand}{[$-$1.1, $+$9.4]}
+\newcommand{\IgPhTwoInfoSoloClimbFlights}{34}
+\newcommand{\IgPhTwoInfoSoloClimbRaw}{$-$1.3}
+\newcommand{\IgPhTwoInfoSoloClimbRawBand}{[$-$3.0, $+$0.3]}
+\newcommand{\IgPhTwoInfoSoloFoundFlight}{$+$8.9}
+\newcommand{\IgPhTwoInfoSoloFoundFlightBand}{[$-$10.4, $+$28.3]}
+\newcommand{\IgPhTwoInfoSoloFoundFlights}{20}
+\newcommand{\IgPhTwoInfoSoloFoundRaw}{$+$3.8}
+\newcommand{\IgPhTwoInfoSoloFoundRawBand}{[$+$1.2, $+$6.4]}
+\newcommand{\IgPhTwoInfoSoloGlideFlight}{$+$0.9}
+\newcommand{\IgPhTwoInfoSoloGlideFlightBand}{[$-$1.6, $+$3.4]}
+\newcommand{\IgPhTwoInfoSoloGlideFlights}{34}
+\newcommand{\IgPhTwoInfoSoloGlideRaw}{$-$4.3}
+\newcommand{\IgPhTwoInfoSoloGlideRawBand}{[$-$5.4, $-$3.2]}
+\newcommand{\IgPhTwoInfoSoloSinkFlight}{$-$0}
+\newcommand{\IgPhTwoInfoSoloSinkFlightBand}{[$-$14, $+$13]}
+\newcommand{\IgPhTwoInfoSoloSinkFlights}{34}
+\newcommand{\IgPhTwoInfoSoloSinkRaw}{$+$4}
+\newcommand{\IgPhTwoInfoSoloSinkRawBand}{[$+$0, $+$8]}
+\newcommand{\IgPhTwoInterClimbFlight}{$+$8.2}
+\newcommand{\IgPhTwoInterClimbFlightBand}{[$+$6.5, $+$9.9]}
+\newcommand{\IgPhTwoInterClimbFlights}{233}
+\newcommand{\IgPhTwoInterClimbRaw}{$-$4.0}
+\newcommand{\IgPhTwoInterClimbRawBand}{[$-$4.6, $-$3.5]}
+\newcommand{\IgPhTwoInterFoundFlight}{$+$10.9}
+\newcommand{\IgPhTwoInterFoundFlightBand}{[$+$6.4, $+$15.4]}
+\newcommand{\IgPhTwoInterFoundFlights}{200}
+\newcommand{\IgPhTwoInterFoundRaw}{$+$2.0}
+\newcommand{\IgPhTwoInterFoundRawBand}{[$+$1.4, $+$2.7]}
+\newcommand{\IgPhTwoInterGlideFlight}{$-$0.4}
+\newcommand{\IgPhTwoInterGlideFlightBand}{[$-$1.4, $+$0.5]}
+\newcommand{\IgPhTwoInterGlideFlights}{233}
+\newcommand{\IgPhTwoInterGlideRaw}{$-$2.8}
+\newcommand{\IgPhTwoInterGlideRawBand}{[$-$3.2, $-$2.4]}
+\newcommand{\IgPhTwoInterSinkFlight}{$-$13}
+\newcommand{\IgPhTwoInterSinkFlightBand}{[$-$18, $-$9]}
+\newcommand{\IgPhTwoInterSinkFlights}{233}
+\newcommand{\IgPhTwoInterSinkRaw}{$-$5}
+\newcommand{\IgPhTwoInterSinkRawBand}{[$-$7, $-$4]}
+\newcommand{\IgPhTwoIntraClimbFlight}{$+$4.9}
+\newcommand{\IgPhTwoIntraClimbFlightBand}{[$+$3.8, $+$6.0]}
+\newcommand{\IgPhTwoIntraClimbFlights}{487}
+\newcommand{\IgPhTwoIntraClimbRaw}{$+$3.5}
+\newcommand{\IgPhTwoIntraClimbRawBand}{[$+$2.9, $+$4.2]}
+\newcommand{\IgPhTwoIntraFoundFlight}{$+$7.1}
+\newcommand{\IgPhTwoIntraFoundFlightBand}{[$+$4.1, $+$10.0]}
+\newcommand{\IgPhTwoIntraFoundFlights}{437}
+\newcommand{\IgPhTwoIntraFoundRaw}{$+$4.1}
+\newcommand{\IgPhTwoIntraFoundRawBand}{[$+$3.3, $+$5.0]}
+\newcommand{\IgPhTwoIntraGlideFlight}{$+$1.2}
+\newcommand{\IgPhTwoIntraGlideFlightBand}{[$+$0.7, $+$1.8]}
+\newcommand{\IgPhTwoIntraGlideFlights}{487}
+\newcommand{\IgPhTwoIntraGlideRaw}{$+$2.7}
+\newcommand{\IgPhTwoIntraGlideRawBand}{[$+$2.2, $+$3.2]}
+\newcommand{\IgPhTwoIntraSinkFlight}{$-$15}
+\newcommand{\IgPhTwoIntraSinkFlightBand}{[$-$20, $-$10]}
+\newcommand{\IgPhTwoIntraSinkFlights}{487}
+\newcommand{\IgPhTwoIntraSinkRaw}{$-$13}
+\newcommand{\IgPhTwoIntraSinkRawBand}{[$-$14, $-$11]}
+\newcommand{\IgPieces}{74\,104}
+\newcommand{\IgPiecesUsed}{69\,526}
+\newcommand{\IgRMain}{5}
+\newcommand{\IgRMax}{20}
+\newcommand{\IgRadFive}{5}
+\newcommand{\IgRadHigh}{10}
+\newcommand{\IgRadLow}{2}
+\newcommand{\IgRadOne}{1}
+\newcommand{\IgRadTen}{10}
+\newcommand{\IgRadTwo}{2}
+\newcommand{\IgRadii}{1, 2, 5 and 10}
+\newcommand{\IgSearchGroupAA}{50.1}
+\newcommand{\IgSearchGroupAAEvents}{8\,071}
+\newcommand{\IgSearchGroupAB}{50.3}
+\newcommand{\IgSearchGroupABEvents}{3\,889}
+\newcommand{\IgSearchGroupAC}{48.3}
+\newcommand{\IgSearchGroupACEvents}{5\,374}
+\newcommand{\IgSearchGroupAD}{45.8}
+\newcommand{\IgSearchGroupADEvents}{8\,242}
+\newcommand{\IgSearchGroupAE}{45.4}
+\newcommand{\IgSearchGroupAEEvents}{5\,818}
+\newcommand{\IgSearchGroupAF}{48.5}
+\newcommand{\IgSearchGroupAFEvents}{5\,488}
+\newcommand{\IgSearchGroupAG}{46.3}
+\newcommand{\IgSearchGroupAGEvents}{20\,747}
+\newcommand{\IgSearchGroupBA}{48.1}
+\newcommand{\IgSearchGroupBAEvents}{7\,951}
+\newcommand{\IgSearchGroupBB}{47.5}
+\newcommand{\IgSearchGroupBBEvents}{4\,123}
+\newcommand{\IgSearchGroupBC}{49.9}
+\newcommand{\IgSearchGroupBCEvents}{6\,137}
+\newcommand{\IgSearchGroupBD}{48.5}
+\newcommand{\IgSearchGroupBDEvents}{10\,367}
+\newcommand{\IgSearchGroupBE}{48.1}
+\newcommand{\IgSearchGroupBEEvents}{7\,710}
+\newcommand{\IgSearchGroupBF}{46.6}
+\newcommand{\IgSearchGroupBFEvents}{6\,310}
+\newcommand{\IgSearchGroupBG}{44.9}
+\newcommand{\IgSearchGroupBGEvents}{15\,031}
+\newcommand{\IgSearchGroupDiffA}{$+$2.0}
+\newcommand{\IgSearchGroupDiffABand}{[$+$0.9, $+$3.1]}
+\newcommand{\IgSearchGroupDiffB}{$+$2.8}
+\newcommand{\IgSearchGroupDiffBBand}{[$+$1.0, $+$4.6]}
+\newcommand{\IgSearchGroupDiffC}{$-$1.6}
+\newcommand{\IgSearchGroupDiffCBand}{[$-$3.1, $-$0.1]}
+\newcommand{\IgSearchGroupDiffD}{$-$2.8}
+\newcommand{\IgSearchGroupDiffDBand}{[$-$4.0, $-$1.6]}
+\newcommand{\IgSearchGroupDiffE}{$-$2.8}
+\newcommand{\IgSearchGroupDiffEBand}{[$-$4.2, $-$1.3]}
+\newcommand{\IgSearchGroupDiffF}{$+$1.9}
+\newcommand{\IgSearchGroupDiffFBand}{[$+$0.3, $+$3.5]}
+\newcommand{\IgSearchGroupDiffG}{$+$1.4}
+\newcommand{\IgSearchGroupDiffGBand}{[$+$0.7, $+$2.1]}
+\newcommand{\IgSearchSoloAA}{49.3}
+\newcommand{\IgSearchSoloAAEvents}{25\,604}
+\newcommand{\IgSearchSoloAB}{49.7}
+\newcommand{\IgSearchSoloABEvents}{15\,237}
+\newcommand{\IgSearchSoloAC}{45.9}
+\newcommand{\IgSearchSoloACEvents}{21\,735}
+\newcommand{\IgSearchSoloAD}{44.7}
+\newcommand{\IgSearchSoloADEvents}{40\,897}
+\newcommand{\IgSearchSoloAE}{45.1}
+\newcommand{\IgSearchSoloAEEvents}{37\,161}
+\newcommand{\IgSearchSoloAF}{45.7}
+\newcommand{\IgSearchSoloAFEvents}{38\,563}
+\newcommand{\IgSearchSoloAG}{45.5}
+\newcommand{\IgSearchSoloAGEvents}{155\,385}
+\newcommand{\IgSearchSoloBA}{47.2}
+\newcommand{\IgSearchSoloBAEvents}{24\,841}
+\newcommand{\IgSearchSoloBB}{47.0}
+\newcommand{\IgSearchSoloBBEvents}{14\,925}
+\newcommand{\IgSearchSoloBC}{47.4}
+\newcommand{\IgSearchSoloBCEvents}{22\,491}
+\newcommand{\IgSearchSoloBD}{46.5}
+\newcommand{\IgSearchSoloBDEvents}{45\,863}
+\newcommand{\IgSearchSoloBE}{46.3}
+\newcommand{\IgSearchSoloBEEvents}{43\,675}
+\newcommand{\IgSearchSoloBF}{46.2}
+\newcommand{\IgSearchSoloBFEvents}{42\,077}
+\newcommand{\IgSearchSoloBG}{44.9}
+\newcommand{\IgSearchSoloBGEvents}{140\,710}
+\newcommand{\IgSearchSoloDiffA}{$+$2.1}
+\newcommand{\IgSearchSoloDiffABand}{[$+$1.5, $+$2.8]}
+\newcommand{\IgSearchSoloDiffB}{$+$2.7}
+\newcommand{\IgSearchSoloDiffBBand}{[$+$1.8, $+$3.6]}
+\newcommand{\IgSearchSoloDiffC}{$-$1.5}
+\newcommand{\IgSearchSoloDiffCBand}{[$-$2.3, $-$0.8]}
+\newcommand{\IgSearchSoloDiffD}{$-$1.9}
+\newcommand{\IgSearchSoloDiffDBand}{[$-$2.4, $-$1.4]}
+\newcommand{\IgSearchSoloDiffE}{$-$1.2}
+\newcommand{\IgSearchSoloDiffEBand}{[$-$1.7, $-$0.7]}
+\newcommand{\IgSearchSoloDiffF}{$-$0.4}
+\newcommand{\IgSearchSoloDiffFBand}{[$-$1.0, $+$0.1]}
+\newcommand{\IgSearchSoloDiffG}{$+$0.6}
+\newcommand{\IgSearchSoloDiffGBand}{[$+$0.4, $+$0.8]}
+\newcommand{\IgShareAFive}{55}
+\newcommand{\IgShareAOne}{21}
+\newcommand{\IgShareATen}{68}
+\newcommand{\IgShareATwo}{34}
+\newcommand{\IgShareGPiecesFive}{44}
+\newcommand{\IgShareGPiecesOne}{17}
+\newcommand{\IgShareGPiecesTen}{55}
+\newcommand{\IgShareGPiecesTwo}{27}
+\newcommand{\IgShareGroupFive}{46}
+\newcommand{\IgShareGroupOne}{18}
+\newcommand{\IgShareGroupTen}{57}
+\newcommand{\IgShareGroupTwo}{29}
+\newcommand{\IgShareOtherFive}{14}
+\newcommand{\IgShareOtherOne}{5}
+\newcommand{\IgShareOtherTen}{21}
+\newcommand{\IgShareOtherTwo}{8}
+\newcommand{\IgShareSFive}{23}
+\newcommand{\IgShareSOne}{7}
+\newcommand{\IgShareSTen}{34}
+\newcommand{\IgShareSTwo}{12}
+\newcommand{\IgShareSoloFive}{43}
+\newcommand{\IgShareSoloOne}{15}
+\newcommand{\IgShareSoloTen}{55}
+\newcommand{\IgShareSoloTwo}{26}
+\newcommand{\IgSinkGroupAA}{78}
+\newcommand{\IgSinkGroupAAEvents}{10\,898}
+\newcommand{\IgSinkGroupAB}{74}
+\newcommand{\IgSinkGroupABEvents}{5\,985}
+\newcommand{\IgSinkGroupAC}{75}
+\newcommand{\IgSinkGroupACEvents}{8\,683}
+\newcommand{\IgSinkGroupAD}{80}
+\newcommand{\IgSinkGroupADEvents}{14\,241}
+\newcommand{\IgSinkGroupAE}{86}
+\newcommand{\IgSinkGroupAEEvents}{9\,237}
+\newcommand{\IgSinkGroupAF}{86}
+\newcommand{\IgSinkGroupAFEvents}{7\,707}
+\newcommand{\IgSinkGroupAG}{85}
+\newcommand{\IgSinkGroupAGEvents}{27\,915}
+\newcommand{\IgSinkGroupBA}{78}
+\newcommand{\IgSinkGroupBAEvents}{12\,250}
+\newcommand{\IgSinkGroupBB}{78}
+\newcommand{\IgSinkGroupBBEvents}{6\,561}
+\newcommand{\IgSinkGroupBC}{78}
+\newcommand{\IgSinkGroupBCEvents}{8\,975}
+\newcommand{\IgSinkGroupBD}{80}
+\newcommand{\IgSinkGroupBDEvents}{14\,761}
+\newcommand{\IgSinkGroupBE}{83}
+\newcommand{\IgSinkGroupBEEvents}{11\,071}
+\newcommand{\IgSinkGroupBF}{86}
+\newcommand{\IgSinkGroupBFEvents}{9\,410}
+\newcommand{\IgSinkGroupBG}{85}
+\newcommand{\IgSinkGroupBGEvents}{21\,638}
+\newcommand{\IgSinkGroupDiffA}{$-$0}
+\newcommand{\IgSinkGroupDiffABand}{[$-$1, $+$1]}
+\newcommand{\IgSinkGroupDiffB}{$-$4}
+\newcommand{\IgSinkGroupDiffBBand}{[$-$7, $-$2]}
+\newcommand{\IgSinkGroupDiffC}{$-$2}
+\newcommand{\IgSinkGroupDiffCBand}{[$-$4, $-$0]}
+\newcommand{\IgSinkGroupDiffD}{$+$0}
+\newcommand{\IgSinkGroupDiffDBand}{[$-$1, $+$2]}
+\newcommand{\IgSinkGroupDiffE}{$+$3}
+\newcommand{\IgSinkGroupDiffEBand}{[$+$1, $+$5]}
+\newcommand{\IgSinkGroupDiffF}{$+$0}
+\newcommand{\IgSinkGroupDiffFBand}{[$-$2, $+$3]}
+\newcommand{\IgSinkGroupDiffG}{$-$1}
+\newcommand{\IgSinkGroupDiffGBand}{[$-$2, $+$1]}
+\newcommand{\IgSinkSoloAA}{89}
+\newcommand{\IgSinkSoloAAEvents}{33\,984}
+\newcommand{\IgSinkSoloAB}{88}
+\newcommand{\IgSinkSoloABEvents}{22\,409}
+\newcommand{\IgSinkSoloAC}{89}
+\newcommand{\IgSinkSoloACEvents}{34\,715}
+\newcommand{\IgSinkSoloAD}{93}
+\newcommand{\IgSinkSoloADEvents}{66\,284}
+\newcommand{\IgSinkSoloAE}{97}
+\newcommand{\IgSinkSoloAEEvents}{58\,039}
+\newcommand{\IgSinkSoloAF}{97}
+\newcommand{\IgSinkSoloAFEvents}{56\,971}
+\newcommand{\IgSinkSoloAG}{95}
+\newcommand{\IgSinkSoloAGEvents}{223\,765}
+\newcommand{\IgSinkSoloBA}{90}
+\newcommand{\IgSinkSoloBAEvents}{38\,528}
+\newcommand{\IgSinkSoloBB}{91}
+\newcommand{\IgSinkSoloBBEvents}{22\,514}
+\newcommand{\IgSinkSoloBC}{91}
+\newcommand{\IgSinkSoloBCEvents}{32\,458}
+\newcommand{\IgSinkSoloBD}{94}
+\newcommand{\IgSinkSoloBDEvents}{65\,959}
+\newcommand{\IgSinkSoloBE}{95}
+\newcommand{\IgSinkSoloBEEvents}{63\,534}
+\newcommand{\IgSinkSoloBF}{96}
+\newcommand{\IgSinkSoloBFEvents}{62\,150}
+\newcommand{\IgSinkSoloBG}{95}
+\newcommand{\IgSinkSoloBGEvents}{211\,024}
+\newcommand{\IgSinkSoloDiffA}{$-$2}
+\newcommand{\IgSinkSoloDiffABand}{[$-$3, $-$1]}
+\newcommand{\IgSinkSoloDiffB}{$-$3}
+\newcommand{\IgSinkSoloDiffBBand}{[$-$4, $-$2]}
+\newcommand{\IgSinkSoloDiffC}{$-$2}
+\newcommand{\IgSinkSoloDiffCBand}{[$-$3, $-$1]}
+\newcommand{\IgSinkSoloDiffD}{$-$1}
+\newcommand{\IgSinkSoloDiffDBand}{[$-$1, $-$0]}
+\newcommand{\IgSinkSoloDiffE}{$+$2}
+\newcommand{\IgSinkSoloDiffEBand}{[$+$1, $+$2]}
+\newcommand{\IgSinkSoloDiffF}{$+$1}
+\newcommand{\IgSinkSoloDiffFBand}{[$+$0, $+$2]}
+\newcommand{\IgSinkSoloDiffG}{$+$0}
+\newcommand{\IgSinkSoloDiffGBand}{[$-$0, $+$0]}
+\newcommand{\IgSpeedGroupAA}{33.6}
+\newcommand{\IgSpeedGroupAAEvents}{10\,898}
+\newcommand{\IgSpeedGroupAB}{33.4}
+\newcommand{\IgSpeedGroupABEvents}{5\,985}
+\newcommand{\IgSpeedGroupAC}{34.4}
+\newcommand{\IgSpeedGroupACEvents}{8\,683}
+\newcommand{\IgSpeedGroupAD}{35.7}
+\newcommand{\IgSpeedGroupADEvents}{14\,241}
+\newcommand{\IgSpeedGroupAE}{36.9}
+\newcommand{\IgSpeedGroupAEEvents}{9\,237}
+\newcommand{\IgSpeedGroupAF}{36.3}
+\newcommand{\IgSpeedGroupAFEvents}{7\,707}
+\newcommand{\IgSpeedGroupAG}{39.2}
+\newcommand{\IgSpeedGroupAGEvents}{27\,915}
+\newcommand{\IgSpeedGroupBA}{34.5}
+\newcommand{\IgSpeedGroupBAEvents}{12\,250}
+\newcommand{\IgSpeedGroupBB}{34.6}
+\newcommand{\IgSpeedGroupBBEvents}{6\,561}
+\newcommand{\IgSpeedGroupBC}{34.8}
+\newcommand{\IgSpeedGroupBCEvents}{8\,975}
+\newcommand{\IgSpeedGroupBD}{35.7}
+\newcommand{\IgSpeedGroupBDEvents}{14\,761}
+\newcommand{\IgSpeedGroupBE}{37.5}
+\newcommand{\IgSpeedGroupBEEvents}{11\,071}
+\newcommand{\IgSpeedGroupBF}{37.6}
+\newcommand{\IgSpeedGroupBFEvents}{9\,410}
+\newcommand{\IgSpeedGroupBG}{38.2}
+\newcommand{\IgSpeedGroupBGEvents}{21\,638}
+\newcommand{\IgSpeedGroupDiffA}{$-$1.0}
+\newcommand{\IgSpeedGroupDiffABand}{[$-$1.3, $-$0.7]}
+\newcommand{\IgSpeedGroupDiffB}{$-$1.1}
+\newcommand{\IgSpeedGroupDiffBBand}{[$-$1.6, $-$0.6]}
+\newcommand{\IgSpeedGroupDiffC}{$-$0.4}
+\newcommand{\IgSpeedGroupDiffCBand}{[$-$0.9, $+$0.0]}
+\newcommand{\IgSpeedGroupDiffD}{$+$0.0}
+\newcommand{\IgSpeedGroupDiffDBand}{[$-$0.4, $+$0.5]}
+\newcommand{\IgSpeedGroupDiffE}{$-$0.6}
+\newcommand{\IgSpeedGroupDiffEBand}{[$-$1.4, $+$0.1]}
+\newcommand{\IgSpeedGroupDiffF}{$-$1.3}
+\newcommand{\IgSpeedGroupDiffFBand}{[$-$2.0, $-$0.6]}
+\newcommand{\IgSpeedGroupDiffG}{$+$0.9}
+\newcommand{\IgSpeedGroupDiffGBand}{[$+$0.4, $+$1.5]}
+\newcommand{\IgSpeedSoloAA}{32.5}
+\newcommand{\IgSpeedSoloAAEvents}{33\,984}
+\newcommand{\IgSpeedSoloAB}{32.0}
+\newcommand{\IgSpeedSoloABEvents}{22\,409}
+\newcommand{\IgSpeedSoloAC}{32.5}
+\newcommand{\IgSpeedSoloACEvents}{34\,715}
+\newcommand{\IgSpeedSoloAD}{33.7}
+\newcommand{\IgSpeedSoloADEvents}{66\,284}
+\newcommand{\IgSpeedSoloAE}{34.3}
+\newcommand{\IgSpeedSoloAEEvents}{58\,039}
+\newcommand{\IgSpeedSoloAF}{34.5}
+\newcommand{\IgSpeedSoloAFEvents}{56\,971}
+\newcommand{\IgSpeedSoloAG}{36.1}
+\newcommand{\IgSpeedSoloAGEvents}{223\,765}
+\newcommand{\IgSpeedSoloBA}{33.3}
+\newcommand{\IgSpeedSoloBAEvents}{38\,528}
+\newcommand{\IgSpeedSoloBB}{33.0}
+\newcommand{\IgSpeedSoloBBEvents}{22\,514}
+\newcommand{\IgSpeedSoloBC}{32.8}
+\newcommand{\IgSpeedSoloBCEvents}{32\,458}
+\newcommand{\IgSpeedSoloBD}{33.3}
+\newcommand{\IgSpeedSoloBDEvents}{65\,959}
+\newcommand{\IgSpeedSoloBE}{34.0}
+\newcommand{\IgSpeedSoloBEEvents}{63\,534}
+\newcommand{\IgSpeedSoloBF}{34.7}
+\newcommand{\IgSpeedSoloBFEvents}{62\,150}
+\newcommand{\IgSpeedSoloBG}{36.1}
+\newcommand{\IgSpeedSoloBGEvents}{211\,024}
+\newcommand{\IgSpeedSoloDiffA}{$-$0.8}
+\newcommand{\IgSpeedSoloDiffABand}{[$-$1.0, $-$0.7]}
+\newcommand{\IgSpeedSoloDiffB}{$-$1.0}
+\newcommand{\IgSpeedSoloDiffBBand}{[$-$1.3, $-$0.8]}
+\newcommand{\IgSpeedSoloDiffC}{$-$0.2}
+\newcommand{\IgSpeedSoloDiffCBand}{[$-$0.4, $-$0.0]}
+\newcommand{\IgSpeedSoloDiffD}{$+$0.4}
+\newcommand{\IgSpeedSoloDiffDBand}{[$+$0.2, $+$0.5]}
+\newcommand{\IgSpeedSoloDiffE}{$+$0.4}
+\newcommand{\IgSpeedSoloDiffEBand}{[$+$0.2, $+$0.5]}
+\newcommand{\IgSpeedSoloDiffF}{$-$0.1}
+\newcommand{\IgSpeedSoloDiffFBand}{[$-$0.3, $+$0.1]}
+\newcommand{\IgSpeedSoloDiffG}{$-$0.0}
+\newcommand{\IgSpeedSoloDiffGBand}{[$-$0.1, $+$0.1]}
+\newcommand{\IgTDir}{10}
+\newcommand{\IgWidHigh}{428}
+\newcommand{\IgWidLow}{19}
+\newcommand{\IgWidMed}{117}
+\newcommand{\IgWidNone}{0}
+\newcommand{\IgXtHigh}{6\,888}
+\newcommand{\IgXtLow}{63}
+\newcommand{\IgXtMed}{691}
+\newcommand{\IgXtNone}{0}

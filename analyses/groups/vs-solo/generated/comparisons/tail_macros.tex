@@ -1,0 +1,866 @@
+\newcommand{\TlAboveAfter}{296}
+\newcommand{\TlAboveBefore}{71}
+\newcommand{\TlAboveBetween}{16}
+\newcommand{\TlAboveFlightsAfter}{289}
+\newcommand{\TlAboveFlightsBefore}{66}
+\newcommand{\TlAboveFlightsBetween}{16}
+\newcommand{\TlAboveFlightsIn}{147}
+\newcommand{\TlAboveFlightsSpanning}{196}
+\newcommand{\TlAboveIn}{151}
+\newcommand{\TlAboveSpanning}{198}
+\newcommand{\TlCheckDifference}{9e-16}
+\newcommand{\TlDescFlightHeightAfter}{1\,554}
+\newcommand{\TlDescFlightHeightAfterBand}{[1\,443, 1\,665]}
+\newcommand{\TlDescFlightHeightBefore}{300}
+\newcommand{\TlDescFlightHeightBeforeBand}{[158, 442]}
+\newcommand{\TlDescFlightHeightBetween}{1\,128}
+\newcommand{\TlDescFlightHeightBetweenBand}{[732, 1\,523]}
+\newcommand{\TlDescFlightHeightGapAfterBefore}{$+$1\,254}
+\newcommand{\TlDescFlightHeightGapAfterBeforeBand}{[$+$1\,078, $+$1\,431]}
+\newcommand{\TlDescFlightHeightGapIn}{$-$409}
+\newcommand{\TlDescFlightHeightGapInBand}{[$-$583, $-$235]}
+\newcommand{\TlDescFlightHeightIn}{518}
+\newcommand{\TlDescFlightHeightInBand}{[370, 667]}
+\newcommand{\TlDescFlightHeightSpanning}{743}
+\newcommand{\TlDescFlightHeightSpanningBand}{[632, 854]}
+\newcommand{\TlDescFlightLastAfter}{44}
+\newcommand{\TlDescFlightLastBefore}{0}
+\newcommand{\TlDescFlightLastBetween}{0}
+\newcommand{\TlDescFlightLastIn}{7}
+\newcommand{\TlDescFlightLastSpanning}{17}
+\newcommand{\TlDescFlightNetAfter}{16.3}
+\newcommand{\TlDescFlightNetAfterBand}{[15.7, 16.8]}
+\newcommand{\TlDescFlightNetBefore}{15.8}
+\newcommand{\TlDescFlightNetBeforeBand}{[14.1, 17.4]}
+\newcommand{\TlDescFlightNetBetween}{20.0}
+\newcommand{\TlDescFlightNetBetweenBand}{[15.8, 24.1]}
+\newcommand{\TlDescFlightNetGapAfterBefore}{$+$0.5}
+\newcommand{\TlDescFlightNetGapAfterBeforeBand}{[$-$1.2, $+$2.2]}
+\newcommand{\TlDescFlightNetGapIn}{$+$0.3}
+\newcommand{\TlDescFlightNetGapInBand}{[$-$1.2, $+$1.7]}
+\newcommand{\TlDescFlightNetIn}{16.3}
+\newcommand{\TlDescFlightNetInBand}{[15.1, 17.5]}
+\newcommand{\TlDescFlightNetSpanning}{16.5}
+\newcommand{\TlDescFlightNetSpanningBand}{[15.3, 17.6]}
+\newcommand{\TlDescFlightPathAfter}{21.0}
+\newcommand{\TlDescFlightPathAfterBand}{[20.4, 21.6]}
+\newcommand{\TlDescFlightPathBefore}{20.7}
+\newcommand{\TlDescFlightPathBeforeBand}{[18.9, 22.5]}
+\newcommand{\TlDescFlightPathBetween}{23.4}
+\newcommand{\TlDescFlightPathBetweenBand}{[18.0, 28.9]}
+\newcommand{\TlDescFlightPathGapAfterBefore}{$+$0.3}
+\newcommand{\TlDescFlightPathGapAfterBeforeBand}{[$-$1.6, $+$2.1]}
+\newcommand{\TlDescFlightPathGapIn}{$-$0.5}
+\newcommand{\TlDescFlightPathGapInBand}{[$-$1.8, $+$0.8]}
+\newcommand{\TlDescFlightPathIn}{20.3}
+\newcommand{\TlDescFlightPathInBand}{[19.3, 21.3]}
+\newcommand{\TlDescFlightPathSpanning}{21.8}
+\newcommand{\TlDescFlightPathSpanningBand}{[20.9, 22.7]}
+\newcommand{\TlDescFlightRiseAfter}{0.23}
+\newcommand{\TlDescFlightRiseAfterBand}{[0.21, 0.26]}
+\newcommand{\TlDescFlightRiseBefore}{0.42}
+\newcommand{\TlDescFlightRiseBeforeBand}{[0.40, 0.44]}
+\newcommand{\TlDescFlightRiseBetween}{0.32}
+\newcommand{\TlDescFlightRiseBetweenBand}{[0.25, 0.40]}
+\newcommand{\TlDescFlightRiseGapAfterBefore}{$-$0.19}
+\newcommand{\TlDescFlightRiseGapAfterBeforeBand}{[$-$0.22, $-$0.16]}
+\newcommand{\TlDescFlightRiseGapIn}{$+$0.06}
+\newcommand{\TlDescFlightRiseGapInBand}{[$+$0.03, $+$0.09]}
+\newcommand{\TlDescFlightRiseIn}{0.39}
+\newcommand{\TlDescFlightRiseInBand}{[0.36, 0.41]}
+\newcommand{\TlDescFlightRiseSpanning}{0.37}
+\newcommand{\TlDescFlightRiseSpanningBand}{[0.34, 0.39]}
+\newcommand{\TlDescFlightRunsAfter}{296}
+\newcommand{\TlDescFlightRunsBefore}{71}
+\newcommand{\TlDescFlightRunsBetween}{16}
+\newcommand{\TlDescFlightRunsIn}{151}
+\newcommand{\TlDescFlightRunsSpanning}{198}
+\newcommand{\TlDescFlightSinkAfter}{94}
+\newcommand{\TlDescFlightSinkAfterBand}{[86, 102]}
+\newcommand{\TlDescFlightSinkBefore}{20}
+\newcommand{\TlDescFlightSinkBeforeBand}{[14, 26]}
+\newcommand{\TlDescFlightSinkBetween}{55}
+\newcommand{\TlDescFlightSinkBetweenBand}{[32, 78]}
+\newcommand{\TlDescFlightSinkGapAfterBefore}{$+$74}
+\newcommand{\TlDescFlightSinkGapAfterBeforeBand}{[$+$64, $+$84]}
+\newcommand{\TlDescFlightSinkGapIn}{$-$21}
+\newcommand{\TlDescFlightSinkGapInBand}{[$-$29, $-$14]}
+\newcommand{\TlDescFlightSinkIn}{36}
+\newcommand{\TlDescFlightSinkInBand}{[30, 42]}
+\newcommand{\TlDescFlightSinkSpanning}{42}
+\newcommand{\TlDescFlightSinkSpanningBand}{[33, 51]}
+\newcommand{\TlDescFlightSpeedAfter}{36.5}
+\newcommand{\TlDescFlightSpeedAfterBand}{[35.6, 37.4]}
+\newcommand{\TlDescFlightSpeedBefore}{35.7}
+\newcommand{\TlDescFlightSpeedBeforeBand}{[33.5, 37.8]}
+\newcommand{\TlDescFlightSpeedBetween}{41.0}
+\newcommand{\TlDescFlightSpeedBetweenBand}{[37.4, 44.5]}
+\newcommand{\TlDescFlightSpeedGapAfterBefore}{$+$0.9}
+\newcommand{\TlDescFlightSpeedGapAfterBeforeBand}{[$-$1.4, $+$3.1]}
+\newcommand{\TlDescFlightSpeedGapIn}{$+$0.1}
+\newcommand{\TlDescFlightSpeedGapInBand}{[$-$1.4, $+$1.6]}
+\newcommand{\TlDescFlightSpeedIn}{36.2}
+\newcommand{\TlDescFlightSpeedInBand}{[35.3, 37.2]}
+\newcommand{\TlDescFlightSpeedSpanning}{35.9}
+\newcommand{\TlDescFlightSpeedSpanningBand}{[35.1, 36.7]}
+\newcommand{\TlDescFlightStraightAfter}{0.84}
+\newcommand{\TlDescFlightStraightAfterBand}{[0.82, 0.87]}
+\newcommand{\TlDescFlightStraightBefore}{0.86}
+\newcommand{\TlDescFlightStraightBeforeBand}{[0.80, 0.92]}
+\newcommand{\TlDescFlightStraightBetween}{0.90}
+\newcommand{\TlDescFlightStraightBetweenBand}{[0.85, 0.95]}
+\newcommand{\TlDescFlightStraightGapAfterBefore}{$-$0.01}
+\newcommand{\TlDescFlightStraightGapAfterBeforeBand}{[$-$0.08, $+$0.05]}
+\newcommand{\TlDescFlightStraightGapIn}{$+$0.03}
+\newcommand{\TlDescFlightStraightGapInBand}{[$-$0.01, $+$0.07]}
+\newcommand{\TlDescFlightStraightIn}{0.88}
+\newcommand{\TlDescFlightStraightInBand}{[0.85, 0.91]}
+\newcommand{\TlDescFlightStraightSpanning}{0.84}
+\newcommand{\TlDescFlightStraightSpanningBand}{[0.80, 0.88]}
+\newcommand{\TlDescFlightVsAfter}{$-$0.74}
+\newcommand{\TlDescFlightVsAfterBand}{[$-$0.82, $-$0.67]}
+\newcommand{\TlDescFlightVsBefore}{$-$0.14}
+\newcommand{\TlDescFlightVsBeforeBand}{[$-$0.19, $-$0.10]}
+\newcommand{\TlDescFlightVsBetween}{$-$0.55}
+\newcommand{\TlDescFlightVsBetweenBand}{[$-$0.76, $-$0.35]}
+\newcommand{\TlDescFlightVsGapAfterBefore}{$-$0.60}
+\newcommand{\TlDescFlightVsGapAfterBeforeBand}{[$-$0.68, $-$0.51]}
+\newcommand{\TlDescFlightVsGapIn}{$+$0.20}
+\newcommand{\TlDescFlightVsGapInBand}{[$+$0.11, $+$0.30]}
+\newcommand{\TlDescFlightVsIn}{$-$0.24}
+\newcommand{\TlDescFlightVsInBand}{[$-$0.32, $-$0.16]}
+\newcommand{\TlDescFlightVsSpanning}{$-$0.34}
+\newcommand{\TlDescFlightVsSpanningBand}{[$-$0.41, $-$0.27]}
+\newcommand{\TlDescRawHeightA}{1\,106}
+\newcommand{\TlDescRawHeightABand}{[959, 1\,253]}
+\newcommand{\TlDescRawHeightG}{512}
+\newcommand{\TlDescRawHeightGBand}{[372, 653]}
+\newcommand{\TlDescRawHeightGapAS}{$+$81}
+\newcommand{\TlDescRawHeightGapASBand}{[$-$74, $+$237]}
+\newcommand{\TlDescRawHeightGapGA}{$-$593}
+\newcommand{\TlDescRawHeightGapGABand}{[$-$781, $-$406]}
+\newcommand{\TlDescRawHeightGapGS}{$-$512}
+\newcommand{\TlDescRawHeightGapGSBand}{[$-$658, $-$366]}
+\newcommand{\TlDescRawHeightS}{1\,024}
+\newcommand{\TlDescRawHeightSBand}{[954, 1\,094]}
+\newcommand{\TlDescRawLastA}{28}
+\newcommand{\TlDescRawLastG}{11}
+\newcommand{\TlDescRawLastS}{28}
+\newcommand{\TlDescRawNetA}{16.3}
+\newcommand{\TlDescRawNetABand}{[15.8, 16.8]}
+\newcommand{\TlDescRawNetG}{16.6}
+\newcommand{\TlDescRawNetGBand}{[15.6, 17.6]}
+\newcommand{\TlDescRawNetGapAS}{$+$1.7}
+\newcommand{\TlDescRawNetGapASBand}{[$+$1.1, $+$2.3]}
+\newcommand{\TlDescRawNetGapGA}{$+$0.3}
+\newcommand{\TlDescRawNetGapGABand}{[$-$0.7, $+$1.4]}
+\newcommand{\TlDescRawNetGapGS}{$+$2.0}
+\newcommand{\TlDescRawNetGapGSBand}{[$+$1.0, $+$3.0]}
+\newcommand{\TlDescRawNetS}{14.6}
+\newcommand{\TlDescRawNetSBand}{[14.3, 14.9]}
+\newcommand{\TlDescRawPathA}{21.2}
+\newcommand{\TlDescRawPathABand}{[20.7, 21.6]}
+\newcommand{\TlDescRawPathG}{21.5}
+\newcommand{\TlDescRawPathGBand}{[20.5, 22.5]}
+\newcommand{\TlDescRawPathGapAS}{$+$0.6}
+\newcommand{\TlDescRawPathGapASBand}{[$+$0.1, $+$1.1]}
+\newcommand{\TlDescRawPathGapGA}{$+$0.3}
+\newcommand{\TlDescRawPathGapGABand}{[$-$0.7, $+$1.4]}
+\newcommand{\TlDescRawPathGapGS}{$+$0.9}
+\newcommand{\TlDescRawPathGapGSBand}{[$-$0.1, $+$1.9]}
+\newcommand{\TlDescRawPathS}{20.6}
+\newcommand{\TlDescRawPathSBand}{[20.4, 20.8]}
+\newcommand{\TlDescRawRiseA}{0.32}
+\newcommand{\TlDescRawRiseABand}{[0.30, 0.34]}
+\newcommand{\TlDescRawRiseG}{0.40}
+\newcommand{\TlDescRawRiseGBand}{[0.38, 0.41]}
+\newcommand{\TlDescRawRiseGapAS}{$+$0.01}
+\newcommand{\TlDescRawRiseGapASBand}{[$-$0.01, $+$0.03]}
+\newcommand{\TlDescRawRiseGapGA}{$+$0.07}
+\newcommand{\TlDescRawRiseGapGABand}{[$+$0.05, $+$0.10]}
+\newcommand{\TlDescRawRiseGapGS}{$+$0.08}
+\newcommand{\TlDescRawRiseGapGSBand}{[$+$0.06, $+$0.10]}
+\newcommand{\TlDescRawRiseS}{0.32}
+\newcommand{\TlDescRawRiseSBand}{[0.31, 0.33]}
+\newcommand{\TlDescRawRunsA}{486}
+\newcommand{\TlDescRawRunsG}{313}
+\newcommand{\TlDescRawRunsS}{1\,638}
+\newcommand{\TlDescRawSinkA}{64}
+\newcommand{\TlDescRawSinkABand}{[55, 73]}
+\newcommand{\TlDescRawSinkG}{34}
+\newcommand{\TlDescRawSinkGBand}{[27, 41]}
+\newcommand{\TlDescRawSinkGapAS}{$-$8}
+\newcommand{\TlDescRawSinkGapASBand}{[$-$18, $+$1]}
+\newcommand{\TlDescRawSinkGapGA}{$-$30}
+\newcommand{\TlDescRawSinkGapGABand}{[$-$40, $-$19]}
+\newcommand{\TlDescRawSinkGapGS}{$-$38}
+\newcommand{\TlDescRawSinkGapGSBand}{[$-$46, $-$30]}
+\newcommand{\TlDescRawSinkS}{72}
+\newcommand{\TlDescRawSinkSBand}{[68, 77]}
+\newcommand{\TlDescRawSpeedA}{36.4}
+\newcommand{\TlDescRawSpeedABand}{[35.8, 37.1]}
+\newcommand{\TlDescRawSpeedG}{35.6}
+\newcommand{\TlDescRawSpeedGBand}{[35.0, 36.2]}
+\newcommand{\TlDescRawSpeedGapAS}{$+$0.4}
+\newcommand{\TlDescRawSpeedGapASBand}{[$-$0.4, $+$1.1]}
+\newcommand{\TlDescRawSpeedGapGA}{$-$0.8}
+\newcommand{\TlDescRawSpeedGapGABand}{[$-$1.6, $+$0.0]}
+\newcommand{\TlDescRawSpeedGapGS}{$-$0.4}
+\newcommand{\TlDescRawSpeedGapGSBand}{[$-$1.1, $+$0.2]}
+\newcommand{\TlDescRawSpeedS}{36.1}
+\newcommand{\TlDescRawSpeedSBand}{[35.7, 36.4]}
+\newcommand{\TlDescRawStraightA}{0.85}
+\newcommand{\TlDescRawStraightABand}{[0.83, 0.87]}
+\newcommand{\TlDescRawStraightG}{0.87}
+\newcommand{\TlDescRawStraightGBand}{[0.85, 0.89]}
+\newcommand{\TlDescRawStraightGapAS}{$+$0.08}
+\newcommand{\TlDescRawStraightGapASBand}{[$+$0.05, $+$0.10]}
+\newcommand{\TlDescRawStraightGapGA}{$+$0.02}
+\newcommand{\TlDescRawStraightGapGABand}{[$-$0.01, $+$0.05]}
+\newcommand{\TlDescRawStraightGapGS}{$+$0.10}
+\newcommand{\TlDescRawStraightGapGSBand}{[$+$0.07, $+$0.13]}
+\newcommand{\TlDescRawStraightS}{0.77}
+\newcommand{\TlDescRawStraightSBand}{[0.75, 0.79]}
+\newcommand{\TlDescRawVsA}{$-$0.50}
+\newcommand{\TlDescRawVsABand}{[$-$0.57, $-$0.43]}
+\newcommand{\TlDescRawVsG}{$-$0.21}
+\newcommand{\TlDescRawVsGBand}{[$-$0.27, $-$0.15]}
+\newcommand{\TlDescRawVsGapAS}{$-$0.01}
+\newcommand{\TlDescRawVsGapASBand}{[$-$0.08, $+$0.07]}
+\newcommand{\TlDescRawVsGapGA}{$+$0.29}
+\newcommand{\TlDescRawVsGapGABand}{[$+$0.20, $+$0.38]}
+\newcommand{\TlDescRawVsGapGS}{$+$0.28}
+\newcommand{\TlDescRawVsGapGSBand}{[$+$0.22, $+$0.34]}
+\newcommand{\TlDescRawVsS}{$-$0.49}
+\newcommand{\TlDescRawVsSBand}{[$-$0.53, $-$0.46]}
+\newcommand{\TlDescRouteHeightA}{36}
+\newcommand{\TlDescRouteHeightABand}{[$-$188, 260]}
+\newcommand{\TlDescRouteHeightG}{305}
+\newcommand{\TlDescRouteHeightGBand}{[126, 483]}
+\newcommand{\TlDescRouteHeightGapA}{$-$204}
+\newcommand{\TlDescRouteHeightGapABand}{[$-$542, $+$135]}
+\newcommand{\TlDescRouteHeightGapD}{$+$281}
+\newcommand{\TlDescRouteHeightGapDBand}{[$-$122, $+$684]}
+\newcommand{\TlDescRouteHeightGapG}{$+$77}
+\newcommand{\TlDescRouteHeightGapGBand}{[$-$194, $+$349]}
+\newcommand{\TlDescRouteHeightSA}{240}
+\newcommand{\TlDescRouteHeightSABand}{[$-$43, 522]}
+\newcommand{\TlDescRouteHeightSG}{227}
+\newcommand{\TlDescRouteHeightSGBand}{[17, 437]}
+\newcommand{\TlDescRouteLastA}{3}
+\newcommand{\TlDescRouteLastG}{7}
+\newcommand{\TlDescRouteLastSA}{13}
+\newcommand{\TlDescRouteLastSG}{2}
+\newcommand{\TlDescRouteNetA}{13.2}
+\newcommand{\TlDescRouteNetABand}{[10.0, 16.3]}
+\newcommand{\TlDescRouteNetG}{15.4}
+\newcommand{\TlDescRouteNetGBand}{[13.9, 16.8]}
+\newcommand{\TlDescRouteNetGapA}{$-$0.0}
+\newcommand{\TlDescRouteNetGapABand}{[$-$5.4, $+$5.4]}
+\newcommand{\TlDescRouteNetGapD}{$+$1.2}
+\newcommand{\TlDescRouteNetGapDBand}{[$-$5.3, $+$7.6]}
+\newcommand{\TlDescRouteNetGapG}{$+$1.2}
+\newcommand{\TlDescRouteNetGapGBand}{[$-$3.7, $+$6.0]}
+\newcommand{\TlDescRouteNetSA}{13.2}
+\newcommand{\TlDescRouteNetSABand}{[8.7, 17.6]}
+\newcommand{\TlDescRouteNetSG}{14.2}
+\newcommand{\TlDescRouteNetSGBand}{[9.7, 18.7]}
+\newcommand{\TlDescRoutePathA}{20.1}
+\newcommand{\TlDescRoutePathABand}{[16.6, 23.5]}
+\newcommand{\TlDescRoutePathG}{18.5}
+\newcommand{\TlDescRoutePathGBand}{[16.4, 20.6]}
+\newcommand{\TlDescRoutePathGapA}{$-$1.0}
+\newcommand{\TlDescRoutePathGapABand}{[$-$5.4, $+$3.4]}
+\newcommand{\TlDescRoutePathGapD}{$-$2.1}
+\newcommand{\TlDescRoutePathGapDBand}{[$-$7.2, $+$3.0]}
+\newcommand{\TlDescRoutePathGapG}{$-$3.1}
+\newcommand{\TlDescRoutePathGapGBand}{[$-$6.1, $-$0.1]}
+\newcommand{\TlDescRoutePathSA}{21.1}
+\newcommand{\TlDescRoutePathSABand}{[18.3, 23.9]}
+\newcommand{\TlDescRoutePathSG}{21.6}
+\newcommand{\TlDescRoutePathSGBand}{[19.3, 23.9]}
+\newcommand{\TlDescRouteRiseA}{0.46}
+\newcommand{\TlDescRouteRiseABand}{[0.43, 0.49]}
+\newcommand{\TlDescRouteRiseG}{0.42}
+\newcommand{\TlDescRouteRiseGBand}{[0.40, 0.44]}
+\newcommand{\TlDescRouteRiseGapA}{$+$0.03}
+\newcommand{\TlDescRouteRiseGapABand}{[$-$0.03, $+$0.08]}
+\newcommand{\TlDescRouteRiseGapD}{$-$0.04}
+\newcommand{\TlDescRouteRiseGapDBand}{[$-$0.10, $+$0.02]}
+\newcommand{\TlDescRouteRiseGapG}{$-$0.02}
+\newcommand{\TlDescRouteRiseGapGBand}{[$-$0.05, $+$0.02]}
+\newcommand{\TlDescRouteRiseSA}{0.43}
+\newcommand{\TlDescRouteRiseSABand}{[0.38, 0.48]}
+\newcommand{\TlDescRouteRiseSG}{0.43}
+\newcommand{\TlDescRouteRiseSGBand}{[0.40, 0.47]}
+\newcommand{\TlDescRouteRunsA}{37}
+\newcommand{\TlDescRouteRunsG}{59}
+\newcommand{\TlDescRouteRunsSA}{55}
+\newcommand{\TlDescRouteRunsSG}{123}
+\newcommand{\TlDescRouteSinkA}{2}
+\newcommand{\TlDescRouteSinkABand}{[$-$16, 21]}
+\newcommand{\TlDescRouteSinkG}{24}
+\newcommand{\TlDescRouteSinkGBand}{[10, 37]}
+\newcommand{\TlDescRouteSinkGapA}{$-$16}
+\newcommand{\TlDescRouteSinkGapABand}{[$-$44, $+$12]}
+\newcommand{\TlDescRouteSinkGapD}{$+$24}
+\newcommand{\TlDescRouteSinkGapDBand}{[$-$8, $+$57]}
+\newcommand{\TlDescRouteSinkGapG}{$+$9}
+\newcommand{\TlDescRouteSinkGapGBand}{[$-$13, $+$30]}
+\newcommand{\TlDescRouteSinkSA}{18}
+\newcommand{\TlDescRouteSinkSABand}{[$-$5, 41]}
+\newcommand{\TlDescRouteSinkSG}{15}
+\newcommand{\TlDescRouteSinkSGBand}{[$-$2, 32]}
+\newcommand{\TlDescRouteSpeedA}{33.4}
+\newcommand{\TlDescRouteSpeedABand}{[31.1, 35.6]}
+\newcommand{\TlDescRouteSpeedG}{33.3}
+\newcommand{\TlDescRouteSpeedGBand}{[31.4, 35.2]}
+\newcommand{\TlDescRouteSpeedGapA}{$-$1.7}
+\newcommand{\TlDescRouteSpeedGapABand}{[$-$5.3, $+$2.0]}
+\newcommand{\TlDescRouteSpeedGapD}{$-$0.0}
+\newcommand{\TlDescRouteSpeedGapDBand}{[$-$4.5, $+$4.4]}
+\newcommand{\TlDescRouteSpeedGapG}{$-$1.7}
+\newcommand{\TlDescRouteSpeedGapGBand}{[$-$5.2, $+$1.7]}
+\newcommand{\TlDescRouteSpeedSA}{35.0}
+\newcommand{\TlDescRouteSpeedSABand}{[31.7, 38.3]}
+\newcommand{\TlDescRouteSpeedSG}{35.0}
+\newcommand{\TlDescRouteSpeedSGBand}{[32.1, 37.9]}
+\newcommand{\TlDescRouteStraightA}{0.79}
+\newcommand{\TlDescRouteStraightABand}{[0.51, 1.07]}
+\newcommand{\TlDescRouteStraightG}{0.87}
+\newcommand{\TlDescRouteStraightGBand}{[0.81, 0.93]}
+\newcommand{\TlDescRouteStraightGapA}{$-$0.07}
+\newcommand{\TlDescRouteStraightGapABand}{[$-$0.38, $+$0.25]}
+\newcommand{\TlDescRouteStraightGapD}{$+$0.08}
+\newcommand{\TlDescRouteStraightGapDBand}{[$-$0.27, $+$0.43]}
+\newcommand{\TlDescRouteStraightGapG}{$+$0.01}
+\newcommand{\TlDescRouteStraightGapGBand}{[$-$0.17, $+$0.20]}
+\newcommand{\TlDescRouteStraightSA}{0.86}
+\newcommand{\TlDescRouteStraightSABand}{[0.71, 1.01]}
+\newcommand{\TlDescRouteStraightSG}{0.86}
+\newcommand{\TlDescRouteStraightSGBand}{[0.68, 1.04]}
+\newcommand{\TlDescRouteVsA}{$-$0.02}
+\newcommand{\TlDescRouteVsABand}{[$-$0.12, 0.09]}
+\newcommand{\TlDescRouteVsG}{$-$0.17}
+\newcommand{\TlDescRouteVsGBand}{[$-$0.25, $-$0.08]}
+\newcommand{\TlDescRouteVsGapA}{$+$0.11}
+\newcommand{\TlDescRouteVsGapABand}{[$-$0.06, $+$0.27]}
+\newcommand{\TlDescRouteVsGapD}{$-$0.16}
+\newcommand{\TlDescRouteVsGapDBand}{[$-$0.36, $+$0.03]}
+\newcommand{\TlDescRouteVsGapG}{$-$0.06}
+\newcommand{\TlDescRouteVsGapGBand}{[$-$0.17, $+$0.06]}
+\newcommand{\TlDescRouteVsSA}{$-$0.12}
+\newcommand{\TlDescRouteVsSABand}{[$-$0.27, 0.02]}
+\newcommand{\TlDescRouteVsSG}{$-$0.11}
+\newcommand{\TlDescRouteVsSGBand}{[$-$0.19, $-$0.03]}
+\newcommand{\TlFactor}{2}
+\newcommand{\TlFlightClimbDeltaAfterBefore}{$-$4.30}
+\newcommand{\TlFlightClimbDeltaAfterBeforeBand}{[$-$9.55, $+$0.96]}
+\newcommand{\TlFlightClimbDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightClimbDeltaAfterBeforeSd}{3.19}
+\newcommand{\TlFlightClimbDeltaAfterBeforeSe}{3.75}
+\newcommand{\TlFlightClimbDeltaIn}{$-$1.14}
+\newcommand{\TlFlightClimbDeltaInBand}{[$-$4.44, $+$2.17]}
+\newcommand{\TlFlightClimbDeltaInInfl}{0.9}
+\newcommand{\TlFlightClimbDeltaInSd}{2.01}
+\newcommand{\TlFlightClimbDeltaInSe}{2.30}
+\newcommand{\TlFlightClimbMuAfter}{7.76}
+\newcommand{\TlFlightClimbMuAfterBand}{[6.35, 9.18]}
+\newcommand{\TlFlightClimbMuAfterInfl}{0.9}
+\newcommand{\TlFlightClimbMuAfterN}{70}
+\newcommand{\TlFlightClimbMuAfterSd}{0.86}
+\newcommand{\TlFlightClimbMuAfterSe}{0.93}
+\newcommand{\TlFlightClimbMuBefore}{12.06}
+\newcommand{\TlFlightClimbMuBeforeBand}{[7.11, 17.01]}
+\newcommand{\TlFlightClimbMuBeforeInfl}{0.8}
+\newcommand{\TlFlightClimbMuBeforeN}{11}
+\newcommand{\TlFlightClimbMuBeforeSd}{3.01}
+\newcommand{\TlFlightClimbMuBeforeSe}{3.64}
+\newcommand{\TlFlightClimbMuBetween}{9.23}
+\newcommand{\TlFlightClimbMuBetweenBand}{[$-$30.32, 48.78]}
+\newcommand{\TlFlightClimbMuBetweenInfl}{6.9}
+\newcommand{\TlFlightClimbMuBetweenN}{7}
+\newcommand{\TlFlightClimbMuBetweenSd}{24.05}
+\newcommand{\TlFlightClimbMuBetweenSe}{3.49}
+\newcommand{\TlFlightClimbMuIn}{8.78}
+\newcommand{\TlFlightClimbMuInBand}{[6.49, 11.06]}
+\newcommand{\TlFlightClimbMuInInfl}{1.1}
+\newcommand{\TlFlightClimbMuInN}{44}
+\newcommand{\TlFlightClimbMuInSd}{1.39}
+\newcommand{\TlFlightClimbMuInSe}{1.32}
+\newcommand{\TlFlightClimbMuSpanning}{12.71}
+\newcommand{\TlFlightClimbMuSpanningBand}{[4.48, 20.93]}
+\newcommand{\TlFlightClimbMuSpanningInfl}{1.6}
+\newcommand{\TlFlightClimbMuSpanningN}{17}
+\newcommand{\TlFlightClimbMuSpanningSd}{5.00}
+\newcommand{\TlFlightClimbMuSpanningSe}{3.08}
+\newcommand{\TlFlightClimbStartDeltaAfterBefore}{$-$3.12}
+\newcommand{\TlFlightClimbStartDeltaAfterBeforeBand}{[$-$7.42, $+$1.18]}
+\newcommand{\TlFlightClimbStartDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightClimbStartDeltaAfterBeforeSd}{2.61}
+\newcommand{\TlFlightClimbStartDeltaAfterBeforeSe}{2.88}
+\newcommand{\TlFlightClimbStartDeltaIn}{$+$0.21}
+\newcommand{\TlFlightClimbStartDeltaInBand}{[$-$2.86, $+$3.28]}
+\newcommand{\TlFlightClimbStartDeltaInInfl}{1.0}
+\newcommand{\TlFlightClimbStartDeltaInSd}{1.87}
+\newcommand{\TlFlightClimbStartDeltaInSe}{1.93}
+\newcommand{\TlFlightClimbStartMuAfter}{7.76}
+\newcommand{\TlFlightClimbStartMuAfterBand}{[6.35, 9.18]}
+\newcommand{\TlFlightClimbStartMuAfterInfl}{0.9}
+\newcommand{\TlFlightClimbStartMuAfterN}{70}
+\newcommand{\TlFlightClimbStartMuAfterSd}{0.86}
+\newcommand{\TlFlightClimbStartMuAfterSe}{0.93}
+\newcommand{\TlFlightClimbStartMuBefore}{10.88}
+\newcommand{\TlFlightClimbStartMuBeforeBand}{[6.84, 14.93]}
+\newcommand{\TlFlightClimbStartMuBeforeInfl}{0.9}
+\newcommand{\TlFlightClimbStartMuBeforeN}{16}
+\newcommand{\TlFlightClimbStartMuBeforeSd}{2.46}
+\newcommand{\TlFlightClimbStartMuBeforeSe}{2.72}
+\newcommand{\TlFlightClimbStartMuBetween}{10.25}
+\newcommand{\TlFlightClimbStartMuBetweenBand}{[$-$21.62, 42.12]}
+\newcommand{\TlFlightClimbStartMuBetweenInfl}{5.3}
+\newcommand{\TlFlightClimbStartMuBetweenN}{8}
+\newcommand{\TlFlightClimbStartMuBetweenSd}{19.38}
+\newcommand{\TlFlightClimbStartMuBetweenSe}{3.62}
+\newcommand{\TlFlightClimbStartMuIn}{9.53}
+\newcommand{\TlFlightClimbStartMuInBand}{[7.20, 11.87]}
+\newcommand{\TlFlightClimbStartMuInInfl}{1.1}
+\newcommand{\TlFlightClimbStartMuInN}{55}
+\newcommand{\TlFlightClimbStartMuInSd}{1.42}
+\newcommand{\TlFlightClimbStartMuInSe}{1.29}
+\newcommand{\TlFlightDeltaAfterBefore}{$+$1.66}
+\newcommand{\TlFlightDeltaAfterBeforeBand}{[$+$0.92, $+$2.39]}
+\newcommand{\TlFlightDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightDeltaAfterBeforeSd}{0.45}
+\newcommand{\TlFlightDeltaAfterBeforeSe}{0.49}
+\newcommand{\TlFlightDeltaIn}{$+$0.12}
+\newcommand{\TlFlightDeltaInBand}{[$-$0.66, $+$0.89]}
+\newcommand{\TlFlightDeltaInInfl}{1.1}
+\newcommand{\TlFlightDeltaInSd}{0.47}
+\newcommand{\TlFlightDeltaInSe}{0.42}
+\newcommand{\TlFlightFlights}{11\,105}
+\newcommand{\TlFlightLongDeltaAfterBefore}{$+$1.68}
+\newcommand{\TlFlightLongDeltaAfterBeforeBand}{[$+$0.94, $+$2.42]}
+\newcommand{\TlFlightLongDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightLongDeltaAfterBeforeSd}{0.45}
+\newcommand{\TlFlightLongDeltaAfterBeforeSe}{0.49}
+\newcommand{\TlFlightLongDeltaIn}{$-$0.37}
+\newcommand{\TlFlightLongDeltaInBand}{[$-$1.09, $+$0.34]}
+\newcommand{\TlFlightLongDeltaInInfl}{1.0}
+\newcommand{\TlFlightLongDeltaInSd}{0.43}
+\newcommand{\TlFlightLongDeltaInSe}{0.42}
+\newcommand{\TlFlightLongMuAfter}{4.94}
+\newcommand{\TlFlightLongMuAfterBand}{[4.42, 5.45]}
+\newcommand{\TlFlightLongMuAfterInfl}{1.0}
+\newcommand{\TlFlightLongMuAfterN}{272}
+\newcommand{\TlFlightLongMuAfterSd}{0.31}
+\newcommand{\TlFlightLongMuAfterSe}{0.30}
+\newcommand{\TlFlightLongMuBefore}{3.26}
+\newcommand{\TlFlightLongMuBeforeBand}{[2.68, 3.83]}
+\newcommand{\TlFlightLongMuBeforeInfl}{0.9}
+\newcommand{\TlFlightLongMuBeforeN}{70}
+\newcommand{\TlFlightLongMuBeforeSd}{0.35}
+\newcommand{\TlFlightLongMuBeforeSe}{0.39}
+\newcommand{\TlFlightLongMuBetween}{3.71}
+\newcommand{\TlFlightLongMuBetweenBand}{[1.04, 6.37]}
+\newcommand{\TlFlightLongMuBetweenInfl}{1.6}
+\newcommand{\TlFlightLongMuBetweenN}{14}
+\newcommand{\TlFlightLongMuBetweenSd}{1.62}
+\newcommand{\TlFlightLongMuBetweenSe}{0.99}
+\newcommand{\TlFlightLongMuIn}{3.72}
+\newcommand{\TlFlightLongMuInBand}{[3.10, 4.35]}
+\newcommand{\TlFlightLongMuInInfl}{1.1}
+\newcommand{\TlFlightLongMuInN}{122}
+\newcommand{\TlFlightLongMuInSd}{0.38}
+\newcommand{\TlFlightLongMuInSe}{0.34}
+\newcommand{\TlFlightLongMuSpanning}{3.78}
+\newcommand{\TlFlightLongMuSpanningBand}{[3.24, 4.31]}
+\newcommand{\TlFlightLongMuSpanningInfl}{0.9}
+\newcommand{\TlFlightLongMuSpanningN}{106}
+\newcommand{\TlFlightLongMuSpanningSd}{0.33}
+\newcommand{\TlFlightLongMuSpanningSe}{0.37}
+\newcommand{\TlFlightMuAfter}{4.95}
+\newcommand{\TlFlightMuAfterBand}{[4.47, 5.44]}
+\newcommand{\TlFlightMuAfterInfl}{1.0}
+\newcommand{\TlFlightMuAfterN}{296}
+\newcommand{\TlFlightMuAfterSd}{0.29}
+\newcommand{\TlFlightMuAfterSe}{0.29}
+\newcommand{\TlFlightMuBefore}{3.30}
+\newcommand{\TlFlightMuBeforeBand}{[2.71, 3.89]}
+\newcommand{\TlFlightMuBeforeInfl}{0.9}
+\newcommand{\TlFlightMuBeforeN}{71}
+\newcommand{\TlFlightMuBeforeSd}{0.36}
+\newcommand{\TlFlightMuBeforeSe}{0.39}
+\newcommand{\TlFlightMuBetween}{4.13}
+\newcommand{\TlFlightMuBetweenBand}{[1.20, 7.05]}
+\newcommand{\TlFlightMuBetweenInfl}{1.7}
+\newcommand{\TlFlightMuBetweenN}{16}
+\newcommand{\TlFlightMuBetweenSd}{1.78}
+\newcommand{\TlFlightMuBetweenSe}{1.03}
+\newcommand{\TlFlightMuIn}{4.24}
+\newcommand{\TlFlightMuInBand}{[3.54, 4.94]}
+\newcommand{\TlFlightMuInInfl}{1.2}
+\newcommand{\TlFlightMuInN}{151}
+\newcommand{\TlFlightMuInSd}{0.42}
+\newcommand{\TlFlightMuInSe}{0.35}
+\newcommand{\TlFlightMuSpanning}{3.52}
+\newcommand{\TlFlightMuSpanningBand}{[3.05, 3.98]}
+\newcommand{\TlFlightMuSpanningInfl}{1.1}
+\newcommand{\TlFlightMuSpanningN}{198}
+\newcommand{\TlFlightMuSpanningSd}{0.28}
+\newcommand{\TlFlightMuSpanningSe}{0.25}
+\newcommand{\TlFlightSearchDeltaAfterBefore}{$-$1.59}
+\newcommand{\TlFlightSearchDeltaAfterBeforeBand}{[$-$2.98, $-$0.19]}
+\newcommand{\TlFlightSearchDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightSearchDeltaAfterBeforeSd}{0.85}
+\newcommand{\TlFlightSearchDeltaAfterBeforeSe}{0.90}
+\newcommand{\TlFlightSearchDeltaIn}{$+$0.06}
+\newcommand{\TlFlightSearchDeltaInBand}{[$-$0.99, $+$1.10]}
+\newcommand{\TlFlightSearchDeltaInInfl}{1.0}
+\newcommand{\TlFlightSearchDeltaInSd}{0.64}
+\newcommand{\TlFlightSearchDeltaInSe}{0.63}
+\newcommand{\TlFlightSearchMuAfter}{3.63}
+\newcommand{\TlFlightSearchMuAfterBand}{[3.09, 4.16]}
+\newcommand{\TlFlightSearchMuAfterInfl}{0.9}
+\newcommand{\TlFlightSearchMuAfterN}{106}
+\newcommand{\TlFlightSearchMuAfterSd}{0.32}
+\newcommand{\TlFlightSearchMuAfterSe}{0.35}
+\newcommand{\TlFlightSearchMuBefore}{5.21}
+\newcommand{\TlFlightSearchMuBeforeBand}{[3.93, 6.49]}
+\newcommand{\TlFlightSearchMuBeforeInfl}{0.9}
+\newcommand{\TlFlightSearchMuBeforeN}{40}
+\newcommand{\TlFlightSearchMuBeforeSd}{0.78}
+\newcommand{\TlFlightSearchMuBeforeSe}{0.82}
+\newcommand{\TlFlightSearchMuBetween}{4.23}
+\newcommand{\TlFlightSearchMuBetweenBand}{[1.31, 7.16]}
+\newcommand{\TlFlightSearchMuBetweenInfl}{1.4}
+\newcommand{\TlFlightSearchMuBetweenN}{11}
+\newcommand{\TlFlightSearchMuBetweenSd}{1.78}
+\newcommand{\TlFlightSearchMuBetweenSe}{1.28}
+\newcommand{\TlFlightSearchMuIn}{4.48}
+\newcommand{\TlFlightSearchMuInBand}{[3.72, 5.23]}
+\newcommand{\TlFlightSearchMuInInfl}{1.0}
+\newcommand{\TlFlightSearchMuInN}{103}
+\newcommand{\TlFlightSearchMuInSd}{0.46}
+\newcommand{\TlFlightSearchMuInSe}{0.44}
+\newcommand{\TlFlightSearchMuSpanning}{4.22}
+\newcommand{\TlFlightSearchMuSpanningBand}{[3.17, 5.27]}
+\newcommand{\TlFlightSearchMuSpanningInfl}{0.9}
+\newcommand{\TlFlightSearchMuSpanningN}{34}
+\newcommand{\TlFlightSearchMuSpanningSd}{0.64}
+\newcommand{\TlFlightSearchMuSpanningSe}{0.72}
+\newcommand{\TlFlightSearchStartDeltaAfterBefore}{$-$1.13}
+\newcommand{\TlFlightSearchStartDeltaAfterBeforeBand}{[$-$2.34, $+$0.08]}
+\newcommand{\TlFlightSearchStartDeltaAfterBeforeInfl}{1.0}
+\newcommand{\TlFlightSearchStartDeltaAfterBeforeSd}{0.74}
+\newcommand{\TlFlightSearchStartDeltaAfterBeforeSe}{0.75}
+\newcommand{\TlFlightSearchStartDeltaIn}{$+$0.21}
+\newcommand{\TlFlightSearchStartDeltaInBand}{[$-$0.74, $+$1.16]}
+\newcommand{\TlFlightSearchStartDeltaInInfl}{1.0}
+\newcommand{\TlFlightSearchStartDeltaInSd}{0.58}
+\newcommand{\TlFlightSearchStartDeltaInSe}{0.55}
+\newcommand{\TlFlightSearchStartMuAfter}{3.63}
+\newcommand{\TlFlightSearchStartMuAfterBand}{[3.09, 4.16]}
+\newcommand{\TlFlightSearchStartMuAfterInfl}{0.9}
+\newcommand{\TlFlightSearchStartMuAfterN}{106}
+\newcommand{\TlFlightSearchStartMuAfterSd}{0.32}
+\newcommand{\TlFlightSearchStartMuAfterSe}{0.35}
+\newcommand{\TlFlightSearchStartMuBefore}{4.76}
+\newcommand{\TlFlightSearchStartMuBeforeBand}{[3.66, 5.86]}
+\newcommand{\TlFlightSearchStartMuBeforeInfl}{1.0}
+\newcommand{\TlFlightSearchStartMuBeforeN}{52}
+\newcommand{\TlFlightSearchStartMuBeforeSd}{0.67}
+\newcommand{\TlFlightSearchStartMuBeforeSe}{0.66}
+\newcommand{\TlFlightSearchStartMuBetween}{5.01}
+\newcommand{\TlFlightSearchStartMuBetweenBand}{[2.58, 7.44]}
+\newcommand{\TlFlightSearchStartMuBetweenInfl}{1.2}
+\newcommand{\TlFlightSearchStartMuBetweenN}{17}
+\newcommand{\TlFlightSearchStartMuBetweenSd}{1.48}
+\newcommand{\TlFlightSearchStartMuBetweenSe}{1.21}
+\newcommand{\TlFlightSearchStartMuIn}{4.40}
+\newcommand{\TlFlightSearchStartMuInBand}{[3.73, 5.08]}
+\newcommand{\TlFlightSearchStartMuInInfl}{1.0}
+\newcommand{\TlFlightSearchStartMuInN}{119}
+\newcommand{\TlFlightSearchStartMuInSd}{0.41}
+\newcommand{\TlFlightSearchStartMuInSe}{0.40}
+\newcommand{\TlFlightStartDeltaAfterBefore}{$+$1.72}
+\newcommand{\TlFlightStartDeltaAfterBeforeBand}{[$+$1.06, $+$2.38]}
+\newcommand{\TlFlightStartDeltaAfterBeforeInfl}{0.9}
+\newcommand{\TlFlightStartDeltaAfterBeforeSd}{0.40}
+\newcommand{\TlFlightStartDeltaAfterBeforeSe}{0.43}
+\newcommand{\TlFlightStartDeltaIn}{$-$0.18}
+\newcommand{\TlFlightStartDeltaInBand}{[$-$0.78, $+$0.41]}
+\newcommand{\TlFlightStartDeltaInInfl}{1.2}
+\newcommand{\TlFlightStartDeltaInSd}{0.36}
+\newcommand{\TlFlightStartDeltaInSe}{0.31}
+\newcommand{\TlFlightStartMuAfter}{4.95}
+\newcommand{\TlFlightStartMuAfterBand}{[4.47, 5.44]}
+\newcommand{\TlFlightStartMuAfterInfl}{1.0}
+\newcommand{\TlFlightStartMuAfterN}{296}
+\newcommand{\TlFlightStartMuAfterSd}{0.29}
+\newcommand{\TlFlightStartMuAfterSe}{0.29}
+\newcommand{\TlFlightStartMuBefore}{3.24}
+\newcommand{\TlFlightStartMuBeforeBand}{[2.76, 3.71]}
+\newcommand{\TlFlightStartMuBeforeInfl}{0.9}
+\newcommand{\TlFlightStartMuBeforeN}{107}
+\newcommand{\TlFlightStartMuBeforeSd}{0.29}
+\newcommand{\TlFlightStartMuBeforeSe}{0.31}
+\newcommand{\TlFlightStartMuBetween}{3.87}
+\newcommand{\TlFlightStartMuBetweenBand}{[2.22, 5.51]}
+\newcommand{\TlFlightStartMuBetweenInfl}{1.4}
+\newcommand{\TlFlightStartMuBetweenN}{30}
+\newcommand{\TlFlightStartMuBetweenSd}{1.00}
+\newcommand{\TlFlightStartMuBetweenSe}{0.71}
+\newcommand{\TlFlightStartMuIn}{3.91}
+\newcommand{\TlFlightStartMuInBand}{[3.45, 4.38]}
+\newcommand{\TlFlightStartMuInInfl}{1.2}
+\newcommand{\TlFlightStartMuInN}{299}
+\newcommand{\TlFlightStartMuInSd}{0.28}
+\newcommand{\TlFlightStartMuInSe}{0.23}
+\newcommand{\TlGapNegativeFrom}{845}
+\newcommand{\TlHillAtHighA}{3.86}
+\newcommand{\TlHillAtHighAN}{118}
+\newcommand{\TlHillAtHighG}{3.58}
+\newcommand{\TlHillAtHighGN}{108}
+\newcommand{\TlHillAtHighS}{4.74}
+\newcommand{\TlHillAtHighSN}{353}
+\newcommand{\TlHillAtThousandA}{3.73}
+\newcommand{\TlHillAtThousandAN}{3\,818}
+\newcommand{\TlHillAtThousandG}{3.58}
+\newcommand{\TlHillAtThousandGN}{2\,252}
+\newcommand{\TlHillAtThousandS}{3.77}
+\newcommand{\TlHillAtThousandSN}{12\,047}
+\newcommand{\TlHillGapSixHundred}{$-$0.06}
+\newcommand{\TlHillGapSixHundredXmin}{599}
+\newcommand{\TlHillGapThousand}{$-$0.19}
+\newcommand{\TlHillGapThousandXmin}{1\,005}
+\newcommand{\TlHillGapThreshold}{$-$1.21}
+\newcommand{\TlHillGapThresholdXmin}{1\,687}
+\newcommand{\TlHillGapTwoThousand}{$-$1.30}
+\newcommand{\TlHillGapTwoThousandXmin}{2\,005}
+\newcommand{\TlHillHigh}{2\,383}
+\newcommand{\TlInGroupInRawG}{151}
+\newcommand{\TlKsDistanceS}{0.018}
+\newcommand{\TlKsGridMu}{4.55}
+\newcommand{\TlKsXminA}{1\,335}
+\newcommand{\TlKsXminFlightAfter}{1\,457}
+\newcommand{\TlKsXminFlightBefore}{939}
+\newcommand{\TlKsXminFlightBetween}{982}
+\newcommand{\TlKsXminFlightIn}{1\,005}
+\newcommand{\TlKsXminFlightSpanning}{1\,223}
+\newcommand{\TlKsXminG}{1\,005}
+\newcommand{\TlKsXminS}{1\,687}
+\newcommand{\TlMinTail}{50}
+\newcommand{\TlNBoot}{1\,000}
+\newcommand{\TlOutside}{79}
+\newcommand{\TlOutsideInRawG}{42}
+\newcommand{\TlRawClimbGapAS}{$-$1.02}
+\newcommand{\TlRawClimbGapASBand}{[$-$2.40, $+$0.37]}
+\newcommand{\TlRawClimbGapASInfl}{0.9}
+\newcommand{\TlRawClimbGapASSd}{0.84}
+\newcommand{\TlRawClimbGapASSe}{0.97}
+\newcommand{\TlRawClimbGapGA}{$+$0.85}
+\newcommand{\TlRawClimbGapGABand}{[$-$1.58, $+$3.29]}
+\newcommand{\TlRawClimbGapGAInfl}{1.0}
+\newcommand{\TlRawClimbGapGASd}{1.48}
+\newcommand{\TlRawClimbGapGASe}{1.50}
+\newcommand{\TlRawClimbGapGS}{$-$0.16}
+\newcommand{\TlRawClimbGapGSBand}{[$-$2.40, $+$2.08]}
+\newcommand{\TlRawClimbGapGSInfl}{1.0}
+\newcommand{\TlRawClimbGapGSSd}{1.36}
+\newcommand{\TlRawClimbGapGSSe}{1.31}
+\newcommand{\TlRawClimbMuA}{8.26}
+\newcommand{\TlRawClimbMuABand}{[6.96, 9.55]}
+\newcommand{\TlRawClimbMuAInfl}{0.9}
+\newcommand{\TlRawClimbMuAN}{92}
+\newcommand{\TlRawClimbMuASd}{0.79}
+\newcommand{\TlRawClimbMuASe}{0.86}
+\newcommand{\TlRawClimbMuG}{9.11}
+\newcommand{\TlRawClimbMuGBand}{[6.97, 11.25]}
+\newcommand{\TlRawClimbMuGInfl}{1.1}
+\newcommand{\TlRawClimbMuGN}{55}
+\newcommand{\TlRawClimbMuGSd}{1.30}
+\newcommand{\TlRawClimbMuGSe}{1.23}
+\newcommand{\TlRawClimbMuS}{9.27}
+\newcommand{\TlRawClimbMuSBand}{[8.57, 9.97]}
+\newcommand{\TlRawClimbMuSInfl}{1.0}
+\newcommand{\TlRawClimbMuSN}{431}
+\newcommand{\TlRawClimbMuSSd}{0.43}
+\newcommand{\TlRawClimbMuSSe}{0.45}
+\newcommand{\TlRawGAbove}{313}
+\newcommand{\TlRawGapAS}{$-$0.44}
+\newcommand{\TlRawGapASBand}{[$-$0.79, $-$0.09]}
+\newcommand{\TlRawGapASInfl}{1.0}
+\newcommand{\TlRawGapASSd}{0.21}
+\newcommand{\TlRawGapASSe}{0.22}
+\newcommand{\TlRawGapGA}{$-$0.80}
+\newcommand{\TlRawGapGABand}{[$-$1.29, $-$0.32]}
+\newcommand{\TlRawGapGAInfl}{1.1}
+\newcommand{\TlRawGapGASd}{0.29}
+\newcommand{\TlRawGapGASe}{0.27}
+\newcommand{\TlRawGapGS}{$-$1.24}
+\newcommand{\TlRawGapGSBand}{[$-$1.67, $-$0.82]}
+\newcommand{\TlRawGapGSInfl}{1.2}
+\newcommand{\TlRawGapGSSd}{0.26}
+\newcommand{\TlRawGapGSSe}{0.22}
+\newcommand{\TlRawMuA}{4.14}
+\newcommand{\TlRawMuABand}{[3.82, 4.45]}
+\newcommand{\TlRawMuAInfl}{1.0}
+\newcommand{\TlRawMuAN}{486}
+\newcommand{\TlRawMuASd}{0.19}
+\newcommand{\TlRawMuASe}{0.19}
+\newcommand{\TlRawMuG}{3.33}
+\newcommand{\TlRawMuGBand}{[2.96, 3.71]}
+\newcommand{\TlRawMuGInfl}{1.2}
+\newcommand{\TlRawMuGN}{313}
+\newcommand{\TlRawMuGSd}{0.23}
+\newcommand{\TlRawMuGSe}{0.19}
+\newcommand{\TlRawMuS}{4.58}
+\newcommand{\TlRawMuSBand}{[4.39, 4.77]}
+\newcommand{\TlRawMuSInfl}{1.0}
+\newcommand{\TlRawMuSN}{1\,638}
+\newcommand{\TlRawMuSSd}{0.12}
+\newcommand{\TlRawMuSSe}{0.11}
+\newcommand{\TlRawSearchGapAS}{$-$0.09}
+\newcommand{\TlRawSearchGapASBand}{[$-$0.66, $+$0.47]}
+\newcommand{\TlRawSearchGapASInfl}{1.0}
+\newcommand{\TlRawSearchGapASSd}{0.34}
+\newcommand{\TlRawSearchGapASSe}{0.35}
+\newcommand{\TlRawSearchGapGA}{$+$0.54}
+\newcommand{\TlRawSearchGapGABand}{[$-$0.25, $+$1.34]}
+\newcommand{\TlRawSearchGapGAInfl}{0.9}
+\newcommand{\TlRawSearchGapGASd}{0.48}
+\newcommand{\TlRawSearchGapGASe}{0.51}
+\newcommand{\TlRawSearchGapGS}{$+$0.45}
+\newcommand{\TlRawSearchGapGSBand}{[$-$0.24, $+$1.13]}
+\newcommand{\TlRawSearchGapGSInfl}{1.0}
+\newcommand{\TlRawSearchGapGSSd}{0.42}
+\newcommand{\TlRawSearchGapGSSe}{0.44}
+\newcommand{\TlRawSearchMuA}{3.95}
+\newcommand{\TlRawSearchMuABand}{[3.46, 4.45]}
+\newcommand{\TlRawSearchMuAInfl}{1.0}
+\newcommand{\TlRawSearchMuAN}{161}
+\newcommand{\TlRawSearchMuASd}{0.30}
+\newcommand{\TlRawSearchMuASe}{0.31}
+\newcommand{\TlRawSearchMuG}{4.50}
+\newcommand{\TlRawSearchMuGBand}{[3.87, 5.13]}
+\newcommand{\TlRawSearchMuGInfl}{0.9}
+\newcommand{\TlRawSearchMuGN}{124}
+\newcommand{\TlRawSearchMuGSd}{0.38}
+\newcommand{\TlRawSearchMuGSe}{0.40}
+\newcommand{\TlRawSearchMuS}{4.05}
+\newcommand{\TlRawSearchMuSBand}{[3.78, 4.32]}
+\newcommand{\TlRawSearchMuSInfl}{1.0}
+\newcommand{\TlRawSearchMuSN}{588}
+\newcommand{\TlRawSearchMuSSd}{0.16}
+\newcommand{\TlRawSearchMuSSe}{0.17}
+\newcommand{\TlRouteControlsA}{1\,680}
+\newcommand{\TlRouteControlsG}{3\,210}
+\newcommand{\TlRouteMuA}{2.99}
+\newcommand{\TlRouteMuABand}{[1.53, 4.46]}
+\newcommand{\TlRouteMuAInfl}{1.8}
+\newcommand{\TlRouteMuAN}{37}
+\newcommand{\TlRouteMuASd}{0.89}
+\newcommand{\TlRouteMuASe}{0.49}
+\newcommand{\TlRouteMuCtlA}{$-$2.47}
+\newcommand{\TlRouteMuCtlABand}{[$-$5.82, $+$0.88]}
+\newcommand{\TlRouteMuCtlAInfl}{1.8}
+\newcommand{\TlRouteMuCtlASd}{2.04}
+\newcommand{\TlRouteMuCtlASe}{1.13}
+\newcommand{\TlRouteMuCtlD}{$+$2.78}
+\newcommand{\TlRouteMuCtlDBand}{[$-$0.80, $+$6.37]}
+\newcommand{\TlRouteMuCtlDInfl}{1.7}
+\newcommand{\TlRouteMuCtlDSd}{2.18}
+\newcommand{\TlRouteMuCtlDSe}{1.31}
+\newcommand{\TlRouteMuCtlG}{$+$0.31}
+\newcommand{\TlRouteMuCtlGBand}{[$-$1.61, $+$2.23]}
+\newcommand{\TlRouteMuCtlGInfl}{1.8}
+\newcommand{\TlRouteMuCtlGSd}{1.17}
+\newcommand{\TlRouteMuCtlGSe}{0.67}
+\newcommand{\TlRouteMuG}{3.92}
+\newcommand{\TlRouteMuGBand}{[2.75, 5.10]}
+\newcommand{\TlRouteMuGInfl}{1.4}
+\newcommand{\TlRouteMuGN}{59}
+\newcommand{\TlRouteMuGSd}{0.71}
+\newcommand{\TlRouteMuGSe}{0.51}
+\newcommand{\TlRouteMuSA}{5.47}
+\newcommand{\TlRouteMuSABand}{[2.39, 8.54]}
+\newcommand{\TlRouteMuSAInfl}{1.8}
+\newcommand{\TlRouteMuSAN}{29}
+\newcommand{\TlRouteMuSASd}{1.87}
+\newcommand{\TlRouteMuSASe}{1.02}
+\newcommand{\TlRouteMuSG}{3.61}
+\newcommand{\TlRouteMuSGBand}{[2.16, 5.07]}
+\newcommand{\TlRouteMuSGInfl}{2.1}
+\newcommand{\TlRouteMuSGN}{71}
+\newcommand{\TlRouteMuSGSd}{0.88}
+\newcommand{\TlRouteMuSGSe}{0.43}
+\newcommand{\TlRoutePiecesA}{831}
+\newcommand{\TlRoutePiecesG}{1\,422}
+\newcommand{\TlRouteSearchMuA}{5.40}
+\newcommand{\TlRouteSearchMuABand}{---}
+\newcommand{\TlRouteSearchMuAN}{15}
+\newcommand{\TlRouteSearchMuASe}{1.39}
+\newcommand{\TlRouteSearchMuCtlA}{$+$1.07}
+\newcommand{\TlRouteSearchMuCtlABand}{---}
+\newcommand{\TlRouteSearchMuCtlASe}{1.62}
+\newcommand{\TlRouteSearchMuCtlD}{$-$1.12}
+\newcommand{\TlRouteSearchMuCtlDBand}{---}
+\newcommand{\TlRouteSearchMuCtlDSe}{1.86}
+\newcommand{\TlRouteSearchMuCtlG}{$-$0.05}
+\newcommand{\TlRouteSearchMuCtlGBand}{[$-$2.02, $+$1.91]}
+\newcommand{\TlRouteSearchMuCtlGInfl}{1.3}
+\newcommand{\TlRouteSearchMuCtlGSd}{1.19}
+\newcommand{\TlRouteSearchMuCtlGSe}{0.91}
+\newcommand{\TlRouteSearchMuG}{4.11}
+\newcommand{\TlRouteSearchMuGBand}{[3.00, 5.22]}
+\newcommand{\TlRouteSearchMuGInfl}{0.9}
+\newcommand{\TlRouteSearchMuGN}{32}
+\newcommand{\TlRouteSearchMuGSd}{0.68}
+\newcommand{\TlRouteSearchMuGSe}{0.73}
+\newcommand{\TlRouteSearchMuSA}{4.33}
+\newcommand{\TlRouteSearchMuSABand}{[2.19, 6.47]}
+\newcommand{\TlRouteSearchMuSAInfl}{1.6}
+\newcommand{\TlRouteSearchMuSAN}{28}
+\newcommand{\TlRouteSearchMuSASd}{1.30}
+\newcommand{\TlRouteSearchMuSASe}{0.83}
+\newcommand{\TlRouteSearchMuSG}{4.17}
+\newcommand{\TlRouteSearchMuSGBand}{[2.44, 5.90]}
+\newcommand{\TlRouteSearchMuSGInfl}{1.9}
+\newcommand{\TlRouteSearchMuSGN}{57}
+\newcommand{\TlRouteSearchMuSGSd}{1.05}
+\newcommand{\TlRouteSearchMuSGSe}{0.55}
+\newcommand{\TlRunsA}{93\,424}
+\newcommand{\TlRunsClassified}{185\,237}
+\newcommand{\TlRunsG}{86\,766}
+\newcommand{\TlRunsS}{428\,324}
+\newcommand{\TlSpanningInRawA}{71}
+\newcommand{\TlSpanningInRawG}{121}
+\newcommand{\TlSpanningShare}{27}
+\newcommand{\TlStretchLongNAfter}{5\,004}
+\newcommand{\TlStretchLongNBefore}{1\,992}
+\newcommand{\TlStretchLongNBetween}{679}
+\newcommand{\TlStretchLongNIn}{7\,537}
+\newcommand{\TlStretchLongShareAfter}{49}
+\newcommand{\TlStretchLongShareBefore}{19}
+\newcommand{\TlStretchLongShareBetween}{22}
+\newcommand{\TlStretchLongShareIn}{53}
+\newcommand{\TlStretchMedianAfter}{3\,344}
+\newcommand{\TlStretchMedianBefore}{444}
+\newcommand{\TlStretchMedianBetween}{1\,280}
+\newcommand{\TlStretchMedianIn}{3\,535}
+\newcommand{\TlStretchShortShareAfter}{68}
+\newcommand{\TlStretchShortShareBefore}{34}
+\newcommand{\TlStretchShortShareBetween}{41}
+\newcommand{\TlStretchShortShareIn}{100}
+\newcommand{\TlStretchesAfter}{10\,126}
+\newcommand{\TlStretchesBefore}{10\,451}
+\newcommand{\TlStretchesBetween}{3\,081}
+\newcommand{\TlStretchesIn}{14\,186}
+\newcommand{\TlTolSpanningTen}{197}
+\newcommand{\TlTolSpanningThirty}{194}
+\newcommand{\TlTolSpanningZero}{198}
+\newcommand{\TlXmin}{1\,704}
+\newcommand{\TlXminClimb}{1\,064}
+\newcommand{\TlXminLong}{3\,408}
+\newcommand{\TlXminSearch}{491}

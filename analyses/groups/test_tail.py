@@ -2,9 +2,11 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
 import tail  # noqa: E402
+import tail_designs as td  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "phases"))
 from durations import hill  # noqa: E402
@@ -84,3 +86,119 @@ def test_median_draws_is_the_median_of_the_repeated_runs():
         rep = np.repeat(v, row[cell])
         assert got[d] == np.sort(rep)[(len(rep) + 1) // 2 - 1]  # the lower median
     assert np.all(tail.median_draws(v, cell, np.ones((3, 40), np.uint8)) == np.sort(v)[150])
+
+
+def test_estimate_is_the_hill_estimate_with_its_iid_error_and_a_band():
+    n, cells = 6000, 300
+    x = pareto(3, n, 300.0, 11)
+    cell = np.random.default_rng(12).integers(0, cells, n)
+    counts = np.random.default_rng(13).multinomial(cells, np.full(cells, 1 / cells), size=3 * 200).astype(np.uint8)
+    e, draws = td.estimate(x, cell, counts, 600.0)
+    above = (x >= 600.0).sum()
+    assert np.isclose(e["value"], hill(x, 600.0)) and e["n"] == above and len(draws) == 600
+    assert np.isclose(e["se_iid"], e["value"] / np.sqrt(above))
+    assert e["band"][0] < e["value"] < e["band"][1]
+    assert np.isnan(td.estimate(x[:0], cell[:0], counts, 600.0)[0]["value"])
+
+
+def test_combine_adds_values_draws_and_iid_errors_in_quadrature():
+    rng = np.random.default_rng(14)
+    a = ({"value": 4.0, "band": [3, 5], "n": 10, "se_iid": 0.3}, rng.normal(4, 0.2, 90))
+    b = ({"value": 3.0, "band": [2, 4], "n": 10, "se_iid": 0.4}, rng.normal(3, 0.2, 90))
+    e, d = td.combine([(1, a), (-0.5, b)])
+    assert np.isclose(e["value"], 2.5) and np.allclose(d, a[1] - 0.5 * b[1])
+    assert np.isclose(e["se_iid"], np.sqrt(0.3 ** 2 + 0.25 * 0.4 ** 2))
+
+
+def test_ks_distance_is_small_from_the_start_of_the_power_law():
+    rng = np.random.default_rng(15)
+    x = np.r_[rng.uniform(50, 300, 4000), pareto(3, 6000, 300.0, 16)]
+    k, best = td.ks_curve(x, np.array([150.0, 200.0, 300.0, 450.0]))
+    d = dict(zip(k["xmin"], k["D"]))
+    assert d[300.0] < 0.03 and d[150.0] > 5 * d[300.0] and d[200.0] > 3 * d[300.0]
+    assert np.isclose(k["mu"][2], hill(x, 300.0)) and best in (300.0, 450.0)
+    assert np.isnan(td.ks_curve(x[:10], np.array([300.0]))[0]["D"][0])
+
+
+def test_weighted_median_is_the_lower_median_of_the_repeated_values():
+    rng = np.random.default_rng(17)
+    v, w = rng.normal(size=51), rng.integers(0, 4, size=(51, 6)).astype(float)
+    got = td.weighted_median(v, w)
+    for j in range(6):
+        rep = np.sort(np.repeat(v, w[:, j].astype(int)))
+        assert got[j] == rep[(len(rep) + 1) // 2 - 1]
+    assert np.isnan(td.weighted_median(v, np.zeros((51, 2)))).all() and np.isnan(td.weighted_median(v[:0], np.zeros((0, 2)))).all()
+
+
+def stretch_frames():
+    """Flight 1: solo, group, solo, group, solo (state of the membership rows; times on a clock that starts at 0).
+    Flight 2: solo only."""
+    rows = [(1, "S", 0, 1000), (1, "G", 1000, 3000), (1, "S", 3000, 4000), (1, "G", 4000, 6000), (1, "S", 6000, 9000), (2, "S", 0, 5000)]
+    membership = pd.DataFrame(rows, columns=["flight", "state", "t_start", "t_end"]).assign(episode_id=1, group_id=1, n=2)
+    flights = pd.DataFrame({"flight": [1, 2], "dt_native": 1.0, "n_grid": 10, "utc0": 0.0})
+    summary = pd.DataFrame({"flight": [1, 2], "n_entries": [2, 0]})
+    return flights, membership, summary
+
+
+def test_group_stretches_are_classed_by_their_place_in_the_flight():
+    s = td.group_stretches(*stretch_frames())
+    assert list(s["flight"]) == [1] * 5
+    assert list(s["cls"]) == ["before", "in group", "between", "in group", "after"]
+    assert list(s["length"]) == [1000, 2000, 1000, 2000, 3000]
+
+
+def test_classify_puts_a_run_where_it_starts_and_ends():
+    s = td.group_stretches(*stretch_frames())
+    runs = pd.DataFrame({"flight": [1, 1, 1, 1, 1, 1, 1, 1, 2],
+                         "t_start": [100, 1200, 3100, 4100, 6500, 900, 2900, 8900, 100],
+                         "t_end": [900, 2800, 3900, 5900, 8000, 1100, 3100, 9500, 900]})
+    c = td.classify(s, runs)
+    assert list(c["cls"]) == ["before", "in group", "between", "in group", "after", "spanning", "spanning", "spanning", "outside"]
+    assert list(c["start"][:8]) == ["before", "in group", "between", "in group", "after", "before", "in group", "after"]
+    assert list(c["length"][:5]) == [1000, 2000, 1000, 2000, 3000] and np.isnan(c["length"][8])
+
+
+def test_classify_forgives_a_small_overshoot_only_with_a_tolerance():
+    s = td.group_stretches(*stretch_frames())
+    runs = pd.DataFrame({"flight": [1, 1], "t_start": [995, 1200], "t_end": [2000, 3005]})
+    assert list(td.classify(s, runs)["cls"]) == ["spanning", "spanning"]
+    assert list(td.classify(s, runs, 10)["cls"]) == ["in group", "in group"]
+
+
+def test_length_table_counts_the_stretches_long_enough():
+    s = td.group_stretches(*stretch_frames())
+    t = td.length_table(s, 1000.0)
+    assert t["in group"]["stretches"] == 2 and t["in group"]["share >= xmin"] == 1.0
+    assert t["in group"]["stretches >= 2 xmin"] == 2 and t["before"]["stretches >= 2 xmin"] == 0
+    assert t["after"]["length quantiles (s)"]["50"] == 3000
+
+
+def test_describe_gives_the_quartiles_and_a_median_band_of_the_long_glides():
+    rows = pd.DataFrame({name: np.arange(1.0, 6.0) for name in td.DESCRIPTORS}).assign(last=[True, False, False, False, False])
+    cell, counts = np.arange(5), np.random.default_rng(18).multinomial(5, np.full(5, 0.2), size=3 * 40).astype(np.uint8)
+    out, med = td.describe(rows, cell, counts)
+    assert out["runs"] == 5 and out["last run of the flight (share)"] == 0.2
+    assert out["path (km)"]["median"] == 3.0 and out["path (km)"]["q25"] == 2.0 and med["path (km)"][1].shape == (120,)
+    w = np.ones((5, 121))
+    out_w, _ = td.describe(rows, None, None, w)
+    assert out_w["path (km)"]["median"] == 3.0
+
+
+def test_route_weights_give_the_sums_of_the_engine():
+    from types import SimpleNamespace
+
+    import isolated
+    import twoway
+    rng = np.random.default_rng(19)
+    universe = np.arange(20)
+    cell = rng.integers(0, 8, 20)
+    stacked = rng.multinomial(8, np.full(8, 1 / 8), size=3 * 30).astype(np.uint8)
+    ctx = SimpleNamespace(tracks={"flight": universe}, row=lambda f: np.searchsorted(universe, f), boot=twoway.weights(cell, stacked))
+    sel = pd.DataFrame({"piece": [0, 0, 1, 2, 2, 2, 3, 3], "solo": [10, 11, 12, 10, 13, 14, 15, 16]})
+    a, b = rng.random((4, 2)), rng.random((len(sel), 2))
+    pieces, p = np.unique(sel["piece"], return_inverse=True)
+    flights, s = np.unique(sel["solo"], return_inverse=True)
+    group, control, _ = isolated.engine(p, s, a, b, ctx.row(pieces), ctx.row(flights), ctx.boot)
+    wp, wm = td.route_weights(ctx, sel, np.arange(ctx.boot[1]))
+    assert np.allclose(group, a.T @ wp) and np.allclose(control, b.T @ wm)
+    assert np.allclose(wp[:, 0], 1) and np.allclose(wm[:, 0], 1 / np.array([2, 2, 1, 3, 3, 3, 2, 2]))

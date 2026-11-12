@@ -229,3 +229,76 @@ Dataset 1000 for $\Hk$ and the statistics, 2760 for $\Hq$; average first, ratio 
 \caption{Decomposition, level all: $\Delta(C)=\G-{}$controls of the cell $C$ for the 8 cells (same pieces and units as Table~\ref{tab:decomposition-controls}); $^\ast$: the 90\% band excludes 0.}
 \label{tab:decomposition-deltas}
 \end{table}
+
+\section{\texorpdfstring{\textcolor{blue}{The tail: variants of the same flight}}{The tail: variants of the same flight}}\label{app:tailvariants}
+
+Table~\ref{tab:tail-variants} gives the classes of the same-flight design of Section~\ref{sec:tails} in three readings: a run in a class when it lies whole in its stretch (the main reading); a run that ends after the stretch where it starts, \textsc{spanning}, given to the class of the stretch where it starts; and only the stretches of at least $\TlFactor\,x_{\min}=\TlXminLong$~s, so that every stretch can hold a run well above the threshold.
+The classes are the same in every reading but \textsc{spanning}, which the second reading empties. A run that starts before the first stretch of its flight, the departure, is in no class (\TlOutside{} runs above the threshold); \TlRunsClassified{} runs of the flights with a group stretch are classed in all. The three contrasts keep their sign in every reading: $\Delta_\text{in}$ is \TlFlightDeltaIn{} \TlFlightDeltaInBand{} in the first, \TlFlightStartDeltaIn{} \TlFlightStartDeltaInBand{} in the second and \TlFlightLongDeltaIn{} \TlFlightLongDeltaInBand{} in the third, and $\Delta_{AB}$ is \TlFlightDeltaAfterBefore, \TlFlightStartDeltaAfterBefore{} and \TlFlightLongDeltaAfterBefore.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/tail_variants_table}
+\caption{Same flight, transitions at the threshold $x_{\min}=\TlXmin$~s: $\hat\mu$ of the classes in the three readings, runs above, 90\% two-way band and the two errors of Table~\ref{tab:tails}.}
+\label{tab:tail-variants}
+\end{table}
+
+\section{\texorpdfstring{\textcolor{blue}{The tail: descriptors of the long transitions}}{The tail: descriptors of the long transitions}}\label{app:taildesc}
+
+Table~\ref{tab:tail-desc} gives the medians drawn in Figure~\ref{fig:tails-desc}, for the transitions of at least $x_{\min}=\TlXmin$~s that are in the cache of the descriptors (a run whose middle is in a piece). The last column is the share of them that are the last counted run of the flight. A descriptor is computed on the fixes from the first to the last of the run, each run inside one segment: the path is the sum of the horizontal steps, the net displacement the distance between the two ends, the straightness their ratio, the vertical speed the change of height over the duration, the share of time rising the share of the duration in steps that gain height, the height lost per km the height lost over the net displacement in km, and the height lost in total $z_\text{start}-z_\text{end}$.
+
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/tail_descriptors_table}
+\caption{Medians of the descriptors of the long transitions: glides, path (km), straightness, vertical speed (m/s), height lost per km of net displacement (m/km), share of time rising, height lost in total (m), and share of the glides that end the flight (\%). On the same route a run weighs as in the estimates.}
+\label{tab:tail-desc}
+\end{table}
+
+\section{\texorpdfstring{\textcolor{blue}{The tail: climbs and searches}}{The tail: climbs and searches}}\label{app:tailphases}
+
+The climbs and the searches that end in a climb are read the same way, at the threshold of $\Sl$ for each phase (\TlXminClimb~s for the climbs, \TlXminSearch~s for the searches). Few runs lie above them (Figure~\ref{fig:tails-phases}, Table~\ref{tab:tail-phases}); in the raw design the climbs of $\G$ give $\hat\mu$ of \TlRawClimbMuG{} \TlRawClimbMuGBand{} against \TlRawClimbMuS{} \TlRawClimbMuSBand{} in $\Sl$, and the searches \TlRawSearchMuG{} \TlRawSearchMuGBand{} against \TlRawSearchMuS{} \TlRawSearchMuSBand; the bands of $\G-\Sl$ include 0 for both (\TlRawClimbGapGS{} \TlRawClimbGapGSBand{} and \TlRawSearchGapGS{} \TlRawSearchGapGSBand). On the same route no climb of the pieces or of the controls lies above the threshold of the climbs, and the entries are empty.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/tails_phases.pdf}
+\caption{$\hat\mu$ of the climbs (left) and of the searches ending in a climb (right) at the threshold of $\Sl$ for each phase, runs above in brackets; as Figure~\ref{fig:tails-forest}.}
+\label{fig:tails-phases}
+\end{figure}
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/tail_phases_table}
+\caption{Climbs and searches ending in a climb: $\hat\mu$, runs above, 90\% two-way band and the two errors of Table~\ref{tab:tails}.}
+\label{tab:tail-phases}
+\end{table}
+
+\section{\texorpdfstring{\textcolor{blue}{Terrain: the pieces by class}}{Terrain: the pieces by class}}\label{app:terrain}
+
+Table~\ref{tab:terrain-pieces} gives the pieces of dataset 1000 of $\Sl$, $\A$ and $\G$ by class, the plains and the hills apart. A piece is mixed when no class holds \TnMajority\% of its grid points, and unknown when the points without a class do. The \TnFlightsClassed{} open flights of the run are the units of the classes; the pieces of $\G$ number \TnPiecesG, those of $\A$ \TnPiecesA{} and those of $\Sl$ \TnPiecesS. Of the \TnEventsAll{} events of Section~\ref{sec:prepost} with the four windows, \TnEventsLowlandClassed{} lie in the lowland, \TnEventsMountainClassed{} in the mountains, \TnEventsMixedClassed{} over several classes and \TnEventsUnknownClassed{} over unknown ground.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/terrain_pieces_table}
+\caption{Pieces of dataset 1000 by terrain class and population, before the plains are counted with the hills.}
+\label{tab:terrain-pieces}
+\end{table}
+
+\section{\texorpdfstring{\textcolor{blue}{The gliders around the group: other radii and the phase statistics}}{The gliders around the group: other radii and the phase statistics}}\label{app:intergroup}
+
+Table~\ref{tab:ig-radii} gives the six contrasts of $\Hk$ with the classes at \IgRadLow, \IgRMain{} and \IgRadHigh~km. The classes change with the radius: the larger the radius, the fewer pieces are alone and the more are ahead. Table~\ref{tab:ig-phase} gives the four phase statistics of the contrasts at \IgRMain~km, raw and within the flight, with the number of flights of the second line.
+
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/intergroup_radii_table}
+\caption{The contrasts of $\Hk$ by the radius $R$ of the classes, raw and within the flight (flight), with 90\% bands.}
+\label{tab:ig-radii}
+\end{table}
+
+\begin{table}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{../generated/comparisons/intergroup_phase_table}
+\caption{The phase statistics of the contrasts at $R=\IgRMain$~km, with 90\% bands; points for the shares of time and of searches. Within the flight, the flights are those with phase time in both cells.}
+\label{tab:ig-phase}
+\end{table}

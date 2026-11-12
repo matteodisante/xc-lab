@@ -1,0 +1,83 @@
+\section{\texorpdfstring{\textcolor{blue}{Point 5: the tail of the transitions}}{Point 5: the tail of the transitions}}\label{sec:tails}
+
+Do the longest transitions, the glides between two climbs, last longer in group time than in solo flight, and does the tail of their durations change inside the group of the same flight?
+
+\paragraph{The estimator.} We write the survival of a duration $x$ above a threshold $x_{\min}$ as $P(X>x)\sim x^{-\mu}$. For the $n$ durations $x_i\ge x_{\min}$ the Hill estimator (Hill, \emph{Ann.\ Statist.}\ 3, 1163, 1975) is
+\[
+  \hat\mu=\frac{n}{\sum_{i=1}^{n}\ln\!\left(x_i/x_{\min}\right)},
+\]
+the maximum-likelihood value of a Pareto law above $x_{\min}$. For $n$ independent runs its standard error is $\hat\mu/\sqrt n$; we tabulate it beside the band below, as the \emph{iid} error. A duration is the number of fixes of the run, in seconds. We cut the durations as in the survival of Section~\ref{sec:raw}: strictly inside the $0.0001$ and $99.9999$ percentiles of each pool. A smaller $\hat\mu$ is a heavier tail.
+
+\paragraph{The threshold.} The Hill estimate depends on $x_{\min}$ (Figure~\ref{fig:tails-hill}). Clauset, Shalizi and Newman (\emph{SIAM Rev.}\ 51, 661, 2009) choose the $x_{\min}$ that minimises the Kolmogorov--Smirnov distance between the data above $x_{\min}$ and the fitted law,
+\[
+  D(x_{\min})=\max_{x\ge x_{\min}}\bigl|F_\text{data}(x)-\bigl(1-(x/x_{\min})^{-\hat\mu}\bigr)\bigr|.
+\]
+We choose it on the solo flights $\Sl$ of the raw design: $x_{\min}=\TlXmin$~s ($\TlRunsS$ transitions in $\Sl$, \TlRawMuSN{} above the threshold). Our own scan of $D$ over a grid of $60$ thresholds from 300 to 4\,000~s, drawn in Figure~\ref{fig:tails-hill}, puts its minimum for $\Sl$ at \TlKsXminS~s, for $\A$ at \TlKsXminA~s and for $\G$ at \TlKsXminG~s. To compare the tails on the same range we read every population and class of the three designs at the one threshold of $\Sl$, and the Hill plots show how the comparison depends on it. The thresholds of the climbs and of the searches ending in a climb, chosen the same way on $\Sl$, are \TlXminClimb{} and \TlXminSearch~s (Appendix~\ref{app:tailphases}).
+
+\paragraph{The band.} The band is the two-way band of the other points (Appendix~\ref{app:bootstrap}): \TlNBoot{} draws over pilots, over blocks (episodes joined with site-days) and over their cells, $V=\max(V_P+V_B-V_C,V_P,V_B)$ (Cameron, Gelbach and Miller, \emph{J.\ Bus.\ Econ.\ Stat.}\ 29, 238, 2011), and $\hat\mu\pm1.645\sqrt V$ at the threshold held fixed. A contrast takes its band from the same draws. The band does not include the uncertainty of the threshold; the Hill plot shows it. On the same route a run of a piece weighs 1 and a run of a control $1/$(controls of its piece), as in Section~\ref{sec:matched}, and $\hat\mu=\sum w/\sum w\ln(x/x_{\min})$.
+
+\paragraph{The three designs.} \emph{Raw:} the runs of $\Sl$, $\A$ and $\G$ whose middle lies in a piece of dataset 1000. \emph{Same route:} the runs of the matched pieces of $\G$ and of $\A$ and of their controls $\SG$ and $\SAA$ (Section~\ref{sec:matched}). \emph{Same flight:} the windows of Section~\ref{sec:prepost} cannot hold a transition longer than the threshold, so we class each run of the \TlFlightFlights{} open flights that have a group stretch by the stretch that holds it. \textsc{before} is a run whole in the solo time before the first group stretch, \textsc{in group} a run whole in a group stretch, \textsc{after} a run whole in the solo time after the last one, \textsc{between} a run whole in the solo time between two group stretches, and \textsc{spanning} a run that ends after the stretch where it starts. In analogy with $g$ of Section~\ref{sec:prepost} we form
+\[
+  \Delta_\text{in}=\hat\mu_\text{in group}-\tfrac12\bigl(\hat\mu_\text{before}+\hat\mu_\text{after}\bigr),\qquad
+  \Delta_{AB}=\hat\mu_\text{after}-\hat\mu_\text{before}.
+\]
+A run cannot be longer than its stretch, so long runs need long stretches. We report the lengths of the stretches (Table~\ref{tab:tail-lengths}), and two variants: the \textsc{spanning} runs given to the class of the stretch where they start, and only the stretches of at least $\TlFactor\,x_{\min}=\TlXminLong$~s (Appendix~\ref{app:tailvariants}).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/tails_survival.pdf}
+\caption{Survival $P(\tau>t)$ of the durations of the transitions, estimated as the share of the runs longer than $t$, with the 90\% bands of the draws at each $t$; the dotted line is the threshold of $\Sl$, \TlXmin~s. Left: raw ($\Sl$, $\A$, $\G$). Middle: same route, $\G$ and $\A$ with their controls $\SG$ and $\SAA$ (dashed). Right: same flight, runs whole in the solo time before, in the group and in the solo time after.}
+\label{fig:tails-survival}
+\end{figure}
+
+\paragraph{Raw.} Above the threshold the transitions of $\G$ have a heavier tail than those of $\Sl$: $\hat\mu$ is \TlRawMuG{} \TlRawMuGBand{} in $\G$, \TlRawMuA{} \TlRawMuABand{} in $\A$ and \TlRawMuS{} \TlRawMuSBand{} in $\Sl$, so $\G-\Sl$ is \TlRawGapGS{} \TlRawGapGSBand{} and $\A-\Sl$ \TlRawGapAS{} \TlRawGapASBand{} (Table~\ref{tab:tails}, Figure~\ref{fig:tails-forest}). The curves of Figure~\ref{fig:tails-survival} lie together at the shorter durations. The Hill plot (Figure~\ref{fig:tails-hill}) rises with $x_{\min}$ in all three populations and the gap $\G-\Sl$ opens with it: \TlHillGapSixHundred{} at \TlHillGapSixHundredXmin~s, \TlHillGapThousand{} at \TlHillGapThousandXmin~s, \TlHillGapThreshold{} at \TlHillGapThresholdXmin~s and \TlHillGapTwoThousand{} at \TlHillGapTwoThousandXmin~s. So the gap grows with the threshold, and its size depends on where the threshold is put. The climbs and the searches show no difference between the populations (Appendix~\ref{app:tailphases}).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/tails_hill.pdf}
+\caption{Hill index $\hat\mu(x_{\min})=n/\sum\ln(x_i/x_{\min})$ of the transitions above $x_{\min}$, with 90\% bands, in the raw design, on the same route (weighted) and in the same flight; the dotted line is the threshold of $\Sl$. Bottom right: the Kolmogorov--Smirnov distance $D(x_{\min})$ of the raw populations on a grid of 60 thresholds (a threshold with fewer than \TlMinTail{} runs above is left out).}
+\label{fig:tails-hill}
+\end{figure}
+
+\paragraph{Same route.} Only \TlRouteMuGN{} transitions of $\G$ and \TlRouteMuAN{} of $\A$ exceed the threshold in the matched pieces. $\hat\mu$ is \TlRouteMuG{} \TlRouteMuGBand{} in $\G$ and \TlRouteMuSG{} \TlRouteMuSGBand{} in its controls, and the contrast $\G-\SG$ is \TlRouteMuCtlG{} \TlRouteMuCtlGBand. For $\A$ it is \TlRouteMuCtlA{} \TlRouteMuCtlABand{} and the difference of the two contrasts \TlRouteMuCtlD{} \TlRouteMuCtlDBand. The three bands include 0: the data do not tell the sign. We do not lower the threshold to gain runs; the Hill plot of Figure~\ref{fig:tails-hill} shows the lower thresholds, where the bands narrow and the curves of $\G$, $\A$ and the controls overlap.
+
+\paragraph{Same flight.} Whole in a stretch, \TlFlightMuBeforeN{} runs above the threshold are \textsc{before}, \TlFlightMuInN{} \textsc{in group}, \TlFlightMuAfterN{} \textsc{after}, \TlFlightMuBetweenN{} \textsc{between} and \TlFlightMuSpanningN{} \textsc{spanning}. $\hat\mu$ is \TlFlightMuBefore{} \TlFlightMuBeforeBand{} before, \TlFlightMuIn{} \TlFlightMuInBand{} in the group and \TlFlightMuAfter{} \TlFlightMuAfterBand{} after. We expected the first and the last to be alike and the middle one smaller. The numbers say otherwise: $\Delta_\text{in}$ is \TlFlightDeltaIn{} \TlFlightDeltaInBand, which includes 0 and has the other sign, and $\Delta_{AB}$ is \TlFlightDeltaAfterBefore{} \TlFlightDeltaAfterBeforeBand: before and after differ. With the \textsc{spanning} runs given to the class where they start, $\Delta_\text{in}$ is \TlFlightStartDeltaIn{} \TlFlightStartDeltaInBand{} and $\Delta_{AB}$ \TlFlightStartDeltaAfterBefore{} \TlFlightStartDeltaAfterBeforeBand; on the stretches of at least $\TlXminLong$~s they are \TlFlightLongDeltaIn{} \TlFlightLongDeltaInBand{} and \TlFlightLongDeltaAfterBefore{} \TlFlightLongDeltaAfterBeforeBand{} (Appendix~\ref{app:tailvariants}).
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/tail_table}
+\caption{Hill index $\hat\mu$ of the durations of the transitions at the threshold $x_{\min}=\TlXmin$~s of $\Sl$, in every population and class of the three designs; runs above the threshold (on the same route a control run counts $1/$(controls of its piece), so the control counts are weighted); 90\% two-way band; \emph{s.e.\ iid}, $\hat\mu/\sqrt n$ for $n$ independent runs; \emph{s.e.\ two-way}, the half-width of the band over 1.645, comparable to it. The two-way error exceeds the iid one by a factor of \TlRawMuGInfl{} for $\G$ in the raw design and \TlRouteMuSAInfl{} for $\SAA$ on the same route; in the same flight it stays near 1. Contrasts take their band from the same draws.
+The band holds the threshold fixed.}
+\label{tab:tails}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/tails_forest.pdf}
+\caption{Left: $\hat\mu$ of the transitions at the threshold of $\Sl$ in every population and class (runs above in brackets; open dots: controls and the solo time after the group). Right: the contrasts $\G-\Sl$, $\A-\Sl$, $(\G-\SG)-(\A-\SAA)$, $\Delta_\text{in}$ and $\Delta_{AB}$. Dot: value; bar: 90\% two-way band.}
+\label{fig:tails-forest}
+\end{figure}
+
+\paragraph{Why the raw tail is heavier.} The \TlRawGAbove{} transitions of $\G$ above the threshold are not all whole in a group stretch: \TlInGroupInRawG{} are, \TlSpanningInRawG{} end after the stretch where they start and \TlOutsideInRawG{} start before the first stretch of their flight, the departure (the sum differs by one from \TlRawGAbove{} through the cut of the longest durations, made in each pool). The spanning runs have $\hat\mu$ of \TlFlightMuSpanning{} \TlFlightMuSpanningBand; the runs whole in a group stretch have \TlFlightMuIn, close to $\A$ (\TlRawMuA) and $\Sl$ (\TlRawMuS). A run whole in a group stretch cannot outlast it: the stretches last \TlStretchMedianIn~s at the median and only \TlStretchLongShareIn\% of them $\TlFactor\,x_{\min}$ or more (Table~\ref{tab:tail-lengths}). The heavy tail of $\G$ in the raw design therefore comes in part from transitions that begin or end outside the group.
+
+\begin{table}
+\centering\small
+\input{../generated/comparisons/tail_lengths_table}
+\caption{Duration of the stretches of the \TlFlightFlights{} flights with a group stretch, by class: number, quantiles (s), share of the stretches of at least $x_{\min}=\TlXmin$~s and of at least $\TlFactor\,x_{\min}=\TlXminLong$~s, and runs above the threshold whole in them.}
+\label{tab:tail-lengths}
+\end{table}
+
+\paragraph{What a long transition is.} A transition above the threshold is \TlDescRawPathS{} km long at the median in $\Sl$ (path, along the track). Two readings of a heavier tail in group time are open. (a) In a group the pilots dare more: they commit to longer glides because they trust the group to find the next thermal. This predicts long transitions that spend more height in total, and arrivals at a lower height above the ground. (b) Long transitions follow lines of rising air, and a group is more often on one. This predicts transitions that cost less height per kilometre and rise a larger share of the time. Figure~\ref{fig:tails-desc} gives the medians of the descriptors (the numbers in Appendix~\ref{app:taildesc}).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{open_min0.1/tails_descriptors.pdf}
+\caption{The transitions above the threshold, median of each descriptor with its 90\% two-way band (glides in brackets). Path: length along the track. Straightness: net displacement over path. Share of time rising: share of the duration in steps that gain height. Vertical speed: change of height over the duration. Height lost per km of net displacement, and height lost in total: the first fix minus the last, $z_\text{start}-z_\text{end}$. On the same route the medians weigh the runs as the estimates do.}
+\label{fig:tails-desc}
+\end{figure}
+
+In the raw design the long transitions of $\G$ are as long as those of $\Sl$ (\TlDescRawPathG{} against \TlDescRawPathS~km, difference \TlDescRawPathGapGS{} \TlDescRawPathGapGSBand) and cost half the height: \TlDescRawHeightG{} against \TlDescRawHeightS~m in total (difference \TlDescRawHeightGapGS{} \TlDescRawHeightGapGSBand), \TlDescRawSinkG{} against \TlDescRawSinkS~m per km, and they rise \TlDescRawRiseG{} of the time against \TlDescRawRiseS. Those of $\A$ look like those of $\Sl$ (\TlDescRawHeightA~m, \TlDescRawSinkA~m per km, \TlDescRawRiseA). This is what reading (b) predicts and what reading (a) does not. On the same route the controls look like the group: \TlDescRouteHeightG{} m in $\G$ against \TlDescRouteHeightSG{} m in $\SG$ (difference \TlDescRouteHeightGapG{} \TlDescRouteHeightGapGBand), \TlDescRouteSinkG{} against \TlDescRouteSinkSG~m per km and \TlDescRouteRiseG{} against \TlDescRouteRiseSG{} of the time rising; the transitions of $\G$ are shorter than those of its controls (\TlDescRoutePathG{} against \TlDescRoutePathSG~km, difference \TlDescRoutePathGapG{} \TlDescRoutePathGapGBand). On the routes that groups fly, the long transitions of solo pilots are cheap too. In the same flight the long transitions before the group cost \TlDescFlightHeightBefore{} m \TlDescFlightHeightBeforeBand, those in it \TlDescFlightHeightIn{} m \TlDescFlightHeightInBand{} and those after it \TlDescFlightHeightAfter{} m \TlDescFlightHeightAfterBand. The \textsc{after} class holds the descents toward the landing: \TlDescFlightLastAfter\% of its long transitions are the last run of the flight, against \TlDescFlightLastIn\% in the group, and they rise \TlDescFlightRiseAfter{} of the time. We computed the height above the ground at the end of a transition for none of them: it needs the elevation under the end point, and the elevation model of Section~\ref{sec:terrain} is kept only as classes.
+
+\paragraph{Limits.} The band does not include the choice of the threshold, and $\hat\mu$ has not levelled off in any population before about \TlXmin~s (Figure~\ref{fig:tails-hill}): above it \TlRawMuSN{} runs of $\Sl$ but \TlRawMuGN{} of $\G$ and \TlRouteMuGN{} on the same route remain, and the range of the power law is short. The bands of the same-route design are wide because of the number of runs; the same-flight classes hold between \TlFlightMuBeforeN{} and \TlFlightMuAfterN{} runs. The stretches limit the runs they hold: the solo time before the group has a median stretch of \TlStretchMedianBefore~s and \TlStretchShortShareBefore\% of its stretches reach the threshold, against \TlStretchShortShareIn\% in the group (Table~\ref{tab:tail-lengths}); the variant on long stretches keeps only the stretches that can hold a run of $\TlFactor\,x_{\min}$ (Appendix~\ref{app:tailvariants}). The classification of a run by the stretch that holds it depends on the boundaries of the stretches to the second; letting a run overshoot its stretch by 10 or 30~s changes the \textsc{spanning} count from \TlTolSpanningZero{} to \TlTolSpanningTen{} and \TlTolSpanningThirty. The descriptors are medians over the long transitions of the pieces; the height lost uses the recorded altitude $z$ of the fixes.
+
+\paragraph{What we keep.} In the raw design the transitions of group time have a heavier tail than those of solo flight at the threshold of $\Sl$ ($\G-\Sl$ \TlRawGapGS{} \TlRawGapGSBand{} at \TlXmin~s), a gap that is \TlHillGapThousand{} at \TlHillGapThousandXmin~s and grows above it; the climbs and searches show none. The same route and the same flight do not carry this gap to a group effect. On the same route the contrast $\G-\SG$ is \TlRouteMuCtlG{} \TlRouteMuCtlGBand, resting on \TlRouteMuGN{} runs. In the same flight, $\Delta_\text{in}$ is \TlFlightDeltaIn{} \TlFlightDeltaInBand{} and before and after differ by \TlFlightDeltaAfterBefore{} \TlFlightDeltaAfterBeforeBand, so the expected pattern (before and after alike, in group smaller) is not found; the tail of the runs whole in a group stretch is close to that of solo flight, and the heavy tail of $\G$ rests on runs that cross a boundary of the group. The long transitions of $\G$ are not longer than those of $\Sl$ and cost less height, as do those of the solo controls on the same route. The numbers support reading (b), a property of where the transitions are flown, and give no support to reading (a); they do not show a group effect on the tail.

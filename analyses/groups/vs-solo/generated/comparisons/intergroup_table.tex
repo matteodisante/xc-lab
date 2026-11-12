@@ -1,0 +1,22 @@
+\begin{tabular}{@{}l l r r r l@{}}
+\toprule
+state & class & pieces & flights & pilots & $\Hk$ \\
+\midrule
+solo & alone & \IgCellFiveSoloAlonePieces & \IgCellFiveSoloAloneFlights & \IgCellFiveSoloAlonePilots & \IgCellFiveSoloAloneH{} \IgCellFiveSoloAloneHBand \\
+solo & ahead & \IgCellFiveSoloAheadPieces & \IgCellFiveSoloAheadFlights & \IgCellFiveSoloAheadPilots & \IgCellFiveSoloAheadH{} \IgCellFiveSoloAheadHBand \\
+solo & behind & \IgCellFiveSoloBehindPieces & \IgCellFiveSoloBehindFlights & \IgCellFiveSoloBehindPilots & \IgCellFiveSoloBehindH{} \IgCellFiveSoloBehindHBand \\
+solo & mixed & \IgCellFiveSoloMixedPieces & \IgCellFiveSoloMixedFlights & \IgCellFiveSoloMixedPilots & \IgCellFiveSoloMixedH{} \IgCellFiveSoloMixedHBand \\
+group & alone & \IgCellFiveGroupAlonePieces & \IgCellFiveGroupAloneFlights & \IgCellFiveGroupAlonePilots & \IgCellFiveGroupAloneH{} \IgCellFiveGroupAloneHBand \\
+group & ahead & \IgCellFiveGroupAheadPieces & \IgCellFiveGroupAheadFlights & \IgCellFiveGroupAheadPilots & \IgCellFiveGroupAheadH{} \IgCellFiveGroupAheadHBand \\
+group & behind & \IgCellFiveGroupBehindPieces & \IgCellFiveGroupBehindFlights & \IgCellFiveGroupBehindPilots & \IgCellFiveGroupBehindH{} \IgCellFiveGroupBehindHBand \\
+group & mixed & \IgCellFiveGroupMixedPieces & \IgCellFiveGroupMixedFlights & \IgCellFiveGroupMixedPilots & \IgCellFiveGroupMixedH{} \IgCellFiveGroupMixedHBand \\
+\midrule
+\multicolumn{6}{@{}l}{$\Delta\Hk$: raw \quad within the flight (flights with both cells)} \\
+\multicolumn{2}{@{}l}{intra-group: (group, alone) $-$ (solo, alone)} & & \multicolumn{2}{l}{\IgConFiveIntraRaw{} \IgConFiveIntraRawBand} & \IgConFiveIntraFlight{} \IgConFiveIntraFlightBand{} (\IgConFiveIntraFlights) \\
+\multicolumn{2}{@{}l}{inter-group: (solo, ahead) $-$ (solo, alone)} & & \multicolumn{2}{l}{\IgConFiveInterRaw{} \IgConFiveInterRawBand} & \IgConFiveInterFlight{} \IgConFiveInterFlightBand{} (\IgConFiveInterFlights) \\
+\multicolumn{2}{@{}l}{crowd control: (solo, behind) $-$ (solo, alone)} & & \multicolumn{2}{l}{\IgConFiveCrowdRaw{} \IgConFiveCrowdRawBand} & \IgConFiveCrowdFlight{} \IgConFiveCrowdFlightBand{} (\IgConFiveCrowdFlights) \\
+\multicolumn{2}{@{}l}{information, solo: (solo, ahead) $-$ (solo, behind)} & & \multicolumn{2}{l}{\IgConFiveInfoSoloRaw{} \IgConFiveInfoSoloRawBand} & \IgConFiveInfoSoloFlight{} \IgConFiveInfoSoloFlightBand{} (\IgConFiveInfoSoloFlights) \\
+\multicolumn{2}{@{}l}{information, group: (group, ahead) $-$ (group, behind)} & & \multicolumn{2}{l}{\IgConFiveInfoGroupRaw{} \IgConFiveInfoGroupRawBand} & \IgConFiveInfoGroupFlight{} \IgConFiveInfoGroupFlightBand{} (\IgConFiveInfoGroupFlights) \\
+\multicolumn{2}{@{}l}{both: (group, ahead) $-$ (solo, alone)} & & \multicolumn{2}{l}{\IgConFiveBothRaw{} \IgConFiveBothRawBand} & \IgConFiveBothFlight{} \IgConFiveBothFlightBand{} (\IgConFiveBothFlights) \\
+\bottomrule
+\end{tabular}
