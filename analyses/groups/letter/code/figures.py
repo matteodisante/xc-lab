@@ -137,6 +137,26 @@ def tail(folder, out):
     plt.close(fig)
 
 
+def survival(folder, out):
+    """Survival of the transition durations of S, A and G (raw design), with the threshold of S: one column."""
+    t = json.loads((folder / "tail.json").read_text())
+    colors = {"S": COLORS["solo"], "A": ALONE, "G": GROUP}
+    fig, ax = plt.subplots(figsize=(3.4, 2.5), constrained_layout=True)
+    for pop in ("S", "A", "G"):
+        s = t["survival"][pop]
+        ax.fill_between(s["grid"], *s["band"], color=colors[pop], alpha=0.18, lw=0)
+        ax.plot(s["grid"], s["value"], color=colors[pop], lw=1.4, ls="--" if pop == "A" else "-", label=pop)
+    xmin = t["transition"]["xmin of S"]
+    ax.axvline(xmin, color="#888888", lw=0.7, ls=":")
+    ax.text(xmin * 1.08, 0.5, rf"$x_\mathrm{{min}}$ = {xmin:.0f} s", fontsize=6.5, color="#555555")
+    ax.set(xscale="log", yscale="log", xlim=(100, 1e4), ylim=(1e-5, 1.5), xlabel=r"$\tau$ (s)",
+           ylabel=r"$P(\tau_\mathrm{transition} > \tau)$")
+    ax.legend(loc="lower left")
+    for ext in ("pdf", "png"):
+        fig.savefig(out / f"survival.{ext}", dpi=300)
+    plt.close(fig)
+
+
 def relative(g, pre, post):
     """g as a percentage of the level outside the group, the mean of the windows before and after."""
     level = (pre["value"] + post["value"]) / 2
@@ -211,6 +231,7 @@ def main():
     folder = GROUPS / "out" / run / f"open_min{MIN_OPENING:g}"
     persistence(folder, HERE / "figures")
     tail(folder, HERE / "figures")
+    survival(folder, HERE / "figures")
     how(folder, HERE / "figures")
 
 

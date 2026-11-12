@@ -19,6 +19,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parents[1]
 GROUPS = HERE.parent
 sys.path.insert(0, str(GROUPS))
+from blocks import SITE_M  # noqa: E402
 from openflights import MIN_OPENING  # noqa: E402
 from tamsd import H_MAX  # noqa: E402
 RUNS = Path("/Volumes/SSD_DISANTE/xc-lab/group-identification/runs")
@@ -38,7 +39,11 @@ def macros(run):
     counts = years.value_counts()
     busy = counts[counts >= MIN_FLIGHTS_YEAR].index
     delta, eps_h, eps_z, theta, _, q = re.fullmatch(r"d(\d+)_eh(\d+)_ez(\d+)_th(\d+)_g(\d+)_q([\d.]+)", run).groups()
+    params = json.loads((RUNS / run / "calibration.json").read_text())["params"]
     return {
+        "LtGapMin": f"{params['gap'] / 60:g}",
+        "LtNullRadiusKm": f"{params['r_s'] / 1000:g}",
+        "LtSiteKm": f"{SITE_M / 1000:g}",
         "LtLoggerMax": f"{H_MAX:g}",
         "LtDeltaMin": f"{int(delta) / 60:g}",
         "LtEpsH": eps_h,

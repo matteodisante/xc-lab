@@ -18,7 +18,7 @@
 
 \begin{document}
 
-\title{Supplemental Material: Together, glider pilots find the way}
+\title{Supplemental Material: Good company is a good route}
 \maketitle
 
 \section{Data}
@@ -45,20 +45,95 @@ data (\CovNewMin--\CovNewMax\%); source: comparisons, appendix H.}
 
 \section{The three designs}
 \pending{Raw; same route (route match, calipers, the counts, selection $A - S|A$); same flight
-(windows, $D_\mathrm{in}$, $D_\mathrm{out}$, $g$, $d_w$, window length, controls); the opposite
+(windows, $D_\mathrm{in}$, $D_\mathrm{out}$, $g$, $d_w$, window length, controls; $g$ at 1840~s
+with windows of 2400 and 3000~s, \PreWinCHQ{} and \PreWinDHQ); the opposite
 signs of glide speed and height lost per km between the same-route and same-flight designs.}
+
+\emph{Matching.} A piece of group flight matches a piece of a solo flight when a share \MatCover{}
+of its points lies within \MatRho~m of the solo track, flown in the same direction, within
+\MatMonth{} months of the date and \MatHour{} hours of the time of day, on a wing of the same class.
+
+\emph{Longer lags.} At 1840~s, on the longer pieces, the same flights while alone differ from their
+matched solo pieces by \MatDeltaHQA{} \MatDeltaHQABand{} (\MatDeltaHKA{} \MatDeltaHKABand{} at
+1000~s), and the effect of the group at fixed route and pilot is \MatDeltaHQD{} \MatDeltaHQDBand.
+
+\emph{Route alone.} In a wider match, on the route alone and over all flights, the gap of the
+matched pieces against the solo flights of their site, day and hour falls from \RouteBaseDHloc{} to
+\RouteDHloc{} \RouteDHlocBand{} at 1000~s, by \RouteExplained\%, for every matching radius and cover
+we tried.
+
+\emph{Controls of the same flight.} Two consecutive windows drawn at random in solo time show no
+change: \PreCAHK{} \PreCAHKBand{} in the same flights alone and \PreCSHK{} \PreCSHKBand{} in solo
+flights. The mock events are \PreMockEvents{} sets of four windows in \PreMockFlights{} flights
+never in a group, for \PreMockRealEvents{} of the events; on them $g$ is \PreMockGHK{}
+\PreMockGHKBand. With mock events from the same site it is \PreMockSiteGHK{} \PreMockSiteGHKBand,
+and $g$ minus mock is \PreNetSiteGHK{} \PreNetSiteGHKBand.
+
+\emph{Cross-country speed.} The straight-line distance covered in 30 min from every origin, over
+30 min, on the pieces of at least 2250~s. Raw: G \RawStatXcG{} \RawStatXcGBand, A \RawStatXcA{}
+\RawStatXcABand, S \RawStatXcS{} \RawStatXcSBand~km/h; G $-$ S \RawGapXc{} \RawGapXcBand, A $-$ S
+\RawGapXcAS{} \RawGapXcASBand, G $-$ A \RawGapXcGA{} \RawGapXcGABand~km/h. Same route, on
+\MatXcPiecesG{} pieces of G and \MatXcPiecesA{} of A: G $-$ S$|$G \MatDeltaXcG{} \MatDeltaXcGBand,
+A $-$ S$|$A \MatDeltaXcA{} \MatDeltaXcABand, difference \MatDeltaXcD{} \MatDeltaXcDBand~km/h. Same
+flight: $g$ \PreGXc{} \PreGXcBand, $d_w$ \PreDwXc{} \PreDwXcBand, mock events \PreMockGXc{}
+\PreMockGXcBand, $g$ minus mock \PreNetGXc{} \PreNetGXcBand~km/h.
+
+\emph{Phases.} Raw, a search in a group ends in a climb \RawStatFoundG\% of the time against
+\RawStatFoundS\% alone. On the same route, net of selection, the time in climb grows by
+\MatDeltaClimbD{} \MatDeltaClimbDBand{} percentage points, while glide speed and height lost per km
+do not change (\MatDeltaGlideD{} \MatDeltaGlideDBand~km/h and \MatDeltaSinkD{}
+\MatDeltaSinkDBand~m per km). Within the flight, joining a group raises the time in climb by
+\PreGClimb{} points and the share of searches that end in a climb by \PreGFound{} points.
 
 \section{Tail of transitions}
 \pending{Hill estimator~\cite{Hill1975}, the threshold~\cite{Clauset2009}, bands; descriptors of
 the long transitions.}
 
+The transitions between climbs last longer in a group (Fig.~\ref{fig:tail}). Above \LtTailXmin~s
+the Hill index of their durations~\cite{Hill1975} is \LtTailMuG{} \LtTailMuGBand{} for G against
+\LtTailMuS{} \LtTailMuSBand{} for S, and the two bands stay apart for every threshold between
+\LtTailApartFrom{} and \LtTailApartTo~s; climbs and searches show no such difference. Since the
+index changes with the threshold, we use it only to compare the weight of the tails. The longest
+transitions are flights along lines of rising air: those above \LtLongMin~s cover about
+\LtLongPathG~km in a group with a median vertical speed of \LtLongVzG~m/s, rising \LtLongRisingG\%
+of the time. In a group they cost less height, \LtLongSinkG{} against \LtLongSinkS~m per km of net
+displacement, a gap of \LtLongSinkGapG{} \LtLongSinkGapGBand{} (Fig.~\ref{fig:tail}c). The same
+flights alone lie in between, \LtLongSinkGapA{} \LtLongSinkGapABand{} from solo flights, so about
+half of the gap comes with the pilots and the days; the gain in vertical speed, \LtLongVzGapG{}
+\LtLongVzGapGBand~m/s, appears only in the group (alone, \LtLongVzGapA{} \LtLongVzGapABand). On the
+same route the tails of the transitions of G and of its matched solo pieces cannot be told apart,
+though only \LtTailRouteRunsG{} group transitions exceed \LtTailXmin~s there.
+
+\begin{figure}[t]
+\includegraphics[width=\textwidth]{figures/tail.pdf}
+\caption{Transitions between climbs. (a) Survival of their durations in solo flights (S), group
+flights while alone (A) and group time (G), with 90\% bands. (b) Hill index of the durations above
+the threshold $x_\mathrm{min}$; top axis, the transitions of G above it. The dotted line is the
+$x_\mathrm{min}$ of S chosen by the Kolmogorov--Smirnov distance~\cite{Clauset2009}. (c) Height lost
+per km of net displacement for all transitions and for those longer than 1000 and \LtLongMin~s,
+medians with 90\% bands.}
+\label{fig:tail}
+\end{figure}
+
 \section{Terrain}
 \pending{Hammond classes~\cite{Hammond1964} in the computer version of Ref.~\cite{Dikau1991} on the
 IGN BD ALTI at 25~m resampled to 200~m; the class of a piece; flights that change class.}
 
+Raw, the gain in $\Hloc(1000~\mathrm{s})$ is \LtTerRawLow{} \LtTerRawLowBand{} in plains and hills,
+\LtTerRawLowMtn{} \LtTerRawLowMtnBand{} in low mountains and \LtTerRawHigh{} \LtTerRawHighBand{} in
+high mountains. Within the same flight it is \LtTerFlightMtn{} \LtTerFlightMtnBand{} in mountains
+and \LtTerFlightLow{} \LtTerFlightLowBand{} in plains and hills, where only
+\LtTerFlightLowEvents{} events of \LtTerFlightLowPilots{} pilots are available. In plains and hills
+routes rarely repeat from one day to another: only \LtTerRouteLowPieces{} pieces of group flight
+find a solo flight on the same route.
+
 \section{Group structure}
 \pending{Leaders and wing, heading correlations, marking of places, encounters, partners, with
 their null models.}
+
+The lead goes more often to the more experienced pilot (\StExp\%) and to the higher wing class
+(\StWing\%). Surrogate pairs, who never saw each other, correlate as much as the pairs once the
+delay reaches \StHdLChanceThree~s.
 
 \section{Robustness}
 \pending{Calipers, radius and cover, years left out, experience, group size, hang gliders.}

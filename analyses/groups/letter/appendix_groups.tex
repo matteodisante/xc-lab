@@ -1,0 +1,41 @@
+\section{Finding the groups}\label{app:groups}
+
+Two flights are in contact when one passes where the other passes, within a delay
+$\delta=\LtDeltaMin$~min before or after. Write $\mathbf{x}$ for the horizontal position, $z$ for
+the altitude and $\mathbf{h}$ for the heading. A correspondence between flights $i$ and $j$ is a
+pair of instants $(t,t')$ with
+\begin{equation}
+|t'-t|\le\delta,\quad
+\|\mathbf{x}_i(t)-\mathbf{x}_j(t')\|<\varepsilon_h,\quad
+|z_i(t)-z_j(t')|<\varepsilon_z,\quad
+\angle\bigl(\mathbf{h}_i(t),\mathbf{h}_j(t')\bigr)<\theta ,
+\end{equation}
+where $\varepsilon_h=\LtEpsH$~m, $\varepsilon_z=\LtEpsZ$~m and $\theta=\LtTheta^\circ$. The heading
+condition applies only when both pilots are in glide: in a climb or a search the heading turns.
+The flights are in contact at $t$ when $t$ belongs to a correspondence $(t,t')$ or $(t',t)$.
+Interruptions shorter than \LtGapMin~min are bridged, and a contact counts when it lasts at least
+$\tau^*$.
+
+We estimate chance with surrogate encounters. On each date we draw pairs of flights $(i,j)$ with
+takeoffs within \LtNullRadiusKm~km and replace $j$ by a copy shifted in time,
+\begin{equation}
+\mathbf{x}^s_j(t)=\mathbf{x}_j(t+r),\qquad r=(t^0_j-t^0_i)-\vartheta ,
+\end{equation}
+and likewise for $z$. Here $t^0$ is the takeoff time and $\vartheta$ is drawn from the takeoff-time
+differences of the pairs of that date, so the copy takes off $\vartheta$ after $i$, as a real pilot
+could. We keep only shifts with $|r|>2\delta$ plus one grid step, so no real correspondence
+survives.
+
+Let $N(\tau)$ be the number of real contacts lasting at least $\tau$ and $C(\tau)$ the number that
+chance gives the same pairs: the surrogate contacts lasting at least $\tau$, per second of exposure,
+scaled date by date to the exposure of the real pairs. We chose $\tau^*$ as the shortest $\tau$ with
+$C(\tau)/N(\tau)\le\LtNullShare\%$. It is $\tau^*=\tauStar$~min.
+
+At each instant the flights in the air are the nodes of a graph whose edges are the contacts. Its
+connected components of two or more flights are the configurations. A group is a set of pilots that
+are the members of a configuration over a maximal interval: a pilot who joins or leaves ends it.
+An episode is a chain of groups, each starting when the previous one ends and keeping at least one
+member.
+
+In the data, \LtGroupFlights{} flights fly in a group at some point, for \LtGroupHours{}
+flight-hours.
