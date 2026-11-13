@@ -317,6 +317,42 @@ def exits_tex():
     macro("StExHeadExp", pct(k["highest_is_head_after"]["expected_climbers"]))
 
 
+def curvature_tex():
+    r = load(MAIN, "curvature")
+    p, a = r["params"], r["leaders"]["before"]["all"]
+
+    def share(name, x, digits=1):
+        macro(name, pct(x["value"], digits))
+        macro(f"{name}Band", band_pct(x["band"]))
+
+    def diff(name, x, digits):
+        """Percent difference follower over leader from a median of r = log10(follower / leader)."""
+        f = lambda v: f"{100 * (10 ** v - 1):.{digits}f}"
+        macro(name, f(x["value"]))
+        macro(f"{name}Band", f"[{f(x['band'][0])}, {f(x['band'][1])}]")
+
+    macro("StCuRows", num(a["own"]["dk"]["rows"], 0))
+    macro("StCuThermals", num(r["members_by_size"]["all"]["thermals"], 0))
+    share("StCuShare", a["own"]["dk"]["leader_above"])
+    macro("StCuShareRandom", pct(r["leaders"]["random"]["all"]["own"]["dk"]["leader_above"]["value"], 1))
+    value("StCuR", a["own"]["dk"]["median"], 3)
+    value("StCuAfterR", r["leaders"]["after"]["all"]["own"]["dk"]["median"], 3)
+    diff("StCuCommon", a["common"]["dk"]["median"], 1)
+    macro("StCuCommonShare", pct(a["common"]["dk"]["leader_above"]["value"], 1))
+    diff("StCuClimbCommon", a["common"]["vz"]["median"], 1)
+    c = r["centring"]["log10_first_over_later"]
+    diff("StCuFirst", c["median"], 0)
+    lo, hi = c["leader_above"]["band"]
+    macro("StCuFirstShare", pct(1 - c["leader_above"]["value"], 0))
+    macro("StCuFirstShareBand", band_pct([1 - hi, 1 - lo]))
+    macro("StCuRadius", f"{r['plausibility']['median_radius_m']:.0f}")
+    macro("StCuPeriod", f"{r['plausibility']['median_turn_period_s']:.0f}")
+    macro("StCuSensMax", f"{max(abs(x['median']['value']) for x in a['sensitivity'].values()):.3f}")
+    macro("StCuSG", str(p["sg_window_s"]))
+    macro("StCuVmin", str(p["v_min_ms"]))
+    macro("StCuMinSec", str(p["min_seconds"]))
+
+
 def headings_tex():
     r = load(MAIN, "headings")
     c, p = r["classes"], r["params"]
@@ -437,6 +473,7 @@ def main():
     glide_tex()
     rotation_tex()
     exits_tex()
+    curvature_tex()
     headings_tex()
     marking_tex()
     encounters_tex()

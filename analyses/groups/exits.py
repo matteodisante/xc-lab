@@ -97,7 +97,7 @@ def exits(t, z, run, a, e):
 
 def one_group(group, real, flight_of, step, runs, tracks, row_of):
     """The group thermals of one group: dicts with the block, the size n, the length in s, the heads
-    before and after, and per member the FIELDS (n,)."""
+    before and after, the window [t0, t1) in UTC s, the members (flight numbers), and per member the FIELDS (n,)."""
     p, x = observe(group, real, flight_of, step, tracks, row_of)
     f = climbing(group, step, runs).mean(axis=1)
     t = group.t_start + step * np.arange(len(f))
@@ -105,7 +105,8 @@ def one_group(group, real, flight_of, step, runs, tracks, row_of):
     for g0, a, e, g1 in thermals(f, step):
         got = np.array([exits(t, p[k, :, 3], runs.get(m, NO_RUNS), a, e) for k, m in enumerate(group.members)])
         out.append({"block": group.block, "n": len(group.members), "seconds": (e - a) * step,
-                    "before": head_over(x[g0:a][::-1]), "after": head_over(x[e:g1])} | dict(zip(FIELDS, got.T)))
+                    "before": head_over(x[g0:a][::-1]), "after": head_over(x[e:g1]),
+                    "t0": t[a], "t1": t[e - 1] + step, "members": group.members} | dict(zip(FIELDS, got.T)))
     return out
 
 

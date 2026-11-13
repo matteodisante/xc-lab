@@ -613,13 +613,59 @@ of $\Delta t$. Bands and bars: 5--95\% of 200 draws of the blocks.}
         definition of the head, the first to pass; the second says that height bought in the
         thermal does not buy the lead.
 \end{itemize}
+
+\paragraph{Turning in the thermal.}\label{sec:turning} Does the leader explore the thermal while
+the followers settle into a steady circle? In white storks the birds that lead keep adjusting their
+circle, with a larger rate of change of the curvature of the horizontal path, and the followers
+circle more regularly~\cite{flack2018}. On the native 1~Hz fixes of each pilot, inside its climb in
+a group thermal, the positions $(x,y)$ smoothed by a Savitzky--Golay filter over \StCuSG~s give the
+signed curvature, and its rate of change $\dot\kappa$ compares a follower $i$ with the leader $l$ of
+the glide before the thermal:
+\begin{equation}\label{eq:curvature}
+\kappa=\frac{\dot x\ddot y-\dot y\ddot x}{(\dot x^2+\dot y^2)^{3/2}},\qquad
+r=\log_{10}\frac{\operatorname{med}|\dot\kappa_i|}{\operatorname{med}|\dot\kappa_l|},
+\end{equation}
+the medians over at least \StCuMinSec~s of climb, without the instants slower than
+\StCuVmin~m/s. Two windows: each pilot's whole climb in the thermal, and the seconds where both
+climb, which leave out the time one of the two spends alone centring the thermal. The circles have
+a median radius of \StCuRadius~m and a turn lasts \StCuPeriod~s; there are \StCuRows{} followers in
+\StCuThermals{} thermals.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/structure/curvature.pdf}
+\caption{Rate of change of the curvature of followers and leaders in group thermals. Left:
+distribution of $r$~\eqref{eq:curvature} over each pilot's whole climb, with the leader of the
+glide before (orange), after (blue) and at random (dotted). Middle: median $r$ of $|\dot\kappa|$, of
+$|\kappa|$ and of the climb rate, over each pilot's whole climb (filled) and over the seconds where
+both climb (open), by size. Right: $\log_{10}$ of $|\dot\kappa|$ in the first 60~s of a climb over
+the rest, every climber. Bars: 5--95\% of 200 draws of the blocks.}
+\label{fig:curvature}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Leaders and followers turn alike} (left): the median $r$ is \StCuR{} \StCuRBand{}
+        (\StCuAfterR{} \StCuAfterRBand{} with the leader after), and the leader has the larger
+        $|\dot\kappa|$ in \StCuShare\% \StCuShareBand{} of the pairs, against \StCuShareRandom\%
+        with a leader at random. A filter of 5 to 11~s and a speed threshold of 2 to 5~m/s move the
+        median $r$ by \StCuSensMax{} at most. We do not observe what Flack et
+        al.~\cite{flack2018} observe in storks.
+  \item \textbf{While both climb, the follower turns slightly more} (middle): its $|\dot\kappa|$ is
+        \StCuCommon\% \StCuCommonBand{} higher, and the leader's is the larger in
+        \StCuCommonShare\% of the pairs: the sign opposite to the storks, and a small difference.
+        In the same seconds the follower climbs \StCuClimbCommon\% \StCuClimbCommonBand{} faster.
+  \item \textbf{The measure sees the centring} (right): in the first minute of a climb
+        $|\dot\kappa|$ is \StCuFirst\% \StCuFirstBand{} higher than later, in \StCuFirstShare\% of
+        the climbs, so the measure would detect a pilot who keeps adjusting the circle.
+\end{itemize}
 \paragraph{What we keep.} The lead passes with the thermals. Pilots form a line along the route,
 and the order of that line renews within a few thermals; no pilot holds the head much longer than
 random hand-overs give, although in pairs the experienced pilot on the higher wing class leads
 more often. The head changes most while the group straddles a thermal. Followers leave a thermal at
 the leader's height, a few metres lower, so a group leaves together in height and spread out in
 time: who stays longer climbs higher, and who leaves first heads the next glide. Height bought in
-the thermal does not buy the lead.
+the thermal does not buy the lead. Inside the thermal leaders and followers circle alike: unlike in
+storks, the leader does not keep adjusting its circle more than the followers.
 
 \subsection{Between groups}\label{sec:between}
 
