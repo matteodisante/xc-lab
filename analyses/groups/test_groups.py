@@ -25,6 +25,7 @@ import marking  # noqa: E402
 import matched  # noqa: E402
 import mechanisms  # noqa: E402
 import network  # noqa: E402
+import openflights  # noqa: E402
 import partners  # noqa: E402
 import isolated  # noqa: E402
 import prepost  # noqa: E402
@@ -890,6 +891,27 @@ def test_route_numbers_of_the_readme():
     assert (round(min(loc), 3), round(max(loc), 3), min(share), max(share)) == (0.014, 0.022, 66, 76)
 
 
+def test_route_share_is_taken_inside_each_draw_and_sizes_count_flights_and_pilots():
+    gap, base = [0.02, 0.01, 0.03, 0.02], [0.06, 0.06, 0.03, 0.04]  # the point estimate first
+    s = route.share_removed(gap, base)
+    draws = 100 * (1 - np.array([0.01, 0.03, 0.02]) / np.array([0.06, 0.03, 0.04]))
+    assert s["value"] == pytest.approx(100 * (1 - 0.02 / 0.06))
+    assert s["band"] == pytest.approx(np.percentile(draws, [5, 95]).tolist())
+    tracks = {"flight": np.array([10, 11, 12, 13])}
+    kept = pd.DataFrame({"piece": [0, 1, 1], "solo": [2, 3, 3]})
+    pilot = pd.Series([0, 0, 1, 2], index=[10, 11, 12, 13])
+    assert route.sizes(kept, tracks, pilot) == {"flights": 2, "pilots": 1, "control flights": 2, "control pilots": 2}
+
+
+@pytest.mark.skipif(not (tamsd.OUT / f"open_min{openflights.MIN_OPENING:g}" / "route.json").exists(), reason="run route.py --open first")
+def test_route_open_share_agrees_with_its_gaps():
+    r = json.loads((tamsd.OUT / f"open_min{openflights.MIN_OPENING:g}" / "route.json").read_text())
+    e = r["any date"]
+    gap, base = e["H_loc(1000 s)"]["value"], e["baseline"]["H_loc(1000 s)"]["value"]
+    assert e["share removed (%)"]["value"] == pytest.approx(100 * (1 - gap / base))
+    assert e["share removed (%)"]["band"][0] < e["share removed (%)"]["value"] < e["share removed (%)"]["band"][1]
+
+
 def test_the_longest_common_lag_keeps_the_minimum_of_flights():
     import longlags
     lags = [1000, 1500, 2000]
@@ -1364,6 +1386,15 @@ def test_comparisons_macros_equal_the_json(tmp_path, monkeypatch):
         g = runs[w]["differences"]["g"]
         assert m[f"PreWin{tag}HK"] == signed(g["H_loc(1000 s)"]["value"], 3)
         assert m[f"PreWin{tag}Events"] == num(g["events (MSD)"], 0)
+
+
+def test_phase_median_interpolates_the_survival_in_log_duration():
+    sys.path.insert(0, str(Path(__file__).parent / "vs-solo" / "code"))
+    import comparisons
+
+    s = {"grid": [100.0, 200.0, 400.0], "value": [0.9, 0.75, 0.25]}
+    assert comparisons.phase_median(s) == pytest.approx(200 * 2 ** 0.5)  # halfway, in the log, between 200 and 400
+    assert comparisons.phase_median({"grid": [100.0, 200.0], "value": [0.4, 0.1]}) == pytest.approx(100.0)
 
 
 def test_twoway_variance_is_pilots_plus_blocks_minus_cells_at_least_the_larger_one_way():
@@ -2412,3 +2443,61 @@ def test_mock_results_leave_out_the_phase_statistics_when_no_mock_window_has_pha
     for key in ("mock", "real events with a mock", "real minus mock"):
         g = out[key]["g"]
         assert "H_loc(1000 s)" in g and "climbs per hour" not in g and g["events (phase)"] == 0
+
+
+# The macros of the letter (letter/code/macros.py): alpha = 2 H_loc, read from the JSON.
+def _letter_macros():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("letter_macros", Path(__file__).parent / "letter" / "code" / "macros.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_letter_alpha_macros_double_the_value_and_the_band_and_a_lag_off_the_curve_has_none():
+    lm = _letter_macros()
+    out = {}
+    lm.put(out, "A", {"value": 0.46, "band": [0.45, 0.48]}, 3, 2)
+    assert out == {"A": "0.920", "ABand": "[0.900, 0.960]"}
+    lm.put(out, "B", {"value": -0.0105, "band": [-0.02, 0.005]}, 3, 2, True)
+    assert out["B"] == "$-$0.021" and out["BBand"] == "[$-$0.040, $+$0.010]"
+    curve = {"lags": [500, 1000], "value": [0.1, 0.2], "band": [[0.0, 0.1], [0.2, 0.3]]}
+    assert lm.at_lag(curve, 1000) == {"value": 0.2, "band": [0.1, 0.3]} and lm.at_lag(curve, 1840) is None
+
+
+def test_letter_stays_above_gives_the_lag_after_the_last_value_at_or_below_zero():
+    lm = _letter_macros()
+    assert lm.stays_above([10, 20, 30, 40], [0.1, -0.1, 0.2, 0.3]) == 30
+    assert lm.stays_above([10, 20], [0.1, 0.2]) == 10 and lm.stays_above([10, 20], [0.1, -0.2]) is None
+
+
+def test_letter_flight_macros_take_the_lags_the_window_measures_and_the_mock_when_it_is_there(tmp_path):
+    lm = _letter_macros()
+    q = lambda v: {"value": v, "band": [v - 0.01, v + 0.01]}
+    effect = lambda v: {"events (MSD)": 10, "flights (MSD)": 9, "Delta H": q(v), "dH_loc": {"value": [v, 2 * v], "band": [[v - 0.01, 2 * v - 0.01], [v + 0.01, 2 * v + 0.01]]}}
+    result = {"lags": [870, 1000], "differences": {"g": effect(0.01), "d w": effect(0.0), "post - pre": effect(0.02)}}
+    (tmp_path / "prepost_1260.json").write_text(json.dumps(result))
+    out = lm.flight_macros(tmp_path)
+    assert out["LtFltShortGAlphaK"] == "$+$0.040" and out["LtFltShortGFit"] == "$+$0.010" and "LtFltShortGAlphaQ" not in out
+    assert out["LtFltShortPostPreAlphaK"] == "$+$0.080" and out["LtFltShortEvents"] == "10"
+    assert not [k for k in out if "Mock" in k or "Net" in k or k.endswith("Xc")]
+    counts = {"mock events (MSD)": 50, "solo flights (MSD)": 40, "real events with a mock event (MSD)": 8}
+    result["mock"] = {"variants": {"any site": {"counts": counts, "mock": {"g": effect(0.0)}, "real minus mock": {"g": effect(0.01)}}}}
+    result["differences"]["g"][lm.XC] = q(1.4)
+    (tmp_path / "prepost_1260.json").write_text(json.dumps(result))
+    out = lm.flight_macros(tmp_path)
+    assert out["LtFltShortNetGAlphaK"] == out["LtFltShortGAlphaK"] and out["LtFltShortMockEvents"] == "50"
+    assert out["LtFltShortGXc"] == "$+$1.4" and out["LtFltShortMockReal"] == "8"
+
+
+def test_matched_difference_curves_subtract_the_draws_of_the_two_sides_on_shared_lags():
+    def side(delta, lags=(500, 1000)):
+        return {"main": {"lags": np.array(lags), "boot": {"delta": {"H_loc": np.array(delta)}}}, "long": None}
+
+    g = side([[0.03, 0.05], [0.02, 0.04], [0.04, 0.06], [0.03, 0.05]])  # the point estimate, then three draws
+    a = side([[0.01, 0.01], [0.01, 0.00], [0.01, 0.02], [0.01, 0.01]])
+    got = matched.difference_curves(g, a)
+    assert list(got) == ["main"] and got["main"]["lags"] == [500, 1000]
+    assert got["main"]["value"] == pytest.approx([0.02, 0.04])
+    assert matched.difference_curves(g, side([[0.0, 0.0]], lags=(500, 2000))) == {}

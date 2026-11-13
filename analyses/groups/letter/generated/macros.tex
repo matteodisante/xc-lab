@@ -17,6 +17,7 @@
 \newcommand{\LtFirstYear}{2003}
 \newcommand{\LtLastYear}{2026}
 \newcommand{\LtDecade}{0.25}
+\newcommand{\LtBandLevel}{90}
 \newcommand{\LtSupport}{0.8}
 \newcommand{\LtTauOne}{1000}
 \newcommand{\LtTauTwo}{2760}
@@ -63,21 +64,779 @@
 \newcommand{\LtLongVzG}{$-$0.15}
 \newcommand{\LtLongStraightG}{0.83}
 \newcommand{\LtLongRisingG}{42}
-\newcommand{\LtTerRawLow}{$+$0.010}
-\newcommand{\LtTerRawLowBand}{[$+$0.007, $+$0.014]}
-\newcommand{\LtTerHlocSLow}{0.94}
-\newcommand{\LtTerRawLowMtn}{$+$0.011}
-\newcommand{\LtTerRawLowMtnBand}{[$+$0.005, $+$0.016]}
-\newcommand{\LtTerHlocSLowMtn}{0.90}
-\newcommand{\LtTerRawHigh}{$+$0.046}
-\newcommand{\LtTerRawHighBand}{[$+$0.042, $+$0.050]}
-\newcommand{\LtTerHlocSHigh}{0.85}
-\newcommand{\LtTerFlightLow}{$+$0.007}
-\newcommand{\LtTerFlightLowBand}{[$-$0.005, $+$0.018]}
+\newcommand{\LtTerRawLow}{$+$0.021}
+\newcommand{\LtTerRawLowBand}{[$+$0.014, $+$0.027]}
+\newcommand{\LtTerAlphaSLow}{1.88}
+\newcommand{\LtTerRawLowMtn}{$+$0.021}
+\newcommand{\LtTerRawLowMtnBand}{[$+$0.010, $+$0.033]}
+\newcommand{\LtTerAlphaSLowMtn}{1.80}
+\newcommand{\LtTerRawHigh}{$+$0.091}
+\newcommand{\LtTerRawHighBand}{[$+$0.083, $+$0.099]}
+\newcommand{\LtTerAlphaSHigh}{1.69}
+\newcommand{\LtTerFlightLow}{$+$0.013}
+\newcommand{\LtTerFlightLowBand}{[$-$0.010, $+$0.037]}
 \newcommand{\LtTerFlightLowEvents}{158}
 \newcommand{\LtTerFlightLowPilots}{100}
-\newcommand{\LtTerFlightMtn}{$+$0.032}
-\newcommand{\LtTerFlightMtnBand}{[$+$0.025, $+$0.040]}
+\newcommand{\LtTerFlightMtn}{$+$0.064}
+\newcommand{\LtTerFlightMtnBand}{[$+$0.050, $+$0.079]}
 \newcommand{\LtTerFlightMtnEvents}{1\,299}
 \newcommand{\LtTerFlightMtnPilots}{814}
 \newcommand{\LtTerRouteLowPieces}{13}
+\newcommand{\LtTnRawLowland}{$+$0.021}
+\newcommand{\LtTnRawLowlandBand}{[$+$0.014, $+$0.027]}
+\newcommand{\LtTnRawLow}{$+$0.021}
+\newcommand{\LtTnRawLowBand}{[$+$0.010, $+$0.033]}
+\newcommand{\LtTnRawHigh}{$+$0.091}
+\newcommand{\LtTnRawHighBand}{[$+$0.083, $+$0.099]}
+\newcommand{\LtTnRawMountain}{$+$0.054}
+\newcommand{\LtTnRawMountainBand}{[$+$0.048, $+$0.061]}
+\newcommand{\LtTnAlphaSLowland}{1.88}
+\newcommand{\LtTnAlphaSHigh}{1.69}
+\newcommand{\LtTnRouteLowland}{$-$0.007}
+\newcommand{\LtTnRouteLowlandBand}{[$-$0.235, $+$0.222]}
+\newcommand{\LtTnFlightLowland}{$+$0.013}
+\newcommand{\LtTnFlightLowlandBand}{[$-$0.010, $+$0.037]}
+\newcommand{\LtTnRouteMountain}{$+$0.008}
+\newcommand{\LtTnRouteMountainBand}{[$-$0.014, $+$0.030]}
+\newcommand{\LtTnFlightMountain}{$+$0.064}
+\newcommand{\LtTnFlightMountainBand}{[$+$0.050, $+$0.079]}
+\newcommand{\LtFitFrom}{10}
+\newcommand{\LtTauLong}{11450}
+\newcommand{\LtRawFitSOne}{0.921}
+\newcommand{\LtRawFitSOneBand}{[0.920, 0.922]}
+\newcommand{\LtRawFlightsSOne}{43\,977}
+\newcommand{\LtRawPiecesSOne}{46\,239}
+\newcommand{\LtRawAlphaKSOne}{1.795}
+\newcommand{\LtRawAlphaKSOneBand}{[1.790, 1.799]}
+\newcommand{\LtRawFitAOne}{0.923}
+\newcommand{\LtRawFitAOneBand}{[0.922, 0.925]}
+\newcommand{\LtRawFlightsAOne}{8\,991}
+\newcommand{\LtRawPiecesAOne}{13\,464}
+\newcommand{\LtRawAlphaKAOne}{1.788}
+\newcommand{\LtRawAlphaKAOneBand}{[1.781, 1.795]}
+\newcommand{\LtRawFitGOne}{0.924}
+\newcommand{\LtRawFitGOneBand}{[0.922, 0.925]}
+\newcommand{\LtRawFlightsGOne}{11\,077}
+\newcommand{\LtRawPiecesGOne}{14\,401}
+\newcommand{\LtRawAlphaKGOne}{1.831}
+\newcommand{\LtRawAlphaKGOneBand}{[1.825, 1.837]}
+\newcommand{\LtRawFitGapGSOne}{$+$0.002}
+\newcommand{\LtRawFitGapGSOneBand}{[$+$0.001, $+$0.004]}
+\newcommand{\LtRawAlphaGapKGSOne}{$+$0.036}
+\newcommand{\LtRawAlphaGapKGSOneBand}{[$+$0.031, $+$0.042]}
+\newcommand{\LtRawFitGapASOne}{$+$0.002}
+\newcommand{\LtRawFitGapASOneBand}{[$+$0.001, $+$0.003]}
+\newcommand{\LtRawAlphaGapKASOne}{$-$0.006}
+\newcommand{\LtRawAlphaGapKASOneBand}{[$-$0.012, $-$0.000]}
+\newcommand{\LtRawTurnOne}{170}
+\newcommand{\LtRawClearOne}{210}
+\newcommand{\LtRawFitSTwo}{0.915}
+\newcommand{\LtRawFitSTwoBand}{[0.914, 0.916]}
+\newcommand{\LtRawFlightsSTwo}{33\,613}
+\newcommand{\LtRawPiecesSTwo}{34\,269}
+\newcommand{\LtRawAlphaKSTwo}{1.796}
+\newcommand{\LtRawAlphaKSTwoBand}{[1.791, 1.801]}
+\newcommand{\LtRawAlphaQSTwo}{1.813}
+\newcommand{\LtRawAlphaQSTwoBand}{[1.807, 1.820]}
+\newcommand{\LtRawFitATwo}{0.920}
+\newcommand{\LtRawFitATwoBand}{[0.918, 0.922]}
+\newcommand{\LtRawFlightsATwo}{6\,235}
+\newcommand{\LtRawPiecesATwo}{7\,507}
+\newcommand{\LtRawAlphaKATwo}{1.795}
+\newcommand{\LtRawAlphaKATwoBand}{[1.788, 1.803]}
+\newcommand{\LtRawAlphaQATwo}{1.807}
+\newcommand{\LtRawAlphaQATwoBand}{[1.797, 1.817]}
+\newcommand{\LtRawFitGTwo}{0.924}
+\newcommand{\LtRawFitGTwoBand}{[0.922, 0.926]}
+\newcommand{\LtRawFlightsGTwo}{6\,297}
+\newcommand{\LtRawPiecesGTwo}{7\,243}
+\newcommand{\LtRawAlphaKGTwo}{1.836}
+\newcommand{\LtRawAlphaKGTwoBand}{[1.829, 1.843]}
+\newcommand{\LtRawAlphaQGTwo}{1.847}
+\newcommand{\LtRawAlphaQGTwoBand}{[1.838, 1.857]}
+\newcommand{\LtRawFitGapGSTwo}{$+$0.009}
+\newcommand{\LtRawFitGapGSTwoBand}{[$+$0.007, $+$0.011]}
+\newcommand{\LtRawAlphaGapKGSTwo}{$+$0.040}
+\newcommand{\LtRawAlphaGapKGSTwoBand}{[$+$0.034, $+$0.047]}
+\newcommand{\LtRawAlphaGapQGSTwo}{$+$0.034}
+\newcommand{\LtRawAlphaGapQGSTwoBand}{[$+$0.026, $+$0.042]}
+\newcommand{\LtRawFitGapASTwo}{$+$0.005}
+\newcommand{\LtRawFitGapASTwoBand}{[$+$0.003, $+$0.007]}
+\newcommand{\LtRawAlphaGapKASTwo}{$-$0.001}
+\newcommand{\LtRawAlphaGapKASTwoBand}{[$-$0.007, $+$0.005]}
+\newcommand{\LtRawAlphaGapQASTwo}{$-$0.007}
+\newcommand{\LtRawAlphaGapQASTwoBand}{[$-$0.015, $+$0.001]}
+\newcommand{\LtRawTurnTwo}{10}
+\newcommand{\LtRawClearTwo}{20}
+\newcommand{\LtRawFitSLong}{0.923}
+\newcommand{\LtRawFitSLongBand}{[0.920, 0.927]}
+\newcommand{\LtRawFlightsSLong}{4\,309}
+\newcommand{\LtRawPiecesSLong}{4\,311}
+\newcommand{\LtRawAlphaKSLong}{1.825}
+\newcommand{\LtRawAlphaKSLongBand}{[1.817, 1.832]}
+\newcommand{\LtRawAlphaQSLong}{1.844}
+\newcommand{\LtRawAlphaQSLongBand}{[1.834, 1.853]}
+\newcommand{\LtRawFitALong}{0.929}
+\newcommand{\LtRawFitALongBand}{[0.924, 0.935]}
+\newcommand{\LtRawFlightsALong}{602}
+\newcommand{\LtRawPiecesALong}{602}
+\newcommand{\LtRawAlphaKALong}{1.833}
+\newcommand{\LtRawAlphaKALongBand}{[1.819, 1.847]}
+\newcommand{\LtRawAlphaQALong}{1.853}
+\newcommand{\LtRawAlphaQALongBand}{[1.837, 1.869]}
+\newcommand{\LtRawFitGLong}{0.943}
+\newcommand{\LtRawFitGLongBand}{[0.930, 0.956]}
+\newcommand{\LtRawFlightsGLong}{115}
+\newcommand{\LtRawPiecesGLong}{115}
+\newcommand{\LtRawAlphaKGLong}{1.873}
+\newcommand{\LtRawAlphaKGLongBand}{[1.841, 1.904]}
+\newcommand{\LtRawAlphaQGLong}{1.897}
+\newcommand{\LtRawAlphaQGLongBand}{[1.865, 1.929]}
+\newcommand{\LtRawFitGapGSLong}{$+$0.019}
+\newcommand{\LtRawFitGapGSLongBand}{[$+$0.006, $+$0.032]}
+\newcommand{\LtRawAlphaGapKGSLong}{$+$0.048}
+\newcommand{\LtRawAlphaGapKGSLongBand}{[$+$0.016, $+$0.080]}
+\newcommand{\LtRawAlphaGapQGSLong}{$+$0.053}
+\newcommand{\LtRawAlphaGapQGSLongBand}{[$+$0.021, $+$0.086]}
+\newcommand{\LtRawFitGapASLong}{$+$0.006}
+\newcommand{\LtRawFitGapASLongBand}{[$+$0.002, $+$0.010]}
+\newcommand{\LtRawAlphaGapKASLong}{$+$0.009}
+\newcommand{\LtRawAlphaGapKASLongBand}{[$-$0.002, $+$0.019]}
+\newcommand{\LtRawAlphaGapQASLong}{$+$0.009}
+\newcommand{\LtRawAlphaGapQASLongBand}{[$-$0.003, $+$0.022]}
+\newcommand{\LtRawTurnLong}{10}
+\newcommand{\LtRawClearLong}{50}
+\newcommand{\LtRawXcS}{20.5}
+\newcommand{\LtRawXcSBand}{[20.2, 20.7]}
+\newcommand{\LtRawXcFlightsS}{26\,336}
+\newcommand{\LtRawXcA}{21.5}
+\newcommand{\LtRawXcABand}{[21.0, 21.9]}
+\newcommand{\LtRawXcFlightsA}{5\,463}
+\newcommand{\LtRawXcG}{21.9}
+\newcommand{\LtRawXcGBand}{[21.5, 22.3]}
+\newcommand{\LtRawXcFlightsG}{7\,823}
+\newcommand{\LtRawXcGapGS}{$+$1.4}
+\newcommand{\LtRawXcGapGSBand}{[$+$1.0, $+$1.7]}
+\newcommand{\LtRawXcGapAS}{$+$1.0}
+\newcommand{\LtRawXcGapASBand}{[$+$0.6, $+$1.3]}
+\newcommand{\LtRouteAlphaKGSOne}{$+$0.021}
+\newcommand{\LtRouteAlphaKGSOneBand}{[$+$0.008, $+$0.033]}
+\newcommand{\LtRouteFitGSOne}{$-$0.005}
+\newcommand{\LtRouteFitGSOneBand}{[$-$0.008, $-$0.002]}
+\newcommand{\LtRouteFitGSTwo}{$+$0.008}
+\newcommand{\LtRouteFitGSTwoBand}{[$+$0.004, $+$0.012]}
+\newcommand{\LtRouteAlphaKGSTwo}{$+$0.048}
+\newcommand{\LtRouteAlphaKGSTwoBand}{[$+$0.028, $+$0.067]}
+\newcommand{\LtRouteAlphaQGSTwo}{$+$0.042}
+\newcommand{\LtRouteAlphaQGSTwoBand}{[$+$0.015, $+$0.068]}
+\newcommand{\LtRouteAlphaTGSTwo}{$+$0.029}
+\newcommand{\LtRouteAlphaTGSTwoBand}{[$-$0.006, $+$0.063]}
+\newcommand{\LtRouteXcGS}{$+$1.2}
+\newcommand{\LtRouteXcGSBand}{[$+$0.7, $+$1.8]}
+\newcommand{\LtRouteAlphaKASOne}{$+$0.013}
+\newcommand{\LtRouteAlphaKASOneBand}{[$-$0.007, $+$0.032]}
+\newcommand{\LtRouteFitASOne}{$-$0.000}
+\newcommand{\LtRouteFitASOneBand}{[$-$0.004, $+$0.004]}
+\newcommand{\LtRouteFitASTwo}{$+$0.006}
+\newcommand{\LtRouteFitASTwoBand}{[$+$0.000, $+$0.011]}
+\newcommand{\LtRouteAlphaKASTwo}{$+$0.027}
+\newcommand{\LtRouteAlphaKASTwoBand}{[$+$0.001, $+$0.052]}
+\newcommand{\LtRouteAlphaQASTwo}{$+$0.054}
+\newcommand{\LtRouteAlphaQASTwoBand}{[$+$0.016, $+$0.091]}
+\newcommand{\LtRouteAlphaTASTwo}{$+$0.063}
+\newcommand{\LtRouteAlphaTASTwoBand}{[$+$0.013, $+$0.113]}
+\newcommand{\LtRouteXcAS}{$-$0.0}
+\newcommand{\LtRouteXcASBand}{[$-$0.8, $+$0.8]}
+\newcommand{\LtRouteAlphaKDiffOne}{$+$0.008}
+\newcommand{\LtRouteAlphaKDiffOneBand}{[$-$0.014, $+$0.029]}
+\newcommand{\LtRouteFitDiffOne}{$-$0.005}
+\newcommand{\LtRouteFitDiffOneBand}{[$-$0.009, $-$0.001]}
+\newcommand{\LtRouteFitDiffTwo}{$+$0.002}
+\newcommand{\LtRouteFitDiffTwoBand}{[$-$0.004, $+$0.009]}
+\newcommand{\LtRouteAlphaKDiffTwo}{$+$0.021}
+\newcommand{\LtRouteAlphaKDiffTwoBand}{[$-$0.009, $+$0.051]}
+\newcommand{\LtRouteAlphaQDiffTwo}{$-$0.012}
+\newcommand{\LtRouteAlphaQDiffTwoBand}{[$-$0.056, $+$0.032]}
+\newcommand{\LtRouteAlphaTDiffTwo}{$-$0.034}
+\newcommand{\LtRouteAlphaTDiffTwoBand}{[$-$0.094, $+$0.025]}
+\newcommand{\LtRouteXcDiff}{$+$1.3}
+\newcommand{\LtRouteXcDiffBand}{[$+$0.4, $+$2.2]}
+\newcommand{\LtRoutePiecesGOne}{2\,717}
+\newcommand{\LtRouteControlsGOne}{8\,094}
+\newcommand{\LtRouteFlightsGOne}{2\,474}
+\newcommand{\LtRoutePilotsGOne}{1\,378}
+\newcommand{\LtRouteControlPilotsGOne}{887}
+\newcommand{\LtRoutePoolGOne}{1\,404}
+\newcommand{\LtRoutePiecesGTwo}{700}
+\newcommand{\LtRouteControlsGTwo}{1\,181}
+\newcommand{\LtRouteXcPiecesG}{1\,127}
+\newcommand{\LtRouteXcControlsG}{1\,976}
+\newcommand{\LtRoutePiecesAOne}{1\,607}
+\newcommand{\LtRouteControlsAOne}{4\,522}
+\newcommand{\LtRouteFlightsAOne}{1\,504}
+\newcommand{\LtRoutePilotsAOne}{990}
+\newcommand{\LtRouteControlPilotsAOne}{766}
+\newcommand{\LtRoutePoolAOne}{1\,191}
+\newcommand{\LtRoutePiecesATwo}{338}
+\newcommand{\LtRouteControlsATwo}{556}
+\newcommand{\LtRouteXcPiecesA}{368}
+\newcommand{\LtRouteXcControlsA}{588}
+\newcommand{\LtLongerTau}{3380}
+\newcommand{\LtLongerBeginners}{139}
+\newcommand{\LtMinPieces}{200}
+\newcommand{\LtRouteLevelBegGS}{$+$0.017}
+\newcommand{\LtRouteLevelBegAS}{$+$0.011}
+\newcommand{\LtRouteLevelBegDiff}{$+$0.006}
+\newcommand{\LtRouteLevelExpGS}{$+$0.022}
+\newcommand{\LtRouteLevelExpAS}{$+$0.013}
+\newcommand{\LtRouteLevelExpDiff}{$+$0.009}
+\newcommand{\LtRouteLevelAllGS}{$+$0.021}
+\newcommand{\LtRouteLevelAllAS}{$+$0.013}
+\newcommand{\LtRouteLevelAllDiff}{$+$0.008}
+\newcommand{\LtRobLinesK}{8}
+\newcommand{\LtRobLowK}{$+$0.015}
+\newcommand{\LtRobHighK}{$+$0.025}
+\newcommand{\LtRobZeroK}{0}
+\newcommand{\LtRobLinesQ}{5}
+\newcommand{\LtRobLowQ}{$+$0.034}
+\newcommand{\LtRobHighQ}{$+$0.043}
+\newcommand{\LtRobZeroQ}{0}
+\newcommand{\LtRobLines}{8}
+\newcommand{\LtRobPiecesLow}{1\,321}
+\newcommand{\LtRobPiecesHigh}{4\,833}
+\newcommand{\LtCntNarrowClassGOneBeg}{781}
+\newcommand{\LtCntNarrowClassGOneExp}{973}
+\newcommand{\LtCntNarrowClassGOneAll}{1\,754}
+\newcommand{\LtCntNarrowLevelGOneBeg}{823}
+\newcommand{\LtCntNarrowLevelGOneExp}{1\,511}
+\newcommand{\LtCntNarrowLevelGOneAll}{2\,334}
+\newcommand{\LtCntWideClassGOneBeg}{1\,132}
+\newcommand{\LtCntWideClassGOneExp}{1\,585}
+\newcommand{\LtCntWideClassGOneAll}{2\,717}
+\newcommand{\LtCntWideLevelGOneBeg}{1\,181}
+\newcommand{\LtCntWideLevelGOneExp}{2\,251}
+\newcommand{\LtCntWideLevelGOneAll}{3\,432}
+\newcommand{\LtCntQueryGOneBeg}{3\,940}
+\newcommand{\LtCntQueryGOneExp}{10\,002}
+\newcommand{\LtCntQueryGOneAll}{14\,401}
+\newcommand{\LtCntNarrowClassAOneBeg}{397}
+\newcommand{\LtCntNarrowClassAOneExp}{591}
+\newcommand{\LtCntNarrowClassAOneAll}{988}
+\newcommand{\LtCntNarrowLevelAOneBeg}{413}
+\newcommand{\LtCntNarrowLevelAOneExp}{885}
+\newcommand{\LtCntNarrowLevelAOneAll}{1\,298}
+\newcommand{\LtCntWideClassAOneBeg}{631}
+\newcommand{\LtCntWideClassAOneExp}{976}
+\newcommand{\LtCntWideClassAOneAll}{1\,607}
+\newcommand{\LtCntWideLevelAOneBeg}{654}
+\newcommand{\LtCntWideLevelAOneExp}{1\,344}
+\newcommand{\LtCntWideLevelAOneAll}{1\,998}
+\newcommand{\LtCntQueryAOneBeg}{3\,563}
+\newcommand{\LtCntQueryAOneExp}{9\,420}
+\newcommand{\LtCntQueryAOneAll}{13\,464}
+\newcommand{\LtCntNarrowClassGTwoBeg}{166}
+\newcommand{\LtCntNarrowClassGTwoExp}{231}
+\newcommand{\LtCntNarrowClassGTwoAll}{397}
+\newcommand{\LtCntNarrowLevelGTwoBeg}{176}
+\newcommand{\LtCntNarrowLevelGTwoExp}{372}
+\newcommand{\LtCntNarrowLevelGTwoAll}{548}
+\newcommand{\LtCntWideClassGTwoBeg}{279}
+\newcommand{\LtCntWideClassGTwoExp}{421}
+\newcommand{\LtCntWideClassGTwoAll}{700}
+\newcommand{\LtCntWideLevelGTwoBeg}{294}
+\newcommand{\LtCntWideLevelGTwoExp}{650}
+\newcommand{\LtCntWideLevelGTwoAll}{944}
+\newcommand{\LtCntQueryGTwoBeg}{1\,846}
+\newcommand{\LtCntQueryGTwoExp}{5\,162}
+\newcommand{\LtCntQueryGTwoAll}{7\,243}
+\newcommand{\LtCntNarrowClassATwoBeg}{65}
+\newcommand{\LtCntNarrowClassATwoExp}{108}
+\newcommand{\LtCntNarrowClassATwoAll}{173}
+\newcommand{\LtCntNarrowLevelATwoBeg}{65}
+\newcommand{\LtCntNarrowLevelATwoExp}{190}
+\newcommand{\LtCntNarrowLevelATwoAll}{255}
+\newcommand{\LtCntWideClassATwoBeg}{123}
+\newcommand{\LtCntWideClassATwoExp}{215}
+\newcommand{\LtCntWideClassATwoAll}{338}
+\newcommand{\LtCntWideLevelATwoBeg}{127}
+\newcommand{\LtCntWideLevelATwoExp}{331}
+\newcommand{\LtCntWideLevelATwoAll}{458}
+\newcommand{\LtCntQueryATwoBeg}{1\,843}
+\newcommand{\LtCntQueryATwoExp}{5\,363}
+\newcommand{\LtCntQueryATwoAll}{7\,507}
+\newcommand{\LtRouteOpenAlpha}{$+$0.019}
+\newcommand{\LtRouteOpenAlphaBand}{[$+$0.012, $+$0.030]}
+\newcommand{\LtRouteOpenBaseAlpha}{$+$0.084}
+\newcommand{\LtRouteOpenBaseAlphaBand}{[$+$0.073, $+$0.098]}
+\newcommand{\LtWinShort}{1\,260}
+\newcommand{\LtFltShortGFit}{$+$0.002}
+\newcommand{\LtFltShortGFitBand}{[$+$0.000, $+$0.004]}
+\newcommand{\LtFltShortGAlphaK}{$-$0.002}
+\newcommand{\LtFltShortGAlphaKBand}{[$-$0.012, $+$0.008]}
+\newcommand{\LtFltShortDwFit}{$-$0.000}
+\newcommand{\LtFltShortDwFitBand}{[$-$0.002, $+$0.002]}
+\newcommand{\LtFltShortDwAlphaK}{$-$0.018}
+\newcommand{\LtFltShortDwAlphaKBand}{[$-$0.028, $-$0.008]}
+\newcommand{\LtFltShortPostPreFit}{$+$0.003}
+\newcommand{\LtFltShortPostPreFitBand}{[$+$0.001, $+$0.006]}
+\newcommand{\LtFltShortPostPreAlphaK}{$+$0.009}
+\newcommand{\LtFltShortPostPreAlphaKBand}{[$-$0.006, $+$0.023]}
+\newcommand{\LtFltShortInFit}{$+$0.002}
+\newcommand{\LtFltShortInFitBand}{[$-$0.001, $+$0.005]}
+\newcommand{\LtFltShortInAlphaK}{$-$0.020}
+\newcommand{\LtFltShortInAlphaKBand}{[$-$0.034, $-$0.006]}
+\newcommand{\LtFltShortOutFit}{$+$0.002}
+\newcommand{\LtFltShortOutFitBand}{[$-$0.000, $+$0.005]}
+\newcommand{\LtFltShortOutAlphaK}{$+$0.015}
+\newcommand{\LtFltShortOutAlphaKBand}{[$+$0.002, $+$0.029]}
+\newcommand{\LtFltShortCtrlAFit}{$+$0.006}
+\newcommand{\LtFltShortCtrlAFitBand}{[$+$0.004, $+$0.007]}
+\newcommand{\LtFltShortCtrlAAlphaK}{$-$0.011}
+\newcommand{\LtFltShortCtrlAAlphaKBand}{[$-$0.019, $-$0.002]}
+\newcommand{\LtFltShortCtrlSFit}{$+$0.008}
+\newcommand{\LtFltShortCtrlSFitBand}{[$+$0.007, $+$0.009]}
+\newcommand{\LtFltShortCtrlSAlphaK}{$-$0.013}
+\newcommand{\LtFltShortCtrlSAlphaKBand}{[$-$0.017, $-$0.009]}
+\newcommand{\LtFltShortEvents}{3\,549}
+\newcommand{\LtFltShortFlights}{3\,261}
+\newcommand{\LtFltShortEventsPostPre}{3\,604}
+\newcommand{\LtFltShortFlightsPostPre}{3\,311}
+\newcommand{\LtFltShortEventsCtrlA}{9\,108}
+\newcommand{\LtFltShortFlightsCtrlA}{7\,212}
+\newcommand{\LtFltShortEventsCtrlS}{37\,812}
+\newcommand{\LtFltShortFlightsCtrlS}{37\,812}
+\newcommand{\LtWinLow}{1\,800}
+\newcommand{\LtFltLowGFit}{$+$0.007}
+\newcommand{\LtFltLowGFitBand}{[$+$0.006, $+$0.009]}
+\newcommand{\LtFltLowGAlphaK}{$+$0.036}
+\newcommand{\LtFltLowGAlphaKBand}{[$+$0.029, $+$0.044]}
+\newcommand{\LtFltLowDwFit}{$+$0.001}
+\newcommand{\LtFltLowDwFitBand}{[$-$0.001, $+$0.003]}
+\newcommand{\LtFltLowDwAlphaK}{$-$0.009}
+\newcommand{\LtFltLowDwAlphaKBand}{[$-$0.015, $-$0.002]}
+\newcommand{\LtFltLowPostPreFit}{$+$0.004}
+\newcommand{\LtFltLowPostPreFitBand}{[$+$0.001, $+$0.006]}
+\newcommand{\LtFltLowPostPreAlphaK}{$-$0.005}
+\newcommand{\LtFltLowPostPreAlphaKBand}{[$-$0.015, $+$0.005]}
+\newcommand{\LtFltLowInFit}{$+$0.008}
+\newcommand{\LtFltLowInFitBand}{[$+$0.006, $+$0.011]}
+\newcommand{\LtFltLowInAlphaK}{$+$0.028}
+\newcommand{\LtFltLowInAlphaKBand}{[$+$0.018, $+$0.038]}
+\newcommand{\LtFltLowOutFit}{$+$0.006}
+\newcommand{\LtFltLowOutFitBand}{[$+$0.004, $+$0.009]}
+\newcommand{\LtFltLowOutAlphaK}{$+$0.045}
+\newcommand{\LtFltLowOutAlphaKBand}{[$+$0.035, $+$0.054]}
+\newcommand{\LtFltLowCtrlAFit}{$+$0.006}
+\newcommand{\LtFltLowCtrlAFitBand}{[$+$0.004, $+$0.007]}
+\newcommand{\LtFltLowCtrlAAlphaK}{$+$0.002}
+\newcommand{\LtFltLowCtrlAAlphaKBand}{[$-$0.004, $+$0.008]}
+\newcommand{\LtFltLowCtrlSFit}{$+$0.008}
+\newcommand{\LtFltLowCtrlSFitBand}{[$+$0.007, $+$0.008]}
+\newcommand{\LtFltLowCtrlSAlphaK}{$+$0.002}
+\newcommand{\LtFltLowCtrlSAlphaKBand}{[$-$0.001, $+$0.005]}
+\newcommand{\LtFltLowEvents}{2\,567}
+\newcommand{\LtFltLowFlights}{2\,417}
+\newcommand{\LtFltLowEventsPostPre}{2\,603}
+\newcommand{\LtFltLowFlightsPostPre}{2\,451}
+\newcommand{\LtFltLowEventsCtrlA}{6\,955}
+\newcommand{\LtFltLowFlightsCtrlA}{5\,918}
+\newcommand{\LtFltLowEventsCtrlS}{32\,089}
+\newcommand{\LtFltLowFlightsCtrlS}{32\,089}
+\newcommand{\LtWinMid}{2\,400}
+\newcommand{\LtFltMidGFit}{$+$0.009}
+\newcommand{\LtFltMidGFitBand}{[$+$0.007, $+$0.011]}
+\newcommand{\LtFltMidGAlphaK}{$+$0.047}
+\newcommand{\LtFltMidGAlphaKBand}{[$+$0.036, $+$0.057]}
+\newcommand{\LtFltMidGAlphaQ}{$+$0.013}
+\newcommand{\LtFltMidGAlphaQBand}{[$-$0.005, $+$0.031]}
+\newcommand{\LtFltMidGXc}{$+$1.4}
+\newcommand{\LtFltMidGXcBand}{[$+$1.0, $+$1.8]}
+\newcommand{\LtFltMidDwFit}{$+$0.000}
+\newcommand{\LtFltMidDwFitBand}{[$-$0.001, $+$0.002]}
+\newcommand{\LtFltMidDwAlphaK}{$-$0.005}
+\newcommand{\LtFltMidDwAlphaKBand}{[$-$0.013, $+$0.004]}
+\newcommand{\LtFltMidDwAlphaQ}{$-$0.012}
+\newcommand{\LtFltMidDwAlphaQBand}{[$-$0.027, $+$0.004]}
+\newcommand{\LtFltMidDwXc}{$+$0.0}
+\newcommand{\LtFltMidDwXcBand}{[$-$0.3, $+$0.3]}
+\newcommand{\LtFltMidPostPreFit}{$+$0.004}
+\newcommand{\LtFltMidPostPreFitBand}{[$+$0.001, $+$0.007]}
+\newcommand{\LtFltMidPostPreAlphaK}{$+$0.003}
+\newcommand{\LtFltMidPostPreAlphaKBand}{[$-$0.010, $+$0.015]}
+\newcommand{\LtFltMidPostPreAlphaQ}{$-$0.008}
+\newcommand{\LtFltMidPostPreAlphaQBand}{[$-$0.030, $+$0.014]}
+\newcommand{\LtFltMidPostPreXc}{$+$0.6}
+\newcommand{\LtFltMidPostPreXcBand}{[$+$0.1, $+$1.2]}
+\newcommand{\LtFltMidInFit}{$+$0.009}
+\newcommand{\LtFltMidInFitBand}{[$+$0.006, $+$0.012]}
+\newcommand{\LtFltMidInAlphaK}{$+$0.042}
+\newcommand{\LtFltMidInAlphaKBand}{[$+$0.028, $+$0.056]}
+\newcommand{\LtFltMidInAlphaQ}{$+$0.002}
+\newcommand{\LtFltMidInAlphaQBand}{[$-$0.023, $+$0.026]}
+\newcommand{\LtFltMidInXc}{$+$1.4}
+\newcommand{\LtFltMidInXcBand}{[$+$0.8, $+$1.9]}
+\newcommand{\LtFltMidOutFit}{$+$0.009}
+\newcommand{\LtFltMidOutFitBand}{[$+$0.006, $+$0.011]}
+\newcommand{\LtFltMidOutAlphaK}{$+$0.051}
+\newcommand{\LtFltMidOutAlphaKBand}{[$+$0.039, $+$0.064]}
+\newcommand{\LtFltMidOutAlphaQ}{$+$0.025}
+\newcommand{\LtFltMidOutAlphaQBand}{[$+$0.001, $+$0.048]}
+\newcommand{\LtFltMidOutXc}{$+$1.3}
+\newcommand{\LtFltMidOutXcBand}{[$+$0.9, $+$1.8]}
+\newcommand{\LtFltMidCtrlAFit}{$+$0.005}
+\newcommand{\LtFltMidCtrlAFitBand}{[$+$0.004, $+$0.007]}
+\newcommand{\LtFltMidCtrlAAlphaK}{$-$0.002}
+\newcommand{\LtFltMidCtrlAAlphaKBand}{[$-$0.010, $+$0.006]}
+\newcommand{\LtFltMidCtrlAAlphaQ}{$+$0.004}
+\newcommand{\LtFltMidCtrlAAlphaQBand}{[$-$0.008, $+$0.016]}
+\newcommand{\LtFltMidCtrlAXc}{$+$0.9}
+\newcommand{\LtFltMidCtrlAXcBand}{[$+$0.5, $+$1.2]}
+\newcommand{\LtFltMidCtrlSFit}{$+$0.008}
+\newcommand{\LtFltMidCtrlSFitBand}{[$+$0.007, $+$0.009]}
+\newcommand{\LtFltMidCtrlSAlphaK}{$+$0.002}
+\newcommand{\LtFltMidCtrlSAlphaKBand}{[$-$0.001, $+$0.006]}
+\newcommand{\LtFltMidCtrlSAlphaQ}{$+$0.005}
+\newcommand{\LtFltMidCtrlSAlphaQBand}{[$-$0.001, $+$0.010]}
+\newcommand{\LtFltMidCtrlSXc}{$+$1.1}
+\newcommand{\LtFltMidCtrlSXcBand}{[$+$1.0, $+$1.2]}
+\newcommand{\LtFltMidMockGFit}{$+$0.000}
+\newcommand{\LtFltMidMockGFitBand}{[$-$0.001, $+$0.001]}
+\newcommand{\LtFltMidMockGAlphaK}{$+$0.003}
+\newcommand{\LtFltMidMockGAlphaKBand}{[$-$0.001, $+$0.007]}
+\newcommand{\LtFltMidMockGAlphaQ}{$+$0.010}
+\newcommand{\LtFltMidMockGAlphaQBand}{[$+$0.003, $+$0.018]}
+\newcommand{\LtFltMidMockGXc}{$+$0.2}
+\newcommand{\LtFltMidMockGXcBand}{[$+$0.0, $+$0.4]}
+\newcommand{\LtFltMidNetGFit}{$+$0.009}
+\newcommand{\LtFltMidNetGFitBand}{[$+$0.007, $+$0.011]}
+\newcommand{\LtFltMidNetGAlphaK}{$+$0.046}
+\newcommand{\LtFltMidNetGAlphaKBand}{[$+$0.035, $+$0.058]}
+\newcommand{\LtFltMidNetGAlphaQ}{$+$0.001}
+\newcommand{\LtFltMidNetGAlphaQBand}{[$-$0.019, $+$0.022]}
+\newcommand{\LtFltMidNetGXc}{$+$1.2}
+\newcommand{\LtFltMidNetGXcBand}{[$+$0.7, $+$1.6]}
+\newcommand{\LtFltMidMockSubsetGFit}{$+$0.009}
+\newcommand{\LtFltMidMockSubsetGFitBand}{[$+$0.007, $+$0.011]}
+\newcommand{\LtFltMidMockSubsetGAlphaK}{$+$0.049}
+\newcommand{\LtFltMidMockSubsetGAlphaKBand}{[$+$0.038, $+$0.059]}
+\newcommand{\LtFltMidMockSubsetGAlphaQ}{$+$0.012}
+\newcommand{\LtFltMidMockSubsetGAlphaQBand}{[$-$0.007, $+$0.030]}
+\newcommand{\LtFltMidMockSubsetGXc}{$+$1.4}
+\newcommand{\LtFltMidMockSubsetGXcBand}{[$+$1.0, $+$1.8]}
+\newcommand{\LtFltMidMockSiteGFit}{$+$0.001}
+\newcommand{\LtFltMidMockSiteGFitBand}{[$-$0.000, $+$0.002]}
+\newcommand{\LtFltMidMockSiteGAlphaK}{$+$0.006}
+\newcommand{\LtFltMidMockSiteGAlphaKBand}{[$-$0.001, $+$0.012]}
+\newcommand{\LtFltMidMockSiteGAlphaQ}{$+$0.003}
+\newcommand{\LtFltMidMockSiteGAlphaQBand}{[$-$0.008, $+$0.014]}
+\newcommand{\LtFltMidMockSiteGXc}{$+$0.1}
+\newcommand{\LtFltMidMockSiteGXcBand}{[$-$0.2, $+$0.4]}
+\newcommand{\LtFltMidNetSiteGFit}{$+$0.009}
+\newcommand{\LtFltMidNetSiteGFitBand}{[$+$0.006, $+$0.011]}
+\newcommand{\LtFltMidNetSiteGAlphaK}{$+$0.046}
+\newcommand{\LtFltMidNetSiteGAlphaKBand}{[$+$0.033, $+$0.060]}
+\newcommand{\LtFltMidNetSiteGAlphaQ}{$+$0.014}
+\newcommand{\LtFltMidNetSiteGAlphaQBand}{[$-$0.009, $+$0.036]}
+\newcommand{\LtFltMidNetSiteGXc}{$+$1.4}
+\newcommand{\LtFltMidNetSiteGXcBand}{[$+$0.8, $+$1.9]}
+\newcommand{\LtFltMidMockSubsetSiteGFit}{$+$0.010}
+\newcommand{\LtFltMidMockSubsetSiteGFitBand}{[$+$0.007, $+$0.012]}
+\newcommand{\LtFltMidMockSubsetSiteGAlphaK}{$+$0.052}
+\newcommand{\LtFltMidMockSubsetSiteGAlphaKBand}{[$+$0.041, $+$0.064]}
+\newcommand{\LtFltMidMockSubsetSiteGAlphaQ}{$+$0.017}
+\newcommand{\LtFltMidMockSubsetSiteGAlphaQBand}{[$-$0.002, $+$0.036]}
+\newcommand{\LtFltMidMockSubsetSiteGXc}{$+$1.5}
+\newcommand{\LtFltMidMockSubsetSiteGXcBand}{[$+$1.0, $+$1.9]}
+\newcommand{\LtFltMidEvents}{1\,595}
+\newcommand{\LtFltMidFlights}{1\,542}
+\newcommand{\LtFltMidEventsPostPre}{1\,818}
+\newcommand{\LtFltMidFlightsPostPre}{1\,752}
+\newcommand{\LtFltMidEventsCtrlA}{5\,205}
+\newcommand{\LtFltMidFlightsCtrlA}{4\,670}
+\newcommand{\LtFltMidEventsCtrlS}{26\,175}
+\newcommand{\LtFltMidFlightsCtrlS}{26\,175}
+\newcommand{\LtFltMidMockEvents}{7\,666}
+\newcommand{\LtFltMidMockFlights}{4\,716}
+\newcommand{\LtFltMidMockReal}{1\,534}
+\newcommand{\LtFltMidMockSiteEvents}{6\,166}
+\newcommand{\LtFltMidMockSiteFlights}{3\,339}
+\newcommand{\LtFltMidMockSiteReal}{1\,382}
+\newcommand{\LtWinLong}{3\,000}
+\newcommand{\LtFltLongGFit}{$+$0.010}
+\newcommand{\LtFltLongGFitBand}{[$+$0.007, $+$0.013]}
+\newcommand{\LtFltLongGAlphaK}{$+$0.048}
+\newcommand{\LtFltLongGAlphaKBand}{[$+$0.033, $+$0.064]}
+\newcommand{\LtFltLongGAlphaQ}{$+$0.046}
+\newcommand{\LtFltLongGAlphaQBand}{[$+$0.029, $+$0.063]}
+\newcommand{\LtFltLongGXc}{$+$1.3}
+\newcommand{\LtFltLongGXcBand}{[$+$0.8, $+$1.9]}
+\newcommand{\LtFltLongDwFit}{$+$0.001}
+\newcommand{\LtFltLongDwFitBand}{[$-$0.002, $+$0.003]}
+\newcommand{\LtFltLongDwAlphaK}{$-$0.014}
+\newcommand{\LtFltLongDwAlphaKBand}{[$-$0.028, $-$0.001]}
+\newcommand{\LtFltLongDwAlphaQ}{$-$0.005}
+\newcommand{\LtFltLongDwAlphaQBand}{[$-$0.020, $+$0.009]}
+\newcommand{\LtFltLongDwXc}{$+$0.1}
+\newcommand{\LtFltLongDwXcBand}{[$-$0.4, $+$0.6]}
+\newcommand{\LtFltLongPostPreFit}{$+$0.003}
+\newcommand{\LtFltLongPostPreFitBand}{[$-$0.000, $+$0.006]}
+\newcommand{\LtFltLongPostPreAlphaK}{$-$0.003}
+\newcommand{\LtFltLongPostPreAlphaKBand}{[$-$0.020, $+$0.013]}
+\newcommand{\LtFltLongPostPreAlphaQ}{$-$0.013}
+\newcommand{\LtFltLongPostPreAlphaQBand}{[$-$0.032, $+$0.006]}
+\newcommand{\LtFltLongPostPreXc}{$+$0.6}
+\newcommand{\LtFltLongPostPreXcBand}{[$-$0.0, $+$1.2]}
+\newcommand{\LtFltLongInFit}{$+$0.011}
+\newcommand{\LtFltLongInFitBand}{[$+$0.007, $+$0.014]}
+\newcommand{\LtFltLongInAlphaK}{$+$0.034}
+\newcommand{\LtFltLongInAlphaKBand}{[$+$0.014, $+$0.054]}
+\newcommand{\LtFltLongInAlphaQ}{$+$0.041}
+\newcommand{\LtFltLongInAlphaQBand}{[$+$0.017, $+$0.064]}
+\newcommand{\LtFltLongInXc}{$+$1.4}
+\newcommand{\LtFltLongInXcBand}{[$+$0.6, $+$2.2]}
+\newcommand{\LtFltLongOutFit}{$+$0.009}
+\newcommand{\LtFltLongOutFitBand}{[$+$0.006, $+$0.013]}
+\newcommand{\LtFltLongOutAlphaK}{$+$0.063}
+\newcommand{\LtFltLongOutAlphaKBand}{[$+$0.041, $+$0.084]}
+\newcommand{\LtFltLongOutAlphaQ}{$+$0.051}
+\newcommand{\LtFltLongOutAlphaQBand}{[$+$0.030, $+$0.072]}
+\newcommand{\LtFltLongOutXc}{$+$1.3}
+\newcommand{\LtFltLongOutXcBand}{[$+$0.6, $+$2.0]}
+\newcommand{\LtFltLongCtrlAFit}{$+$0.005}
+\newcommand{\LtFltLongCtrlAFitBand}{[$+$0.003, $+$0.006]}
+\newcommand{\LtFltLongCtrlAAlphaK}{$-$0.003}
+\newcommand{\LtFltLongCtrlAAlphaKBand}{[$-$0.012, $+$0.005]}
+\newcommand{\LtFltLongCtrlAAlphaQ}{$-$0.001}
+\newcommand{\LtFltLongCtrlAAlphaQBand}{[$-$0.011, $+$0.009]}
+\newcommand{\LtFltLongCtrlAXc}{$+$0.8}
+\newcommand{\LtFltLongCtrlAXcBand}{[$+$0.5, $+$1.2]}
+\newcommand{\LtFltLongCtrlSFit}{$+$0.007}
+\newcommand{\LtFltLongCtrlSFitBand}{[$+$0.006, $+$0.008]}
+\newcommand{\LtFltLongCtrlSAlphaK}{$-$0.000}
+\newcommand{\LtFltLongCtrlSAlphaKBand}{[$-$0.004, $+$0.003]}
+\newcommand{\LtFltLongCtrlSAlphaQ}{$+$0.008}
+\newcommand{\LtFltLongCtrlSAlphaQBand}{[$+$0.003, $+$0.012]}
+\newcommand{\LtFltLongCtrlSXc}{$+$1.1}
+\newcommand{\LtFltLongCtrlSXcBand}{[$+$0.9, $+$1.2]}
+\newcommand{\LtFltLongMockGFit}{$+$0.002}
+\newcommand{\LtFltLongMockGFitBand}{[$+$0.001, $+$0.003]}
+\newcommand{\LtFltLongMockGAlphaK}{$+$0.001}
+\newcommand{\LtFltLongMockGAlphaKBand}{[$-$0.006, $+$0.007]}
+\newcommand{\LtFltLongMockGAlphaQ}{$+$0.010}
+\newcommand{\LtFltLongMockGAlphaQBand}{[$+$0.003, $+$0.017]}
+\newcommand{\LtFltLongMockGXc}{$+$0.6}
+\newcommand{\LtFltLongMockGXcBand}{[$+$0.3, $+$0.9]}
+\newcommand{\LtFltLongNetGFit}{$+$0.008}
+\newcommand{\LtFltLongNetGFitBand}{[$+$0.005, $+$0.011]}
+\newcommand{\LtFltLongNetGAlphaK}{$+$0.049}
+\newcommand{\LtFltLongNetGAlphaKBand}{[$+$0.032, $+$0.066]}
+\newcommand{\LtFltLongNetGAlphaQ}{$+$0.036}
+\newcommand{\LtFltLongNetGAlphaQBand}{[$+$0.017, $+$0.055]}
+\newcommand{\LtFltLongNetGXc}{$+$0.7}
+\newcommand{\LtFltLongNetGXcBand}{[$+$0.1, $+$1.4]}
+\newcommand{\LtFltLongMockSubsetGFit}{$+$0.010}
+\newcommand{\LtFltLongMockSubsetGFitBand}{[$+$0.007, $+$0.013]}
+\newcommand{\LtFltLongMockSubsetGAlphaK}{$+$0.050}
+\newcommand{\LtFltLongMockSubsetGAlphaKBand}{[$+$0.033, $+$0.066]}
+\newcommand{\LtFltLongMockSubsetGAlphaQ}{$+$0.046}
+\newcommand{\LtFltLongMockSubsetGAlphaQBand}{[$+$0.029, $+$0.063]}
+\newcommand{\LtFltLongMockSubsetGXc}{$+$1.4}
+\newcommand{\LtFltLongMockSubsetGXcBand}{[$+$0.8, $+$1.9]}
+\newcommand{\LtFltLongMockSiteGFit}{$+$0.002}
+\newcommand{\LtFltLongMockSiteGFitBand}{[$+$0.000, $+$0.004]}
+\newcommand{\LtFltLongMockSiteGAlphaK}{$+$0.013}
+\newcommand{\LtFltLongMockSiteGAlphaKBand}{[$+$0.004, $+$0.022]}
+\newcommand{\LtFltLongMockSiteGAlphaQ}{$+$0.024}
+\newcommand{\LtFltLongMockSiteGAlphaQBand}{[$+$0.013, $+$0.035]}
+\newcommand{\LtFltLongMockSiteGXc}{$+$0.7}
+\newcommand{\LtFltLongMockSiteGXcBand}{[$+$0.3, $+$1.1]}
+\newcommand{\LtFltLongNetSiteGFit}{$+$0.009}
+\newcommand{\LtFltLongNetSiteGFitBand}{[$+$0.006, $+$0.013]}
+\newcommand{\LtFltLongNetSiteGAlphaK}{$+$0.042}
+\newcommand{\LtFltLongNetSiteGAlphaKBand}{[$+$0.022, $+$0.061]}
+\newcommand{\LtFltLongNetSiteGAlphaQ}{$+$0.032}
+\newcommand{\LtFltLongNetSiteGAlphaQBand}{[$+$0.013, $+$0.051]}
+\newcommand{\LtFltLongNetSiteGXc}{$+$0.8}
+\newcommand{\LtFltLongNetSiteGXcBand}{[$+$0.1, $+$1.5]}
+\newcommand{\LtFltLongMockSubsetSiteGFit}{$+$0.012}
+\newcommand{\LtFltLongMockSubsetSiteGFitBand}{[$+$0.009, $+$0.015]}
+\newcommand{\LtFltLongMockSubsetSiteGAlphaK}{$+$0.055}
+\newcommand{\LtFltLongMockSubsetSiteGAlphaKBand}{[$+$0.038, $+$0.072]}
+\newcommand{\LtFltLongMockSubsetSiteGAlphaQ}{$+$0.056}
+\newcommand{\LtFltLongMockSubsetSiteGAlphaQBand}{[$+$0.038, $+$0.073]}
+\newcommand{\LtFltLongMockSubsetSiteGXc}{$+$1.6}
+\newcommand{\LtFltLongMockSubsetSiteGXcBand}{[$+$0.9, $+$2.2]}
+\newcommand{\LtFltLongEvents}{695}
+\newcommand{\LtFltLongFlights}{679}
+\newcommand{\LtFltLongEventsPostPre}{1\,325}
+\newcommand{\LtFltLongFlightsPostPre}{1\,281}
+\newcommand{\LtFltLongEventsCtrlA}{3\,937}
+\newcommand{\LtFltLongFlightsCtrlA}{3\,663}
+\newcommand{\LtFltLongEventsCtrlS}{21\,107}
+\newcommand{\LtFltLongFlightsCtrlS}{21\,107}
+\newcommand{\LtFltLongMockEvents}{3\,308}
+\newcommand{\LtFltLongMockFlights}{2\,397}
+\newcommand{\LtFltLongMockReal}{662}
+\newcommand{\LtFltLongMockSiteEvents}{2\,507}
+\newcommand{\LtFltLongMockSiteFlights}{1\,575}
+\newcommand{\LtFltLongMockSiteReal}{583}
+\newcommand{\LtWinMax}{3\,450}
+\newcommand{\LtFltMaxGFit}{$+$0.012}
+\newcommand{\LtFltMaxGFitBand}{[$+$0.008, $+$0.015]}
+\newcommand{\LtFltMaxGAlphaK}{$+$0.052}
+\newcommand{\LtFltMaxGAlphaKBand}{[$+$0.032, $+$0.072]}
+\newcommand{\LtFltMaxGAlphaQ}{$+$0.036}
+\newcommand{\LtFltMaxGAlphaQBand}{[$+$0.015, $+$0.057]}
+\newcommand{\LtFltMaxGAlphaT}{$+$0.026}
+\newcommand{\LtFltMaxGAlphaTBand}{[$-$0.010, $+$0.062]}
+\newcommand{\LtFltMaxGXc}{$+$1.6}
+\newcommand{\LtFltMaxGXcBand}{[$+$0.8, $+$2.3]}
+\newcommand{\LtFltMaxDwFit}{$+$0.001}
+\newcommand{\LtFltMaxDwFitBand}{[$-$0.001, $+$0.004]}
+\newcommand{\LtFltMaxDwAlphaK}{$-$0.013}
+\newcommand{\LtFltMaxDwAlphaKBand}{[$-$0.028, $+$0.002]}
+\newcommand{\LtFltMaxDwAlphaQ}{$+$0.000}
+\newcommand{\LtFltMaxDwAlphaQBand}{[$-$0.020, $+$0.020]}
+\newcommand{\LtFltMaxDwAlphaT}{$+$0.023}
+\newcommand{\LtFltMaxDwAlphaTBand}{[$-$0.012, $+$0.058]}
+\newcommand{\LtFltMaxDwXc}{$+$0.1}
+\newcommand{\LtFltMaxDwXcBand}{[$-$0.5, $+$0.7]}
+\newcommand{\LtFltMaxPostPreFit}{$+$0.000}
+\newcommand{\LtFltMaxPostPreFitBand}{[$-$0.003, $+$0.003]}
+\newcommand{\LtFltMaxPostPreAlphaK}{$-$0.015}
+\newcommand{\LtFltMaxPostPreAlphaKBand}{[$-$0.031, $+$0.002]}
+\newcommand{\LtFltMaxPostPreAlphaQ}{$-$0.019}
+\newcommand{\LtFltMaxPostPreAlphaQBand}{[$-$0.038, $+$0.001]}
+\newcommand{\LtFltMaxPostPreAlphaT}{$-$0.012}
+\newcommand{\LtFltMaxPostPreAlphaTBand}{[$-$0.044, $+$0.020]}
+\newcommand{\LtFltMaxPostPreXc}{$-$0.0}
+\newcommand{\LtFltMaxPostPreXcBand}{[$-$0.6, $+$0.6]}
+\newcommand{\LtFltMaxInFit}{$+$0.013}
+\newcommand{\LtFltMaxInFitBand}{[$+$0.008, $+$0.018]}
+\newcommand{\LtFltMaxInAlphaK}{$+$0.039}
+\newcommand{\LtFltMaxInAlphaKBand}{[$+$0.015, $+$0.063]}
+\newcommand{\LtFltMaxInAlphaQ}{$+$0.036}
+\newcommand{\LtFltMaxInAlphaQBand}{[$+$0.005, $+$0.068]}
+\newcommand{\LtFltMaxInAlphaT}{$+$0.049}
+\newcommand{\LtFltMaxInAlphaTBand}{[$-$0.004, $+$0.102]}
+\newcommand{\LtFltMaxInXc}{$+$1.6}
+\newcommand{\LtFltMaxInXcBand}{[$+$0.6, $+$2.7]}
+\newcommand{\LtFltMaxOutFit}{$+$0.010}
+\newcommand{\LtFltMaxOutFitBand}{[$+$0.006, $+$0.015]}
+\newcommand{\LtFltMaxOutAlphaK}{$+$0.065}
+\newcommand{\LtFltMaxOutAlphaKBand}{[$+$0.039, $+$0.091]}
+\newcommand{\LtFltMaxOutAlphaQ}{$+$0.036}
+\newcommand{\LtFltMaxOutAlphaQBand}{[$+$0.009, $+$0.062]}
+\newcommand{\LtFltMaxOutAlphaT}{$+$0.003}
+\newcommand{\LtFltMaxOutAlphaTBand}{[$-$0.043, $+$0.050]}
+\newcommand{\LtFltMaxOutXc}{$+$1.5}
+\newcommand{\LtFltMaxOutXcBand}{[$+$0.5, $+$2.5]}
+\newcommand{\LtFltMaxCtrlAFit}{$+$0.003}
+\newcommand{\LtFltMaxCtrlAFitBand}{[$+$0.002, $+$0.005]}
+\newcommand{\LtFltMaxCtrlAAlphaK}{$-$0.008}
+\newcommand{\LtFltMaxCtrlAAlphaKBand}{[$-$0.016, $+$0.001]}
+\newcommand{\LtFltMaxCtrlAAlphaQ}{$-$0.005}
+\newcommand{\LtFltMaxCtrlAAlphaQBand}{[$-$0.015, $+$0.004]}
+\newcommand{\LtFltMaxCtrlAAlphaT}{$+$0.003}
+\newcommand{\LtFltMaxCtrlAAlphaTBand}{[$-$0.012, $+$0.019]}
+\newcommand{\LtFltMaxCtrlAXc}{$+$0.7}
+\newcommand{\LtFltMaxCtrlAXcBand}{[$+$0.4, $+$1.0]}
+\newcommand{\LtFltMaxCtrlSFit}{$+$0.007}
+\newcommand{\LtFltMaxCtrlSFitBand}{[$+$0.007, $+$0.008]}
+\newcommand{\LtFltMaxCtrlSAlphaK}{$+$0.000}
+\newcommand{\LtFltMaxCtrlSAlphaKBand}{[$-$0.003, $+$0.004]}
+\newcommand{\LtFltMaxCtrlSAlphaQ}{$+$0.010}
+\newcommand{\LtFltMaxCtrlSAlphaQBand}{[$+$0.005, $+$0.014]}
+\newcommand{\LtFltMaxCtrlSAlphaT}{$+$0.016}
+\newcommand{\LtFltMaxCtrlSAlphaTBand}{[$+$0.009, $+$0.023]}
+\newcommand{\LtFltMaxCtrlSXc}{$+$1.3}
+\newcommand{\LtFltMaxCtrlSXcBand}{[$+$1.2, $+$1.4]}
+\newcommand{\LtFltMaxMockGFit}{$+$0.003}
+\newcommand{\LtFltMaxMockGFitBand}{[$+$0.002, $+$0.004]}
+\newcommand{\LtFltMaxMockGAlphaK}{$+$0.007}
+\newcommand{\LtFltMaxMockGAlphaKBand}{[$-$0.000, $+$0.015]}
+\newcommand{\LtFltMaxMockGAlphaQ}{$+$0.013}
+\newcommand{\LtFltMaxMockGAlphaQBand}{[$+$0.004, $+$0.022]}
+\newcommand{\LtFltMaxMockGAlphaT}{$+$0.017}
+\newcommand{\LtFltMaxMockGAlphaTBand}{[$+$0.002, $+$0.032]}
+\newcommand{\LtFltMaxMockGXc}{$+$0.5}
+\newcommand{\LtFltMaxMockGXcBand}{[$+$0.2, $+$0.9]}
+\newcommand{\LtFltMaxNetGFit}{$+$0.009}
+\newcommand{\LtFltMaxNetGFitBand}{[$+$0.005, $+$0.013]}
+\newcommand{\LtFltMaxNetGAlphaK}{$+$0.043}
+\newcommand{\LtFltMaxNetGAlphaKBand}{[$+$0.022, $+$0.064]}
+\newcommand{\LtFltMaxNetGAlphaQ}{$+$0.026}
+\newcommand{\LtFltMaxNetGAlphaQBand}{[$+$0.003, $+$0.050]}
+\newcommand{\LtFltMaxNetGAlphaT}{$+$0.017}
+\newcommand{\LtFltMaxNetGAlphaTBand}{[$-$0.022, $+$0.057]}
+\newcommand{\LtFltMaxNetGXc}{$+$1.0}
+\newcommand{\LtFltMaxNetGXcBand}{[$+$0.2, $+$1.8]}
+\newcommand{\LtFltMaxMockSubsetGFit}{$+$0.011}
+\newcommand{\LtFltMaxMockSubsetGFitBand}{[$+$0.008, $+$0.015]}
+\newcommand{\LtFltMaxMockSubsetGAlphaK}{$+$0.050}
+\newcommand{\LtFltMaxMockSubsetGAlphaKBand}{[$+$0.030, $+$0.071]}
+\newcommand{\LtFltMaxMockSubsetGAlphaQ}{$+$0.039}
+\newcommand{\LtFltMaxMockSubsetGAlphaQBand}{[$+$0.017, $+$0.061]}
+\newcommand{\LtFltMaxMockSubsetGAlphaT}{$+$0.034}
+\newcommand{\LtFltMaxMockSubsetGAlphaTBand}{[$-$0.003, $+$0.071]}
+\newcommand{\LtFltMaxMockSubsetGXc}{$+$1.5}
+\newcommand{\LtFltMaxMockSubsetGXcBand}{[$+$0.7, $+$2.3]}
+\newcommand{\LtFltMaxMockSiteGFit}{$+$0.004}
+\newcommand{\LtFltMaxMockSiteGFitBand}{[$+$0.002, $+$0.006]}
+\newcommand{\LtFltMaxMockSiteGAlphaK}{$+$0.020}
+\newcommand{\LtFltMaxMockSiteGAlphaKBand}{[$+$0.008, $+$0.033]}
+\newcommand{\LtFltMaxMockSiteGAlphaQ}{$+$0.029}
+\newcommand{\LtFltMaxMockSiteGAlphaQBand}{[$+$0.013, $+$0.045]}
+\newcommand{\LtFltMaxMockSiteGAlphaT}{$+$0.031}
+\newcommand{\LtFltMaxMockSiteGAlphaTBand}{[$+$0.008, $+$0.054]}
+\newcommand{\LtFltMaxMockSiteGXc}{$+$1.0}
+\newcommand{\LtFltMaxMockSiteGXcBand}{[$+$0.5, $+$1.6]}
+\newcommand{\LtFltMaxNetSiteGFit}{$+$0.009}
+\newcommand{\LtFltMaxNetSiteGFitBand}{[$+$0.005, $+$0.014]}
+\newcommand{\LtFltMaxNetSiteGAlphaK}{$+$0.035}
+\newcommand{\LtFltMaxNetSiteGAlphaKBand}{[$+$0.010, $+$0.060]}
+\newcommand{\LtFltMaxNetSiteGAlphaQ}{$+$0.014}
+\newcommand{\LtFltMaxNetSiteGAlphaQBand}{[$-$0.011, $+$0.039]}
+\newcommand{\LtFltMaxNetSiteGAlphaT}{$+$0.007}
+\newcommand{\LtFltMaxNetSiteGAlphaTBand}{[$-$0.039, $+$0.052]}
+\newcommand{\LtFltMaxNetSiteGXc}{$+$0.8}
+\newcommand{\LtFltMaxNetSiteGXcBand}{[$-$0.2, $+$1.8]}
+\newcommand{\LtFltMaxMockSubsetSiteGFit}{$+$0.014}
+\newcommand{\LtFltMaxMockSubsetSiteGFitBand}{[$+$0.010, $+$0.018]}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaK}{$+$0.055}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaKBand}{[$+$0.033, $+$0.078]}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaQ}{$+$0.043}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaQBand}{[$+$0.020, $+$0.065]}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaT}{$+$0.037}
+\newcommand{\LtFltMaxMockSubsetSiteGAlphaTBand}{[$-$0.002, $+$0.077]}
+\newcommand{\LtFltMaxMockSubsetSiteGXc}{$+$1.8}
+\newcommand{\LtFltMaxMockSubsetSiteGXcBand}{[$+$1.0, $+$2.6]}
+\newcommand{\LtFltMaxEvents}{362}
+\newcommand{\LtFltMaxFlights}{352}
+\newcommand{\LtFltMaxEventsPostPre}{1\,020}
+\newcommand{\LtFltMaxFlightsPostPre}{988}
+\newcommand{\LtFltMaxEventsCtrlA}{3\,198}
+\newcommand{\LtFltMaxFlightsCtrlA}{3\,020}
+\newcommand{\LtFltMaxEventsCtrlS}{18\,057}
+\newcommand{\LtFltMaxFlightsCtrlS}{18\,057}
+\newcommand{\LtFltMaxMockEvents}{1\,735}
+\newcommand{\LtFltMaxMockFlights}{1\,372}
+\newcommand{\LtFltMaxMockReal}{347}
+\newcommand{\LtFltMaxMockSiteEvents}{1\,269}
+\newcommand{\LtFltMaxMockSiteFlights}{885}
+\newcommand{\LtFltMaxMockSiteReal}{299}
+\newcommand{\LtOpenTotal}{154\,598}
+\newcommand{\LtOpenDeclared}{66\,845}
+\newcommand{\LtOpenKept}{55\,879}
+\newcommand{\LtOpenKeptShare}{83.6}
+\newcommand{\LtOpenThreshold}{0.1}
+\newcommand{\LtDeclTau}{11450}
+\newcommand{\LtDeclLongestAlphaS}{1.653}
+\newcommand{\LtDeclLongestAlphaSBand}{[1.621, 1.685]}
+\newcommand{\LtDeclFlightsS}{5\,775}
+\newcommand{\LtDeclLongestAlphaA}{1.616}
+\newcommand{\LtDeclLongestAlphaABand}{[1.553, 1.679]}
+\newcommand{\LtDeclFlightsA}{853}
+\newcommand{\LtDeclLongestAlphaG}{1.790}
+\newcommand{\LtDeclLongestAlphaGBand}{[1.696, 1.884]}
+\newcommand{\LtDeclFlightsG}{158}

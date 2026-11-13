@@ -21,7 +21,12 @@ within HOURS). Bands: N_BOOT draws of the blocks of decompose.flight_table. Base
 matched pieces against the solo flights of their site-day and hour (the comparison of the report,
 on these pieces), so that the two differences refer to the same group time.
 
-    uv run python route.py [--run NAME] [--sample N] [--rho M] [--cover SHARE]    # after tamsd.py
+The share of the gap that the route removes is 100 (1 - Delta H_loc(1000 s) / baseline Delta H_loc(1000 s)),
+taken inside every bootstrap draw (the same draws for the two gaps) with its 5-95% band. With --open (or
+--declared-open, as tamsd.py) the pieces, the controls and the solo flights of the baseline are those of the
+open flights only, the sample of the comparisons; the results go to out/<run>/open_min<m>/.
+
+    uv run python route.py [--run NAME] [--open | --declared-open] [--sample N] [--rho M] [--cover SHARE]    # after tamsd.py
     # the first run reads the fixes; matches and results are named by the sample and the parameters
 """
 
@@ -204,29 +209,45 @@ def units(tracks, found, flights, block, season=False):
                            np.array(values)), found
 
 
-def compare(u, counts, populations=("group", "route")):
+def compare(u, counts, populations=("group", "route"), draws=None):
     """The pieces and the other population reweighted to them: H_loc over every lag and fitted H of
-    each, and Delta H, Delta H_loc at 100 and 1000 s and over every lag (P minus Q), with bands."""
+    each, and Delta H, Delta H_loc at 100 and 1000 s and over every lag (P minus Q), with bands.
+    A dict `draws` receives the draws of Delta H_loc(1000 s) (the point estimate first)."""
     mp, mq, _, _ = zones.standardized(u, *populations, counts)
     (hp, fp), (hq, fq) = zones.curve(mp), zones.curve(mq)
     k = {x: int(np.searchsorted(LAGS, x)) for x in (100, 1000)}
+    if draws is not None:
+        draws["H_loc(1000 s)"] = (hp - hq)[:, k[1000]]
     return {"Delta H": decompose.described(fp - fq),
             **{f"H_loc({x} s)": decompose.described((hp - hq)[:, i]) for x, i in k.items()},
             "Delta H_loc": (hp - hq)[0].tolist(), "Delta H_loc band": np.nanpercentile((hp - hq)[1:], [5, 95], axis=0).tolist(),
             "H_loc": {"group": hp[0].tolist(), "route": hq[0].tolist()}, "H": {"group": float(fp[0]), "route": float(fq[0])}}
 
 
-def baseline(found, tracks, info, block, counts, solo=None):
+def baseline(found, tracks, info, block, counts, solo=None, draws=None):
     """The same pieces of group time against the solo flights (never in a group) of their site-day
     and hour, from the pieces of tamsd.py: the comparison of the report, on these pieces only.
-    With `solo` (flight numbers), only those solo flights."""
+    With `solo` (flight numbers), only those solo flights; `draws` as in compare."""
     p = read_pieces(CACHE / "pieces.npz")["para"]
     mine = pd.MultiIndex.from_arrays([tracks["flight"][found["piece"]], tracks["start"][found["piece"]]])
     allowed = np.ones(len(p["flight"]), bool) if solo is None else np.isin(p["flight"], solo)
     keep = ((p["population"] == "solo") & allowed) | ((p["population"] == "group")
                                           & pd.MultiIndex.from_arrays([p["flight"], p["start"]]).isin(mine))
     u = decompose.msd_units({k: v[keep] for k, v in p.items()}, "site_hour", info, block)
-    return {"pieces": int(keep[p["population"] == "group"].sum()), **compare(u, counts, ("group", "solo"))}
+    return {"pieces": int(keep[p["population"] == "group"].sum()), **compare(u, counts, ("group", "solo"), draws)}
+
+
+def share_removed(route, base):
+    """The share (%) of the baseline gap that the route removes, 100 (1 - route / base), from the draws of the two
+    gaps (the point estimate first): its value and 5-95% band."""
+    return decompose.described(100 * (1 - np.asarray(route) / np.asarray(base)))
+
+
+def sizes(kept, tracks, pilot):
+    """Flights and pilots of the matched pieces and of their controls (`pilot`: the pilot code of each flight)."""
+    own, ctl = (np.unique(tracks["flight"][kept[k].to_numpy()]) for k in ("piece", "solo"))
+    return {"flights": int(own.size), "pilots": int(pilot.reindex(own).nunique()),
+            "control flights": int(ctl.size), "control pilots": int(pilot.reindex(ctl).nunique())}
 
 
 def figure(result, path):
@@ -269,15 +290,19 @@ if __name__ == "__main__":
     pieces = int((tracks["population"] == "group").sum()) if sample is None else sample
     result = {"group pieces": pieces, "alone flights": int(len(alone)), "matches": int(len(found)),
               "median cover": float(found["cover"].median())}
+    import isolated  # here, not above: isolated imports this module
+    pilot = pd.Series(isolated.codes(flights, summary, flights["flight"].to_numpy())[0], index=flights["flight"].to_numpy())
     for key, season in (("any date", False), ("same season and hour", True)):
         u, kept = units(tracks, found, flights, block, season)
-        result[key] = {"pieces": int(kept["piece"].nunique()), "matches": int(len(kept)),
-                       "median matches per piece": float(kept.groupby("piece").size().median()), **compare(u, counts),
-                       "baseline": baseline(kept, tracks, info, block, counts)}
+        gap, base_gap = {}, {}
+        result[key] = {"pieces": int(kept["piece"].nunique()), "matches": int(len(kept)), **sizes(kept, tracks, pilot),
+                       "median matches per piece": float(kept.groupby("piece").size().median()), **compare(u, counts, draws=gap),
+                       "baseline": baseline(kept, tracks, info, block, counts, draws=base_gap)}
+        result[key]["share removed (%)"] = share_removed(gap["H_loc(1000 s)"], base_gap["H_loc(1000 s)"])
     name = f"route{tag}"
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"{name}.json").write_text(json.dumps(result, indent=1))
     figure(result, OUT / f"{name}.pdf")
     print(json.dumps({k: v for k, v in result.items() if not isinstance(v, dict)}
-                     | {k: {s: result[k][s] for s in ("pieces", "matches", "Delta H", "H_loc(100 s)", "H_loc(1000 s)")}
+                     | {k: {s: result[k][s] for s in ("pieces", "matches", "flights", "pilots", "Delta H", "H_loc(100 s)", "H_loc(1000 s)", "share removed (%)")}
                         for k in ("any date", "same season and hour")}, indent=1))

@@ -554,6 +554,14 @@ def delta_curve(ser):
     return {"lags": ser["lags"].tolist(), **twoway.quote(ser["boot"]["delta"]["H_loc"])}
 
 
+def difference_curves(g, a):
+    """Delta H_loc of the group side minus that of the A side at every lag, for each series both sides have on the
+    same lags, with its band (the sides share the draws)."""
+    return {key: {"lags": g[key]["lags"].tolist(),
+                  **twoway.quote(g[key]["boot"]["delta"]["H_loc"] - a[key]["boot"]["delta"]["H_loc"])}
+            for key in ("main", "long") if g[key] and a[key] and list(g[key]["lags"]) == list(a[key]["lags"])}
+
+
 def draw_msd(est, folder, tag):
     """The MSD and the H_loc figure of G, S|G, A and S|A (level "all") of both series, fitted H in the legend."""
     for key, name in (("main", "1000"), ("long", "2760")):
@@ -682,7 +690,8 @@ def run_stats(ctx, table, tables_rho, chosen, tag):
                                                 ("A", "A", "group", a), ("S|A", "A", "control", a))},
             "deltas": {c: {m: quoted(v) for m, v in dm.items()} for c, dm in d.items()},
             "delta curves": {c: {key: delta_curve(est[s][level][key]) for key in ("main", "long") if est[s][level][key]}
-                             for s, c in (("G", CONTRASTS[0]), ("A", CONTRASTS[1]))}}
+                             for s, c in (("G", CONTRASTS[0]), ("A", CONTRASTS[1]))}
+            | {CONTRASTS[2]: difference_curves(est["G"][level], est["A"][level])}}
         for c in CONTRASTS:
             forest.append((f"{level}: {c}", CONTRAST_COLORS[c], result["levels"][level]["deltas"][c]))
         forest.append(None)

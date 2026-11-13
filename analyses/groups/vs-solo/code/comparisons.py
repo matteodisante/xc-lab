@@ -180,7 +180,7 @@ def raw_tex(r):
     macro("RawHlocRangeHigh", num(max(span("1000") + span("2760")), 3))
     macro("RawHlocRangeLong", num(max(span("longest")), 3))
     macro("RawHMeanGap", num(max(abs(c["H"] - np.mean(c["H_loc"])) for d in curves.values() for c in d.values()), 3))
-    for tag in ("S", "G"):
+    for tag in ("S", "A", "G"):
         macro(f"RawGlideMedian{tag}", num(phase_median(r["survival"][tag]["transition"]), 0))
         macro(f"RawClimbMedian{tag}", num(phase_median(r["survival"][tag]["climb"]), 0))
     lines = [r"\begin{tabular}{@{}l l r r l l l@{}}", r"\toprule",
@@ -424,8 +424,13 @@ def windows_tex(runs):
 
 
 def phase_median(s):
-    """The duration (s, on the grid of the survival) at which the survival of a phase falls below 1/2."""
-    return s["grid"][int(np.argmax(np.asarray(s["value"]) < 0.5))]
+    """The duration (s) at which the survival of a phase crosses 1/2: linear in the log of the duration
+    between the two grid points around the crossing."""
+    v, t = np.asarray(s["value"]), np.log(s["grid"])
+    i = int(np.argmax(v < 0.5))
+    if i == 0:
+        return float(np.exp(t[0]))
+    return float(np.exp(t[i - 1] + (v[i - 1] - 0.5) / (v[i - 1] - v[i]) * (t[i] - t[i - 1])))
 
 
 def prepost_tex(p, m):

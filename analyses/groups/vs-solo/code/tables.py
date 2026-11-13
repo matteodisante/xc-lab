@@ -440,6 +440,28 @@ def prepost_tex(width, tag=""):
         macro(f"PP{tag}ProfileHlocHundred{sn}", f"{p[st]['H_loc(100)']:.3f}")
 
 
+def route_open_tex(name="route"):
+    """Macros of route.py --open (the open flights of the comparisons, all their pieces): the gaps of
+    H_loc(1000 s) to the route and to the baseline, the share of the baseline gap that the route removes (from
+    the unrounded values, its band from the bootstrap draws of the two gaps) and the counts."""
+    o = load(f"{MAIN}/open_declared", "opening")
+    r = o and load(f"{MAIN}/open_min{o['min_opening']:g}", name)
+    if r is None:
+        return
+    macro("RouteOpenSample", num(r["group pieces"], 0))
+    macro("RouteOpenAlone", num(r["alone flights"], 0))
+    e = r["any date"]
+    for key in ("pieces", "matches", "flights", "pilots", "control flights", "control pilots"):
+        macro("RouteOpen" + key.title().replace(" ", ""), num(e[key], 0))
+    for stat, ks in (("H_loc(1000 s)", "DHloc"), ("H_loc(100 s)", "DHlocHundred")):
+        for pre, v in (("RouteOpen", e[stat]), ("RouteOpenBase", e["baseline"][stat])):
+            macro(f"{pre}{ks}", signed(v["value"], 3))
+            macro(f"{pre}{ks}Band", f"[{signed(v['band'][0], 3)}, {signed(v['band'][1], 3)}]")
+    s = e["share removed (%)"]
+    macro("RouteOpenExplained", num(s["value"], 0))
+    macro("RouteOpenExplainedBand", f"[{num(s['band'][0], 0)}, {num(s['band'][1], 0)}]")
+
+
 def route_tex(main="route_sample10000"):
     """Macros of route.py (the sample of 10 000 pieces) and the table of its variants on 2000 pieces."""
     r = load(MAIN, main)
@@ -505,6 +527,7 @@ def main():
     prepost_tex(3000)
     prepost_tex(1260, "Short")
     route_tex()
+    route_open_tex()
     redundancy_tex()
     d = decompose_tex()
     if d is not None:
