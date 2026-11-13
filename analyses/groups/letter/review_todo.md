@@ -3,6 +3,106 @@
 Review of `letter.tex` (title since this review: "Good company is a good route"). This file lists what was fixed and
 what is still open, in priority order. Paths are relative to `xc-lab/analyses/groups/`.
 
+## Redesign decided with the author on 2026-11-13 (this replaces the list below)
+
+Decisions:
+- Format: two-column revtex, sections as in arXiv:2601.01293 (unnumbered, upper case):
+  INTRODUCTION, DATA AND GROUPS, MEASURING PERSISTENCE, RAW COMPARISON, SAME ROUTE, SAME FLIGHT,
+  HOW A GROUP HOLDS A ROUTE, DISCUSSION, CONCLUDING REMARKS, APPENDIX. That paper has 11 pages and
+  7 figures: the 4-page limit no longer applies.
+- Main dataset: lags up to 2760 s (pieces of at least 3450 s); dataset 1000 as a check. The text
+  must say why no longer dataset: beyond 2760 s the same-route design has too few matched pieces
+  of G (at 3380 s no caliper reaches 200 per level), and longer pieces select flights with a
+  larger exponent (the shape of the curve is kept, its level shifts).
+- Notation: `\alpha(\tau) = d ln MSD / d ln tau`, "the local slope of the MSD", with
+  `\alpha = 2H`; never "local Hurst exponent", no `H_loc` in the letter or the supplement. `H` is
+  only the exponent fitted from 10 s to the end lag, and it is reported in every design.
+- Curves against the lag carry the results; single numbers go in one table with the sample sizes.
+- Figures of the letter: (1) one group in 3D from the viewer with the time strip; (2) MSD and
+  `\alpha(\tau)` of S, A, G with the fitted H; (3) the three designs against the lag; (4) forest
+  plot of fitted H, `\alpha` at two lags, speed and phases in the three designs; (5) how a group
+  holds a route; (6) survival of the long glides.
+- Supplement: every section has its figure and is cited from the letter by its number. S1 open
+  flights (histogram of the opening, threshold 0.1: the smallest selection that removes the closed
+  flights declared open; a high threshold inflates the exponent); S2 datasets and the tau/0.8 rule
+  (MSD and `\alpha` on datasets 1000, 2760, 11 450; counts that justify 2760); S3 the estimate of
+  `\alpha` and H against the end lag; S4 groups; S5 bands; S6 same route (calipers, sets of
+  controls, the 77% share); S7 same flight (window lengths, mock events, forest); S8 phases and
+  speed; S9 tails; S10 terrain; S11 structure; S12 robustness.
+- The 77% [64, 86] of `route.py --open` goes in the letter; the sentence on the factor 1.42 is
+  rewritten to say what it measures.
+
+Order of work: (A) runs and macros for the main dataset, numbers reviewed before any prose;
+(B) figures; (C) text: abstract, end of the introduction, DISCUSSION and CONCLUDING REMARKS by the
+strong model, the rest by Sonnet from this file; (D) supplement; (E) compile and check.
+
+### Phase A result (2026-11-13): the main dataset changes the same-route reading
+
+Runs: `prepost.py --open` with mock events for windows of 3000 s and 3450 s (362 events at
+3450 s), `matched.py --open --stats` with the curve of the difference; 313 new `\Lt...` macros
+in `letter/generated/macros.tex` (alpha = 2 x the stored exponent), 339 tests pass, no commit.
+Differences of alpha, 90% bands:
+
+| | dataset 1000 | main (lags to 2760 s) |
+|---|---|---|
+| raw G - S, alpha(1000 s) | +0.036 [+0.031, +0.042] | +0.040 [+0.034, +0.047] |
+| raw G - S, fitted H | +0.002 [+0.001, +0.004] | +0.009 [+0.007, +0.011] |
+| raw A - S, alpha(1000 s) | -0.006 [-0.012, -0.000] | -0.001 [-0.007, +0.005] |
+| same route G - S\|G, alpha(1000 s) | +0.021 [+0.008, +0.033] | +0.048 [+0.028, +0.067] |
+| same route A - S\|A, alpha(1000 s) | +0.013 [-0.007, +0.032] | +0.027 [+0.001, +0.052] |
+| same route, difference, alpha(1000 s) | +0.008 [-0.014, +0.029] | +0.021 [-0.009, +0.051] |
+| same route, difference, alpha(1840 s) | n/a | -0.012 [-0.056, +0.032] |
+| same route, difference, fitted H | -0.005 [-0.009, -0.001] | +0.002 [-0.004, +0.009] |
+| same route, difference, speed (km/h) | +1.3 [+0.4, +2.2] | same sample |
+| same flight, net of mock, alpha(1000 s) | window 2400: +0.046 [+0.035, +0.058] | window 3450: +0.043 [+0.022, +0.064] |
+| same flight, net, alpha(1840 s) | window 2400: +0.001 [-0.019, +0.022] (edge) | +0.026 [+0.003, +0.050] |
+| same flight, net, fitted H | +0.009 | +0.009 [+0.005, +0.013] |
+| same flight, net, speed (km/h) | +1.2 [+0.7, +1.6] | +1.0 [+0.2, +1.8] |
+| pieces of G / A on the same route | 2 717 / 1 607 | 700 / 338 |
+| same-flight events | 1 595 (window 2400) | 362 |
+
+What this means for the text:
+- On the main dataset the same-route gap does not shrink (+0.048 against +0.040 raw). "On the
+  same route the gap falls" holds on dataset 1000 only.
+- The difference net of selection is not resolved on either dataset, and on the main one its band
+  reaches +0.051, above the raw gap: it does not exclude an effect of the group. "Most of the jump
+  is the line" is not supported.
+- On the main dataset G - S is positive from 10 s (band clear from 20 s): the crossover at 170 s
+  and the argument on "one leg" exist on dataset 1000 only.
+- Robust on both: the raw gap; the same-route gap against other pilots; the jump within the
+  flight net of the mock events (alpha, fitted H, speed); the speed gain on the same route net of
+  selection.
+- With a window of 1260 s the same-flight g at 1000 s is zero, but 1000 s is the last lag of that
+  window (one-sided estimate) and d_w is -0.018: not a clean check.
+- The curve value of alpha at 1000 s differs from the old scalar `H_loc(1000 s)` (window cut at
+  1000 s): 0.047 against 0.052 for g at window 2400. The new macros use the curve everywhere.
+- The 77% of `route.py --open` is on dataset 1000 and against another baseline (solo flights of
+  the same site, day and hour): to recompute on the main dataset before citing it.
+**Author decides**: the message and the title, see the chat of 2026-11-13.
+
+### State at the end of 2026-11-13 (nothing committed)
+
+Done: phases A to E. Title "The value of flying together" (author's choice). `letter.tex`: 8 pages,
+sections as in arXiv:2601.01293, alpha notation, Table `tab:designs` with sample sizes, six
+figures (`design`, `msd`, `designs`, `forest`, `how`, `survival`); `supplement.tex`: 16 pages,
+S1 to S12, each cited from the letter; both compile with no undefined reference. The approved
+message and the prose of abstract, Discussion and Concluding remarks are in `message.md`.
+Fig. 1 comes from the viewer (`xc-viewer`, branch `feature/group-episodes`, uncommitted: "Save
+image" button, `scripts/episode_snapshot.py`, high-resolution orthophoto, arrows); the commands
+are in `DESIGN_COMMANDS` of `letter/code/figures.py`.
+
+Open, in order:
+1. The author reads the letter and the supplement.
+2. Opening threshold: at 0.5 the exponent of solo flights rises to 0.946 and G falls below S, so
+   the raw gap disappears. Say it in S1, and check the same-route and same-flight designs at 0.5.
+3. Fig. `how`: panel (b) is g before the mock events, panel (c) is on the check dataset; redo (b)
+   net of the mock events. Fig. 1: smaller arrowheads, the label (c) overlaps the frame of (b).
+4. Route share (`route.py --open`): recompute on the main dataset; now cited in S6 only.
+5. Same route restricted to the pilots present on both sides (author decides).
+6. `structure/sections/structure.tex`: "upper bound" of the marking half-shift is a lower bound.
+7. `\pending`: affiliation, email, acknowledgments; supplement: track cleaning (S1), robustness
+   variants (S12).
+
 ## Remaining work, in order (state at commit 57efdac, 2026-11-12)
 
 **Decided and done later on 2026-11-12.** Venue: J. R. Soc. Interface. Fig. 1: one column, (a) map
@@ -36,6 +136,83 @@ as background.
 6. Smaller points (item 6 below): terrain gain relative to the headroom, the "$-$0.000" format of
    `\PreCAHK`, a paraglider-only episode count, the venue.
 7. Report only, optional: the open variants of the inter-group analysis (item 4c below).
+
+## Check of 2026-11-13, before the polish (letter back in two-column revtex)
+
+Every sentence with a number was compared with the code and the reports. Sources as file:line are
+in the agent report of that day; the facts are below. Nothing here is applied yet.
+
+**A. Sentences the sources do not support as written**
+
+1. "Compared with themselves alone", "at fixed route and pilot". The same-route design does not
+   pair flights or pilots: G side 2 717 pieces, 1 378 pilots; A side 1 607 pieces, 990 pilots
+   (`matched.py` has no pairing). The difference of the two contrasts removes the selection of the
+   flights that join groups at population level only. **Reworded on 2026-11-13** in the letter
+   (abstract, introduction, "Same route", captions of Tables I and II, "How a group holds a
+   route") and in the supplement: "on the same route, net of selection"; the solo pieces come from
+   other pilots who share only the route. Still open, **author decides**: a variant restricted to
+   the pilots present on both sides.
+2. Phase gains within the flight are quoted as `g`, but the mock events are not null there: climb
+   time +1.0 [+0.7, +1.3] pp, glide speed +0.5 [+0.3, +0.7] km/h (only `H_loc` shows no jump; speed
+   +0.2 [+0.0, +0.4]). Quote `g` minus mock for the phases (macros to add).
+3. Marking. `\StMkNowGroup` is m(0)/m(5 min), with m the share of climb starts that have a glider
+   climbing nearby (829 m, previous 152 s), shifts of +-5 min averaged: a share, not "the rate of
+   new climbs", and "before or after", not "earlier". `\StMkHalfGroup` (46 min) is an upper bound.
+4. "Groups form mostly as chance meetings: pairs attract only 1.42 times more". `\StEnSoloPair` is
+   observed over expected joins of a solo glider meeting an existing pair, band [1.33, 1.51]; groups
+   of three or more 1.05 [0.97, 1.12]. It says nothing on how groups form. Reword or drop.
+5. Lead. 3.3 changes per hour of contact against 4.3 [4.1, 4.4] in chance contacts: the lead
+   changes less often than by chance, and the letter does not say it. Leader more experienced in
+   58.5% of pairs, higher wing class in 64.3%: modest, give the shares.
+6. The 71%. Not "all flights": a random 10 000 pieces of G, 4 933 matched, controls from the same
+   site on another date. The printed values give 70%, and it has no band. Drop it from the letter.
+7. One leg. `\RawGlideMedianG/S` and `\RawClimbMedianG/S` are the upper edge of a grid cell (steps
+   of 13.8%): the medians are about 190 s (glide) and 140 s (climb). The crossover at 170 s is
+   one glide or one climb, not their sum as the abstract says; the band clears zero at 210 s
+   (`\RawGapSig`). Interpolate the median in `comparisons.py: phase_median`.
+8. "Most of the jump is the line". Holds at the central estimate. At the upper end of the band the
+   route effect is 0.015 of 0.026. The two designs use pieces of different length (at least 1250 s
+   against windows of 2400 s); on the long pieces the difference is about +0.011, band not
+   tabulated.
+9. Terrain. Raw gain +0.010 lowland, +0.011 low mountains, +0.046 high mountains: a step at high
+   mountains, not a growth. The window is a square of 9.8 km (`TnWindowKm`), and a piece takes the
+   class of 80% of its points. Same route by terrain is not resolved (13 lowland pieces).
+10. "The glides no longer change": not detected; the band of the height lost reaches +8 m/km.
+11. Speed at fixed route (+1.3 [+0.4, +2.2] km/h, 1 127 pieces of G and 368 of A of at least
+    2250 s): no report section explains it, since glide speed does not change and climb time
+    rises. The letter must say what is and is not known.
+12. Headings. "At every delay": the peak of the longest class comes 16 s early, and the check of
+    no second peak covers delays of at least 20 s only.
+13. Sample. The comparisons use the flights declared open with an opening above 0.1: 55 879 of
+    154 598 (36%). The letter gives no sample size for any design.
+14. Mock events: month +-2, hour +-2 h, same wing level (the text says season and hour).
+15. Literature. Sassi2024: eight captive vultures in free flights. Vilpellet2026: H about 0.88.
+
+**Done in code on 2026-11-13 (335 tests pass, nothing committed, the letter still cites the old
+macros where noted).**
+- Item 7: `phase_median` interpolates in log duration. Glide S 194, A 205, G 188 s; climb S 140,
+  A 137, G 142 s (before: 201 and 155 for both).
+- Item 2: the net macros already existed (`\PreNetG<Stat>`, `\PreMockG<Stat>`, bands). Net of the
+  mock events: climb time +1.8 [+1.0, +2.7] pp, searches ending in a climb +2.1 [+0.3, +4.0] pp,
+  glide speed +0.7 [+0.3, +1.2] km/h, height lost -5 [-7, -3] m/km, climbs per hour +0.35
+  [+0.19, +0.51]; climb rate +0.012 [-0.011, +0.035] m/s, not resolved. The letter must cite these.
+- Item 6: `route.py --open`, share computed inside each bootstrap draw. On the open flights, all
+  14 401 pieces of G, 3 925 matched (3 521 flights, 1 722 pilots): gap to the solo flights of the
+  same site, day and hour +0.042 [+0.036, +0.049], on the same route +0.010 [+0.006, +0.015], share
+  removed 77% [64, 86]. Macros `\RouteOpen*`; the all-flights macros are unchanged. The author
+  wants this number in the letter.
+- Item 3: in `marking.py` the denominator is all climb starts, so `s_half` is biased low: 46 min is
+  a lower bound. `structure/sections/structure.tex` says "upper bound": to correct.
+- Item 5: the letter now says "slightly more often to the pilot with the higher wing class or with
+  more flights in the archive, two markers of experience" (author's choice).
+
+**B. Form**
+
+Typed numbers (1000 s, 30 min, 10 km, "five minutes", 90%); Fig. 1 cited after the group shares;
+"flatter by -5 m per km"; caption of Fig. 2b argues from overlapping bands, not from the band of
+the difference; the Discussion argues with "it lasts as long as the group", which does not tie
+the effect to the route; no sentence on pilots who planned to fly together; caption of Fig. 1
+still describes the old figure.
 
 ## Rules for whoever works on this
 

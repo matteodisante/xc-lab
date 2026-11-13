@@ -22,8 +22,10 @@ the data. All the quantities of one design use the same draws, so a difference o
 the band of its own draws. With $V_P$, $V_B$ and $V_C$ the variances of the estimate over the three
 sets of draws,
 \begin{equation}
-V=\max\bigl(V_P+V_B-V_C,\;V_P,\;V_B\bigr),\qquad
-\text{band}=\hat\theta\pm z_{0.95}\sqrt{V},
+\begin{split}
+V&=\max\bigl(V_P+V_B-V_C,\;V_P,\;V_B\bigr),\\
+\text{band}&=\hat\theta\pm z_{0.95}\sqrt{V},
+\end{split}
 \end{equation}
 a 90\% band, with $z_{0.95}$ the 0.95 quantile of the standard normal distribution. The maximum
 keeps $V$ above each one-way variance when noise makes the sum smaller.
