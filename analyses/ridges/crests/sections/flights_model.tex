@@ -66,70 +66,68 @@ gliders.
 
 \subsection{Durations of glides and pauses}\label{sec:flphases}
 
-How long do glides and pauses last, and does a heavy tail describe them better than an exponential? Let $X_0$ be
-the shortest duration observed minus half a second (durations are integers) and $t > X_0$ a duration. Both laws
-are fitted on the durations above $X_0$, conditional on exceeding it:
+How long do glides and pauses last, and which law follows the whole survival? Let $X_0$ be the shortest duration observed
+minus half a second (durations are integers) and $t > X_0$ a duration. Four laws are fitted on the durations above $X_0$,
+conditional on exceeding it:
 \begin{align}
   \text{Lomax:}\quad & S(t) = \Bigl(\frac{\tau_0 + t}{\tau_0 + X_0}\Bigr)^{-\mu}, &
-  \text{exponential:}\quad & S(t) = e^{-(t - X_0)/\theta},
+  \text{exponential:}\quad & S(t) = e^{-(t - X_0)/\theta}, \nonumber\\
+  \text{Weibull:}\quad & S(t) = e^{-(t/\lambda)^k + (X_0/\lambda)^k}, &
+  \text{gamma:}\quad & S(t) = \frac{Q(a,\,t/\theta)}{Q(a,\,X_0/\theta)},
   \label{eq:laws}
 \end{align}
-where $S(t)$ is the probability to last longer than $t$ given that the duration exceeds $X_0$. The parameters
-maximise the likelihood of the $n$ observed durations $t_i$,
-\begin{equation}
-  \ln L_{\mathrm{Lomax}} = n\ln\frac{\mu}{\tau_0+X_0} - (\mu+1)\sum_i \ln\frac{\tau_0+t_i}{\tau_0+X_0},\qquad
-  \ln L_{\mathrm{exp}} = -n\ln\theta - \frac1\theta\sum_i (t_i - X_0),
-  \label{eq:loglik}
-\end{equation}
-and the laws are compared by $\mathrm{AIC} = 2k - 2\ln L$ with $k = 2$ and $k = 1$. The mean duration of the
-Lomax law is $X_0 + (\tau_0 + X_0)/(\mu - 1)$ for $\mu > 1$, and $X_0 + \theta$ for the exponential. All
-intervals are the 2.5\% and 97.5\% percentiles of \flNBoot{} resamples of whole flights. Figure~\ref{fig:flphases}
-shows the empirical survival $P(\text{duration} \ge t)$ with both fits, and Table~\ref{tab:flfits} the
-parameters.
+where $S(t)$ is the probability to last longer than $t$ given that the duration exceeds $X_0$ and $Q$ is the regularised upper
+incomplete gamma function. The Weibull law with $k < 1$ is a stretched exponential, with a heavier tail than the exponential,
+and with $k > 1$ it has a lighter one; the gamma law behaves alike with $a < 1$ and $a > 1$. The parameters maximise the
+likelihood of the $n$ observed durations $t_i$, $\ln L = \sum_i \ln\bigl[f(t_i)/S(X_0)\bigr]$ with $f$ the density of the law,
+and the laws are compared by $\mathrm{AIC} = 2k - 2\ln L$ with $k = 1$ parameter for the exponential and 2 for the others.
+The law of a group is the one of lowest AIC, and we check it by eye on the survival of Figure~\ref{fig:flphases}, drawn so that
+an exponential is a straight line. The mean duration of a law is $E[T] = X_0 + \int_{X_0}^\infty S(t)\,dt$. All intervals are the
+2.5\% and 97.5\% percentiles of \flNBoot{} resamples of whole flights, each refitted with the four laws.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_phases}
-\caption{Glide and climb durations are close to exponential. Survival $P(\text{duration} \ge t)$ of the glides (top) and of the
-climbs, which are the pauses (bottom), with the Lomax fit (solid) and the exponential fit (dotted) of Eq.~\eqref{eq:laws}; grey dots: data.}
+\caption{Glide and climb durations follow a law of lowest AIC close to the exponential, and the Weibull law fits the climbs. Survival $P(\text{duration} \ge t)$ on a logarithmic axis against a linear duration, where an exponential is a straight line, for the glides (a) and the climbs (b) of each group; markers: data (open for the hang gliders), coloured lines: the law of lowest AIC of Eq.~\eqref{eq:laws}, dotted black lines: exponential fit. Only the glides of the Alps paragliders leave the exponential upwards (Lomax tail); the climbs of all groups fall below it (Weibull, $k > 1$).}
 \label{fig:flphases}
 \end{figure}
 
 \begin{table}[t]
 \centering
-\caption{Fits of Eq.~\eqref{eq:laws}. $\mu$ and $\tau_0$: Lomax; $\theta$: exponential; $\Delta\mathrm{AIC} =
-\mathrm{AIC}_{\mathrm{exp}} - \mathrm{AIC}_{\mathrm{Lomax}}$, positive when the Lomax law fits better. Intervals:
-95\%, bootstrap over flights. $\infty$: the fit reached the bound of the search ($\mu$ near 3\,000), which is the
-exponential limit of the Lomax law.}
+\caption{Fits of Eq.~\eqref{eq:laws}: the law of lowest AIC with its parameters, and $\Delta\mathrm{AIC}$ of each of the four laws from the best (0 = best). Intervals: 95\%, bootstrap over flights.}
 \label{tab:flfits}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
 \input{generated/flights_table_fits}
 \end{table}
 
-In the Alps the glides of paragliders have a Lomax tail of exponent $\mu = \flGlideMuAlpsPara$ (interval
-\flGlideMuAlpsParaLo{} to \flGlideMuAlpsParaHi), a mean of \flGlideMeanAlpsPara~s and an AIC lower by
-\flGlideAicAlpsPara{} than the exponential, whose $\theta$ is \flGlideThetaAlpsPara~s. The pauses of the same
-flights, the glides and the pauses of the hang gliders and the pauses of the Pyrenees paragliders are fitted as
-well by an exponential: the Lomax fit runs to the exponential limit (Table~\ref{tab:flfits}). The glides of the
-Pyrenees paragliders gain \flGlideAicPyrPara{} units of AIC from the Lomax law, with a wide interval for $\mu$. The mean pause is \flPauseMeanAlpsPara~s for the Alps paragliders, \flPauseMeanAlpsHang~s for
-the Alps hang gliders and \flPauseMeanPyrPara~s for the Pyrenees paragliders. Every fitted law has a finite mean, so the pilot's progress along the route is ballistic
-again at lags much longer than a glide and a pause.
+The climbs of every group follow a Weibull law with $k$ above 1: $k = \flPauseParamAAlpsPara$ for the Alps paragliders (interval
+\flPauseParamAAlpsParaLo{} to \flPauseParamAAlpsParaHi), \flPauseParamAAlpsHang{} for the Alps hang gliders and
+\flPauseParamAPyrPara{} for the Pyrenees paragliders. A tail lighter than the exponential means that long climbs are rarer than
+an exponential of the same mean predicts. The exponential is worse than the Weibull by \flPauseAicExpAlpsPara{} units of AIC for the
+Alps paragliders and by \flPauseAicExpAlpsHang{} and \flPauseAicExpPyrPara{} for the other two groups, and the Lomax law, which
+has a heavy tail, by more. The mean climb is \flPauseMeanAlpsPara~s, \flPauseMeanAlpsHang~s and \flPauseMeanPyrPara~s. The glides
+of the Alps paragliders follow a Lomax law with $\mu = \flGlideParamAAlpsPara$ (\flGlideParamAAlpsParaLo{} to \flGlideParamAAlpsParaHi)
+and $\tau_0 = \flGlideParamBAlpsPara$~s, whose tail is heavier than the exponential's ($\Delta\mathrm{AIC}$ of the exponential:
+\flGlideAicExpAlpsPara); those of the Alps hang gliders and the Pyrenees paragliders follow a gamma law with $a$ close to
+1 (\flGlideParamAAlpsHang{} and \flGlideParamAPyrPara), that is, nearly exponential, with mean glides of \flGlideMeanAlpsHang~s and
+\flGlideMeanPyrPara~s. All fitted laws have a finite mean, so the progress along the route is ballistic again at lags much longer
+than a glide and a climb.
 
-\paragraph{What we keep.} Glides and pauses last a few minutes on average and have, to the precision of the
-data, exponential tails; only the glides of the Alps paragliders show a Lomax tail, with $\mu =
-\flGlideMuAlpsPara$. The model of Section~\ref{sec:flmodel} uses the Lomax fit of every group; where the fit is at the
-exponential limit, the model draws exponential durations.
+\paragraph{What we keep.} The climbs are not exponential: their law is Weibull with $k \approx 1.15$ in every group, so that
+long climbs are rarer than for an exponential. The glides are exponential or nearly so, except for the Alps paragliders, where
+a Lomax tail wins by AIC. The model of Section~\ref{sec:flmodel} draws from the law of lowest AIC of each group and phase.
 
 \subsection{An intermittent ball on the crests}\label{sec:flmodel}
 
 What does the geometry give when the ball does not move at constant speed but stops as the pilot does? The ball
 runs on a crest path $\mathbf p(s)$ of the region, with $s$ the arc length, and alternates glides and pauses. In
 a glide it advances at the speed $v$ of Eq.~\eqref{eq:vglide}; in a pause it stays where it is. The searches of the flights are not in the model: the time a pilot spends
-searching is dropped from its clock. The glide and pause durations are independent draws of the Lomax laws of Eq.~\eqref{eq:laws} fitted on the glides and the climbs of the flights of
-the same region and discipline, conditional on exceeding $X_0$:
+searching is dropped from its clock. The glide and
+pause durations are independent draws of the laws of Eq.~\eqref{eq:laws} of lowest AIC, fitted on the glides and the climbs of the
+flights of the same region and discipline, conditional on exceeding $X_0$:
 \begin{equation}
-  T = (\tau_0 + X_0)\,U^{-1/\mu} - \tau_0,\qquad U \text{ uniform on } (0,1),
+  T = S^{-1}(U),\qquad U \text{ uniform on } (0,1),
   \label{eq:draw}
 \end{equation}
 rounded to whole seconds. The position at time $t$ is $\mathbf r(t) = \mathbf p\bigl(v\,\Theta(t)\bigr)$, where
@@ -195,9 +193,7 @@ Table~\ref{tab:flwindows} in Section~\ref{sec:flwindows} the fits on fixed windo
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_msd}
-\caption{The crests stay closest to ballistic motion; pauses and turns lower the MSD of everything else. Mean squared displacement
-over the ballistic value, $\overline{\delta^2}(\tau)/(v\tau)^2$, of the crests, the crest model, the flights and the two null models
-against the lag $\tau$; grey line: 1, a ballistic motion at speed $v$. Bands: 95\% bootstrap intervals.}
+\caption{The crests stay closest to ballistic motion; pauses and turns lower the MSD of everything else. Mean squared displacement over the ballistic value, $\overline{\delta^2}(\tau)/(v\tau)^2$, of the crests, the crest model, the flights and the two null models against the lag $\tau$; grey line: 1, a ballistic motion at speed $v$. The crest model, the straight model and the random model start near 0.5 to 0.6 at a lag of 1~s because the ball is still during the pauses, so only the share of time spent gliding contributes. Bands: 95\% bootstrap intervals; grey zone: beyond the last lag of the fit.}
 \label{fig:flmsd}
 \end{figure}
 
@@ -284,14 +280,16 @@ For the Alps paragliders $1 - \Hdyn = \flTotalAlpsPara$, of which the crests car
 \flPctOtherAlpsPara\% (\flPctOtherAlpsParaLo\% to \flPctOtherAlpsParaHi\%). The Pyrenees paragliders give
 \flPctGeometryPyrPara\%, \flPctInterPyrPara\% and \flPctOtherPyrPara\%. The Alps hang gliders give
 \flPctGeometryAlpsHang\%, \flPctInterAlpsHang\% and \flPctOtherAlpsHang\% (interval \flPctOtherAlpsHangLo\% to
-\flPctOtherAlpsHangHi\%, which includes zero).
+\flPctOtherAlpsHangHi\%, which reaches zero).
 
 For the paragliders the remainder is negative and the first two terms add to more than 100\%: the model falls
 below the flights, so a ball that stops completely for the observed climbs loses more exponent than the flights
 lose. We have not tested why. A possible reason is that a pilot in a climb is not at rest, since he circles and
 drifts with the thermal, but the model does not move at all in a pause. For these groups the shares are the
 shares of a model that overshoots, and the remainder is the size of the overshoot. For the Alps hang gliders the
-remainder is positive but not distinguishable from zero, so the model and the flights agree within the interval.
+remainder is positive but its interval reaches zero, so the model and the flights agree within the interval. Fitting the climbs
+by Weibull laws that follow their whole survival, in place of the exponential and Lomax laws used first, left the remainder
+unchanged to within one percentage point in every group: the tail of the climb law does not explain the overshoot.
 The Alps hang gliders have a smaller geometric share than the paragliders, because their $1 - \Hdyn$ is larger.
 
 A first version of the model used search and climb runs joined as the pause. It gave $\Hmod = \flHModOldAlpsPara$,

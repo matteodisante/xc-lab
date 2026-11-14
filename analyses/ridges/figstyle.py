@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 TEXT_WIDTH_IN = 6.3  # the width of the text of the report: figures are drawn at this width, so 8 pt stays 8 pt
 KIND_COLOR = {"geo": "#000000", "model": "#0072B2", "straight": "#009E73", "random": "#CC79A7", "dyn": "#D55E00", "route": "#E69F00"}
 KIND_LABEL = {"geo": "crests", "model": "crest model", "straight": "straight", "random": "random", "dyn": "flights", "route": "flights, circles removed"}
-REGION_COLOR = {"alps": "#000000", "pyrenees": "#8C8C8C"}  # the crests of the two massifs: black and grey
+REGION_COLOR = {"alps": "#332288", "pyrenees": "#999933"}  # the two massifs in the crest figures: indigo and olive, unused by any curve kind
 GUIDE = "#B8B8B8"  # thin reference lines
 LW = 1.2
 FIT_DASH = (0, (4, 2))

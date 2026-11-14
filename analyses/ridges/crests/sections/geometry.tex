@@ -52,9 +52,7 @@ neighbouring tiles count as no data (Appendix~\ref{app:choices}). It is \CgAlpsA
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/map.pdf}
-\caption{The mountain area (grey) of the Alps and the Pyrenees, with the crest curves of Section~\ref{sec:curves}
-and the joins of Section~\ref{sec:joins} (red). The Alps have \CgAlpsCurves{} curves of \CgAlpsCurveKm~km in total and
-the Pyrenees \CgPyrCurves{} of \CgPyrCurveKm~km.}
+\caption{The crest curves cover the mountain area of both massifs, and the joins mend broken ridges. \textbf{a, b}~The mountain area (grey) with the crest curves of the Alps (indigo) and the Pyrenees (olive); black rectangles: the windows of c and d. \textbf{c, d}~Zoom on a hillshade where a join (red) links two curves. The Alps have \CgAlpsCurves{} curves of \CgAlpsCurveKm~km in total and the Pyrenees \CgPyrCurves{} of \CgPyrCurveKm~km.}
 \label{fig:map}
 \end{figure}
 
@@ -104,10 +102,7 @@ failing side shows what Eq.~\eqref{eq:xsec} measures.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/divides.pdf}
-\caption{A divide side is a crest if the ground falls away on both sides. \textbf{a}~Divide sides on the hillshade of a part of the Écrins. Green: valley cells ($h=0$); light blue:
-cells with $h<h_{\min}$. \textbf{b}~Elevation $z-z_{\mathrm{crest}}$ along the axis through the two cells of a
-side, for a side that passes and a side that fails the cross-section. Dotted lines: $n$ cells from the side;
-dashed: $-\Delta_z$.}
+\caption{A divide side is a crest if the ground falls away on both sides. \textbf{a}~Divide sides on the hillshade of a part of the Écrins; the legend gives the colours. \textbf{b}~Elevation $z-z_{\mathrm{crest}}$ along the axis through the two cells of a side that passes the cross-section: dotted lines mark $n$ cells ($\CgPXsecM$~m) from the side and the dashed red line the drop $-\Delta_z$ the ground must reach there. \textbf{c}~The same for a side that fails.}
 \label{fig:divides}
 \end{figure}
 
@@ -149,9 +144,7 @@ How do the sides of cells become curves that have a length and a direction? The 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/curves.pdf}
-\caption{Sides that pass the tests become curves, which are sampled every $\Delta s$. \textbf{a}~Sides after the tests (red) and the bridged stretches (yellow), in the area of
-Figure~\ref{fig:divides}. \textbf{b}~The curves drawn from them, one colour each. \textbf{c}~Detail of 150~m:
-the staircase of sides and the points every $\Delta s$ of the spline.}
+\caption{Sides that pass the tests become smooth curves, which are sampled every $\Delta s$. \textbf{a}~Cell sides of the tests (red) and bridged stretches (orange) under the smoothed curve (indigo) on a hillshade; the rectangle is the window of b. \textbf{b}~Detail of 150~m: the staircase of cell sides, the curve and its points every $\Delta s$.}
 \label{fig:curves}
 \end{figure}
 
@@ -201,8 +194,7 @@ a light blue cell, and several run beside a valley and stop short of it.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/joins_alps.png}
-\caption{24 joins of the Alps drawn at random (red), each in a window of its own with the length of the join. Orange:
-the crest curves; green: valley cells; light blue: cells with $h<h_{\min}$; grey: hillshade.}
+\caption{A join is a short straight link between two crest curves that stays on the ridge. Eight joins of the Alps, from the shortest to the longest of the range, each in a window of the same size: the join (red), the crest curves, the stream cells and the cells less than 20~m above a stream.}
 \label{fig:joins}
 \end{figure}
 
@@ -231,10 +223,7 @@ The Alps give \CgAlpsTrees{} trees and \CgAlpsPaths{} paths (median \CgAlpsPathM
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/trees.pdf}
-\caption{Most paths are short and few trees have a path of tens of kilometres. \textbf{a}~The longest tree of the Alps (black:
-curves, red: joins), its root (star), its longest path (black)
-and the tip at its end (circle). \textbf{b}~Share of paths longer than $L$. \textbf{c}~Number of trees whose
-longest path is at least $L$; dotted line: 40~km, the length a path needs for a lag of 10~km (Section~\ref{sec:tamsd}).}
+\caption{Most paths are short and few trees have a path of tens of kilometres. \textbf{a}~The longest tree of the Alps (curves, joins in red), its root (star), its longest path (black) and the tip at its end (circle). \textbf{b}~Share of paths longer than $L$.}
 \label{fig:trees}
 \end{figure}
 
@@ -297,12 +286,7 @@ Table~\ref{tab:hgeo} the exponents on the windows.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/tamsd.pdf}
-\caption{The crests bend more at larger scales, in the Alps and the Pyrenees alike. \textbf{a}~End-to-end distance over arc
-length, $\sqrt{\overline{\delta^2}}/s$, of the Alps (black) and the Pyrenees (grey), for the paths (solid) and the curves (dashed). Bottom axis: arc length $s$; top axis: lag $\tau$ of a
-ball at 35~km/h; grey: below four cells. \textbf{b}~Local slope of the MSD, $\alpha(s)$, Eq.~\eqref{eq:alphaloc}, with its 95\% band for
-the paths. Dashed horizontal lines: $\Hgeo$ of the window from 0.1~km (Table~\ref{tab:hgeo}), drawn over the lags of that fit, for the
-paths (Alps \CgAlpsPathsFrom, Pyrenees \CgPyrPathsFrom) and, fainter, the curves (\CgAlpsCurvesFrom{} and \CgPyrCurvesFrom). \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals (filled: paths; open: curves, too short for the
-last window).}
+\caption{The crests bend more at larger scales, in the Alps and the Pyrenees alike. Alps in indigo, Pyrenees in olive; paths solid (filled), curves dashed (open). \textbf{a}~End-to-end distance over arc length, $\sqrt{\overline{\delta^2}}/s$; bottom axis: arc length $s$; top axis: lag $\tau$ of a ball at 35~km/h; grey: below four cells. \textbf{b}~Local slope of the MSD, $\alpha(s)$, Eq.~\eqref{eq:alphaloc}, with its 95\% band for the paths. Dashed horizontal lines: $\Hgeo$ of the window from 0.1~km (Table~\ref{tab:hgeo}), drawn over the lags of that fit, for the paths (Alps \CgAlpsPathsFrom, Pyrenees \CgPyrPathsFrom) and, fainter, the curves (\CgAlpsCurvesFrom{} and \CgPyrCurvesFrom). Curves are drawn where at least 100 paths reach the lag and the band is narrower than 0.05. \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals; the curves are too short beyond 1~km and are not shown there.}
 \label{fig:tamsd}
 \end{figure}
 
@@ -356,10 +340,7 @@ Where can the exponent not be trusted? Three limits, shown in Figure~\ref{fig:li
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/limits.pdf}
-\caption{Three things limit the exponent: the data edge, the grid scale and the number of trees at long lags.
-\textbf{a}~The data edge where most flagged curves of the Alps are: red, no data; orange, curves that reach the edge. \textbf{b}~Local
-slope of the MSD, $\alpha(s)$, near the grid scale; grey: below four cells. Dashed lines: $\Hgeo$ of the window from 0.1~km, as in Figure~\ref{fig:tamsd}b. \textbf{c}~Number of trees (solid) and of paths (dotted) that
-have each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
+\caption{Three things limit the exponent: the data edge, the grid scale and the number of trees at long lags. \textbf{a}~The data edge where most flagged curves of the Alps are: pink, no elevation data; orange, curves that reach the edge. \textbf{b}~Local slope of the MSD, $\alpha(s)$, near the grid scale; grey: below four cells. Dashed lines: $\Hgeo$ of the window from 0.1~km, as in Figure~\ref{fig:tamsd}b. \textbf{c}~Number of trees (solid) and of paths (dotted) that reach each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
 \label{fig:limits}
 \end{figure}
 

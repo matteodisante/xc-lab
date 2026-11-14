@@ -8,7 +8,7 @@ import flights as fl  # noqa: E402
 import model as md  # noqa: E402
 import pauses as pa  # noqa: E402
 
-GLIDE, PAUSE = (4.0, 700.0, 0.5), (3.0, 300.0, 0.5)
+GLIDE, PAUSE = pa.Law("lomax", (4.0, 700.0), 0.5), pa.Law("lomax", (3.0, 300.0), 0.5)
 V = 10.0
 
 
@@ -40,18 +40,17 @@ def test_pauses_bend_the_msd_below_one_and_it_returns_to_ballistic_over_long_lag
 
 def test_equilibrium_fraction_of_time_moving_and_first_phase():
     rng = np.random.default_rng(2)
-    eg, ep = pa.lomax_cond_mean(*GLIDE), pa.lomax_cond_mean(*PAUSE)
+    eg, ep = GLIDE.mean(), PAUSE.mean()
     frac = np.mean([md.moving_series(rng, 1_000_000, V, GLIDE, PAUSE)[:3000].mean() for _ in range(300)])
     assert abs(frac - eg / (eg + ep)) < 0.02
 
 
-def test_equilibrium_residual_has_mean_ET2_over_2ET():
+def test_equilibrium_residual_has_mean_ET2_over_2ET_for_every_law():
     rng = np.random.default_rng(3)
-    mu, tau0, x0 = 4.0, 700.0, 0.5
-    x = np.array([md.equilibrium_residual(rng, mu, tau0, x0) for _ in range(60_000)])
-    # E[T^2]/(2E[T]) for T = x0 + Lomax(mu, tau0 + x0)
-    t = md.draw(rng, 600_000, mu, tau0, x0)
-    assert abs(x.mean() - np.mean(t.astype(float) ** 2) / (2 * t.mean())) / x.mean() < 0.1
+    for law in (pa.Law("lomax", (4.0, 700.0), 0.5), pa.Law("weibull", (0.8, 200.0), 0.5), pa.Law("gamma", (2.0, 100.0), 0.5), pa.Law("exponential", (150.0,), 0.5)):
+        x = np.array([law.residual(rng) for _ in range(30_000)])
+        t = law.sample(rng, 400_000).astype(float)
+        assert abs(x.mean() - np.mean(t**2) / (2 * t.mean())) / x.mean() < 0.12, law.name
 
 
 def test_the_ball_ends_at_the_end_of_the_path():
@@ -72,7 +71,7 @@ def test_straight_null_without_pauses_has_h_one_and_with_pauses_matches_the_cres
 
 def test_random_null_with_exponential_durations_has_alpha_one_half_at_long_lags():
     rng = np.random.default_rng(8)
-    glide, pause = (2980.0, 2e5, 0.5), (2980.0, 1.5e5, 0.5)  # near-exponential Lomax laws, means about 100 s
+    glide, pause = pa.Law("exponential", (100.0,), 0.5), pa.Law("exponential", (100.0,), 0.5)
     rows = md.model_rows([line(5_000_000)] * 6, rng, V, glide, pause, 1, kind="random")
     tau = fl.LAGS_T.astype(float)
     m = np.nanmean(rows, 0)

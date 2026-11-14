@@ -12,34 +12,35 @@ def lomax_sample(rng, n, mu, tau0, x0):
     return np.round((tau0 + x0) * rng.random(n) ** (-1 / mu) - tau0)
 
 
-def test_lomax_fit_recovers_known_parameters_and_beats_the_exponential():
-    rng = np.random.default_rng(0)
-    x = lomax_sample(rng, 40_000, 4.0, 900.0, 4.5)
-    x0 = x.min() - 0.5
-    u, c = pa.histogram(x)
-    mu, tau0 = pa.fit_lomax(u, c, x0)
-    assert abs(mu - 4.0) < 0.25 and abs(tau0 - 900) < 70
-    aic_l = 4 - 2 * pa.lomax_loglik(u, c, mu, tau0, x0)
-    aic_e = 2 - 2 * pa.exp_loglik(u, c, pa.fit_exp(u, c, x0), x0)
-    assert aic_l < aic_e - 100
+def sample(name, params, n, seed):
+    return pa.Law(name, params, 4.5).sample(np.random.default_rng(seed), n).astype(float)
 
 
-def test_exponential_data_prefer_the_exponential_and_theta_is_the_mean_excess():
-    rng = np.random.default_rng(1)
-    x = np.round(10.5 + rng.exponential(120, 20_000))
-    x0 = x.min() - 0.5
-    u, c = pa.histogram(x)
-    assert abs(pa.fit_exp(u, c, x0) - 120) < 4
-    mu, tau0 = pa.fit_lomax(u, c, x0)
-    assert 4 - 2 * pa.lomax_loglik(u, c, mu, tau0, x0) > 2 - 2 * pa.exp_loglik(u, c, pa.fit_exp(u, c, x0), x0) - 0.5
+def test_every_law_is_recovered_and_the_right_one_wins_by_aic():
+    for name, params in (("lomax", (4.0, 900.0)), ("exponential", (150.0,)), ("weibull", (0.7, 120.0)), ("gamma", (2.5, 60.0))):
+        x = sample(name, params, 60_000, 1)
+        x0 = x.min() - 0.5
+        u, c = pa.histogram(x)
+        fits = pa.fit_all(u, c, x0)
+        best = min(fits, key=lambda k: fits[k][1])
+        assert best == name or (name == "exponential" and fits[name][1] - fits[best][1] < 3), (name, best)
+        assert np.allclose(fits[best][0], params, rtol=0.15), (name, fits[best][0])
 
 
-def test_bootstrap_interval_holds_the_truth():
+def test_law_survival_mean_and_quantiles_agree():
+    for law in (pa.Law("lomax", (4.0, 700.0), 4.5), pa.Law("weibull", (0.7, 120.0), 4.5), pa.Law("gamma", (2.5, 60.0), 4.5), pa.Law("exponential", (90.0,), 4.5)):
+        u = np.array([1.0, 0.5, 0.1, 0.01])
+        assert np.allclose(law.surv(law.isf(u)), u, atol=1e-9), law.name
+        x = law.isf(np.random.default_rng(0).random(300_000))
+        assert abs(x.mean() - law.mean()) / law.mean() < 0.03, law.name
+
+
+def test_bootstrap_interval_holds_the_truth_and_names_the_best_law():
     rng = np.random.default_rng(2)
-    x = lomax_sample(rng, 6000, 4.0, 900.0, 4.5)
+    x = sample("weibull", (0.7, 120.0), 6000, 3)
     flight = rng.integers(0, 300, len(x))
-    r = pa.fit_phase(x, flight, n_boot=60)
-    assert r["mu_ci"][0] < 4.0 < r["mu_ci"][1] + 0.3 and r["lomax_better"] > 0.9 and r["n_flights"] <= 300
+    r = pa.fit_phase(x, flight, n_boot=40)
+    assert r["best"] == "weibull" and r["params_ci"][0][0] < 0.7 < r["params_ci"][0][1] + 0.05 and r["wins"]["weibull"] > 0.8
 
 
 def test_blocks_join_pause_runs_and_drop_censored_and_noncontiguous():

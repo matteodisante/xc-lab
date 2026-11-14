@@ -86,29 +86,51 @@ GROUP_LABEL = {(r, d): f"{RLONG[r]}, {DLONG[d]}" for r, d in GROUPS}
 SHOWN = [(r, d) for r, d in GROUPS if (r, d) != ("pyrenees", "hang")]  # the Pyrenees hang gliders are too few to draw
 
 
+LAW_NAME = {"lomax": "Lomax", "exponential": "exponential", "weibull": "Weibull", "gamma": "gamma"}
+LAW_FMT = {"lomax": ("{:.2f}", "{:.0f}"), "exponential": ("{:.0f}",), "weibull": ("{:.3f}", "{:.0f}"), "gamma": ("{:.3f}", "{:.0f}")}
+LAW_SYMBOLS = {"lomax": ("\\mu", "\\tau_0"), "exponential": ("\\theta",), "weibull": ("k", "\\lambda"), "gamma": ("a", "\\theta")}
+GROUP_COLOR = {("alps", "para"): "#332288", ("alps", "hang"): "#44AA99", ("pyrenees", "para"): "#999933"}
+
+
 def fig_phases(res):
-    """Durations of glides and climbs: the survival of each group with the Lomax and the exponential fit."""
-    fig, axs = plt.subplots(2, 3, figsize=(fs.TEXT_WIDTH_IN, 3.6), sharey=True)
-    for j, (r, d) in enumerate(SHOWN):
-        for i, kind in enumerate((pa.GLIDE, pa.PAUSE)):
-            ax = axs[i, j]
+    """Durations of glides and climbs: survival on a logarithmic axis against a linear duration, where an exponential is a
+    straight line, for each group with the law of the lowest AIC and the exponential fit."""
+    fig, axs = plt.subplots(1, 2, figsize=(fs.TEXT_WIDTH_IN, 3.2), sharey=True)
+    style = {("alps", "para"): ("o", 3.0, 0.45, 5.0), ("pyrenees", "para"): ("s", 2.0, 0.6, 3.6), ("alps", "hang"): ("^", 1.2, 1.0, 3.6)}
+    for i, kind in enumerate((pa.GLIDE, pa.PAUSE)):
+        ax = axs[i]
+        ax.set_yscale("log")
+        ax.set_ylim(3e-4, 1.3)
+        ax.set_xlim(0, 2200 if i == 0 else 1500)
+        fs.letter(ax, "ab"[i])
+        ax.set_title("glides" if i == 0 else "climbs (pauses)", fontsize=8, loc="left", x=0.05)
+        for (r, d) in style:
             f = res["phases"].get(gkey(r, d), {}).get(kind)
-            ax.set(xscale="log", yscale="log", ylim=(3e-4, 1.6), xlim=(1, 6e3))
-            fs.letter(ax, "abcdef"[3 * i + j])
-            ax.text(0.03, 0.03, f"{GROUP_LABEL[(r, d)]}\n{'glides' if i == 0 else 'climbs'}", transform=ax.transAxes, ha="left", va="bottom", fontsize=8)
-            t, s = (np.array(a) for a in f["survival"])
+            c = GROUP_COLOR[(r, d)]
+            marker, lw, alpha, ms = style[(r, d)]
+            t, s = (np.array(a_) for a_ in f["survival"])
             keep = np.unique(np.round(np.geomspace(1, len(t), 60)).astype(int) - 1)
-            g = np.geomspace(t.min(), t.max(), 200)
-            ax.plot(t[keep], s[keep], ".", color="#8C8C8C", ms=3, label="data", zorder=1)
-            ax.plot(g, pa.lomax_survival(g - 0.5, f["mu"], f["tau0"], f["x0"]), color="black", lw=1.2, label="Lomax", zorder=2)
-            ax.plot(g, pa.exp_survival(g - 0.5, f["theta"], f["x0"]), color="black", lw=1.2, ls=":", label="exponential", zorder=3)
-            if i == 1:
-                ax.set_xlabel("duration $t$ [s]")
-            if j == 0:
-                ax.set_ylabel("$P(\\mathrm{duration}\\geq t)$")
-    h, l = axs[0, 0].get_legend_handles_labels()
-    fig.legend(h, l, loc="upper center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 1.03))
-    fig.tight_layout(rect=(0, 0, 1, 0.97))
+            g = np.linspace(t.min(), t.max(), 300)
+            law = pa.Law(f["best"], f["fits"][f["best"]]["params"], f["x0"])
+            exp = pa.Law("exponential", f["fits"]["exponential"]["params"], f["x0"])
+            ax.plot(t[keep], s[keep], marker, color=c, ms=ms, mfc="none" if d == "hang" else c, alpha=0.9, zorder=1)
+            ax.plot(g, exp.surv(g - 0.5), color="black", lw=0.8, ls=":", zorder=3)
+            ax.plot(g, law.surv(g - 0.5), color=c, lw=lw, alpha=alpha if d == "para" else 1.0, zorder=2)
+        ax.set_xlabel("duration $t$ [s]")
+        if i == 0:
+            ax.set_ylabel("$P(\\mathrm{duration}\\geq t)$")
+    f = res["phases"][gkey("alps", "para")][pa.GLIDE]
+    law = pa.Law(f["best"], f["fits"][f["best"]]["params"], f["x0"])
+    axs[0].annotate("Lomax above the exponential\n(Alps, paragliders)", xy=(1500, float(law.surv(1500 - 0.5))), xytext=(1000, 0.3),
+                    fontsize=8, arrowprops=dict(arrowstyle="->", lw=0.8, color="0.3"), va="center", ha="left")
+    f = res["phases"][gkey("alps", "para")][pa.PAUSE]
+    law = pa.Law(f["best"], f["fits"][f["best"]]["params"], f["x0"])
+    axs[1].annotate("Weibull below the exponential\n(Alps, paragliders)", xy=(800, float(law.surv(800 - 0.5))), xytext=(850, 0.3),
+                    fontsize=8, arrowprops=dict(arrowstyle="->", lw=0.8, color="0.3"), va="center", ha="left")
+    handles = [plt.Line2D([], [], color=GROUP_COLOR[k], lw=1.6, marker=style[k][0], ms=5, mfc="none" if k[1] == "hang" else GROUP_COLOR[k], label=GROUP_LABEL[k]) for k in style]
+    handles += [plt.Line2D([], [], color="black", lw=1.2, label="law of the lowest AIC (colour)"), plt.Line2D([], [], color="black", lw=0.8, ls=":", label="exponential")]
+    fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.04))
+    fig.tight_layout(rect=(0, 0.14, 1, 1))
     save(fig, "flights_phases")
 
 
@@ -121,18 +143,20 @@ def shade_after(ax, tau_b, right):
 
 
 def curves_figure(res, what, name):
-    """MSD over the ballistic value against the lag, one panel per group; the fourth panel holds the legend."""
+    """MSD over the ballistic value against the lag, one panel per group, legend below."""
     right = SHOW_BEYOND * max(res["groups"][gkey(r, d)]["tau_max"] for r, d in SHOWN)
-    fig, axs = plt.subplots(2, 2, figsize=(fs.TEXT_WIDTH_IN, 5.0), sharex=True)
-    for k_, (ax, (r, d)) in enumerate(zip(axs.flat, SHOWN)):
+    fig, axs = plt.subplots(1, 3, figsize=(fs.TEXT_WIDTH_IN, 3.0), sharex=True, sharey=True)
+    for k_, (ax, (r, d)) in enumerate(zip(axs, SHOWN)):
         g = res["groups"].get(gkey(r, d))
         ax.set_xscale("log")
         ax.set_yscale("log")
         fs.letter(ax, "abc"[k_])
-        ax.text(0.03, 0.03, GROUP_LABEL[(r, d)], transform=ax.transAxes, ha="left", va="bottom", fontsize=8)
+        ax.set_title(GROUP_LABEL[(r, d)], fontsize=8)
         shade_after(ax, g["tau_max"], right)
         ax.axhline(1, color=fs.GUIDE, lw=0.6, zorder=0)
         ax.set_ylim(0.1, 1.3)
+        ax.set_yticks([0.1, 0.2, 0.5, 1.0], ["0.1", "0.2", "0.5", "1"])
+        ax.minorticks_off()
         for k in ALL:
             c = g["curves"][k]
             tau = np.array(c["tau"])
@@ -143,17 +167,12 @@ def curves_figure(res, what, name):
             ax.fill_between(tau, lo, hi, color=COLOR[k], alpha=0.15, lw=0, zorder=1)
             ax.plot(tau, y, color=COLOR[k], lw=fs.LW, zorder=2)
         ax.set_xlim(1, right)
-    for ax in (axs[0, 1], axs[1, 0]):
         ax.set_xlabel("lag $\\tau$ [s]")
-        ax.tick_params(labelbottom=True)
-    for ax in axs[:, 0]:
-        ax.set_ylabel("MSD$\\,/\\,(v\\tau)^2$")
-    leg = axs[1, 1]
-    leg.axis("off")
+    axs[0].set_ylabel("MSD$\\,/\\,(v\\tau)^2$")
     handles = [plt.Line2D([], [], color=COLOR[k], lw=fs.LW, label=LABEL[k]) for k in ALL]
     handles += [plt.Line2D([], [], color=fs.GUIDE, lw=0.8, label="ballistic motion at $v$")]
-    leg.legend(handles=handles, loc="center", frameon=False)
-    fig.tight_layout()
+    fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.15, 1, 1))
     save(fig, name)
 
 
@@ -306,12 +325,15 @@ def macros(res, cache):
                 continue
             m.add(f"fl{K}N" + n, f"{f['n']:,}".replace(",", r"\,"))
             m.add(f"fl{K}Mean" + n, f"{f['mean']:.0f}")
-            m.ci(f"fl{K}Mu" + n, [f["mu"], *f["mu_ci"]], "{:.2f}")
-            m.ci(f"fl{K}Tau" + n, [f["tau0"], *f["tau0_ci"]], "{:.0f}")
-            m.ci(f"fl{K}Theta" + n, [f["theta"], *f["theta_ci"]], "{:.0f}")
-            m.ci(f"fl{K}MeanFit" + n, [f["mean_lomax"], *f["mean_lomax_ci"]], "{:.0f}")
-            m.add(f"fl{K}Aic" + n, num("{:.0f}", f["aic_exp"] - f["aic_lomax"]))
-            m.add(f"fl{K}Better" + n, f"{100 * f['lomax_better']:.0f}")
+            best, law = f["best"], f["fits"][f["best"]]
+            m.add(f"fl{K}Law" + n, LAW_NAME[best])
+            fmt = LAW_FMT[best]
+            for i, form in enumerate(fmt):
+                m.ci(f"fl{K}Param{'AB'[i]}" + n, [law["params"][i], *f["params_ci"][i]], form)
+            m.ci(f"fl{K}MeanFit" + n, [f["mean_fit"], *f["mean_fit_ci"]], "{:.0f}")
+            m.add(f"fl{K}Theta" + n, f"{f['fits']['exponential']['params'][0]:.0f}")
+            for name, W in (("lomax", "Lomax"), ("exponential", "Exp"), ("weibull", "Weibull"), ("gamma", "Gamma")):
+                m.add(f"fl{K}Aic{W}" + n, num("{:.0f}", f["fits"][name]["daic"]))
         if g:
             m.add("flN" + n, str(g["n_flights"]))
             m.add("flNPaths" + n, str(g["n_paths"]))
@@ -377,9 +399,10 @@ def tables(res):
             f = res["phases"].get(gkey(r, d), {}).get(kind)
             if f is None:
                 continue
-            rows.append([gl(r, d), kind, f"{f['mean']:.0f}", fmt_ci([f["mu"], *f["mu_ci"]], "{:.2f}"), fmt_ci([f["tau0"], *f["tau0_ci"]], "{:.0f}"),
-                         fmt_ci([f["theta"], *f["theta_ci"]], "{:.0f}"), num("{:.0f}", f["aic_exp"] - f["aic_lomax"])])
-    table("fits", r"group & phase & mean (s) & $\mu$ & $\tau_0$ (s) & $\theta$ (s) & $\Delta\mathrm{AIC}$", rows, "llrlllr")
+            best = f["best"]
+            ps = "; ".join(f"${s}$ = {fmt_ci([f['fits'][best]['params'][i], *f['params_ci'][i]], LAW_FMT[best][i])}" for i, s in enumerate(LAW_SYMBOLS[best]))
+            rows.append([gl(r, d), kind, f"{f['mean']:.0f}", LAW_NAME[best], ps] + [num("{:.0f}", f["fits"][k]["daic"]) for k in pa.LAWS])
+    table("fits", r"group & phase & mean (s) & law & parameters & Lomax & exp. & Weibull & gamma", rows, "llrllrrrr")
     shown = [(r, d) for r, d in GROUPS if res["groups"].get(gkey(r, d)) is not None]
     gs = [res["groups"][gkey(r, d)] for r, d in shown]
     head = "curve & " + " & ".join(gl(r, d) for r, d in shown)

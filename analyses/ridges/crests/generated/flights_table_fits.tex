@@ -1,12 +1,12 @@
-\begin{tabular}{llrlllr}
+\begin{tabular}{llrllrrrr}
 \toprule
-group & phase & mean (s) & $\mu$ & $\tau_0$ (s) & $\theta$ (s) & $\Delta\mathrm{AIC}$ \\
+group & phase & mean (s) & law & parameters & Lomax & exp. & Weibull & gamma \\
 \midrule
-Alps, paragliders & glide & 281 & 10.11 (9.69--10.57) & 2555 (2437--2685) & 280 (279--282) & 3417 \\
-Alps, paragliders & pause & 158 & $\infty$ & $\infty$ & 157 (157--158) & $-$29 \\
-Alps, hang gliders & glide & 236 & $\infty$ & $\infty$ & 235 (227--243) & $-$2 \\
-Alps, hang gliders & pause & 198 & $\infty$ & $\infty$ & 197 (191--203) & $-$3 \\
-Pyrenees, paragliders & glide & 233 & 84.28 (41.75--$\infty$) & 19361 (9533--$\infty$) & 232 (229--237) & 3 \\
-Pyrenees, paragliders & pause & 194 & $\infty$ & $\infty$ & 193 (191--196) & $-$5 \\
+Alps, paragliders & glide & 281 & Lomax & $\mu$ = 10.11 (9.69--10.57); $\tau_0$ = 2555 (2437--2685) & 0 & 3417 & 1776 & 2635 \\
+Alps, paragliders & pause & 158 & Weibull & $k$ = 1.150 (1.145--1.154); $\lambda$ = 165 (165--166) & 9134 & 9105 & 0 & 1796 \\
+Alps, hang gliders & glide & 236 & gamma & $a$ = 1.057 (1.012--1.104); $\theta$ = 223 (211--233) & 9 & 7 & 2 & 0 \\
+Alps, hang gliders & pause & 198 & Weibull & $k$ = 1.155 (1.125--1.188); $\lambda$ = 207 (199--214) & 160 & 157 & 0 & 49 \\
+Pyrenees, paragliders & glide & 233 & gamma & $a$ = 1.089 (1.068--1.110); $\theta$ = 214 (208--220) & 103 & 106 & 47 & 0 \\
+Pyrenees, paragliders & pause & 194 & Weibull & $k$ = 1.166 (1.152--1.180); $\lambda$ = 204 (201--207) & 937 & 933 & 0 & 202 \\
 \bottomrule
 \end{tabular}

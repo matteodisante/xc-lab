@@ -194,11 +194,11 @@ def main(cache, data):
             sel = (ok["region"] == r) & (ok["disc"] == d)
             if not (pa.GLIDE in ph and pa.PAUSE in ph) or sel.sum() < 10:
                 continue
-            glide = (ph[pa.GLIDE]["mu"], ph[pa.GLIDE]["tau0"], ph[pa.GLIDE]["x0"])
-            pause = (ph[pa.PAUSE]["mu"], ph[pa.PAUSE]["tau0"], ph[pa.PAUSE]["x0"])
+            law = lambda f: pa.Law(f["best"], f["fits"][f["best"]]["params"], f["x0"])  # the law of the lowest AIC
+            glide, pause = law(ph[pa.GLIDE]), law(ph[pa.PAUSE])
             mod = md.model_rows(paths, rng, v, glide, pause, N_REAL)
             old = ph["pause_old"]
-            mod_old = md.model_rows(paths, rng, v, glide, (old["mu"], old["tau0"], old["x0"]), N_REAL)
+            mod_old = md.model_rows(paths, rng, v, glide, law(old), N_REAL)
             nulls = {k: md.model_rows(paths, rng, v, glide, pause, N_REAL, kind=k) for k in NULLS}
             try:
                 out["groups"][key] = analyse_group(geo, trees, mod, rows["dyn"]["rows"][sel.to_numpy()], rows["route"]["rows"][sel.to_numpy()], v, rng, mod_old, nulls)
