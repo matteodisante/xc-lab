@@ -330,7 +330,7 @@ def write_csv(path, rows):
 
 
 def analyse(results, data, out, v_kmh=V_KMH, n_boot=N_BOOT, seed=SEED):
-    """Rows, windows and local H from the results of `process`; writes the files of OUT."""
+    """Rows, windows and local slope from the results of `process`; writes the files of OUT."""
     out = Path(out)
     ok = [r for r in results if r["rows"] is not None]
     for kind in KINDS:
@@ -369,7 +369,7 @@ def analyse(results, data, out, v_kmh=V_KMH, n_boot=N_BOOT, seed=SEED):
 
 
 def plot_local(local, out):
-    """flights_<region>.png: local H against arc length (lag times v) for the kinds and the crests."""
+    """flights_<region>.png: local slope of the MSD against arc length (lag times v) for the kinds and the crests."""
     import matplotlib
 
     matplotlib.use("Agg")
@@ -386,7 +386,7 @@ def plot_local(local, out):
                 x = [r["lag_m"] for r in k]
                 ax.plot(x, [r["H"] for r in k], label=kind, lw=1)
                 ax.fill_between(x, [r["H_lo"] for r in k], [r["H_hi"] for r in k], alpha=0.15, lw=0)
-        ax.set(xscale="log", xlabel="arc length s = v tau (m)", ylabel="local H", title=region, ylim=(0.4, 1.05))
+        ax.set(xscale="log", xlabel="arc length s = v tau (m)", ylabel="local slope alpha", title=region, ylim=(0.4, 1.05))
         ax.legend(fontsize=7)
         fig.tight_layout()
         fig.savefig(out / f"flights_{region}.png", dpi=130)

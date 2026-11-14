@@ -1,4 +1,4 @@
-"""Geometric TAMSD of curves sampled every STEP m of arc length, local H(s) and H on windows, with bootstrap.
+"""Geometric TAMSD of curves sampled every STEP m of arc length, local slope alpha(s) and H on windows, with bootstrap.
 
 A ball runs along each curve at constant speed V_KMH; a lag of k samples is an arc length s = k STEP and a
 time tau = s / V. Per curve, delta2(k) = mean_i |r(i + k) - r(i)|^2 on the lags up to a quarter of the curve.
@@ -47,7 +47,7 @@ def tamsd(xy, ks):
 
 
 def local_h(s, m):
-    """H(s) = half the log-log slope of m, central differences (one-sided at the ends); NaN where m is not finite."""
+    """alpha(s) = half the log-log slope of m, central differences (one-sided at the ends); NaN where m is not finite."""
     ls, lm = np.log(s), np.log(m)
     h = np.full(len(s), np.nan)
     ok = np.isfinite(lm)
@@ -91,7 +91,7 @@ def bootstrap_weights(group, n_boot=N_BOOT, seed=SEED):
 
 
 def analyse(rows, ks, group, n_boot=N_BOOT):
-    """Mean TAMSD, local H and window fits with 95% bootstrap intervals.
+    """Mean TAMSD, local slope and window fits with 95% bootstrap intervals.
     Returns (table of lags as dict of arrays, list of window rows (name, H, lo, hi))."""
     s = ks * STEP
     mean, den = weighted_means(rows, np.ones((1, len(rows)), np.float32))

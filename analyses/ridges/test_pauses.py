@@ -42,14 +42,16 @@ def test_bootstrap_interval_holds_the_truth():
     assert r["mu_ci"][0] < 4.0 < r["mu_ci"][1] + 0.3 and r["lomax_better"] > 0.9 and r["n_flights"] <= 300
 
 
-def test_blocks_join_search_and_climb_and_drop_censored_and_noncontiguous():
+def test_blocks_join_pause_runs_and_drop_censored_and_noncontiguous():
     rows = []
     t = 0
     for ph, n in [("transition", 10), ("search", 5), ("climb", 20), ("transition", 30), ("climb", 8), ("search", 4), ("transition", 6)]:
         rows.append(("f", 0, ph, t, t + n - 1, n, ph == "transition" and t == 0, ph == "transition" and n == 6))
         t += n
     r = pd.DataFrame(rows, columns=["flight_id", "segment_id", "phase", "t_start", "t_end", "n_fixes", "left_censored", "right_censored"])
-    b = pa.blocks(r)
-    assert b["kind"].tolist() == ["pause", "glide", "pause"] and b["duration_s"].tolist() == [25, 30, 12]
+    b = pa.blocks(r)  # a pause is a climb; the search runs are in neither phase
+    assert b["kind"].tolist() == ["pause", "glide", "pause"] and b["duration_s"].tolist() == [20, 30, 8]
+    old = pa.blocks(r, ("search", "climb"))  # search and climb joined
+    assert old["kind"].tolist() == ["pause", "glide", "pause"] and old["duration_s"].tolist() == [25, 30, 12]
     r.loc[2, "t_start"] += 3  # a hole before the climb: the search and the climb are two pauses
-    assert pa.blocks(r)["duration_s"].tolist() == [5, 20, 30, 12]
+    assert pa.blocks(r, ("search", "climb"))["duration_s"].tolist() == [5, 20, 30, 12]

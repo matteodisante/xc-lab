@@ -264,10 +264,10 @@ lags rest on too few independent windows.
 \end{equation}
 where the sum is over the $n(s)$ paths that have the lag $s$, and only lags with $n(s)\ge\CgPMinCurves$ are kept.
 
-\paragraph{Local exponent and windows.} The local exponent of the mean is
+\paragraph{Local slope and windows.} The local slope of the mean MSD is
 \begin{equation}
-  H(s)=\frac12\,\frac{\mathrm{d}\ln\overline{\delta^2}}{\mathrm{d}\ln s},
-  \label{eq:hlocal}
+  \alpha(s)=\frac12\,\frac{\mathrm{d}\ln\overline{\delta^2}}{\mathrm{d}\ln s},
+  \label{eq:alphaloc}
 \end{equation}
 computed by central differences on the log-spaced lags. $\Hgeo$ on a window $[s_1,s_2)$ is half the least-squares
 slope of $\ln\overline{\delta^2}$ against $\ln s$ over the lags of the window; as the lags are log-spaced, every
@@ -279,10 +279,10 @@ the end-to-end distance over the arc length, which is 1 on a straight line.
 resample draws $T$ trees with replacement out of the $T$ of the region; a path takes the multiplicity $m_t$ of its
 tree, and the mean of Eq.~\eqref{eq:mean} becomes $\sum_c m_{t(c)}\delta_c^2/\sum_c m_{t(c)}$ over the paths that have
 the lag, with the same rule of at least \CgPMinCurves{} paths. For curves a resample draws curves. The same resamples
-give the bands of $H(s)$ and the intervals of $\Hgeo$.
+give the bands of $\alpha(s)$ and the intervals of $\Hgeo$.
 
 \paragraph{What we keep.} $\delta^2$ of Eq.~\eqref{eq:tamsd} on every path, its mean over paths with at least
-\CgPMinCurves{} paths per lag, $H(s)$ of Eq.~\eqref{eq:hlocal} and $\Hgeo$ as a slope on four windows, with
+\CgPMinCurves{} paths per lag, $\alpha(s)$ of Eq.~\eqref{eq:alphaloc} and $\Hgeo$ as a slope on four windows, with
 \CgPBoot{} bootstrap resamples of whole trees. A straight line gives $H=1$ at every scale (checked in
 \code{test\_tamsd.py}).
 
@@ -298,8 +298,9 @@ Table~\ref{tab:hgeo} the exponents on the windows.
 \includegraphics[width=\textwidth]{figures/tamsd.pdf}
 \caption{\textbf{a}~End-to-end distance over arc length, $\sqrt{\overline{\delta^2}}/s$, of the Alps (blue) and the
 Pyrenees (orange), for the paths (solid) and the curves (dashed). Bottom axis: arc length $s$; top axis: lag $\tau$ of a
-ball at 35~km/h; grey: below four cells. \textbf{b}~Local exponent $H(s)$, Eq.~\eqref{eq:hlocal}, with its 95\% band for
-the paths. \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals (filled: paths; open: curves, too short for the
+ball at 35~km/h; grey: below four cells. \textbf{b}~Local slope of the MSD, $\alpha(s)$, Eq.~\eqref{eq:alphaloc}, with its 95\% band for
+the paths. Dashed horizontal lines: $\Hgeo$ of the window from 0.1~km (Table~\ref{tab:hgeo}), drawn over the lags of that fit, for the
+paths (Alps \CgAlpsPathsFrom, Pyrenees \CgPyrPathsFrom) and, fainter, the curves (\CgAlpsCurvesFrom{} and \CgPyrCurvesFrom). \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals (filled: paths; open: curves, too short for the
 last window).}
 \label{fig:tamsd}
 \end{figure}
@@ -322,10 +323,10 @@ window of $s$ & paths & curves & paths & curves \\
 \end{tabular}
 \end{table}
 
-The exponent depends on the scale and has no plateau. The local exponent of the Alps paths is \CgAlpsPathsHHundred{} at
-100~m, \CgAlpsPathsHFiveHundred{} at 500~m, \CgAlpsPathsHKm{} at 1~km, \CgAlpsPathsHTwoKm{} at 2~km,
-\CgAlpsPathsHFiveKm{} at 5~km and \CgAlpsPathsHTenKm{} at 10~km; the Pyrenees give \CgPyrPathsHHundred, \CgPyrPathsHFiveHundred,
-\CgPyrPathsHKm, \CgPyrPathsHTwoKm, \CgPyrPathsHFiveKm{} and \CgPyrPathsHTenKm{} at the same lags (the values are read at the
+The slope of the MSD depends on the scale and has no plateau. The local slope of the MSD of the Alps paths is \CgAlpsPathsAlphaHundred{} at
+100~m, \CgAlpsPathsAlphaFiveHundred{} at 500~m, \CgAlpsPathsAlphaKm{} at 1~km, \CgAlpsPathsAlphaTwoKm{} at 2~km,
+\CgAlpsPathsAlphaFiveKm{} at 5~km and \CgAlpsPathsAlphaTenKm{} at 10~km; the Pyrenees give \CgPyrPathsAlphaHundred, \CgPyrPathsAlphaFiveHundred,
+\CgPyrPathsAlphaKm, \CgPyrPathsAlphaTwoKm, \CgPyrPathsAlphaFiveKm{} and \CgPyrPathsAlphaTenKm{} at the same lags (the values are read at the
 nearest lag of the grid). The end-to-end distance over the arc length is \CgAlpsPathsRatioKm{} at 1~km and
 \CgAlpsPathsRatioTenKm{} at 10~km in the Alps, \CgPyrPathsRatioKm{} and \CgPyrPathsRatioTenKm{} in the Pyrenees.
 From 0.1~km on, $\Hgeo$ is \CgAlpsPathsFrom{} (\CgAlpsPathsFromLo--\CgAlpsPathsFromHi) in the Alps and
@@ -341,7 +342,7 @@ The single curves are straighter than the paths: from 0.1~km on $\Hgeo$ is \CgAl
 over 1 to 10~km needs care (Section~\ref{sec:limits}).
 
 \paragraph{What we keep.} A ball at constant speed on a crest path of either massif has $\Hgeo$ near
-\CgAlpsPathsFrom{} from 100~m up, with $H(s)$ falling from \CgAlpsPathsHHundred{} at 100~m to \CgAlpsPathsHFiveKm{} at 5~km
+\CgAlpsPathsFrom{} from 100~m up, with $\alpha(s)$ falling from \CgAlpsPathsAlphaHundred{} at 100~m to \CgAlpsPathsAlphaFiveKm{} at 5~km
 and no plateau. The exponent depends on the window, so the flights are compared with the function of Figure~\ref{fig:tamsd}b
 as well as with the windows. The Alps and the Pyrenees agree from 0.1 to 1~km and
 differ little beyond.
@@ -355,7 +356,7 @@ Where can the exponent not be trusted? Three limits, shown in Figure~\ref{fig:li
 \centering
 \includegraphics[width=\textwidth]{figures/limits.pdf}
 \caption{\textbf{a}~The data edge where most flagged curves of the Alps are: red, no data; orange, curves that reach the edge. \textbf{b}~Local
-exponent near the grid scale; grey: below four cells. \textbf{c}~Number of trees (solid) and of paths (dotted) that
+slope of the MSD, $\alpha(s)$, near the grid scale; grey: below four cells. Dashed lines: $\Hgeo$ of the window from 0.1~km, as in Figure~\ref{fig:tamsd}b. \textbf{c}~Number of trees (solid) and of paths (dotted) that
 have each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
 \label{fig:limits}
 \end{figure}
@@ -366,7 +367,7 @@ Pyrenees curves are flagged, and so are \CgAlpsEdgePaths{} and \CgPyrEdgePaths{}
 Appendix~\ref{app:more} repeats the exponents without them.
 
 \paragraph{The grid scale.} Below four cells the divide runs on cell sides and the spline that smooths the steps makes
-the curve straighter than the terrain: $H(s)$ is at least \CgGridHmin{} there (Figure~\ref{fig:limits}b). The fit starts at
+the curve straighter than the terrain: $\alpha(s)$ is at least \CgGridAlphaMin{} there (Figure~\ref{fig:limits}b). The fit starts at
 $\CgPFitFrom$~m and no window includes shorter lags.
 
 \paragraph{Few trees at long lags.} A lag of 10~km needs a path of at least 40~km, since lags stop at a quarter

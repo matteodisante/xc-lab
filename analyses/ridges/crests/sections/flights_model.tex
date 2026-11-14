@@ -34,8 +34,8 @@ Each continuous piece of track (a segment of the cleaning, without a gap longer 
 one fix per second by a cubic spline.
 
 For the phases we use the labels of Vilpellet's segmenter, which exist for flights recorded at 1~Hz. A
-\emph{glide} is a run labelled transition. A \emph{pause} is the union of consecutive runs labelled search or
-climb: the pilot does not progress along the route while he looks for a thermal and while he climbs in it. Only
+\emph{glide} is a run labelled transition. A \emph{pause} is a run labelled climb, with consecutive climb runs joined: the pilot does not progress along the
+route while he climbs in a thermal. Runs labelled search are in neither phase and the model leaves them out. Only
 whole phases count; a phase that touches the start or the end of a segment is left out. The duration of a phase
 is its number of fixes, that is, seconds. The mean ground speed in glides of a group of flights is
 \begin{equation}
@@ -59,7 +59,7 @@ interpreted.}
 
 \paragraph{What we keep.} A flight is a distance flight with an opening of at least 0.1, a median sampling
 interval of at most 5~s and 80\% of its fixes over one massif. A glide is a transition run and a pause is a
-search and climb run joined. The mean ground speed in glides is $v = \flVGlideAlpsPara$~m/s for the Alps
+climb run; search runs are left out. The mean ground speed in glides is $v = \flVGlideAlpsPara$~m/s for the Alps
 paragliders, \flVGlidePyrPara~m/s for the Pyrenees paragliders and \flVGlideAlpsHang~m/s for the Alps hang
 gliders.
 
@@ -89,7 +89,7 @@ parameters.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_phases}
-\caption{Survival of the durations of glides (top) and pauses (bottom), $P(\text{duration} \ge t)$, with the
+\caption{Survival of the durations of glides (top) and pauses, that is climbs (bottom), $P(\text{duration} \ge t)$, with the
 Lomax and the exponential fit of Eq.~\eqref{eq:laws}.}
 \label{fig:flphases}
 \end{figure}
@@ -124,9 +124,9 @@ exponential limit, the model draws exponential durations.
 
 What does the geometry give when the ball does not move at constant speed but stops as the pilot does? The ball
 runs on a crest path $\mathbf p(s)$ of the region, with $s$ the arc length, and alternates glides and pauses. In
-a glide it advances at the speed $v$ of Eq.~\eqref{eq:vglide}; in a pause it stays where it is. The glide and
-pause durations are independent draws of the Lomax laws of Eq.~\eqref{eq:laws} fitted on the flights of the same
-region and discipline, conditional on exceeding $X_0$:
+a glide it advances at the speed $v$ of Eq.~\eqref{eq:vglide}; in a pause it stays where it is. The searches of the flights are not in the model: the time a pilot spends
+searching is dropped from its clock. The glide and pause durations are independent draws of the Lomax laws of Eq.~\eqref{eq:laws} fitted on the glides and the climbs of the flights of
+the same region and discipline, conditional on exceeding $X_0$:
 \begin{equation}
   T = (\tau_0 + X_0)\,U^{-1/\mu} - \tau_0,\qquad U \text{ uniform on } (0,1),
   \label{eq:draw}
@@ -162,12 +162,12 @@ being ballistic? Four curves are drawn for each region and discipline, all as fu
         if longer than 20~s.
 \end{itemize}
 Figure~\ref{fig:flmsd} plots the ratio $\overline{\delta^2}(\tau)/(v\tau)^2$, which is 1 for a ballistic motion at
-speed $v$, and Figure~\ref{fig:flalpha} the local exponent
+speed $v$, and Figure~\ref{fig:flalpha} the local slope of the MSD
 \begin{equation}
   \alpha(\tau) = \frac12\,\frac{d\ln\overline{\delta^2}}{d\ln\tau},
   \label{eq:alpha}
 \end{equation}
-which is Eq.~\eqref{eq:hlocal} in time. The bands are the 2.5\% and 97.5\% percentiles of the bootstrap.
+which is Eq.~\eqref{eq:alphaloc} in time. The bands are the 2.5\% and 97.5\% percentiles of the bootstrap.
 
 \paragraph{One rule for the exponent.} The fit of $H$ starts at the end of the initial ballistic regime. For each
 curve, $H$ is half the least-squares slope of $\ln\overline{\delta^2}$ against $\ln\tau$ over the lags
@@ -191,8 +191,10 @@ crests, the model and the flights against the lag $\tau$. Dotted: 1.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_alpha}
-\caption{Local exponent $\alpha(\tau)$, Eq.~\eqref{eq:alpha}. Ticks: start of the fit of each curve. Dotted:
-$\alpha = \flAlphaEnd$. Vertical grey line: last lag of the fit.}
+\caption{Local slope of the MSD, $\alpha(\tau)$, Eq.~\eqref{eq:alpha}. Ticks: start of the fit of each curve. Dotted:
+$\alpha = \flAlphaEnd$. Vertical grey line: last lag of the fit. Dashed horizontal lines: $H$ of the fit of the rule of the
+text (Table~\ref{tab:flh}), in the colour of the curve and over the lags of the fit; for the Alps paragliders the crests
+give \flHGeoAlpsPara, the model \flHModAlpsPara, the flights \flHDynAlpsPara{} and the route \flHRouteAlpsPara.}
 \label{fig:flalpha}
 \end{figure}
 
@@ -212,18 +214,17 @@ Pyrenees paragliders, $\flHRoutePyrPara$, is close to its crests, $\flHGeoPyrPar
 $\flHRouteAlpsHang$, is lower than its crests, $\flHGeoAlpsHang$. The curves of $\alpha$ show where $\Hdyn$ and
 $\Hroute$ differ: the flights leave the ballistic value at about the floor, fall to a minimum within the first
 twenty seconds, which is about half a turn of a circle, and then recover part of the way; the route has no such
-minimum. The model has no circles and its $\alpha$ falls steadily with the lag. After the circles the model lies
-below the flights over most of the range. At the longest lags all curves rise towards and above 1, because only
+minimum. The model has no circles and its $\alpha$ falls steadily with the lag; after the circles it is below the
+flights at the shorter lags and comes close to them at the longer ones. At the longest lags all curves rise towards and above 1, because only
 the longest flights and paths reach them and these are the straightest; the fit stops at $\tau_b$, before this
 rise.
 
 \paragraph{What we keep.} The crests, the route of the flights, the flights with their circles and the model are
 four different curves. The route of the paragliders follows the crests as straight as the crests are, and the
 route of the hang gliders is a little less straight. The circles lower $H$ from the route
-($\Hroute = \flHRouteAlpsPara$ for the Alps paragliders) to the flights ($\Hdyn = \flHDynAlpsPara$). The model
-falls below the flights in every group: $\Hmod = \flHModAlpsPara$ against $\Hdyn = \flHDynAlpsPara$ for the
-Alps paragliders, \flHModAlpsHang{} against \flHDynAlpsHang{} for the Alps hang gliders and \flHModPyrPara{}
-against \flHDynPyrPara{} for the Pyrenees paragliders.
+($\Hroute = \flHRouteAlpsPara$ for the Alps paragliders) to the flights ($\Hdyn = \flHDynAlpsPara$). The model's $H$ is below that of the flights for the paragliders of both massifs ($\Hmod = \flHModAlpsPara$ against
+$\Hdyn = \flHDynAlpsPara$ in the Alps and \flHModPyrPara{} against \flHDynPyrPara{} in the Pyrenees) and above it
+for the Alps hang gliders (\flHModAlpsHang{} against \flHDynAlpsHang{}).
 
 \subsection{Splitting $1-H$}\label{sec:fldecomp}
 
@@ -260,22 +261,46 @@ For the Alps paragliders $1 - \Hdyn = \flTotalAlpsPara$, of which the crests car
 \flPctInterAlpsPara\% (\flPctInterAlpsParaLo\% to \flPctInterAlpsParaHi\%) and the remainder is
 \flPctOtherAlpsPara\% (\flPctOtherAlpsParaLo\% to \flPctOtherAlpsParaHi\%). The Pyrenees paragliders give
 \flPctGeometryPyrPara\%, \flPctInterPyrPara\% and \flPctOtherPyrPara\%. The Alps hang gliders give
-\flPctGeometryAlpsHang\%, \flPctInterAlpsHang\% and \flPctOtherAlpsHang\%.
+\flPctGeometryAlpsHang\%, \flPctInterAlpsHang\% and \flPctOtherAlpsHang\% (interval \flPctOtherAlpsHangLo\% to
+\flPctOtherAlpsHangHi\%, which includes zero).
 
-The first two terms add to more than 100\% in every group, and the remainder is negative. The model therefore
-falls below the flights: a ball that stops completely for the observed pauses loses more exponent than the
-flights lose. We have not tested why. A possible reason is that a pilot in a pause is not at rest, since he
-circles and drifts with the thermal, but the model does not move at all in a pause. The shares are therefore the
-shares of a model that overshoots, and the remainder is the size of the overshoot. The Pyrenees paragliders are
-close to the Alps paragliders in all three terms. The Alps hang gliders have a smaller geometric share, because
-their $1 - \Hdyn$ is larger, and a remainder of smaller size.
+For the paragliders the remainder is negative and the first two terms add to more than 100\%: the model falls
+below the flights, so a ball that stops completely for the observed climbs loses more exponent than the flights
+lose. We have not tested why. A possible reason is that a pilot in a climb is not at rest, since he circles and
+drifts with the thermal, but the model does not move at all in a pause. For these groups the shares are the
+shares of a model that overshoots, and the remainder is the size of the overshoot. For the Alps hang gliders the
+remainder is positive but not distinguishable from zero, so the model and the flights agree within the interval.
+The Alps hang gliders have a smaller geometric share than the paragliders, because their $1 - \Hdyn$ is larger.
+
+A first version of the model used search and climb runs joined as the pause. It gave $\Hmod = \flHModOldAlpsPara$,
+$\flHModOldPyrPara$ and $\flHModOldAlpsHang$ for the Alps paragliders, the Pyrenees paragliders and the Alps hang
+gliders, intermittency shares of \flPctInterOldAlpsPara\%, \flPctInterOldPyrPara\% and \flPctInterOldAlpsHang\%
+and remainders of \flPctOtherOldAlpsPara\%, \flPctOtherOldPyrPara\% and \flPctOtherOldAlpsHang\%: a longer
+pause lowered the model further below the flights.
 
 \paragraph{What we keep.} The crests carry \flPctGeometryAlpsPara\%, \flPctGeometryPyrPara\% and
 \flPctGeometryAlpsHang\% of $1 - \Hdyn$ for the Alps paragliders, the Pyrenees paragliders and the Alps hang
-gliders. The stops of the model take \flPctInterAlpsPara\%, \flPctInterPyrPara\% and \flPctInterAlpsHang\%. The
-two add to more than the deficit, and the remainder is \flPctOtherAlpsPara\%, \flPctOtherPyrPara\% and
-\flPctOtherAlpsHang\%: the model falls below the flights. The split is a statement about this model, and the
-Pyrenees hang gliders are too few to say anything.
+gliders. The stops of the model take \flPctInterAlpsPara\%, \flPctInterPyrPara\% and \flPctInterAlpsHang\%, and
+the remainder is \flPctOtherAlpsPara\%, \flPctOtherPyrPara\% and \flPctOtherAlpsHang\%. The model falls below
+the flights for the paragliders and agrees with them, within the interval, for the Alps hang gliders. The split
+is a statement about this model, and the Pyrenees hang gliders are too few to say anything.
+
+\subsection{The flights alone from 10 s}\label{sec:flhten}
+
+What is $H$ of the flights if the fit runs from 10~s to the last lag that at least ten flights reach?
+Table~\ref{tab:flhten} gives it for $\Hdyn$ with equal weight per flight and \flNBoot{} resamples of whole flights.
+
+\begin{table}[t]
+\centering
+\caption{$H$ of the flights (dyn) fitted from 10~s to the last lag with at least ten flights, with 95\% intervals.}
+\label{tab:flhten}
+\small
+\input{generated/flights_table_h10}
+\end{table}
+
+This $H$ is higher than the one of the rule (Table~\ref{tab:flh}), because only the longest flights reach the
+longest lags and $\alpha$ rises there (Figure~\ref{fig:flalpha}). It is therefore not the number compared with
+the crests.
 
 \subsection{Fixed windows of arc length}\label{sec:flwindows}
 

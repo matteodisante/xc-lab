@@ -137,6 +137,7 @@ def curves_figure(res, what, ylabel, name):
                 s = g["start"][k][0]
                 if np.isfinite(s):
                     ax.plot([s], [np.interp(s, tau, y)], "|", color=COLOR[k], ms=8)
+                    ax.plot([s, g["tau_max"]], [g["H"][k][0]] * 2, color=COLOR[k], lw=0.9, ls=(0, (4, 2)))  # the fitted H
         if what == "msd":
             ax.axhline(1, color="0.6", lw=0.6, ls=":")
             ax.set_ylim(0.03, 1.5)
@@ -220,6 +221,11 @@ def macros(res, cache):
             for k, K in (("geo", "Geo"), ("model", "Mod"), ("dyn", "Dyn"), ("route", "Route")):
                 m.ci("flH" + K + n, g["H"][k], "{:.3f}")
                 m.ci("flStart" + K + n, g["start"][k], "{:.0f}")
+            m.ci("flHTen" + n, g["h10"]["H"], "{:.3f}")
+            m.add("flHTenLast" + n, f"{g['h10']['last_lag']:.0f}")
+            m.ci("flHModOld" + n, g["H_old"], "{:.3f}")
+            m.ci("flPctInterOld" + n, g["decomposition_old"]["intermittency"], "{:.0f}")
+            m.ci("flPctOtherOld" + n, g["decomposition_old"]["other"], "{:.0f}")
             m.ci("flTotal" + n, g["decomposition"]["total"], "{:.3f}")
             for key, K in (("geometry", "Geometry"), ("intermittency", "Inter"), ("other", "Other")):
                 m.ci("flPct" + K + n, g["decomposition"][key], "{:.0f}")
@@ -279,6 +285,9 @@ def tables(res):
             continue
         rows.append([gl(r, d), str(g["n_flights"])] + [fmt_ci(g["H"][k]) for k in dc.CURVES])
     table("h", r"group & flights & $\Hgeo$ & $\Hmod$ & $\Hdyn$ & $\Hroute$", [[x[0], x[1], x[2], x[3], x[4], x[5]] for x in rows], "lrllll")
+    rows = [[gl(r, d), str(g["n_flights"]), fmt_ci(g["h10"]["H"]), f"{g['h10']['last_lag']:.0f}"]
+            for r, d in GROUPS if (g := res["groups"].get(gkey(r, d))) is not None]
+    table("h10", r"group & flights & $H$ & last lag (s)", rows, "lrll")
     rows = []
     for r, d in GROUPS:
         g = res["groups"].get(gkey(r, d))
@@ -308,7 +317,7 @@ if __name__ == "__main__":
     (OUT / "generated").mkdir(parents=True, exist_ok=True)
     fig_phases(res)
     curves_figure(res, "msd", r"MSD$/(v\tau)^2$", "flights_msd")
-    curves_figure(res, "alpha", r"local exponent $\alpha(\tau)$", "flights_alpha")
+    curves_figure(res, "alpha", r"local slope $\alpha(\tau)$", "flights_alpha")
     fig_decomposition(res)
     macros(res, cache)
     tables(res)

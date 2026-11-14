@@ -1,8 +1,8 @@
 """Glides and pauses of the selected flights, and their durations fitted by a Lomax law and by an exponential.
 
-Runs come from Vilpellet's segmenter (analyses/phases/durations.py): a glide is a transition run; a pause is
-consecutive search and climb runs joined into one phase. Only whole phases count: a phase touching the start or
-the end of a segment is left out. A duration is the number of 1 Hz fixes of the phase.
+Runs come from Vilpellet's segmenter (analyses/phases/durations.py): a glide is a transition run; a pause is a
+climb run (consecutive runs of the pause phases joined). Search runs are in neither. Only whole phases count: a
+phase touching the start or the end of a segment is left out. A duration is the number of 1 Hz fixes of the phase.
 
 Both laws are fitted on the durations above X0 = the shortest duration minus half a second, conditional on being
 above it (durations are integers; X0 is the continuity correction):
@@ -19,15 +19,16 @@ RUNS = "derived/segmentation/vilpellet/phase_segments.parquet"
 DISK = "/Volumes/SSD_DISANTE"
 FOLDERS = {"para": "paragliders/ffvl_cfd_igc", "hang": "hang_gliders/delta_cfd_igc"}
 GLIDE, PAUSE = "glide", "pause"
-KIND = {"transition": GLIDE, "search": PAUSE, "climb": PAUSE}
+PAUSE_PHASES = ("climb",)  # the phases that make a pause
 N_BOOT = 1000
 
 
-def blocks(runs):
+def blocks(runs, pause_phases=PAUSE_PHASES):
     """Whole phases of a table of runs: one row per glide or pause with flight_id, segment_id, kind, t_start and
-    duration_s (fixes); consecutive search and climb runs are one pause."""
-    r = runs[runs["phase"].isin(KIND)].sort_values(["flight_id", "segment_id", "t_start"], kind="stable")
-    kind = r["phase"].map(KIND).to_numpy()
+    duration_s (fixes); consecutive runs of the pause phases are one pause."""
+    kinds = {"transition": GLIDE, **{p: PAUSE for p in pause_phases}}
+    r = runs[runs["phase"].isin(kinds)].sort_values(["flight_id", "segment_id", "t_start"], kind="stable")
+    kind = r["phase"].map(kinds).to_numpy()
     key = r["flight_id"].astype(str).to_numpy() + "/" + r["segment_id"].astype(str).to_numpy()
     head = np.r_[True, (kind[1:] != kind[:-1]) | (key[1:] != key[:-1])]
     # a run after an unlabelled one is not contiguous with it: break on any start not at the previous end + 1
@@ -97,6 +98,8 @@ def fit_phase(x, flight, n_boot=N_BOOT, seed=0):
     aic_e = 2 - 2 * exp_loglik(u, c, theta, x0)
     out = {"n": len(x), "n_flights": nf, "x0": x0, "mean": x.mean(), "mu": mu, "tau0": tau0, "theta": theta,
            "mean_lomax": lomax_cond_mean(mu, tau0, x0), "aic_lomax": aic_l, "aic_exp": aic_e}
+    if n_boot == 0:
+        return out
     rng = np.random.default_rng(seed)
     boot = []
     for _ in range(n_boot):

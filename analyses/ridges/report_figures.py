@@ -319,6 +319,15 @@ def ghost(ax, lo=100.0):
     ax.axvspan(1, lo, color="#e6e5e1", lw=0)
 
 
+def fit_line(ax, data, r, kind, w):
+    """Dashed horizontal line at H of the window from 0.1 km, over the lags of that fit (from 100 m to the last lag
+    with enough paths or curves), in the colour of the region."""
+    t = data[r].h[kind]
+    h = w[(w.region == r) & (w.kind == kind) & (w.window == "from 0.1 km")].H.iloc[0]
+    last = t.s_m[np.isfinite(t["mean"])].max()
+    ax.plot([100, last], [h, h], color=COLOR[r], lw=0.9, ls=(0, (4, 2)), alpha=1 if kind == "paths" else 0.6)
+
+
 def fig_tamsd(data):
     fig, axs = plt.subplots(1, 3, figsize=(6.8, 2.6), gridspec_kw={"width_ratios": [1, 1, 0.9], "wspace": 0.4})
     for r in REGIONS:
@@ -340,8 +349,12 @@ def fig_tamsd(data):
         sec.set_xscale("log")
     axs[0].set_ylabel("$\\sqrt{\\overline{\\delta^2}}\\,/\\,s$")
     axs[0].set_ylim(0.3, 1.02)
-    axs[1].set_ylabel("local $H(s)$")
+    axs[1].set_ylabel("local slope $\\alpha(s)$")
     axs[1].set_ylim(0.6, 1.02)
+    wins = pd.read_csv(data["alps"].d / "hgeo_windows.csv")
+    for r in REGIONS:
+        for kind in ("paths", "curves"):
+            fit_line(axs[1], data, r, kind, wins)
     for r in REGIONS:
         axs[0].plot([], [], color=COLOR[r], label=REGIONS[r])
     axs[0].plot([], [], "-", color=INK, label="paths")
@@ -394,17 +407,22 @@ def fig_limits(data):
     ax.plot([], [], color="#e8a317", label="reaches the edge")
     ax.plot([], [], color=COLOR["alps"], label="other curves")
     ax.legend(loc="lower left", frameon=True, framealpha=0.85, fontsize=6)
-    # b: local H near the grid scale
+    # b: local slope near the grid scale
     ax = fig.add_subplot(gs[1])
     for r in REGIONS:
         for kind, ls in (("paths", "-"), ("curves", "--")):
             t = data[r].h[kind]
             ok = np.isfinite(t.H) & (t.s_m <= 1000)
             ax.plot(t.s_m[ok], t.H[ok], ls, color=COLOR[r], lw=1.1)
+    wins = pd.read_csv(data["alps"].d / "hgeo_windows.csv")
+    for r in REGIONS:
+        for kind in ("paths", "curves"):
+            fit_line(ax, data, r, kind, wins)
+    ax.set_xlim(right=1000)
     ax.axvspan(0, 100, color="#e6e5e1", lw=0)
     ax.axvline(100, color=GREY, lw=0.6)
     ax.set_xlabel("arc length $s$ (m)")
-    ax.set_ylabel("local $H(s)$")
+    ax.set_ylabel("local slope $\\alpha(s)$")
     ax.set_title("b", fontsize=7, loc="left")
     # c: trees at the lag
     ax = fig.add_subplot(gs[2])
@@ -489,15 +507,15 @@ def macros(data):
             for lag, word in LAGS.items():
                 i = int(np.argmin(abs(t.s_m - lag)))
                 if np.isfinite(t.H[i]):
-                    add(f"{R}{K}H{word}", h3(t.H[i]))
-                    add(f"{R}{K}H{word}Lo", h3(t.H_lo[i]))
-                    add(f"{R}{K}H{word}Hi", h3(t.H_hi[i]))
+                    add(f"{R}{K}Alpha{word}", h3(t.H[i]))
+                    add(f"{R}{K}Alpha{word}Lo", h3(t.H_lo[i]))
+                    add(f"{R}{K}Alpha{word}Hi", h3(t.H_hi[i]))
                     add(f"{R}{K}Ratio{word}", f"{np.sqrt(t['mean'][i]) / t.s_m[i]:.2f}")
         for stage in ("drain", "curves", "hgeo"):
             add(R + "Ram" + stage.capitalize(), f"{peaks[f'{r}_{stage}']:.1f}")
     add("SecHundred", f"{100 / (tamsd.V_KMH / 3.6):.1f}")
     below = [data[r].h[k][(data[r].h[k].s_m < 100)].H.min() for r in REGIONS for k in ("paths", "curves")]
-    add("GridHmin", f"{np.floor(min(below) * 100) / 100:.2f}")
+    add("GridAlphaMin", f"{np.floor(min(below) * 100) / 100:.2f}")
     # parameters
     P = dict(Valley=ridges.VALLEY_KM2, ValleyCells=ridges.valley_cells(), XsecCells=ridges.XSEC_CELLS,
              XsecM=ridges.XSEC_CELLS * 25, XsecDrop=int(ridges.XSEC_DROP), HandMin=int(ridges.HAND_MIN),
