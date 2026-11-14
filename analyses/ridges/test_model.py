@@ -59,3 +59,24 @@ def test_the_ball_ends_at_the_end_of_the_path():
     p = line(20_000)
     xy = md.positions(p, rng, V, GLIDE, PAUSE)
     assert np.allclose(xy[-1], p[-1], atol=V) and xy[0, 0] < 50 + V * 400
+
+
+def test_straight_null_without_pauses_has_h_one_and_with_pauses_matches_the_crest_ball_on_a_line():
+    rng = np.random.default_rng(5)
+    rows = md.model_rows([line(60_000)] * 12, rng, V, GLIDE, None, 1, kind="straight")
+    assert abs(h_of(rows, fl.LAGS_T.astype(float), 10, 3000) - 1) < 1e-4
+    a = md.model_rows([line(300_000)] * 20, np.random.default_rng(6), V, GLIDE, PAUSE, 2, kind="straight")
+    b = md.model_rows([line(300_000)] * 20, np.random.default_rng(7), V, GLIDE, PAUSE, 2)
+    assert abs(h_of(a, fl.LAGS_T.astype(float), 10, 2000) - h_of(b, fl.LAGS_T.astype(float), 10, 2000)) < 0.01
+
+
+def test_random_null_with_exponential_durations_has_alpha_one_half_at_long_lags():
+    rng = np.random.default_rng(8)
+    glide, pause = (2980.0, 2e5, 0.5), (2980.0, 1.5e5, 0.5)  # near-exponential Lomax laws, means about 100 s
+    rows = md.model_rows([line(5_000_000)] * 6, rng, V, glide, pause, 1, kind="random")
+    tau = fl.LAGS_T.astype(float)
+    m = np.nanmean(rows, 0)
+    a = np.gradient(np.log(m), np.log(tau)) / 2
+    k = (tau > 2000) & (tau < 8000)
+    assert abs(a[k].mean() - 0.5) < 0.05
+    assert abs(a[tau < 3].mean() - 1) < 0.05  # ballistic below one glide

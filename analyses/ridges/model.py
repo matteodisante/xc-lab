@@ -61,6 +61,24 @@ def positions(path, rng, v, glide, pause=None):
     return np.c_[np.interp(s, arc, path[:, 0]), np.interp(s, arc, path[:, 1])]
 
 
-def model_rows(paths, rng, v, glide, pause, n_real=3):
-    """TAMSD on the 1-s lags fl.LAGS_T of the ball on each path, the pairs of n_real realisations pooled."""
-    return np.array([fl.pooled([positions(p, rng, v, glide, pause) for _ in range(n_real)], fl.LAGS_T) for p in paths])
+def null_positions(length_m, rng, v, glide, pause, kind):
+    """1-Hz positions of a null model that keeps the durations and the speed of the crest model and changes the
+    geometry of the motion. straight: every glide goes on along one fixed line. random: each glide is a straight
+    segment in a direction drawn uniformly on the circle, independent of the previous one."""
+    m = moving_series(rng, length_m, v, glide, pause)
+    if kind == "straight":
+        x = v * np.cumsum(m)
+        return np.c_[x, np.zeros_like(x)]
+    glide_index = np.cumsum(m & ~np.r_[False, m[:-1]])  # the glide each second of motion belongs to
+    angle = rng.uniform(0, 2 * np.pi, glide_index[-1] + 1)[glide_index]
+    return np.cumsum(v * m[:, None] * np.c_[np.cos(angle), np.sin(angle)], axis=0)
+
+
+def model_rows(paths, rng, v, glide, pause, n_real=3, kind="crest"):
+    """TAMSD on the 1-s lags fl.LAGS_T of the ball on each path, the pairs of n_real realisations pooled. kind
+    crest: the ball runs on the path; straight and random: null models with the length of the path (null_positions)."""
+    if kind == "crest":
+        walk = lambda p: positions(p, rng, v, glide, pause)
+    else:
+        walk = lambda p: null_positions(fl.STEP_M * (len(p) - 1), rng, v, glide, pause, kind)
+    return np.array([fl.pooled([walk(p) for _ in range(n_real)], fl.LAGS_T) for p in paths])

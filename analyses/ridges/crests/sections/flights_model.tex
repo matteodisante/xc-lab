@@ -4,7 +4,8 @@ How much of $1-H$ of a real flight does the geometry of the crests explain, and 
 pilot moves along them? We answer for the Alps and the Pyrenees and for paragliders and hang gliders
 separately. The steps are: the flights and their phases (Section~\ref{sec:flsel}), the durations of glides and
 pauses (Section~\ref{sec:flphases}), a ball that moves and stops on the crest paths (Section~\ref{sec:flmodel}),
-the four curves compared (Section~\ref{sec:flcurves}) and the split of $1-H$ (Section~\ref{sec:fldecomp}).
+the four curves compared (Section~\ref{sec:flcurves}) and the split of $1-H$ (Section~\ref{sec:fldecomp}), then two null
+models without the crest geometry (Section~\ref{sec:flnull}).
 Sections~\ref{sec:flwindows} and~\ref{sec:flraw} give the fits on fixed windows and a check of the cleaned
 tracks against the raw ones.
 
@@ -89,8 +90,8 @@ parameters.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_phases}
-\caption{Survival of the durations of glides (top) and pauses, that is climbs (bottom), $P(\text{duration} \ge t)$, with the
-Lomax and the exponential fit of Eq.~\eqref{eq:laws}.}
+\caption{Glide and climb durations are close to exponential. Survival $P(\text{duration} \ge t)$ of the glides (top) and of the
+climbs, which are the pauses (bottom), with the Lomax fit (solid) and the exponential fit (dotted) of Eq.~\eqref{eq:laws}; grey dots: data.}
 \label{fig:flphases}
 \end{figure}
 
@@ -134,7 +135,17 @@ the same region and discipline, conditional on exceeding $X_0$:
 rounded to whole seconds. The position at time $t$ is $\mathbf r(t) = \mathbf p\bigl(v\,\Theta(t)\bigr)$, where
 $\Theta(t)$ is the time spent gliding up to $t$. The ball starts in equilibrium: the first phase is a glide with
 probability $E[T_g]/(E[T_g] + E[T_p])$, and the time left in it has the density $S(t)/E[T]$ of the law of that
-phase. The ball stops when it reaches the end of the path. Positions are given every second.
+phase. The ball stops when it reaches the end of the path. Positions are given every second. Figure~\ref{fig:flmodels} draws the crest model beside the crests at constant speed and
+the two null models of Section~\ref{sec:flnull}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/flights_models}
+\caption{The four motions differ only in what they keep of the flight. The same sequence of four glides and three pauses on
+each model: the crests at constant speed (a, white dots at equal steps of time), the crest model (b), the straight model (c)
+and the random model (d). Dot area: duration of the pause; black square: start.}
+\label{fig:flmodels}
+\end{figure}
 
 The paths are all the joined paths of the region, those of Section~\ref{sec:trees}: \flNPathsAlpsPara{} in the
 Alps and \flNPathsPyrPara{} in the Pyrenees, the same rows as the TAMSD of the crests, so that $\Hgeo$ and the
@@ -161,7 +172,8 @@ being ballistic? Four curves are drawn for each region and discipline, all as fu
         heading turns faster than 8$^\circ$/s averaged over 20~s, merged across gaps shorter than 10~s and kept
         if longer than 20~s.
 \end{itemize}
-Figure~\ref{fig:flmsd} plots the ratio $\overline{\delta^2}(\tau)/(v\tau)^2$, which is 1 for a ballistic motion at
+The two null models of Section~\ref{sec:flnull}, straight and random, are drawn in the same figures and fitted by the
+same rule. Figure~\ref{fig:flmsd} plots the ratio $\overline{\delta^2}(\tau)/(v\tau)^2$, which is 1 for a ballistic motion at
 speed $v$, and Figure~\ref{fig:flalpha} the local slope of the MSD
 \begin{equation}
   \alpha(\tau) = \frac12\,\frac{d\ln\overline{\delta^2}}{d\ln\tau},
@@ -172,7 +184,7 @@ which is Eq.~\eqref{eq:alphaloc} in time. The bands are the 2.5\% and 97.5\% per
 \paragraph{One rule for the exponent.} The fit of $H$ starts at the end of the initial ballistic regime. For each
 curve, $H$ is half the least-squares slope of $\ln\overline{\delta^2}$ against $\ln\tau$ over the lags
 $\tau_a \le \tau \le \tau_b$, where $\tau_a$ is the first lag not below $\flFloorM/v$ at which
-$\alpha(\tau) < \flAlphaEnd$, and $\tau_b$ is the last lag reached by the four curves of the group
+$\alpha(\tau) < \flAlphaEnd$, and $\tau_b$ is the last lag that at least \flMinRows{} flights or paths reach, in every curve of the group
 (\flTauMaxAlpsPara~s for the Alps paragliders). The floor of $\flFloorM$~m is the start of the fit of
 Section~\ref{sec:tamsd}, converted to time. The rule is applied to the four curves alike and again in every
 resample. For the Alps paragliders it starts the fit of the flights at \flStartDynAlpsPara~s, that of the model at \flStartModAlpsPara~s
@@ -183,28 +195,36 @@ Table~\ref{tab:flwindows} in Section~\ref{sec:flwindows} the fits on fixed windo
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_msd}
-\caption{Mean squared displacement over the ballistic value, $\overline{\delta^2}(\tau)/(v\tau)^2$, of the
-crests, the model and the flights against the lag $\tau$. Dotted: 1.}
+\caption{The crests stay closest to ballistic motion; pauses and turns lower the MSD of everything else. Mean squared displacement
+over the ballistic value, $\overline{\delta^2}(\tau)/(v\tau)^2$, of the crests, the crest model, the flights and the two null models
+against the lag $\tau$; grey line: 1, a ballistic motion at speed $v$. Bands: 95\% bootstrap intervals.}
 \label{fig:flmsd}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_alpha}
-\caption{Local slope of the MSD, $\alpha(\tau)$, Eq.~\eqref{eq:alpha}. Ticks: start of the fit of each curve. Dotted:
-$\alpha = \flAlphaEnd$. Vertical grey line: last lag of the fit. Dashed horizontal lines: $H$ of the fit of the rule of the
-text (Table~\ref{tab:flh}), in the colour of the curve and over the lags of the fit; for the Alps paragliders the crests
-give \flHGeoAlpsPara, the model \flHModAlpsPara, the flights \flHDynAlpsPara{} and the route \flHRouteAlpsPara.}
+\caption{The flights leave the ballistic regime within seconds; the crest model, the straight model and the random model bracket
+them. Local slope of the MSD, $\alpha(\tau)$, Eq.~\eqref{eq:alpha}, against the lag $\tau$, for the Alps paragliders (a, d), the Alps
+hang gliders (b, e) and the Pyrenees paragliders (c, f). Top row: crests, crest model, flights and flights without circles. Bottom
+row: the straight and random null models against the flights and the crest model. Thin grey lines: $\alpha = 1$ (ballistic) and,
+for the null models, $0.5$ (diffusive). Dashed horizontal lines: $H$ of the fit of the rule of the text (Table~\ref{tab:flh}), in the
+colour of the curve, over the lags of the fit; for the Alps paragliders the crests give \flHGeoAlpsPara, the crest model
+\flHModAlpsPara, the flights \flHDynAlpsPara, the flights without circles \flHRouteAlpsPara, the straight model \flHStraightAlpsPara{}
+and the random model \flHRandomAlpsPara. Curves stop where fewer than \flMinRows{} flights or paths reach the lag, and the grey zone
+is beyond the last lag of the fit. The Alps hang gliders rest on \flNAlpsHang{} flights and are noisier. Bands: 95\% bootstrap
+intervals.}
 \label{fig:flalpha}
 \end{figure}
 
 \begin{table}[t]
 \centering
-\caption{$H$ of the four curves, fitted by the rule of the text, with 95\% intervals. The flights are all those of the
-group that pass the selection (not only those at 1~Hz).}
+\caption{$H$ of the curves, fitted by the rule of the text, with 95\% intervals: crests, crest model, flights (dyn), route
+of the flights and the two null models. The flights are all those of the group that pass the selection (not only those
+at 1~Hz).}
 \label{tab:flh}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
 \input{generated/flights_table_h}
 \end{table}
 
@@ -215,9 +235,8 @@ $\flHRouteAlpsHang$, is lower than its crests, $\flHGeoAlpsHang$. The curves of 
 $\Hroute$ differ: the flights leave the ballistic value at about the floor, fall to a minimum within the first
 twenty seconds, which is about half a turn of a circle, and then recover part of the way; the route has no such
 minimum. The model has no circles and its $\alpha$ falls steadily with the lag; after the circles it is below the
-flights at the shorter lags and comes close to them at the longer ones. At the longest lags all curves rise towards and above 1, because only
-the longest flights and paths reach them and these are the straightest; the fit stops at $\tau_b$, before this
-rise.
+flights at the shorter lags and comes close to them at the longer ones. Towards $\tau_b$ the curves of the flights rise, because only the longest flights reach these lags and these are the
+straightest; the fit stops at $\tau_b$.
 
 \paragraph{What we keep.} The crests, the route of the flights, the flights with their circles and the model are
 four different curves. The route of the paragliders follows the crests as straight as the crests are, and the
@@ -226,7 +245,7 @@ route of the hang gliders is a little less straight. The circles lower $H$ from 
 $\Hdyn = \flHDynAlpsPara$ in the Alps and \flHModPyrPara{} against \flHDynPyrPara{} in the Pyrenees) and above it
 for the Alps hang gliders (\flHModAlpsHang{} against \flHDynAlpsHang{}).
 
-\subsection{Splitting $1-H$}\label{sec:fldecomp}
+\subsection{Splitting \texorpdfstring{$1-H$}{1 - H}}\label{sec:fldecomp}
 
 How much of $1-\Hdyn$ is geometry, how much intermittency, and how much is left? With $\Hdyn$ the exponent of the
 flights, the identity
@@ -242,7 +261,10 @@ Table~\ref{tab:fldecomp} give the result.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/flights_decomposition}
-\caption{Terms of Eq.~\eqref{eq:split} as a percentage of $1 - \Hdyn$, with 95\% intervals.}
+\caption{Geometry and intermittency each take a large part of $1 - \Hdyn$, and the remainder is small. From $H = 1$ down to
+$\Hdyn$ in three steps, $1 - \Hgeo$, $\Hgeo - \Hmod$ and $\Hmod - \Hdyn$ (Eq.~\eqref{eq:split}); each step is labelled with its
+share of $1 - \Hdyn$. The last step goes up when $\Hmod < \Hdyn$, and its share is then negative. Intervals are in
+Table~\ref{tab:fldecomp}.}
 \label{fig:fldecomp}
 \end{figure}
 
@@ -278,12 +300,58 @@ gliders, intermittency shares of \flPctInterOldAlpsPara\%, \flPctInterOldPyrPara
 and remainders of \flPctOtherOldAlpsPara\%, \flPctOtherOldPyrPara\% and \flPctOtherOldAlpsHang\%: a longer
 pause lowered the model further below the flights.
 
+The two null models of Section~\ref{sec:flnull} stand \flNullGapStraightAlpsPara\% (straight) and
+\flNullGapRandomAlpsPara\% (random) of $1-\Hdyn$ from the flights for the Alps paragliders, \flNullGapStraightAlpsHang\% and
+\flNullGapRandomAlpsHang\% for the Alps hang gliders and \flNullGapStraightPyrPara\% and \flNullGapRandomPyrPara\% for the
+Pyrenees paragliders.
+
 \paragraph{What we keep.} The crests carry \flPctGeometryAlpsPara\%, \flPctGeometryPyrPara\% and
 \flPctGeometryAlpsHang\% of $1 - \Hdyn$ for the Alps paragliders, the Pyrenees paragliders and the Alps hang
 gliders. The stops of the model take \flPctInterAlpsPara\%, \flPctInterPyrPara\% and \flPctInterAlpsHang\%, and
 the remainder is \flPctOtherAlpsPara\%, \flPctOtherPyrPara\% and \flPctOtherAlpsHang\%. The model falls below
 the flights for the paragliders and agrees with them, within the interval, for the Alps hang gliders. The split
 is a statement about this model, and the Pyrenees hang gliders are too few to say anything.
+
+\subsection{Two null models without the crest geometry}\label{sec:flnull}
+
+Is the crest geometry needed, or do the pauses and the glide lengths alone give the exponent of the flights? Two null
+models keep everything of the crest model except the geometry of the motion: the glide and climb laws of
+Eq.~\eqref{eq:laws} of the group, the speed $v$, the still pauses, the \flNReal{} realisations per path, the length of
+the path (the ball stops when it has glided that distance), the TAMSD and the rule of the fit. In the \emph{straight}
+model every glide goes on along one fixed line, so that $\mathbf r(t) = (v\,\Theta(t),\,0)$ with $\Theta(t)$ the time
+spent gliding. In the \emph{random} model glide $i$ is a straight segment in a direction $\theta_i$ drawn uniformly on the
+circle, independent of the previous one: $\mathbf r(t) = v\sum_i \Theta_i(t)\,(\cos\theta_i, \sin\theta_i)$, where
+$\Theta_i(t)$ is the time spent in glide $i$ up to $t$. The straight model is the extreme of a ball that never turns and
+the random model that of a ball that forgets its direction at every glide. Figures~\ref{fig:flmsd} and~\ref{fig:flalpha}
+show them with the other curves and Table~\ref{tab:flh} their $H$. Table~\ref{tab:flnulls} gives how far each is from the
+flights, as $\Delta H = H_{\mathrm{null}} - \Hdyn$ and as the gap $100\,\Delta H/(1-\Hdyn)$ in percent.
+
+\begin{table}[t]
+\centering
+\caption{$H$ of the null models and their distance to the flights: $\Delta H$ and the gap as a percentage of
+$1-\Hdyn$, with 95\% intervals. A positive gap means $H$ above the flights.}
+\label{tab:flnulls}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\input{generated/flights_table_nulls}
+\end{table}
+
+For the Alps paragliders the straight model has $H = \flHStraightAlpsPara$, above the crests ($\Hgeo = \flHGeoAlpsPara$),
+above the crest model ($\flHModAlpsPara$) and above the flights ($\Hdyn = \flHDynAlpsPara$), by $\Delta H =
+\flNullDHStraightAlpsPara$. The random model has $H = \flHRandomAlpsPara$, below the flights by $\flNullDHRandomAlpsPara$
+(a gap of \flNullGapRandomAlpsPara\%). The crest model lies between the two, and so do the flights, in all three groups. The
+straight model shows that the pauses alone lower $H$ to this value, since a ball that never turns has $\alpha = 1$ without
+them, and its $\alpha$ tends to 1 at lags much longer than a glide and a climb. Where fewer than \flMinRows{} paths reach a lag, the
+curves of the crest model and of the straight model drop, because only the paths with the most pauses are long enough to reach
+it; the figures stop before this. In the random model $\alpha$ keeps falling with the lag, towards 0.5 for lags much longer than a glide
+(Figure~\ref{fig:flalpha}), where the flights and the crest model do not. For the hang gliders the random model comes
+closer to the flights (gap \flNullGapRandomAlpsHang\%) than for the paragliders, but still below them, and its $\alpha$ has the
+same continuing fall.
+
+\paragraph{What we keep.} The two extremes bracket the flights: a ball that never turns has $H$ above them, a ball that
+forgets its direction at every glide has $H$ below them, and the crest model lies in between. The crest geometry
+therefore matters: the same durations and speed give $H$ from \flHRandomAlpsPara{} to \flHStraightAlpsPara{} for the Alps
+paragliders according to the geometry of the motion, and the crests put it at \flHModAlpsPara, close to the flights' \flHDynAlpsPara.
 
 \subsection{The flights alone from 10 s}\label{sec:flhten}
 
@@ -306,7 +374,7 @@ the crests.
 
 Does the picture of the rule change on fixed windows? Table~\ref{tab:flwindows} gives $H$ of the four curves on
 the windows of Table~\ref{tab:hgeo}, divided by $v$ to give lags. The window from 0.1~km starts at the floor and each curve runs to its last lag with
-at least ten flights or paths, not to $\tau_b$.
+at least \flMinRows{} flights or paths, not to $\tau_b$.
 
 \begin{table}[t]
 \centering

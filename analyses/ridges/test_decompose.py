@@ -29,5 +29,5 @@ def test_bootstrap_counts_are_whole_groups_and_row_zero_is_the_data():
     c = dc.draw_counts(20, 30, np.random.default_rng(1))
     assert (c[0] == 1).all() and (c[1:].sum(1) == 20).all()
     rows = np.tile(np.arange(1.0, 6.0), (20, 1))
-    lnm = dc.log_means(rows, np.arange(20), c)
+    lnm = dc.log_means(rows, np.arange(20), c, min_rows=10)
     assert np.allclose(lnm, np.log(np.arange(1.0, 6.0)))

@@ -104,7 +104,7 @@ failing side shows what Eq.~\eqref{eq:xsec} measures.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/divides.pdf}
-\caption{\textbf{a}~Divide sides on the hillshade of a part of the Écrins. Green: valley cells ($h=0$); light blue:
+\caption{A divide side is a crest if the ground falls away on both sides. \textbf{a}~Divide sides on the hillshade of a part of the Écrins. Green: valley cells ($h=0$); light blue:
 cells with $h<h_{\min}$. \textbf{b}~Elevation $z-z_{\mathrm{crest}}$ along the axis through the two cells of a
 side, for a side that passes and a side that fails the cross-section. Dotted lines: $n$ cells from the side;
 dashed: $-\Delta_z$.}
@@ -149,7 +149,7 @@ How do the sides of cells become curves that have a length and a direction? The 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/curves.pdf}
-\caption{\textbf{a}~Sides after the tests (red) and the bridged stretches (yellow), in the area of
+\caption{Sides that pass the tests become curves, which are sampled every $\Delta s$. \textbf{a}~Sides after the tests (red) and the bridged stretches (yellow), in the area of
 Figure~\ref{fig:divides}. \textbf{b}~The curves drawn from them, one colour each. \textbf{c}~Detail of 150~m:
 the staircase of sides and the points every $\Delta s$ of the spline.}
 \label{fig:curves}
@@ -231,7 +231,8 @@ The Alps give \CgAlpsTrees{} trees and \CgAlpsPaths{} paths (median \CgAlpsPathM
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/trees.pdf}
-\caption{\textbf{a}~The longest tree of the Alps (blue: curves, red: joins), its root (star), its longest path (black)
+\caption{Most paths are short and few trees have a path of tens of kilometres. \textbf{a}~The longest tree of the Alps (black:
+curves, red: joins), its root (star), its longest path (black)
 and the tip at its end (circle). \textbf{b}~Share of paths longer than $L$. \textbf{c}~Number of trees whose
 longest path is at least $L$; dotted line: 40~km, the length a path needs for a lag of 10~km (Section~\ref{sec:tamsd}).}
 \label{fig:trees}
@@ -296,8 +297,8 @@ Table~\ref{tab:hgeo} the exponents on the windows.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/tamsd.pdf}
-\caption{\textbf{a}~End-to-end distance over arc length, $\sqrt{\overline{\delta^2}}/s$, of the Alps (blue) and the
-Pyrenees (orange), for the paths (solid) and the curves (dashed). Bottom axis: arc length $s$; top axis: lag $\tau$ of a
+\caption{The crests bend more at larger scales, in the Alps and the Pyrenees alike. \textbf{a}~End-to-end distance over arc
+length, $\sqrt{\overline{\delta^2}}/s$, of the Alps (black) and the Pyrenees (grey), for the paths (solid) and the curves (dashed). Bottom axis: arc length $s$; top axis: lag $\tau$ of a
 ball at 35~km/h; grey: below four cells. \textbf{b}~Local slope of the MSD, $\alpha(s)$, Eq.~\eqref{eq:alphaloc}, with its 95\% band for
 the paths. Dashed horizontal lines: $\Hgeo$ of the window from 0.1~km (Table~\ref{tab:hgeo}), drawn over the lags of that fit, for the
 paths (Alps \CgAlpsPathsFrom, Pyrenees \CgPyrPathsFrom) and, fainter, the curves (\CgAlpsCurvesFrom{} and \CgPyrCurvesFrom). \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals (filled: paths; open: curves, too short for the
@@ -355,7 +356,8 @@ Where can the exponent not be trusted? Three limits, shown in Figure~\ref{fig:li
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{figures/limits.pdf}
-\caption{\textbf{a}~The data edge where most flagged curves of the Alps are: red, no data; orange, curves that reach the edge. \textbf{b}~Local
+\caption{Three things limit the exponent: the data edge, the grid scale and the number of trees at long lags.
+\textbf{a}~The data edge where most flagged curves of the Alps are: red, no data; orange, curves that reach the edge. \textbf{b}~Local
 slope of the MSD, $\alpha(s)$, near the grid scale; grey: below four cells. Dashed lines: $\Hgeo$ of the window from 0.1~km, as in Figure~\ref{fig:tamsd}b. \textbf{c}~Number of trees (solid) and of paths (dotted) that
 have each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
 \label{fig:limits}

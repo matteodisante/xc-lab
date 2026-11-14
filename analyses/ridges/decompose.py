@@ -30,11 +30,13 @@ import pauses as pa
 REGIONS, DISCS = ("alps", "pyrenees"), ("para", "hang")
 DISC_LONG = {"para": "paragliders", "hang": "hang_gliders"}
 ALPHA_END, FLOOR_M = 0.98, 100.0
+MIN_ROWS = 100  # a lag counts for a curve only if this many flights or paths reach it: no thin tails
 H10_FROM_S = 10.0  # start of the fit of the flights alone, to their last lag
 N_BOOT, N_REAL, SEED = 1000, 3, 20261113
 MIN_FLIGHTS = 30  # a group with fewer flights is shown but not interpreted
 HERE = Path(__file__).parent
 CURVES = ("geo", "model", "dyn", "route")
+NULLS = ("straight", "random")  # null models: the same durations and speed, another geometry of the motion
 
 
 def newest_cache():
@@ -54,8 +56,9 @@ def draw_counts(m, n_boot, rng):
     return np.vstack([np.ones(m), rng.multinomial(m, np.full(m, 1 / m), size=n_boot)])
 
 
-def log_means(rows, group, counts):
-    """ln of the mean over rows with equal weight, per resample of the groups; NaN below fl.MIN_PIECES rows."""
+def log_means(rows, group, counts, min_rows=None):
+    """ln of the mean over rows with equal weight, per resample of the groups; NaN below `min_rows` rows (MIN_ROWS)."""
+    min_rows = MIN_ROWS if min_rows is None else min_rows
     v = np.isfinite(rows)
     x, v = np.where(v, rows, 0.0), v.astype(float)
     out = []
@@ -63,7 +66,7 @@ def log_means(rows, group, counts):
         c = counts[s : s + 100][:, group]
         n = c @ v
         with np.errstate(all="ignore"):
-            out.append(np.where(n >= fl.MIN_PIECES, np.log((c @ x) / n), np.nan))
+            out.append(np.where(n >= min_rows, np.log((c @ x) / n), np.nan))
     return np.vstack(out)
 
 
@@ -102,33 +105,38 @@ def last_lag(lnm, tau):
     return tau[np.isfinite(lnm[0])].max()
 
 
-def analyse_group(geo_rows, trees, mod_rows, dyn, route, v, rng, mod_old=None):
+def analyse_group(geo_rows, trees, mod_rows, dyn, route, v, rng, mod_old=None, nulls=None):
     """Curves, H (rule and fixed windows) and the decomposition of one region and discipline.
 
     geo_rows, mod_rows: one row per crest path (trees: its tree); dyn, route: one row per flight. mod_old: rows of
-    a second model on the same paths, for the decomposition it gives."""
+    a second model on the same paths, for the decomposition it gives. nulls: rows of the null models by name."""
     _, g = np.unique(trees, return_inverse=True)
     ct, cf = draw_counts(g.max() + 1, N_BOOT, rng), draw_counts(len(dyn), N_BOOT, rng)
     tau = {"geo": fl.LAGS_K * fl.STEP_M / v, "model": fl.LAGS_T.astype(float), "dyn": fl.LAGS_T.astype(float), "route": fl.LAGS_K * fl.STEP_M / v}
     idx = np.arange(len(dyn))
     lnm = {"geo": log_means(geo_rows, g, ct), "model": log_means(mod_rows, g, ct), "dyn": log_means(dyn, idx, cf), "route": log_means(route, idx, cf)}
+    for k, rows in (nulls or {}).items():
+        lnm[k], tau[k] = log_means(rows, g, ct), tau["model"]
     floor, tau_max = FLOOR_M / v, min(last_lag(lnm[k], tau[k]) for k in CURVES)
     res = {"v": v, "tau_floor": floor, "tau_max": tau_max, "n_flights": int(np.isfinite(dyn[:, 0]).sum()), "n_paths": len(geo_rows),
            "curves": {}, "H": {}, "start": {}, "window": {}}
     h = {}
-    for k in CURVES:
+    for k in CURVES + tuple(nulls or {}):
         a = alpha(lnm[k], tau[k])
         res["curves"][k] = {"tau": tau[k].tolist(), "lnm": lnm[k][0].tolist(), "lnm_band": band(lnm[k]).tolist(),
                             "alpha": a[0].tolist(), "alpha_band": band(a).tolist()}
         h[k], st = rule_fit(lnm[k], tau[k], floor, tau_max)
         res["H"][k], res["start"][k] = ci(h[k]), ci(st)
-        res["window"][k] = {fl.fmt_window(lo, hi): ci(fl.slope_h(lnm[k], tau[k], lo / v, hi / v)) for lo, hi in fl.WINDOWS_M}
-    last = last_lag(lnm["dyn"], tau["dyn"])  # the flights alone: from H10_FROM_S to their last lag with MIN_PIECES flights
-    res["h10"] = {"H": ci(fl.slope_h(lnm["dyn"], tau["dyn"], H10_FROM_S, last)), "last_lag": float(last)}
+        if k in CURVES:
+            res["window"][k] = {fl.fmt_window(lo, hi): ci(fl.slope_h(lnm[k], tau[k], lo / v, hi / v)) for lo, hi in fl.WINDOWS_M}
+    ten = log_means(dyn, idx, cf, min_rows=fl.MIN_PIECES)  # the flights alone: from H10_FROM_S to their last lag with MIN_PIECES flights
+    last = last_lag(ten, tau["dyn"])
+    res["h10"] = {"H": ci(fl.slope_h(ten, tau["dyn"], H10_FROM_S, last)), "last_lag": float(last)}
     if mod_old is not None:
         h_old = rule_fit(log_means(mod_old, g, ct), tau["model"], floor, tau_max)[0]
         res["H_old"], res["decomposition_old"] = ci(h_old), decomposition(h["geo"], h_old, h["dyn"])
     res["decomposition"] = decomposition(h["geo"], h["model"], h["dyn"])
+    res["null"] = {k: {"dH": ci(h[k] - h["dyn"]), "gap": ci(100 * (h[k] - h["dyn"]) / (1 - h["dyn"]))} for k in nulls or {}}
     res["decomposition_route"] = decomposition(h["geo"], h["model"], h["route"])
     return res
 
@@ -191,8 +199,9 @@ def main(cache, data):
             mod = md.model_rows(paths, rng, v, glide, pause, N_REAL)
             old = ph["pause_old"]
             mod_old = md.model_rows(paths, rng, v, glide, (old["mu"], old["tau0"], old["x0"]), N_REAL)
+            nulls = {k: md.model_rows(paths, rng, v, glide, pause, N_REAL, kind=k) for k in NULLS}
             try:
-                out["groups"][key] = analyse_group(geo, trees, mod, rows["dyn"]["rows"][sel.to_numpy()], rows["route"]["rows"][sel.to_numpy()], v, rng, mod_old)
+                out["groups"][key] = analyse_group(geo, trees, mod, rows["dyn"]["rows"][sel.to_numpy()], rows["route"]["rows"][sel.to_numpy()], v, rng, mod_old, nulls)
             except (ValueError, IndexError) as e:  # too few flights for any lag with MIN_PIECES of them
                 print(key, "not analysed:", e, flush=True)
     return out

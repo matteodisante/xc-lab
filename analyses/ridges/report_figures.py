@@ -31,14 +31,14 @@ import tamsd
 ROOT = Path(__file__).parent
 FIG, GEN = ROOT / "crests" / "figures", ROOT / "crests" / "generated"
 REGIONS = {"alps": "Alps", "pyrenees": "Pyrenees"}
-COLOR = {"alps": "#2A78D6", "pyrenees": "#EB6834"}
+import figstyle
+
+COLOR = figstyle.REGION_COLOR
 INK, GREY = "#0B0B0B", "#9A9893"
 LAGS = {100: "Hundred", 250: "TwoFifty", 500: "FiveHundred", 1000: "Km", 2000: "TwoKm", 5000: "FiveKm", 10000: "TenKm"}
 WINDOW_KEY = {"from 0.1 km": "From", "0.1-1 km": "Short", "1-10 km": "Mid", "beyond 10 km": "Long"}
 SITES = {"ecrins": (6.30, 44.97), "maurienne": (6.98, 45.27), "pyrenees": (-0.05, 42.75)}  # lon, lat
-plt.rcParams.update({"font.size": 8, "axes.labelsize": 8, "axes.titlesize": 8, "legend.fontsize": 7,
-                     "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.spines.top": False, "axes.spines.right": False,
-                     "figure.dpi": 100, "savefig.bbox": "tight"})
+figstyle.apply()
 
 
 def lambert(lon, lat):
@@ -111,7 +111,7 @@ def fig_map(data):
         x0, x1, y0, y1 = ax.axis()
         xs = x1 - 60000 if side == 1 else x0 + 10000
         ax.plot([xs, xs + 50000], [y0 + 8000] * 2, color=INK, lw=1.5)
-        ax.text(xs + 25000, y0 + 14000, "50 km", ha="center", fontsize=7)
+        ax.text(xs + 25000, y0 + 14000, "50 km", ha="center", fontsize=8)
     fig.tight_layout()
     save(fig, "map.pdf")
 
@@ -175,10 +175,10 @@ def fig_divides(data):
     ax.plot([], [], color="red", lw=1, label="passes both tests")
     ax.plot([], [], color="#f1c40f", lw=1, label="fails the cross-section only")
     ax.plot([], [], color="#00e68a", lw=2, label="valley cells")
-    ax.legend(loc="lower left", frameon=True, framealpha=0.85, fontsize=6)
+    ax.legend(loc="lower left", frameon=True, framealpha=0.85, fontsize=8)
     ax.plot([box[0] + 300, box[0] + 1300], [box[1] + 150] * 2, color="white", lw=1.5)
-    ax.text(box[0] + 800, box[1] + 260, "1 km", color="white", ha="center", fontsize=7)
-    ax.set_title("a")
+    ax.text(box[0] + 800, box[1] + 260, "1 km", color="white", ha="center", fontsize=8)
+    ax.set_title("a", loc="left", fontweight="bold")
     # two profiles: an accepted side and a side failing the cross-section
     cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
     pick = lambda ids: ids[np.argmin(((D.corner_xy(ids[:, 0]) - [cx, cy]) ** 2).sum(axis=1))]
@@ -196,7 +196,7 @@ def fig_divides(data):
             a.axvline(0, color=GREY, lw=0.6)
             for sgn in (-1, 1):
                 a.axvline(sgn * (ridges.XSEC_CELLS * 25 + 12.5), color=GREY, lw=0.6, ls=":")
-        a.set_title(name, fontsize=7)
+        a.set_title(name, fontsize=8)
         a.set_ylabel("$z-z_{\\mathrm{crest}}$ (m)")
         if k == 1:
             a.set_xlabel("distance across the side (m)")
@@ -223,12 +223,12 @@ def fig_curves(data):
         a.set_yticks([])
     axs[0].add_collection(LineCollection(acc, colors="red", linewidths=0.8))
     axs[0].add_collection(LineCollection(bridged, colors="#f1c40f", linewidths=0.8))
-    axs[0].set_title("a  sides after the tests and the bridges", fontsize=7)
+    axs[0].set_title("a", loc="left", fontweight="bold")
     cl = [p for p in D.curve_list() if (p[:, 0] > box[0] - 3000).any() and (p[:, 0] < box[2] + 3000).any() and (p[:, 1] > box[1] - 3000).any() and (p[:, 1] < box[3] + 3000).any()]
     cmap = plt.get_cmap("tab20")
     for i, p in enumerate(cl):
         axs[1].plot(p[:, 0], p[:, 1], color=cmap(i % 20), lw=1.0)
-    axs[1].set_title("b  curves", fontsize=7)
+    axs[1].set_title("b", loc="left", fontweight="bold")
     # zoom: sides and the spline points of one curve
     cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
     best = min(cl, key=lambda p: ((p - [cx, cy]) ** 2).sum(axis=1).min())
@@ -244,7 +244,7 @@ def fig_curves(data):
     a.set_aspect("equal")
     a.set_xticks([])
     a.set_yticks([])
-    a.set_title("c  150 m: sides and points every 5 m", fontsize=7)
+    a.set_title("c", loc="left", fontweight="bold")
     for ax_ in axs:
         for s in ax_.spines.values():
             s.set_visible(True)
@@ -281,10 +281,10 @@ def fig_trees(data):
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title("a  the longest tree of the Alps", fontsize=7)
+    ax.set_title("a", loc="left", fontweight="bold")
     ax.plot([], [], color=INK, lw=1.1, label="longest path")
     ax.plot([], [], color="red", lw=1, label="joins")
-    ax.legend(loc="lower left", frameon=False, fontsize=6)
+    ax.legend(loc="lower right", frameon=False, fontsize=8)
     # b: lengths of paths
     ax = fig.add_subplot(gs[1])
     for r in REGIONS:
@@ -295,7 +295,7 @@ def fig_trees(data):
     ax.set_xlabel("path length $L$ (km)")
     ax.set_ylabel("share of paths longer than $L$")
     ax.legend(frameon=False)
-    ax.set_title("b", fontsize=7, loc="left")
+    ax.set_title("b", loc="left", fontweight="bold")
     # c: trees by longest path
     ax = fig.add_subplot(gs[2])
     for r in REGIONS:
@@ -309,7 +309,7 @@ def fig_trees(data):
     ax.set_yscale("log")
     ax.set_xlabel("longest path of a tree $\\geq L$ (km)")
     ax.set_ylabel("number of trees")
-    ax.set_title("c", fontsize=7, loc="left")
+    ax.set_title("c", loc="left", fontweight="bold")
     save(fig, "trees.pdf")
 
 
@@ -403,10 +403,10 @@ def fig_limits(data):
     ax.set_aspect("equal")
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title("a  data edge (red: no data)", fontsize=7)
+    ax.set_title("a", loc="left", fontweight="bold")
     ax.plot([], [], color="#e8a317", label="reaches the edge")
     ax.plot([], [], color=COLOR["alps"], label="other curves")
-    ax.legend(loc="lower left", frameon=True, framealpha=0.85, fontsize=6)
+    ax.legend(loc="lower left", frameon=True, framealpha=0.85, fontsize=8)
     # b: local slope near the grid scale
     ax = fig.add_subplot(gs[1])
     for r in REGIONS:
@@ -418,12 +418,12 @@ def fig_limits(data):
     for r in REGIONS:
         for kind in ("paths", "curves"):
             fit_line(ax, data, r, kind, wins)
-    ax.set_xlim(right=1000)
+    ax.set_xlim(0, 1000)
     ax.axvspan(0, 100, color="#e6e5e1", lw=0)
     ax.axvline(100, color=GREY, lw=0.6)
     ax.set_xlabel("arc length $s$ (m)")
     ax.set_ylabel("local slope $\\alpha(s)$")
-    ax.set_title("b", fontsize=7, loc="left")
+    ax.set_title("b", loc="left", fontweight="bold")
     # c: trees at the lag
     ax = fig.add_subplot(gs[2])
     for r in REGIONS:
@@ -438,7 +438,7 @@ def fig_limits(data):
     ax.set_yscale("log")
     ax.set_xlabel("arc length $s$ (m)")
     ax.set_ylabel("trees (solid), paths (dotted)")
-    ax.set_title("c", fontsize=7, loc="left")
+    ax.set_title("c", loc="left", fontweight="bold")
     save(fig, "limits.pdf")
 
 

@@ -62,7 +62,7 @@ def compare(sample_dir, v_kmh=fl.V_KMH, n_boot=dc.N_BOOT, seed=1):
     v = v_kmh / 3.6
     tau = {"dyn": fl.LAGS_T.astype(float), "route": fl.LAGS_K * fl.STEP_M / v}
     counts = dc.draw_counts(len(keys), n_boot, np.random.default_rng(seed))
-    lnm = {k: dc.log_means(r, np.arange(len(keys)), counts) for k, r in rows.items()}
+    lnm = {k: dc.log_means(r, np.arange(len(keys)), counts, min_rows=fl.MIN_PIECES) for k, r in rows.items()}
     tau_max = min(dc.last_lag(lnm[(s, k)], tau[k]) for s in ("raw", "clean") for k in CURVES)
     out = {"n_in_sample": len(flights), "n_clean": len(clean), "n_raw": len(raw), "n_both": len(keys), "v_kmh": v_kmh, "tau_max": tau_max,
            "h": {}}
