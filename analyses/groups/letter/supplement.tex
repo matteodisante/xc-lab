@@ -1,10 +1,15 @@
-\documentclass[aps,prl,onecolumn,superscriptaddress,nofootinbib]{revtex4-2}
+\documentclass[aps,prl,twocolumn,superscriptaddress,nofootinbib]{revtex4-2}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{xcolor}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.85}
 \usepackage{booktabs}
-\usepackage[section]{placeins}
 
 \input{../vs-solo/generated/comparisons/macros.tex}
 \let\tauStar\relax
@@ -26,7 +31,7 @@
 
 \begin{document}
 
-\title{Supplemental Material: The value of flying together}
+\title{Supplemental Material: Good company is a good route}
 \maketitle
 
 \section{Open flights}\label{sm:open}
@@ -36,41 +41,46 @@ Which flights do the comparisons of the letter use? The declared open flights wh
 
 The archive of the French free-flight federation (FFVL) holds \LtFlightsAll{} paraglider flights
 recorded between \LtFirstYear{} and \LtLastYear. We use the \LtOpenTotal{} flights that depart and
-are logged at most every \LtLoggerMax~s. The pilot declares the type of each flight. Of these flights
-\LtOpenDeclared{} are declared open (a free distance or a route with up to three turn points),
-\FlightsClosed{} closed (a triangle, a quadrilateral or an out-and-return) and \FlightsNeither{}
-neither. \pending{State how the tracks are cleaned (spikes, gaps, altitude); the tracks are those cleaned by
+are logged at most every \LtLoggerMax~s.
+
+The pilot declares the type of each flight. Of these flights \LtOpenDeclared{} are declared open (a
+free distance or a route with up to three turn points), \FlightsClosed{} closed (a triangle, a
+quadrilateral or an out-and-return) and \FlightsNeither{} neither. \pending{State how the tracks are cleaned (spikes, gaps, altitude); the tracks are those cleaned by
 soaring-anomalous-transport (tag legacy-final), and the rule is in its preprocessing.}
 
 The opening of a flight is the distance from its takeoff to its landing over the path flown. It is 1
 for a straight line and close to 0 for a flight that returns to its takeoff. Declared open flights
 are often folded: their median opening is \MedianEvery{}, and \BelowEvery\% of them have an opening
-below \LtOpenThreshold{} (Fig.~\ref{fig:sm_opening}). A flight that returns near its takeoff moves
-away and then back, so its displacement stops growing as the lag approaches its duration and its mean
-squared displacement (MSD) bends. Closed circuits therefore bend the MSD at long lags. On the dataset
-to \DeclTauLongest~s (Sec.~S2) the local slope $\alpha$ at that lag falls to \LtDeclLongestAlphaS{}
-for solo flights (S) and \LtDeclLongestAlphaA{} for the same flights alone (A), and group time (G)
-keeps \LtDeclLongestAlphaG{} on \LtDeclFlightsG{} flights only. The flights of G are the most open at
-these lags (Table~\ref{tab:opening}), so part of the straighter progress of G at long lags is the
-shape of its flights.
+below \LtOpenThreshold{} (Fig.~\ref{fig:sm_opening}).
+
+A flight that returns near its takeoff moves away and then back, so its displacement stops growing as
+the lag approaches its duration and its mean squared displacement (MSD) bends. Closed circuits
+therefore bend the MSD at long lags. On the dataset to \DeclTauLongest~s (Sec.~S2) the local slope
+$\alpha$ at that lag falls to \LtDeclLongestAlphaS{} for solo flights (S) and
+\LtDeclLongestAlphaA{} for the same flights alone (A).
+
+Group time (G) keeps \LtDeclLongestAlphaG{} on \LtDeclFlightsG{} flights only. The flights of G are
+the most open at these lags (Table~\ref{tab:opening}), so part of the straighter progress of G at
+long lags is the shape of its flights.
 
 We keep the declared open flights with an opening above \LtOpenThreshold, \LtOpenKept{} flights or
 \LtOpenKeptShare\% of the declared open ones. We chose \LtOpenThreshold{} as the smallest selection
 that removes the flights that return near their takeoff, and that keeps similar shares of the flights
-from low and high takeoffs, \TakeoffLowKeep\% below and \TakeoffHighKeep\% above \MountainM~m. A
-stricter threshold of \Stricter{} keeps only \TakeoffLowStrict\% and \TakeoffHighStrict\% of them.
+from low and high takeoffs, \TakeoffLowKeep\% below and \TakeoffHighKeep\% above \MountainM~m.
+
+A stricter threshold of \Stricter{} keeps only \TakeoffLowStrict\% and \TakeoffHighStrict\% of them.
 It would select the region as well as the shape, and a high threshold selects straight flights and
 raises the exponent by construction.
 
-\begin{figure}[tbp]
-\includegraphics[width=0.7\textwidth]{figures/sm_opening.pdf}
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_opening.pdf}
 \caption{(a) Opening of the declared open flights (distance from takeoff to landing over the path
 flown), with the threshold \LtOpenThreshold{} and the stricter one of \Stricter. (b) Fitted $H$ and
 (c) $\aK$ of S, A and G with no threshold, with \LtOpenThreshold{} and with \Stricter.}
 \label{fig:sm_opening}
 \end{figure}
 
-\begin{table}[tbp]
+\begin{table}[t]
 \caption{Flights and median opening of the declared open flights in the datasets to the lags
 \DeclTauFixed{} and \DeclTauLongest~s (Sec.~S2), by population.}
 \label{tab:opening}
@@ -96,63 +106,48 @@ lag needs long enough pieces, and longer pieces are fewer and differ from the sh
 A lag $\tau$ needs pieces of at least $\tau/\LtSupport$~s, so that the origins of every piece cover the
 lag in the same share of it. A dataset to the lag $T$ keeps in each population the pieces of at least
 $T/\LtSupport$~s and measures them at every lag up to $T$, so that the population does not change along
-a curve. We use three datasets. The main dataset has $T = \RawTauTwo$~s and pieces of at least
+a curve.
+
+We use three datasets. The main dataset has $T = \RawTauTwo$~s and pieces of at least
 \RawShortestTwo~s. The check has $T = \RawTauOne$~s and pieces of at least \RawShortestOne~s. The longest,
-to \LtTauLong~s, shows what longer pieces select. Table~\ref{tab:raw} gives the raw design on the three
-datasets; Fig.~\ref{fig:sm_datasets} shows their MSD and $\alpha(\tau)$ and Fig.~\ref{fig:sm_durations}
-the durations of the pieces.
+to \LtTauLong~s, shows what longer pieces select. Fig.~\ref{fig:sm_datasets} shows their MSD, their
+$\alpha(\tau)$, their fitted $H$ and their number of flights, and Fig.~\ref{fig:sm_durations} the
+durations of the pieces.
 
 The value $\aK$ is read on the datasets to \LtTauOne~s, where its window is cut at \LtLagOne~s, and on
-the others, where it is not. $\aQ$ is read on the datasets to \LtTauTwo~s and \LtTauLong~s; on the
-first its window of $\pm\LtDecade$ decades would run from \HqLowest{} to \HqHighest~s and is cut at
-\RawTauTwo~s. On the main dataset $\aQ$ is \LtRawAlphaQSTwo{} for S, \LtRawAlphaQATwo{} for A and
-\LtRawAlphaQGTwo{} for G.
+the others, where it is not.
+
+$\aQ$ is read on the datasets to \LtTauTwo~s and \LtTauLong~s. On the first its window of
+$\pm\LtDecade$ decades would run from \HqLowest{} to \HqHighest~s and is cut at \RawTauTwo~s.
 
 Longer pieces select flights with a larger exponent. On the dataset to \LtTauLong~s $\aK$ is
-\LtRawAlphaKSLong{} for S, \LtRawAlphaKALong{} for A and \LtRawAlphaKGLong{} for G, against
-\LtRawAlphaKSTwo{}, \LtRawAlphaKATwo{} and \LtRawAlphaKGTwo{} on the main dataset. The level shifts.
-The shape of $\alpha(\tau)$ at the lags that the datasets share is kept (Fig.~\ref{fig:sm_datasets}).
+\LtRawAlphaKSLong{} for S, \LtRawAlphaKALong{} for A and \LtRawAlphaKGLong{} for G, larger than on the
+main dataset (Fig.~\ref{fig:sm_datasets}). The level shifts. The shape of $\alpha(\tau)$ at the lags
+that the datasets share is kept.
 
 We chose \LtTauTwo~s as the longest lag at which the same-route design keeps \MatMin{} pieces of G
 per level of the wing. Table~\ref{tab:counts} gives the pieces of G and A that find a control for each
-caliper (Sec.~S6) on the datasets to \LtTauOne{} and \LtTauTwo~s. At $T = \LtLongerTau$~s no caliper
-reaches \LtMinPieces{} pieces per level: the most beginners any caliper keeps is \LtLongerBeginners.
-We counted this once, outside the final run, with the matching of Sec.~S6.
+caliper (Sec.~S6) on the datasets to \LtTauOne{} and \LtTauTwo~s.
 
-\begin{figure}[tbp]
+At $T = \LtLongerTau$~s no caliper reaches \LtMinPieces{} pieces per level: the most beginners any
+caliper keeps is \LtLongerBeginners. We counted this once, outside the final run, with the matching of
+Sec.~S6.
+
+\begin{figure*}[t]
 \includegraphics[width=\textwidth]{figures/sm_datasets.pdf}
 \caption{MSD (top) and local slope $\alpha(\tau)$ (bottom) of S, A and G on the datasets to
 \LtTauOne, \LtTauTwo{} and \LtTauLong~s, with their fitted $H$ and number of flights.}
 \label{fig:sm_datasets}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[tbp]
-\includegraphics[width=0.8\textwidth]{figures/sm_durations.pdf}
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_durations.pdf}
 \caption{Flights of S, A and G with a piece of at least the duration $d = \tau/\LtSupport$, and the
 minimum durations of the three datasets (dotted lines).}
 \label{fig:sm_durations}
 \end{figure}
 
-\begin{table}[tbp]
-\caption{Raw design on the three datasets: flights and $\aK$ of the three populations, with
-\LtBandLevel\% bands, and their differences.}
-\label{tab:raw}
-\small
-\begin{ruledtabular}
-\begin{tabular}{lrcrcrc}
- & \multicolumn{2}{c}{To \LtTauOne~s} & \multicolumn{2}{c}{To \LtTauTwo~s} & \multicolumn{2}{c}{To \LtTauLong~s} \\
- & Flights & $\aK$ & Flights & $\aK$ & Flights & $\aK$ \\
-\hline
-S & \LtRawFlightsSOne & \vb{\LtRawAlphaKSOne}{\LtRawAlphaKSOneBand} & \LtRawFlightsSTwo & \vb{\LtRawAlphaKSTwo}{\LtRawAlphaKSTwoBand} & \LtRawFlightsSLong & \vb{\LtRawAlphaKSLong}{\LtRawAlphaKSLongBand} \\
-A & \LtRawFlightsAOne & \vb{\LtRawAlphaKAOne}{\LtRawAlphaKAOneBand} & \LtRawFlightsATwo & \vb{\LtRawAlphaKATwo}{\LtRawAlphaKATwoBand} & \LtRawFlightsALong & \vb{\LtRawAlphaKALong}{\LtRawAlphaKALongBand} \\
-G & \LtRawFlightsGOne & \vb{\LtRawAlphaKGOne}{\LtRawAlphaKGOneBand} & \LtRawFlightsGTwo & \vb{\LtRawAlphaKGTwo}{\LtRawAlphaKGTwoBand} & \LtRawFlightsGLong & \vb{\LtRawAlphaKGLong}{\LtRawAlphaKGLongBand} \\
-G $-$ S & & \vb{\LtRawAlphaGapKGSOne}{\LtRawAlphaGapKGSOneBand} & & \vb{\LtRawAlphaGapKGSTwo}{\LtRawAlphaGapKGSTwoBand} & & \vb{\LtRawAlphaGapKGSLong}{\LtRawAlphaGapKGSLongBand} \\
-A $-$ S & & \vb{\LtRawAlphaGapKASOne}{\LtRawAlphaGapKASOneBand} & & \vb{\LtRawAlphaGapKASTwo}{\LtRawAlphaGapKASTwoBand} & & \vb{\LtRawAlphaGapKASLong}{\LtRawAlphaGapKASLongBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
-
-\begin{table}[tbp]
+\begin{table*}[t]
 \caption{Pieces of G (beginners, experienced, all) and of A (all) that find a control, for each caliper
 of the same-route match, on the datasets to \LtTauOne{} and \LtTauTwo~s. The chosen caliper is the
 third (month within \MatMonth, hour within \MatHour, same class of the wing); the rule asks for
@@ -171,7 +166,7 @@ $\ast$ Month $\pm2$, hour $\pm2$, class & \LtCntWideClassGOneBeg & \LtCntWideCla
 Month $\pm2$, hour $\pm2$, level & \LtCntWideLevelGOneBeg & \LtCntWideLevelGOneExp & \LtCntWideLevelGOneAll & \LtCntWideLevelGTwoBeg & \LtCntWideLevelGTwoExp & \LtCntWideLevelGTwoAll & \LtCntWideLevelAOneAll & \LtCntWideLevelATwoAll \\
 \end{tabular}
 \end{ruledtabular}
-\end{table}
+\end{table*}
 
 What we keep: the main dataset to \LtTauTwo~s, the check to \LtTauOne~s, and the rule that a lag needs
 pieces of at least $\tau/\LtSupport$~s.
@@ -188,46 +183,29 @@ population,
 \end{equation}
 with $t$ and $t+\tau$ in the same piece, on a \TnGridStep~s grid. The ensemble $\mathrm{MSD}(\tau)$ is
 the mean over the flights, with one weight per flight (per piece, control segment or window in the
-other designs). The local slope is
+other designs).
+
+The local slope is
 \begin{equation}
 \alpha(\tau) = \frac{d \ln \mathrm{MSD}}{d \ln \tau},
 \end{equation}
 estimated as the slope of $\ln\mathrm{MSD}$ against $\ln\tau$ over the lags within $\pm\LtDecade$
 decades of $\tau$, with the three nearest lags when fewer lie there. At the last lag of a dataset the
-window is one-sided. $\alpha$ is 1 for diffusion and 2 for straight flight. The exponent $H$ is half
-the slope of $\ln\mathrm{MSD}$ against $\ln\tau$ from \LtFitFrom~s to the end lag, with the same
-weight for every lag; for a power law $\mathrm{MSD}\sim\tau^{2H}$, $\alpha = 2H$.
+window is one-sided. $\alpha$ is 1 for diffusion and 2 for straight flight.
 
+The exponent $H$ is half the slope of $\ln\mathrm{MSD}$ against $\ln\tau$ from \LtFitFrom~s to the end
+lag, with the same weight for every lag; for a power law $\mathrm{MSD}\sim\tau^{2H}$, $\alpha = 2H$.
 Because $H$ averages $\alpha$ over the lags of the fit, it depends on the end lag when $\alpha$ is not
-constant (Fig.~\ref{fig:sm_fit_by_end}, Table~\ref{tab:fit}). The gap of G against S in the fitted $H$
-is \LtRawFitGapGSOne{} to \LtTauOne~s, \LtRawFitGapGSTwo{} to \LtTauTwo~s and \LtRawFitGapGSLong{} to
-\LtTauLong~s. It grows with the end lag.
+constant. The gap of G against S in the fitted $H$ grows with the end lag
+(Fig.~\ref{fig:sm_fit_by_end}b).
 
-\begin{figure}[tbp]
-\includegraphics[width=0.8\textwidth]{figures/sm_fit_by_end.pdf}
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_fit_by_end.pdf}
 \caption{(a) Fitted exponent $H$ of S, A and G and (b) its differences G $-$ S and A $-$ S against
 the end lag of the fit. Points: the datasets to \LtTauOne, \LtTauTwo{} and \LtTauLong~s, with
 \LtBandLevel\% bands. Dotted lines: the fit on the dataset to \LtTauTwo~s with an earlier end lag.}
 \label{fig:sm_fit_by_end}
 \end{figure}
-
-\begin{table}[tbp]
-\caption{Fitted exponent $H$ (from \LtFitFrom~s to the end lag) of the three populations and its
-differences, on the datasets to \LtTauOne, \LtTauTwo{} and \LtTauLong~s, with \LtBandLevel\% bands.}
-\label{tab:fit}
-\small
-\begin{ruledtabular}
-\begin{tabular}{lccc}
- & To \LtTauOne~s & To \LtTauTwo~s & To \LtTauLong~s \\
-\hline
-S & \vb{\LtRawFitSOne}{\LtRawFitSOneBand} & \vb{\LtRawFitSTwo}{\LtRawFitSTwoBand} & \vb{\LtRawFitSLong}{\LtRawFitSLongBand} \\
-A & \vb{\LtRawFitAOne}{\LtRawFitAOneBand} & \vb{\LtRawFitATwo}{\LtRawFitATwoBand} & \vb{\LtRawFitALong}{\LtRawFitALongBand} \\
-G & \vb{\LtRawFitGOne}{\LtRawFitGOneBand} & \vb{\LtRawFitGTwo}{\LtRawFitGTwoBand} & \vb{\LtRawFitGLong}{\LtRawFitGLongBand} \\
-G $-$ S & \vb{\LtRawFitGapGSOne}{\LtRawFitGapGSOneBand} & \vb{\LtRawFitGapGSTwo}{\LtRawFitGapGSTwoBand} & \vb{\LtRawFitGapGSLong}{\LtRawFitGapGSLongBand} \\
-A $-$ S & \vb{\LtRawFitGapASOne}{\LtRawFitGapASOneBand} & \vb{\LtRawFitGapASTwo}{\LtRawFitGapASTwoBand} & \vb{\LtRawFitGapASLong}{\LtRawFitGapASLongBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
 
 What we keep: $\alpha(\tau)$ for the shape and $\aK$, $\aQ$ for single numbers, and the fitted $H$ to
 the end lag of the dataset as a summary.
@@ -239,17 +217,21 @@ its parameters and the three populations.
 
 Table~\ref{tab:groups} lists the parameters. Contacts are sought among all flights of the archive, so
 a pilot may meet any other pilot whose track was uploaded. Only uploaded tracks are seen, and a group
-may have more members than we count. With these values \LtGroupFlights{} flights (\LtGroupShare\% of
-the eligible flights) fly in a group at some point, for \LtGroupHours{} flight-hours, and groups of two
-pilots hold \LtPairShare\% of this time.
+may have more members than we count.
+
+With these values \LtGroupFlights{} flights (\LtGroupShare\% of the eligible flights) fly in a group
+at some point, for \LtGroupHours{} flight-hours, and groups of two pilots hold \LtPairShare\% of this
+time.
 
 A flight is split into stretches on its own clock. After its departure, every instant of a flight that
-entered a group at least once is in a group or alone. We compare three populations: G, the stretches
-in a group of the flights that entered one; A, the other stretches of those flights, flown by the same
-pilots on the same gliders and days; and S, the flights that never entered a group. A piece is a
-stretch within one segment of the track, on a \TnGridStep~s grid of the track clock.
+entered a group at least once is in a group or alone.
 
-\begin{table}[tbp]
+We compare three populations: G, the stretches in a group of the flights that entered one; A, the other
+stretches of those flights, flown by the same pilots on the same gliders and days; and S, the flights
+that never entered a group. A piece is a stretch within one segment of the track, on a \TnGridStep~s
+grid of the track clock.
+
+\begin{table}[t]
 \caption{Parameters of the identification of groups.}
 \label{tab:groups}
 \begin{ruledtabular}
@@ -276,20 +258,25 @@ Do the bands of the letter mean what they say? We checked their coverage on synt
 
 Appendix~B of the letter describes the two-way bootstrap of pilots and blocks~\cite{Cameron2011}. We
 use \NBoot{} draws of pilots, of blocks and of cells, and the same draws for all the quantities of a
-design, so that a difference of two quantities has the band of its own draws. We checked the coverage
-on synthetic data that keep the real flights, pilots, blocks, pieces and events of the three designs
-and carry no group effect, in \CovReplicates{} replicates of several mixes of the variances of
-pilots, blocks, flights and units, with \CovDraws{} draws per bootstrap (Fig.~\ref{fig:sm_coverage}).
-A \LtBandLevel\% band holds the true value in \CovNewMin--\CovNewMax\% of the replicates, and its
-standard error is \CovNewSdMin{} to \CovNewSdMax{} times the standard deviation of the estimate over
-the replicates. A bootstrap over blocks of episodes alone, without pilots, holds it in only
-\CovOldRawMin\% of the replicates when pilots matter. A band that excludes 0 is a two-sided test at
-\LtBandLevel\%, so among many quantities without an effect about one in ten excludes 0 by chance. The
-bands do not include the choice of the matching rules, which Sec.~S12 varies, nor the choice of the
-threshold of the Hill estimator.
+design, so that a difference of two quantities has the band of its own draws.
 
-\begin{figure}[tbp]
-\includegraphics[width=0.8\textwidth]{figures/sm_coverage.pdf}
+We checked the coverage on synthetic data that keep the real flights, pilots, blocks, pieces and
+events of the three designs and carry no group effect, in \CovReplicates{} replicates of several mixes
+of the variances of pilots, blocks, flights and units, with \CovDraws{} draws per bootstrap
+(Fig.~\ref{fig:sm_coverage}).
+
+A \LtBandLevel\% band holds the true value in \CovNewMin--\CovNewMax\% of the replicates. A bootstrap
+over blocks of episodes alone, without pilots, holds it in only \CovOldRawMin\% of the replicates when
+pilots matter.
+
+The standard error of the band is \CovNewSdMin{} to \CovNewSdMax{} times the standard deviation of the
+estimate over the replicates. A band that excludes 0 is a two-sided test at \LtBandLevel\%, so among
+many quantities without an effect about one in ten excludes 0 by chance. The bands do not include the
+choice of the matching rules, which Sec.~S12 varies, nor the choice of the threshold of the Hill
+estimator.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_coverage.pdf}
 \caption{Coverage of the \LtBandLevel\% bands on synthetic data without a group effect, in the three
 designs and for five mixes of the variances of units, flights, pilots and blocks. Orange: the two-way
 band of the letter. Grey: the earlier scheme, a bootstrap over blocks of episodes alone. The shaded band
@@ -302,82 +289,105 @@ What we keep: the two-way bootstrap, with the same draws for all the quantities 
 \section{Same-route design}\label{sm:route}
 
 Does the gap remain on the same route, and how much of it is selection? This section gives the
-matching, the two contrasts and their difference.
+matching, the two contrasts and their difference. Table~\ref{tab:designs} gives the contrasts of the
+three designs on the main dataset, drawn in Fig.~4 of the letter. Fig.~\ref{fig:sm_route_forest} shows
+the same-route contrasts on both datasets, with the phase statistics.
+
+\begin{table*}[t]
+\caption{Contrasts of the three designs on the main dataset, with \LtBandLevel\% bands: $\Delta\alpha$
+at \LtLagOne~s and \LtLagTwo~s, the change of the fitted $H$ and the change of cross-country speed
+over \LtXcMin~min (km/h). Samples. Raw: \LtRawFlightsSTwo{} flights of S, \LtRawFlightsATwo{} of A,
+\LtRawFlightsGTwo{} of G; speed, \LtRawXcFlightsS{}, \LtRawXcFlightsA{} and \LtRawXcFlightsG{}
+flights. Same route: \LtRoutePiecesGTwo{} pieces of G and \LtRoutePiecesATwo{} of A;
+speed, \LtRouteXcPiecesG{} and \LtRouteXcPiecesA{}. S$|$G and S$|$A are the solo pieces matched to
+G and to A, and the difference of the two contrasts is the effect of the group on the same route,
+net of the selection of the flights that join groups. Same flight: \LtFltMaxEvents{} events with
+windows of \LtWinMax~s; $g$ is the mean of the changes at entry and at exit, $d_w$ their half
+difference, the drift over one window, and mock events are the same four windows at the same times
+of flight in \LtFltMaxMockFlights{} flights never in a group (\LtFltMaxMockEvents{} mock events,
+month within \MatMonth, hour within \MatHour~h, wing of the same class).}
+\label{tab:designs}
+\begin{ruledtabular}
+\begin{tabular}{llcccc}
+Design & Contrast & $\Delta\aK$ & $\Delta\aQ$ & $\Delta H$ & Speed (km/h) \\
+\hline
+Raw & G $-$ S & \LtRawAlphaGapKGSTwo{} \LtRawAlphaGapKGSTwoBand & \LtRawAlphaGapQGSTwo{} \LtRawAlphaGapQGSTwoBand & \LtRawFitGapGSTwo{} \LtRawFitGapGSTwoBand & \LtRawXcGapGS{} \LtRawXcGapGSBand \\
+ & A $-$ S & \LtRawAlphaGapKASTwo{} \LtRawAlphaGapKASTwoBand & \LtRawAlphaGapQASTwo{} \LtRawAlphaGapQASTwoBand & \LtRawFitGapASTwo{} \LtRawFitGapASTwoBand & \LtRawXcGapAS{} \LtRawXcGapASBand \\
+Same route & G $-$ S$|$G & \LtRouteAlphaKGSTwo{} \LtRouteAlphaKGSTwoBand & \LtRouteAlphaQGSTwo{} \LtRouteAlphaQGSTwoBand & \LtRouteFitGSTwo{} \LtRouteFitGSTwoBand & \LtRouteXcGS{} \LtRouteXcGSBand \\
+ & A $-$ S$|$A & \LtRouteAlphaKASTwo{} \LtRouteAlphaKASTwoBand & \LtRouteAlphaQASTwo{} \LtRouteAlphaQASTwoBand & \LtRouteFitASTwo{} \LtRouteFitASTwoBand & \LtRouteXcAS{} \LtRouteXcASBand \\
+ & difference & \LtRouteAlphaKDiffTwo{} \LtRouteAlphaKDiffTwoBand & \LtRouteAlphaQDiffTwo{} \LtRouteAlphaQDiffTwoBand & \LtRouteFitDiffTwo{} \LtRouteFitDiffTwoBand & \LtRouteXcDiff{} \LtRouteXcDiffBand \\
+Same flight & $g$ & \LtFltMaxGAlphaK{} \LtFltMaxGAlphaKBand & \LtFltMaxGAlphaQ{} \LtFltMaxGAlphaQBand & \LtFltMaxGFit{} \LtFltMaxGFitBand & \LtFltMaxGXc{} \LtFltMaxGXcBand \\
+ & mock events & \LtFltMaxMockGAlphaK{} \LtFltMaxMockGAlphaKBand & \LtFltMaxMockGAlphaQ{} \LtFltMaxMockGAlphaQBand & \LtFltMaxMockGFit{} \LtFltMaxMockGFitBand & \LtFltMaxMockGXc{} \LtFltMaxMockGXcBand \\
+ & $g$ minus mock & \LtFltMaxNetGAlphaK{} \LtFltMaxNetGAlphaKBand & \LtFltMaxNetGAlphaQ{} \LtFltMaxNetGAlphaQBand & \LtFltMaxNetGFit{} \LtFltMaxNetGFitBand & \LtFltMaxNetGXc{} \LtFltMaxNetGXcBand \\
+ & drift $d_w$ & \LtFltMaxDwAlphaK{} \LtFltMaxDwAlphaKBand & \LtFltMaxDwAlphaQ{} \LtFltMaxDwAlphaQBand & \LtFltMaxDwFit{} \LtFltMaxDwFitBand & \LtFltMaxDwXc{} \LtFltMaxDwXcBand \\
+ & after $-$ before & \LtFltMaxPostPreAlphaK{} \LtFltMaxPostPreAlphaKBand & \LtFltMaxPostPreAlphaQ{} \LtFltMaxPostPreAlphaQBand & \LtFltMaxPostPreFit{} \LtFltMaxPostPreFitBand & \LtFltMaxPostPreXc{} \LtFltMaxPostPreXcBand \\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
 
 \emph{Matching.} For each piece of G, the controls are stretches of flights of S on another date. A
 control matches the piece when a share \MatCover{} of its points, taken every \LtMatchStep~s, lies within
 \MatRho~m of the control track and the control flew them in the same direction. The control stretch
 runs between the points of its track nearest to the first and to the last of these points, and
 lasts at least as long as the dataset needs. Each piece may have several controls, which share its
-weight. A caliper then keeps the controls of the same season (month within \MatMonth), the same hour
+weight.
+
+A caliper then keeps the controls of the same season (month within \MatMonth), the same hour
 (within \MatHour{} hours, local time of the middle of the piece and of the stretch) and a wing of the
 same class. The pool holds \MatPool{} flights of S and gives \MatMatches{} matches before the
 caliper. We chose the caliper by trying the narrower ones first and taking the first that keeps at
 least \MatMin{} pieces of G per level of the wing on the dataset to \LtTauTwo~s (Table~\ref{tab:counts}):
-month within \MatMonth, hour within \MatHour, same class. On the dataset to \LtTauOne~s it keeps
-\LtRoutePiecesGOne{} pieces of G from \LtRouteFlightsGOne{} flights and \LtRoutePilotsGOne{} pilots,
-with \LtRouteControlsGOne{} control stretches, and \LtRoutePiecesAOne{} pieces of A from
-\LtRouteFlightsAOne{} flights and \LtRoutePilotsAOne{} pilots, with \LtRouteControlsAOne{} control
-stretches. On the dataset to \LtTauTwo~s it keeps \LtRoutePiecesGTwo{} pieces of G with
-\LtRouteControlsGTwo{} controls, and \LtRoutePiecesATwo{} of A with \LtRouteControlsATwo{}. We write
-S$|$G and S$|$A for the controls of the pieces of G and of A.
+month within \MatMonth, hour within \MatHour, same class.
+
+Table~\ref{tab:counts} gives the pieces kept on each dataset. On the dataset to \LtTauOne~s the pieces
+of G come from \LtRouteFlightsGOne{} flights and \LtRoutePilotsGOne{} pilots, and those of A from
+\LtRouteFlightsAOne{} flights and \LtRoutePilotsAOne{} pilots. We write S$|$G and S$|$A for the
+controls of the pieces of G and of A.
+
+The pieces of G have \LtRouteControlsGOne{} control stretches and those of A \LtRouteControlsAOne{} on
+the dataset to \LtTauOne~s, and \LtRouteControlsGTwo{} and \LtRouteControlsATwo{} on the dataset to
+\LtTauTwo~s.
 
 \emph{Selection and the effect of the group.} The contrast A $-$ S$|$A repeats the comparison for the
 flights that join groups, taken while they fly alone, and measures the selection of these flights. In
 both contrasts the solo pieces come from other flights, never in a group, that share only the route.
-The matched pieces of G come from \LtRoutePilotsGOne{} pilots and those of A from
-\LtRoutePilotsAOne{}: the two sides are not paired, so the difference removes selection at the level of
-the two populations and no pilot is compared with themselves. The effect of the group on the same
-route, net of selection, is the difference (G $-$ S$|$G) $-$ (A $-$ S$|$A). Table~\ref{tab:matched}
-gives the values at \LtLagOne~s, at \LtLagTwo~s and at \LtTauTwo~s. On the main dataset the gap of G
-against its controls is \LtRouteAlphaKGSTwo{} at \LtLagOne~s and \LtRouteAlphaQGSTwo{} at \LtLagTwo~s,
-no smaller than the raw gap, and the same flights alone differ from their controls by
-\LtRouteAlphaKASTwo{} and \LtRouteAlphaQASTwo{}, a band that excludes 0 at \LtLagTwo~s and is of the
-size of the gap of G. The effect net of selection is \LtRouteAlphaKDiffTwo{}
-\LtRouteAlphaKDiffTwoBand{} at \LtLagOne~s and \LtRouteAlphaQDiffTwo{} \LtRouteAlphaQDiffTwoBand{} at
-\LtLagTwo~s: it is not resolved, and its band includes values as large as the raw gap. On the check
-dataset the gap of G is \LtRouteAlphaKGSOne{}, about half the raw gap of \LtRawAlphaGapKGSOne{}; the
-same flights alone show \LtRouteAlphaKASOne{}; the difference is \LtRouteAlphaKDiffOne{}
-\LtRouteAlphaKDiffOneBand. The fitted $H$ gives a difference of \LtRouteFitDiffOne{}
-\LtRouteFitDiffOneBand{} on the check dataset, resolved and of the opposite sign to the gap, and
-\LtRouteFitDiffTwo{} \LtRouteFitDiffTwoBand{} on the main one. The three contrasts show that the same
-route keeps the gap of G, that the flights that join groups keep part of it, and that the design does
-not separate the group from this selection for persistence.
 
-\begin{table}[tbp]
-\caption{Same-route design: contrasts of G and A against their matched solo pieces, and effect of the
-group net of selection (difference), with \LtBandLevel\% bands. Fitted $H$ from \LtFitFrom~s to the end
-lag of the dataset.}
-\label{tab:matched}
-\small
-\begin{ruledtabular}
-\begin{tabular}{llccc}
-Dataset & Quantity & G $-$ S$|$G & A $-$ S$|$A & Difference \\
-\hline
-To \LtTauOne~s & $\aK$ & \vb{\LtRouteAlphaKGSOne}{\LtRouteAlphaKGSOneBand} & \vb{\LtRouteAlphaKASOne}{\LtRouteAlphaKASOneBand} & \vb{\LtRouteAlphaKDiffOne}{\LtRouteAlphaKDiffOneBand} \\
- & $H$ & \vb{\LtRouteFitGSOne}{\LtRouteFitGSOneBand} & \vb{\LtRouteFitASOne}{\LtRouteFitASOneBand} & \vb{\LtRouteFitDiffOne}{\LtRouteFitDiffOneBand} \\
-To \LtTauTwo~s & $\aK$ & \vb{\LtRouteAlphaKGSTwo}{\LtRouteAlphaKGSTwoBand} & \vb{\LtRouteAlphaKASTwo}{\LtRouteAlphaKASTwoBand} & \vb{\LtRouteAlphaKDiffTwo}{\LtRouteAlphaKDiffTwoBand} \\
- & $\aQ$ & \vb{\LtRouteAlphaQGSTwo}{\LtRouteAlphaQGSTwoBand} & \vb{\LtRouteAlphaQASTwo}{\LtRouteAlphaQASTwoBand} & \vb{\LtRouteAlphaQDiffTwo}{\LtRouteAlphaQDiffTwoBand} \\
- & $\aT$ & \vb{\LtRouteAlphaTGSTwo}{\LtRouteAlphaTGSTwoBand} & \vb{\LtRouteAlphaTASTwo}{\LtRouteAlphaTASTwoBand} & \vb{\LtRouteAlphaTDiffTwo}{\LtRouteAlphaTDiffTwoBand} \\
- & $H$ & \vb{\LtRouteFitGSTwo}{\LtRouteFitGSTwoBand} & \vb{\LtRouteFitASTwo}{\LtRouteFitASTwoBand} & \vb{\LtRouteFitDiffTwo}{\LtRouteFitDiffTwoBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
+The two sides are not paired, so the difference removes selection at the level of the two populations
+and no pilot is compared with themselves. The effect of the group on the same route, net of
+selection, is the difference (G $-$ S$|$G) $-$ (A $-$ S$|$A). Fig.~\ref{fig:sm_route_forest} and
+Table~\ref{tab:designs} give the values at \LtLagOne~s and \LtLagTwo~s.
+
+On the main dataset the gap of G against its controls is no smaller than the raw gap. The same flights
+alone differ from their controls by a band that excludes 0 at \LtLagTwo~s and is of the size of the gap
+of G. The effect net of selection is \LtRouteAlphaKDiffTwo{} \LtRouteAlphaKDiffTwoBand{} at
+\LtLagOne~s and \LtRouteAlphaQDiffTwo{} \LtRouteAlphaQDiffTwoBand{} at \LtLagTwo~s: it is not resolved,
+and its band includes values as large as the raw gap.
+
+On the check dataset the gap of G is about half the raw gap, and the difference is
+\LtRouteAlphaKDiffOne{} \LtRouteAlphaKDiffOneBand. The fitted $H$ gives a difference of
+\LtRouteFitDiffOne{} \LtRouteFitDiffOneBand{} on the check dataset, resolved and of the opposite sign
+to the gap, and \LtRouteFitDiffTwo{} \LtRouteFitDiffTwoBand{} on the main one.
+
+The three contrasts show that the same route keeps the gap of G, that the flights that join groups
+keep part of it, and that the design does not separate the group from this selection for persistence.
 
 \emph{Route alone.} A second match tests how much of the gap the route explains. It takes the flights
 of S that never had a contact of any length (\RouteOpenAlone{} flights), and matches a piece of G to a
 flight from the same site on another day in the same way. It uses all \RouteOpenSample{} pieces of G
-of the dataset to \LtTauOne~s, of which \RouteOpenPieces{} find at least one match, from
-\RouteOpenFlights{} flights and \RouteOpenPilots{} pilots, against \RouteOpenControlFlights{} control
-flights of \RouteOpenControlPilots{} pilots. The baseline compares the same pieces with the solo
-flights of their site, day and hour. Fixing the route lowers the gap at \LtLagOne~s from
-\LtRouteOpenBaseAlpha{} \LtRouteOpenBaseAlphaBand{} to \LtRouteOpenAlpha{} \LtRouteOpenAlphaBand, so
-that the route removes \RouteOpenExplained\% (\RouteOpenExplainedBand) of the gap to the flights of
-the same site, day and hour. This share rests on this sample and this baseline only. It is not the
-gap against the same-route solo pieces of the matched design, and we do not quote it in the letter.
+of the dataset to \LtTauOne~s, of which \RouteOpenPieces{} find at least one match.
 
-\begin{figure}[tbp]
-\includegraphics[width=0.8\textwidth]{figures/sm_route_forest.pdf}
+The matched pieces come from \RouteOpenFlights{} flights and \RouteOpenPilots{} pilots, against
+\RouteOpenControlFlights{} control flights of \RouteOpenControlPilots{} pilots. The baseline compares
+the same pieces with the solo flights of their site, day and hour.
+
+Fixing the route lowers the gap at \LtLagOne~s from \LtRouteOpenBaseAlpha{}
+\LtRouteOpenBaseAlphaBand{} to \LtRouteOpenAlpha{} \LtRouteOpenAlphaBand, so that the route removes
+\RouteOpenExplained\% (\RouteOpenExplainedBand) of the gap to the flights of the same site, day and
+hour. This share rests on this sample and this baseline only. It is not the gap against the same-route
+solo pieces of the matched design, and we do not quote it in the letter.
+
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_route_forest.pdf}
 \caption{Same-route design: G $-$ S$|$G, A $-$ S$|$A and their difference for $\Delta\aK$,
 $\Delta\aQ$, the fitted $H$, the cross-country speed and the phase statistics, with
 \LtBandLevel\% bands. Filled: lags to \LtTauTwo~s; open: lags to \LtTauOne~s.}
@@ -397,7 +407,9 @@ Pre is the window before the stretch, if the flight was alone for at least that 
 are its first and last windows, if the stretch lasts that long. Post is the window after it, if the
 flight is alone for that long. A set of four windows is one event. The MSD is measured on the lags of
 the grid up to the largest within $\LtSupport$ times the window: \PreMaxLag~s for windows of
-\LtWinMid~s, \LtTauTwo~s for windows of \LtWinMax~s. The changes at entry and at exit are
+\LtWinMid~s, \LtTauTwo~s for windows of \LtWinMax~s.
+
+The changes at entry and at exit are
 $D_\mathrm{in} = \alpha^\mathrm{start} - \alpha^\mathrm{pre}$ and $D_\mathrm{out} =
 \alpha^\mathrm{end} - \alpha^\mathrm{post}$, and
 \begin{equation}
@@ -412,107 +424,60 @@ effect of the group. We test this with two controls.
 \emph{Controls.} The control pairs are two consecutive windows of \LtWinMid~s drawn at random in solo
 time, in the same flights alone (\LtFltMidEventsCtrlA{} events) and in flights of S
 (\LtFltMidEventsCtrlS{} events); the change is the later window minus the earlier. At \LtLagOne~s they
-give \LtFltMidCtrlAAlphaK{} and \LtFltMidCtrlSAlphaK{} (Table~\ref{tab:prepost}), so a linear drift is
-small in $\alpha$. The mock events place the four windows of a real event at the same times of the
-flight clock in flights of S. For each of the real events we draw at random up to \PreMockK{} flights
-of S in which the four windows fit in one solo stretch at these times, within the caliper of the
-same-route design (\PreMockCaliper). We measure and compare them like the real windows. A mock event
-takes the resampling cell of its real event, and the mocks of one event weigh one event. For windows of
-\LtWinMid~s this gives \LtFltMidMockEvents{} mock events in \LtFltMidMockFlights{} flights, for
-\LtFltMidMockReal{} of the \LtFltMidEvents{} real events; for windows of \LtWinMax~s,
-\LtFltMaxMockEvents{} mock events in \LtFltMaxMockFlights{} flights, for \LtFltMaxMockReal{} of the
-\LtFltMaxEvents{} real events. In a second variant the mock flight also took off at the site of the
-real one: \LtFltMidMockSiteEvents{} mock events for windows of \LtWinMid~s and \LtFltMaxMockSiteEvents{}
-for windows of \LtWinMax~s. Since the real events with a mock are a subset, we report $g$ on that
-subset too and the difference of the two.
+give \LtFltMidCtrlAAlphaK{} and \LtFltMidCtrlSAlphaK{}, so a linear drift is small in $\alpha$.
 
-\emph{Length of the window.} Table~\ref{tab:windows} gives the changes for the five windows we cut. $g$
-at \LtLagOne~s is \LtFltLowGAlphaK{} with windows of \LtWinLow~s, \LtFltMidGAlphaK{} with
-\LtWinMid~s, \LtFltLongGAlphaK{} with \LtWinLong~s and \LtFltMaxGAlphaK{} with \LtWinMax~s. With
-windows of \LtWinShort~s it is \LtFltShortGAlphaK{}. This window is not a clean check. At
-\LtLagOne~s the window is \LtWinShortShare{} of its length, close to the limit of the
-$\tau/\LtSupport$ rule, \LtLagOne~s is the last lag of its MSD so that its estimate is one-sided,
-and $D_\mathrm{in}$ is \LtFltShortInAlphaK{} while $D_\mathrm{out}$ is \LtFltShortOutAlphaK{}, with a
-drift $d_w$ of \LtFltShortDwAlphaK{}. The $\alpha$ at \LtLagOne~s is not comparable there. At
-\LtLagTwo~s, which the windows of \LtWinMid~s and longer allow, $g$ is \LtFltMidGAlphaQ{}
+The mock events place the four windows of a real event at the same times of the flight clock in flights
+of S. For each of the real events we draw at random up to \PreMockK{} flights of S in which the four
+windows fit in one solo stretch at these times, within the caliper of the same-route design
+(\PreMockCaliper). We measure and compare them like the real windows. A mock event takes the
+resampling cell of its real event, and the mocks of one event weigh one event.
+
+For windows of \LtWinMid~s this gives \LtFltMidMockEvents{} mock events in \LtFltMidMockFlights{}
+flights, and for windows of \LtWinMax~s \LtFltMaxMockEvents{} mock events in \LtFltMaxMockFlights{}
+flights. Fig.~\ref{fig:sm_windows} gives the real events with a mock. Since these real events are a
+subset, $g$ minus mock compares the mock events with them.
+
+In a second variant the mock flight also took off at the site of the real one: \LtFltMidMockSiteEvents{}
+mock events for windows of \LtWinMid~s and \LtFltMaxMockSiteEvents{} for windows of \LtWinMax~s.
+
+\emph{Length of the window.} Fig.~\ref{fig:sm_windows} gives the changes for the five windows we cut,
+and Fig.~\ref{fig:sm_flight_forest} the changes by quantity for windows of \LtWinMax{} and \LtWinMid~s.
+
+The window of \LtWinShort~s is not a clean check. At \LtLagOne~s the window is \LtWinShortShare{} of its
+length, close to the limit of the $\tau/\LtSupport$ rule, \LtLagOne~s is the last lag of its MSD so
+that its estimate is one-sided, and $D_\mathrm{in}$ is \LtFltShortInAlphaK{} while $D_\mathrm{out}$ is
+\LtFltShortOutAlphaK{}, with a drift $d_w$ of \LtFltShortDwAlphaK{}. The $\alpha$ at \LtLagOne~s is not
+comparable there.
+
+At \LtLagTwo~s, which the windows of \LtWinMid~s and longer allow, $g$ is \LtFltMidGAlphaQ{}
 \LtFltMidGAlphaQBand{} with \LtWinMid~s, \LtFltLongGAlphaQ{} \LtFltLongGAlphaQBand{} with
 \LtWinLong~s and \LtFltMaxGAlphaQ{} \LtFltMaxGAlphaQBand{} with \LtWinMax~s. The bands overlap and the
-events differ (\LtFltMidEvents{}, \LtFltLongEvents{} and \LtFltMaxEvents), so we do not say that the
-windows differ.
+events differ, so we do not say that the windows differ.
 
-\emph{Mock events.} The mock events show a small change at \LtLagTwo~s, \LtFltMaxMockGAlphaQ{}
-\LtFltMaxMockGAlphaQBand{} with windows of \LtWinMax~s, and of speed, \LtFltMaxMockGXc{}
-\LtFltMaxMockGXcBand~km/h. Mock events from the takeoff site of the real event give, with windows of
-\LtWinMax~s, a net change of \LtFltMaxNetSiteGAlphaK{} \LtFltMaxNetSiteGAlphaKBand{} at \LtLagOne~s,
-\LtFltMaxNetSiteGAlphaQ{} \LtFltMaxNetSiteGAlphaQBand{} at \LtLagTwo~s and \LtFltMaxNetSiteGXc{}
-\LtFltMaxNetSiteGXcBand~km/h in speed, on \LtFltMaxMockSiteReal{} real events. With windows of
-\LtWinMid~s the net changes are \LtFltMidNetSiteGAlphaK{}, \LtFltMidNetSiteGAlphaQ{} and
-\LtFltMidNetSiteGXc{}~km/h on \LtFltMidMockSiteReal{} real events. Fewer events find a mock at the same
-site, so these bands are wider.
+\emph{Mock events.} The mock events show a small change at \LtLagTwo~s and in speed with windows of
+\LtWinMax~s (Table~\ref{tab:designs}). Mock events from the takeoff site of the real event give, with
+windows of \LtWinMax~s, a net change of \LtFltMaxNetSiteGAlphaK{} \LtFltMaxNetSiteGAlphaKBand{} at
+\LtLagOne~s, \LtFltMaxNetSiteGAlphaQ{} \LtFltMaxNetSiteGAlphaQBand{} at \LtLagTwo~s and
+\LtFltMaxNetSiteGXc{} \LtFltMaxNetSiteGXcBand~km/h in speed, on \LtFltMaxMockSiteReal{} real events.
 
-\begin{figure}[tbp]
+With windows of \LtWinMid~s the net changes are \LtFltMidNetSiteGAlphaK{}, \LtFltMidNetSiteGAlphaQ{}
+and \LtFltMidNetSiteGXc{}~km/h on \LtFltMidMockSiteReal{} real events. Fewer events find a mock at the
+same site, so these bands are wider.
+
+\begin{figure*}[t]
 \includegraphics[width=\textwidth]{figures/sm_windows.pdf}
 \caption{Same-flight design: (a) $\Delta\aK$ and (b) $\Delta H$ of $g$ and of $g$ minus the mock
 events against the length of the window; below each window, the number of events of $g$ and of
 $g$ minus mock. At \LtWinShort~s, \LtLagOne~s is the last lag of the window.}
 \label{fig:sm_windows}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[tbp]
-\includegraphics[width=0.8\textwidth]{figures/sm_flight_forest.pdf}
+\begin{figure}[t]
+\includegraphics[width=\columnwidth]{figures/sm_flight_forest.pdf}
 \caption{Same-flight design: $g$, the mock events and $g$ minus the mock events by quantity, for
 windows of \LtWinMax{} and \LtWinMid~s, with \LtBandLevel\% bands.}
 \label{fig:sm_flight_forest}
 \end{figure}
-
-\begin{table}[tbp]
-\caption{Same-flight design with windows of \LtWinMid~s: changes of $\alpha$ and of the fitted $H$ with
-\LtBandLevel\% bands, and of cross-country speed (km/h). $g$ is the change in the group free of a
-linear drift and $d_w$ the drift over one window. Control pairs: the later minus the earlier of two
-consecutive windows. Mock events: the four windows at the same times of flight in flights of S, in the
-same season and hour and on a wing of the same class (any site, or the same takeoff site); the real
-events with a mock event are those for which one was found.}
-\label{tab:prepost}
-\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{ruledtabular}
-\begin{tabular}{p{4.6cm}cccc}
-Events and quantity & $\Delta\aK$ & $\Delta\aQ$ & $\Delta H$ & Speed \\
-\hline
-Real events (\LtFltMidEvents): $D_\mathrm{in}$ & \vb{\LtFltMidInAlphaK}{\LtFltMidInAlphaKBand} & \vb{\LtFltMidInAlphaQ}{\LtFltMidInAlphaQBand} & \vb{\LtFltMidInFit}{\LtFltMidInFitBand} & \vb{\LtFltMidInXc}{\LtFltMidInXcBand} \\
-Real events: $D_\mathrm{out}$ & \vb{\LtFltMidOutAlphaK}{\LtFltMidOutAlphaKBand} & \vb{\LtFltMidOutAlphaQ}{\LtFltMidOutAlphaQBand} & \vb{\LtFltMidOutFit}{\LtFltMidOutFitBand} & \vb{\LtFltMidOutXc}{\LtFltMidOutXcBand} \\
-Real events: $g$ & \vb{\LtFltMidGAlphaK}{\LtFltMidGAlphaKBand} & \vb{\LtFltMidGAlphaQ}{\LtFltMidGAlphaQBand} & \vb{\LtFltMidGFit}{\LtFltMidGFitBand} & \vb{\LtFltMidGXc}{\LtFltMidGXcBand} \\
-Real events: $d_w$ & \vb{\LtFltMidDwAlphaK}{\LtFltMidDwAlphaKBand} & \vb{\LtFltMidDwAlphaQ}{\LtFltMidDwAlphaQBand} & \vb{\LtFltMidDwFit}{\LtFltMidDwFitBand} & \vb{\LtFltMidDwXc}{\LtFltMidDwXcBand} \\
-Real events: after $-$ before (\LtFltMidEventsPostPre) & \vb{\LtFltMidPostPreAlphaK}{\LtFltMidPostPreAlphaKBand} & \vb{\LtFltMidPostPreAlphaQ}{\LtFltMidPostPreAlphaQBand} & \vb{\LtFltMidPostPreFit}{\LtFltMidPostPreFitBand} & \vb{\LtFltMidPostPreXc}{\LtFltMidPostPreXcBand} \\
-Control pairs: same flights alone (\LtFltMidEventsCtrlA) & \vb{\LtFltMidCtrlAAlphaK}{\LtFltMidCtrlAAlphaKBand} & \vb{\LtFltMidCtrlAAlphaQ}{\LtFltMidCtrlAAlphaQBand} & \vb{\LtFltMidCtrlAFit}{\LtFltMidCtrlAFitBand} & \vb{\LtFltMidCtrlAXc}{\LtFltMidCtrlAXcBand} \\
-Control pairs: flights of S (\LtFltMidEventsCtrlS) & \vb{\LtFltMidCtrlSAlphaK}{\LtFltMidCtrlSAlphaKBand} & \vb{\LtFltMidCtrlSAlphaQ}{\LtFltMidCtrlSAlphaQBand} & \vb{\LtFltMidCtrlSFit}{\LtFltMidCtrlSFitBand} & \vb{\LtFltMidCtrlSXc}{\LtFltMidCtrlSXcBand} \\
-Mock, any site (\LtFltMidMockEvents): $g$ & \vb{\LtFltMidMockGAlphaK}{\LtFltMidMockGAlphaKBand} & \vb{\LtFltMidMockGAlphaQ}{\LtFltMidMockGAlphaQBand} & \vb{\LtFltMidMockGFit}{\LtFltMidMockGFitBand} & \vb{\LtFltMidMockGXc}{\LtFltMidMockGXcBand} \\
-Mock, any site: $g$ of the real events with a mock (\LtFltMidMockReal) & \vb{\LtFltMidMockSubsetGAlphaK}{\LtFltMidMockSubsetGAlphaKBand} & \vb{\LtFltMidMockSubsetGAlphaQ}{\LtFltMidMockSubsetGAlphaQBand} & \vb{\LtFltMidMockSubsetGFit}{\LtFltMidMockSubsetGFitBand} & \vb{\LtFltMidMockSubsetGXc}{\LtFltMidMockSubsetGXcBand} \\
-Mock, any site: $g$ minus mock & \vb{\LtFltMidNetGAlphaK}{\LtFltMidNetGAlphaKBand} & \vb{\LtFltMidNetGAlphaQ}{\LtFltMidNetGAlphaQBand} & \vb{\LtFltMidNetGFit}{\LtFltMidNetGFitBand} & \vb{\LtFltMidNetGXc}{\LtFltMidNetGXcBand} \\
-Mock, same site (\LtFltMidMockSiteEvents): $g$ & \vb{\LtFltMidMockSiteGAlphaK}{\LtFltMidMockSiteGAlphaKBand} & \vb{\LtFltMidMockSiteGAlphaQ}{\LtFltMidMockSiteGAlphaQBand} & \vb{\LtFltMidMockSiteGFit}{\LtFltMidMockSiteGFitBand} & \vb{\LtFltMidMockSiteGXc}{\LtFltMidMockSiteGXcBand} \\
-Mock, same site: $g$ of the real events with a mock (\LtFltMidMockSiteReal) & \vb{\LtFltMidMockSubsetSiteGAlphaK}{\LtFltMidMockSubsetSiteGAlphaKBand} & \vb{\LtFltMidMockSubsetSiteGAlphaQ}{\LtFltMidMockSubsetSiteGAlphaQBand} & \vb{\LtFltMidMockSubsetSiteGFit}{\LtFltMidMockSubsetSiteGFitBand} & \vb{\LtFltMidMockSubsetSiteGXc}{\LtFltMidMockSubsetSiteGXcBand} \\
-Mock, same site: $g$ minus mock & \vb{\LtFltMidNetSiteGAlphaK}{\LtFltMidNetSiteGAlphaKBand} & \vb{\LtFltMidNetSiteGAlphaQ}{\LtFltMidNetSiteGAlphaQBand} & \vb{\LtFltMidNetSiteGFit}{\LtFltMidNetSiteGFitBand} & \vb{\LtFltMidNetSiteGXc}{\LtFltMidNetSiteGXcBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
-
-\begin{table}[tbp]
-\caption{Same-flight design by length of the window: events and changes of $\aK$ with
-\LtBandLevel\% bands. Mock events (any site) exist for the windows of \LtWinMid, \LtWinLong{} and
-\LtWinMax~s.}
-\label{tab:windows}
-\small
-\begin{ruledtabular}
-\begin{tabular}{lrccc}
-Window (s) & Events & $g$ & $d_w$ & $g$ minus mock \\
-\hline
-\LtWinShort & \LtFltShortEvents & \vb{\LtFltShortGAlphaK}{\LtFltShortGAlphaKBand} & \vb{\LtFltShortDwAlphaK}{\LtFltShortDwAlphaKBand} & \\
-\LtWinLow & \LtFltLowEvents & \vb{\LtFltLowGAlphaK}{\LtFltLowGAlphaKBand} & \vb{\LtFltLowDwAlphaK}{\LtFltLowDwAlphaKBand} & \\
-\LtWinMid & \LtFltMidEvents & \vb{\LtFltMidGAlphaK}{\LtFltMidGAlphaKBand} & \vb{\LtFltMidDwAlphaK}{\LtFltMidDwAlphaKBand} & \vb{\LtFltMidNetGAlphaK}{\LtFltMidNetGAlphaKBand} \\
-\LtWinLong & \LtFltLongEvents & \vb{\LtFltLongGAlphaK}{\LtFltLongGAlphaKBand} & \vb{\LtFltLongDwAlphaK}{\LtFltLongDwAlphaKBand} & \vb{\LtFltLongNetGAlphaK}{\LtFltLongNetGAlphaKBand} \\
-\LtWinMax & \LtFltMaxEvents & \vb{\LtFltMaxGAlphaK}{\LtFltMaxGAlphaKBand} & \vb{\LtFltMaxDwAlphaK}{\LtFltMaxDwAlphaKBand} & \vb{\LtFltMaxNetGAlphaK}{\LtFltMaxNetGAlphaKBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
 
 What we keep: $g$ minus the mock events, on the windows of \LtWinMax~s for the main dataset and
 \LtWinMid~s for the check. The windows of \LtWinShort~s are not used as evidence.
@@ -525,18 +490,20 @@ phase statistics net of the mock events; this section defines them.
 \emph{Phases.} Every flight logged at 1~Hz is cut into climbs, searches and transitions by the
 labelling of Ref.~\cite{Vilpellet2026}. A climb is a stretch of circling in which the glider gains
 height, a transition a straight glide between two climbs, and a search a stretch flown with turns and
-without a sustained gain. Phases exist on the flights logged at 1~Hz, so the phase statistics rest on
-fewer flights than the MSD: in the raw comparison \RawPhaseFlightsS{} flights of S, \RawPhaseFlightsA{}
-of A and \RawPhaseFlightsG{} of G, against \RawFlightsOneS, \RawFlightsOneA{} and \RawFlightsOneG{} for
-the MSD on the dataset to \LtTauOne~s.
+without a sustained gain.
+
+Phases exist on the flights logged at 1~Hz, so the phase statistics rest on fewer flights than the MSD
+(Fig.~\ref{fig:sm_datasets}): in the raw comparison \RawPhaseFlightsS{} flights of S,
+\RawPhaseFlightsA{} of A and \RawPhaseFlightsG{} of G.
 
 We use four statistics: the time in climb, the share of searches that end in a climb (a search ends in
 a climb when the next phase of the flight is a climb), the glide speed (the straight-line distance of
 the transitions over their duration, in km/h) and the height lost per km of glide (m/km). A phase
 belongs to the unit that holds its middle. The unit is the flight in the raw design, the piece or the
-control segment in the same-route design and the window in the same-flight design. For a unit $u$ let
-$n_u$ and $d_u$ be the numerator and the denominator of the statistic and $T_u$ its phase time. The
-statistic of a population is the ratio of averages
+control segment in the same-route design and the window in the same-flight design.
+
+For a unit $u$ let $n_u$ and $d_u$ be the numerator and the denominator of the statistic and $T_u$ its
+phase time. The statistic of a population is the ratio of averages
 \begin{equation}
 \frac{\sum_u w_u\, n_u/T_u}{\sum_u w_u\, d_u/T_u},
 \end{equation}
@@ -547,35 +514,33 @@ does not give 0\% or 100\%, and no long flight dominates.
 \emph{Cross-country speed.} In a piece, a control stretch or a window, the speed is the mean over the
 origins $t$ on the grid of the straight-line distance $\|\mathbf{r}(t+\LtXcMin~\mathrm{min}) -
 \mathbf{r}(t)\|$ divided by \LtXcMin~min, in km/h. It needs pieces of at least $\LtXcS/\LtSupport$~s.
-The raw design uses \LtRawXcFlightsS{} flights of S, \LtRawXcFlightsA{} of A and \LtRawXcFlightsG{} of
-G. Raw, the speed is \LtRawXcS{} \LtRawXcSBand{} km/h for S, \LtRawXcA{} \LtRawXcABand{} for A and
-\LtRawXcG{} \LtRawXcGBand{} for G, so that G $-$ S is \LtRawXcGapGS{} \LtRawXcGapGSBand, A $-$ S
-\LtRawXcGapAS{} \LtRawXcGapASBand{} km/h. On the same route, on \LtRouteXcPiecesG{} pieces of G and
-\LtRouteXcPiecesA{} of A, G $-$ S$|$G is \LtRouteXcGS{} \LtRouteXcGSBand{} and A $-$ S$|$A
-\LtRouteXcAS{} \LtRouteXcASBand: the same flights alone go as fast as their controls, and the effect of
-the group net of selection is \LtRouteXcDiff{} \LtRouteXcDiffBand~km/h. In the same flight, with
-windows of \LtWinMax~s, $g$ is \LtFltMaxGXc{} \LtFltMaxGXcBand{} and $d_w$ is \LtFltMaxDwXc{}
-\LtFltMaxDwXcBand. The mock events give \LtFltMaxMockGXc{} \LtFltMaxMockGXcBand, and $g$ minus mock is
-\LtFltMaxNetGXc{} \LtFltMaxNetGXcBand~km/h. With windows of \LtWinMid~s, \PreGXc{} \PreGXcBand{} for
-$g$, \PreMockGXc{} \PreMockGXcBand{} for the mock events and \PreNetGXc{} \PreNetGXcBand{} net
-(Table~\ref{tab:speed}).
+
+Raw, the speed is \LtRawXcS{} \LtRawXcSBand{} km/h for S, \LtRawXcA{} \LtRawXcABand{} for A and
+\LtRawXcG{} \LtRawXcGBand{} for G. Table~\ref{tab:designs} gives the gaps and the samples of the three
+designs. On the same route the same flights alone go as fast as their controls, and the effect of the
+group net of selection is the row difference of that table.
+
+In the same flight, Table~\ref{tab:designs} gives $g$, the drift $d_w$, the mock events and $g$ minus
+mock for windows of \LtWinMax~s. With windows of \LtWinMid~s the mock events give \PreMockGXc{}
+\PreMockGXcBand~km/h, and Table~\ref{tab:speed} gives $g$ and $g$ minus mock.
 
 \emph{Phase statistics.} Raw, a search ends in a climb \RawStatFoundG\% of the time in G against
 \RawStatFoundS\% in S. On the same route, net of selection, the time in climb grows and the glide
-speed and the height lost per km are not resolved (Table~\ref{tab:speed}). On the same route G
-glides slower and steeper than S$|$G (\MatDeltaGlideG{} \MatDeltaGlideGBand~km/h and \MatDeltaSinkG{}
-\MatDeltaSinkGBand~m/km), and A does too (\MatDeltaGlideA{} \MatDeltaGlideABand~km/h and
-\MatDeltaSinkA{} \MatDeltaSinkABand~m/km), so that the effect net of selection is \MatDeltaGlideD{}
-\MatDeltaGlideDBand~km/h and \MatDeltaSinkD{} \MatDeltaSinkDBand~m/km. Within a flight, with windows
-of \LtWinMid~s, a pilot in a group glides faster and flatter than before and after, by
-\PreGGlide{} \PreGGlideBand~km/h and \PreGSink{} \PreGSinkBand~m/km, and net of the mock events by
-\PreNetGGlide{} \PreNetGGlideBand~km/h and \PreNetGSink{} \PreNetGSinkBand~m/km. The mock events are
-not null for these statistics: \PreMockGClimb{} \PreMockGClimbBand{} percentage points of time in
-climb and \PreMockGGlide{} \PreMockGGlideBand~km/h of glide speed. Net of the mock events the climbs
-per hour rise by \PreNetGCph{} \PreNetGCphBand{} and the climb rate by \PreNetGRate{}
-\PreNetGRateBand~m/s, which is not resolved.
+speed and the height lost per km are not resolved (Table~\ref{tab:speed}).
 
-\begin{table}[tbp]
+On the same route G glides slower and steeper than S$|$G (\MatDeltaGlideG{} \MatDeltaGlideGBand~km/h and
+\MatDeltaSinkG{} \MatDeltaSinkGBand~m/km), and A does too (\MatDeltaGlideA{} \MatDeltaGlideABand~km/h
+and \MatDeltaSinkA{} \MatDeltaSinkABand~m/km), so that the effect net of selection is the one of
+Table~\ref{tab:speed}.
+
+Within a flight, with windows of \LtWinMid~s, a pilot in a group glides faster and flatter than before
+and after (Table~\ref{tab:speed}). The mock events are not null for these statistics:
+\PreMockGClimb{} \PreMockGClimbBand{} percentage points of time in climb and \PreMockGGlide{}
+\PreMockGGlideBand~km/h of glide speed. Net of the mock events the climbs per hour rise by
+\PreNetGCph{} \PreNetGCphBand{} and the climb rate by \PreNetGRate{} \PreNetGRateBand~m/s, which is not
+resolved.
+
+\begin{table*}[t]
 \caption{Gains of the group in the time in climb, in the searches that end in a climb, in the glide
 speed, in the height lost per km of glide and in the cross-country speed, with \LtBandLevel\% bands.
 Raw: G $-$ S. Same route: effect net of selection, (G $-$ S$|$G) $-$ (A $-$ S$|$A). Same flight, with
@@ -593,40 +558,32 @@ Height lost per km (m/km) & \vb{\RawGapSink}{\RawGapSinkBand} & \vb{\MatDeltaSin
 Cross-country speed (km/h) & \vb{\RawGapXc}{\RawGapXcBand} & \vb{\MatDeltaXcD}{\MatDeltaXcDBand} & \vb{\PreGXc}{\PreGXcBand} & \vb{\PreNetGXc}{\PreNetGXcBand} \\
 \end{tabular}
 \end{ruledtabular}
-\end{table}
+\end{table*}
 
 What we keep: the time in climb, the searches that end in a climb, the glide speed, the height lost per
 km and the cross-country speed, net of the mock events within a flight.
 
 \section{Tail of the transitions}\label{sm:tails}
 
-Do long glides change with the group? The letter reports the Hill index of the durations of the
-transitions in the three designs; this section gives the threshold and the variants.
+Do long glides change with the group? Raw, the durations of the transitions have a heavier tail in
+group time, but the two other designs do not confirm it, and the letter does not use it. This
+section gives the Hill index in the three designs.
 
-\emph{Threshold.} The Hill estimate depends on the threshold $x_\mathrm{min}$. Following
-Ref.~\cite{Clauset2009} we take the $x_\mathrm{min}$ that minimises the Kolmogorov--Smirnov distance
-between the data above it and the fitted law,
-\begin{equation}
-D(x_\mathrm{min}) = \max_{x \ge x_\mathrm{min}} \Bigl| F_\mathrm{data}(x) - \bigl[1 - (x/x_\mathrm{min})^{-\hat\mu}\bigr] \Bigr| .
-\end{equation}
-We choose it on the solo flights of the raw design, \TlXmin~s, with \TlRawMuSN{} of their \TlRunsS{}
-transitions above it, and read every population and class of the three designs at this one value so
-that the tails are compared on the same range. A scan of $D$ over \LtKsN{} thresholds between \LtKsLow{}
-and \LtKsHigh~s puts its minimum at \TlKsXminS~s for S, \TlKsXminA~s for A and \TlKsXminG~s for G. The
-bands are those of the two-way bootstrap at the threshold held fixed. They do not include the
-uncertainty of the threshold, which the Hill plot shows (Fig.~\ref{fig:tail}b). On the same route a
-transition of a piece weighs 1 and a transition of a control $1/m$, with $m$ the number of controls of
-its piece.
+\emph{Method.} The Hill estimator gives the index $\hat\mu$ of the durations above a threshold
+$x_\mathrm{min}$. Following Ref.~\cite{Clauset2009} we take the $x_\mathrm{min}$ that minimises the
+Kolmogorov--Smirnov distance between the data above it and the fitted law. We choose it on the solo
+flights of the raw design, \TlXmin~s, and read every population of the three designs at this one value.
+The bands do not include the uncertainty of the threshold (Fig.~\ref{fig:tail}b).
 
-\emph{Raw.} The index rises with the threshold in the three populations, and the gap G $-$ S opens
-with it: \TlHillGapSixHundred{} at \TlHillGapSixHundredXmin~s, \TlHillGapThousand{} at
-\TlHillGapThousandXmin~s, \TlHillGapThreshold{} at \TlHillGapThresholdXmin~s and
-\TlHillGapTwoThousand{} at \TlHillGapTwoThousandXmin~s. The bands of G and S stay apart for every
-threshold between \LtTailApartFrom{} and \LtTailApartTo~s. The size of the gap depends on where the
-threshold is put. The climbs and the searches show no difference between the populations.
+\emph{Result.} Raw, the tail of G is heavier than that of S (a lower index), and the gap depends on where
+the threshold is put. On the same route the effect of the group is not resolved. In the same flight we class every
+transition by the stretch of group time that holds it: the transitions flown entirely in a group have
+$\hat\mu = \TlFlightMuIn$, and their difference from the mean of the transitions flown before and after the
+group, \TlFlightDeltaIn{} \TlFlightDeltaInBand, is not resolved. The transitions that cross the start or the end of a group have
+$\hat\mu = \TlFlightMuSpanning$ \TlFlightMuSpanningBand, so the heavy tail comes from them.
 
 \begin{figure}[t]
-\includegraphics[viewport=0 0 340 165.6,clip,width=0.68\textwidth]{figures/tail.pdf}
+\includegraphics[viewport=0 0 340 165.6,clip,width=\columnwidth]{figures/tail.pdf}
 \caption{Transitions between climbs in the raw design. (a) Survival of their durations in solo flights
 (S), group flights while alone (A) and group time (G), with \LtBandLevel\% bands. (b) Hill index of the
 durations above the threshold $x_\mathrm{min}$; top axis, the transitions of G above it. The dotted
@@ -634,81 +591,7 @@ line is the $x_\mathrm{min}$ of S chosen by the Kolmogorov--Smirnov distance.}
 \label{fig:tail}
 \end{figure}
 
-\emph{Same flight.} In a window of \LtWinMid~s a transition cannot be longer than the threshold, so
-we class instead every transition of the \TlFlightFlights{} flights with a group stretch by the stretch
-that holds it. A transition is before if it lies whole in the solo time before the first group
-stretch, in group if it lies whole in a group stretch, after if it lies whole in the solo time after
-the last one, between if it lies whole in the solo time between two stretches, and spanning if it ends
-after the stretch where it starts. Above the threshold there are \TlFlightMuBeforeN{} transitions
-before, \TlFlightMuInN{} in group, \TlFlightMuAfterN{} after, \TlFlightMuBetweenN{} between and
-\TlFlightMuSpanningN{} spanning. In analogy with $g$,
-\begin{equation}
-\Delta_\mathrm{in} = \hat\mu_\mathrm{in} - \tfrac{1}{2}\bigl(\hat\mu_\mathrm{before} + \hat\mu_\mathrm{after}\bigr),
-\qquad
-\Delta_{AB} = \hat\mu_\mathrm{after} - \hat\mu_\mathrm{before} .
-\end{equation}
-We expected before and after to be alike and the group smaller. We find $\Delta_\mathrm{in}$ of
-\TlFlightDeltaIn{} \TlFlightDeltaInBand{} and $\Delta_{AB}$ of \TlFlightDeltaAfterBefore{}
-\TlFlightDeltaAfterBeforeBand. After a group the long transitions include the final glides to landing:
-\TlDescFlightLastAfter\% of them are the last phase of the flight, against \TlDescFlightLastIn\% in a
-group. Two variants give the same picture. Giving the spanning transitions to the class where they
-start, $\Delta_\mathrm{in}$ is \TlFlightStartDeltaIn{} \TlFlightStartDeltaInBand{} and $\Delta_{AB}$
-\TlFlightStartDeltaAfterBefore{} \TlFlightStartDeltaAfterBeforeBand. Keeping only the stretches of at
-least $\TlFactor\,x_\mathrm{min} = \TlXminLong$~s, they are \TlFlightLongDeltaIn{}
-\TlFlightLongDeltaInBand{} and \TlFlightLongDeltaAfterBefore{} \TlFlightLongDeltaAfterBeforeBand.
-
-\emph{Where the raw tail comes from.} Of the \TlRawGAbove{} transitions of G above the threshold,
-\TlInGroupInRawG{} lie whole in a group stretch, \TlSpanningInRawG{} end after the stretch where they
-start and \TlOutsideInRawG{} start before the first stretch of their flight (the sum differs by one
-because the longest durations are cut in each pool). The spanning transitions have $\hat\mu =
-\TlFlightMuSpanning{}$ \TlFlightMuSpanningBand, and the transitions whole in a group stretch
-\TlFlightMuIn, close to \TlRawMuA{} for A and \TlRawMuS{} for S. A transition whole in a stretch
-cannot outlast it, and group stretches are short: their median is \TlStretchMedianIn~s and only
-\TlStretchLongShareIn\% last $\TlFactor\,x_\mathrm{min}$ or more. Part of the heavy tail of G comes from
-transitions that start or end outside the group.
-
-\emph{What a long transition is.} We describe the transitions above the threshold by their path, the
-height lost in total, the height lost per km of net displacement and the share of their duration spent
-in steps that gain height (Table~\ref{tab:descriptors}). Two readings of a heavier tail in a group are
-open. Pilots in a group may dare more and commit to longer glides, which predicts long transitions that
-spend more height in total. Or long transitions may follow lines of rising air that a group more often
-flies, which predicts transitions that cost less height per km and rise a larger share of the time.
-Raw, the long transitions of G are as long as those of S (path \TlDescRawPathG{} against
-\TlDescRawPathS~km, difference \TlDescRawPathGapGS{} \TlDescRawPathGapGSBand~km), lose less height and
-rise more. The numbers support the second reading. On the same route the transitions of the solo
-controls cost as little as those of G, \TlDescRouteSinkSG{} against \TlDescRouteSinkG~m/km, and the
-effect of the group net of selection on the height lost per km is \TlDescRouteSinkGapD{}
-\TlDescRouteSinkGapDBand~m/km. These bands rest on \TlDescRouteRunsG{} transitions of G, so they are
-wide. The path is not longer in a group, and no group effect on the tail is established.
-
-\begin{table}[tbp]
-\caption{Long transitions, those above the threshold $x_\mathrm{min} = \TlXmin$~s: number, median
-height lost in total, median height lost per km of net displacement and median share of the duration
-spent in steps that gain height, with \LtBandLevel\% bands. Same route: runs of G and A and of their
-controls S$|$G and S$|$A. Same flight: runs whole in the solo time before, in the group and in the solo
-time after.}
-\label{tab:descriptors}
-\small
-\begin{ruledtabular}
-\begin{tabular}{llrccc}
-Design & Population & Runs & Height lost (m) & Per km (m/km) & Time rising \\
-\hline
-Raw & S & \TlDescRawRunsS & \vb{\TlDescRawHeightS}{\TlDescRawHeightSBand} & \vb{\TlDescRawSinkS}{\TlDescRawSinkSBand} & \vb{\TlDescRawRiseS}{\TlDescRawRiseSBand} \\
- & A & \TlDescRawRunsA & \vb{\TlDescRawHeightA}{\TlDescRawHeightABand} & \vb{\TlDescRawSinkA}{\TlDescRawSinkABand} & \vb{\TlDescRawRiseA}{\TlDescRawRiseABand} \\
- & G & \TlDescRawRunsG & \vb{\TlDescRawHeightG}{\TlDescRawHeightGBand} & \vb{\TlDescRawSinkG}{\TlDescRawSinkGBand} & \vb{\TlDescRawRiseG}{\TlDescRawRiseGBand} \\
-Same route & G & \TlDescRouteRunsG & \vb{\TlDescRouteHeightG}{\TlDescRouteHeightGBand} & \vb{\TlDescRouteSinkG}{\TlDescRouteSinkGBand} & \vb{\TlDescRouteRiseG}{\TlDescRouteRiseGBand} \\
- & S$|$G & \TlDescRouteRunsSG & \vb{\TlDescRouteHeightSG}{\TlDescRouteHeightSGBand} & \vb{\TlDescRouteSinkSG}{\TlDescRouteSinkSGBand} & \vb{\TlDescRouteRiseSG}{\TlDescRouteRiseSGBand} \\
- & A & \TlDescRouteRunsA & \vb{\TlDescRouteHeightA}{\TlDescRouteHeightABand} & \vb{\TlDescRouteSinkA}{\TlDescRouteSinkABand} & \vb{\TlDescRouteRiseA}{\TlDescRouteRiseABand} \\
- & S$|$A & \TlDescRouteRunsSA & \vb{\TlDescRouteHeightSA}{\TlDescRouteHeightSABand} & \vb{\TlDescRouteSinkSA}{\TlDescRouteSinkSABand} & \vb{\TlDescRouteRiseSA}{\TlDescRouteRiseSABand} \\
-Same flight & Before & \TlDescFlightRunsBefore & \vb{\TlDescFlightHeightBefore}{\TlDescFlightHeightBeforeBand} & \vb{\TlDescFlightSinkBefore}{\TlDescFlightSinkBeforeBand} & \vb{\TlDescFlightRiseBefore}{\TlDescFlightRiseBeforeBand} \\
- & In group & \TlDescFlightRunsIn & \vb{\TlDescFlightHeightIn}{\TlDescFlightHeightInBand} & \vb{\TlDescFlightSinkIn}{\TlDescFlightSinkInBand} & \vb{\TlDescFlightRiseIn}{\TlDescFlightRiseInBand} \\
- & After & \TlDescFlightRunsAfter & \vb{\TlDescFlightHeightAfter}{\TlDescFlightHeightAfterBand} & \vb{\TlDescFlightSinkAfter}{\TlDescFlightSinkAfterBand} & \vb{\TlDescFlightRiseAfter}{\TlDescFlightRiseAfterBand} \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
-
-What we keep: the Hill index at one threshold for every population, the heavy raw tail as a feature of
-the transitions that cross the boundary of a group, and no effect of the group on the tail.
+What we keep: the heavy tail of group time is a selection effect.
 
 \section{Terrain}\label{sm:terrain}
 
@@ -720,35 +603,36 @@ version~\cite{Dikau1991}. The elevation is the model BD ALTI of the French natio
 institute (IGN) at \TnSource~m, averaged over blocks of $\TnBlock\times\TnBlock$ cells onto a grid of
 \TnCell~m. A block with more than half of its cells without data has no elevation, and neither has a
 block whose cells all stand at 0~m, which is sea (\TnMaskedShare\% of the blocks with an elevation).
+
 The slope is taken by central differences on this grid, and a cell is gentle when its slope is below
 \TnGentle{} (rise over run). In a square window of $\TnWindow\times\TnWindow$ cells (\TnWindowKm~km)
 around a cell we take the relief, the maximum minus the minimum elevation, and the gentle share. A
-window with fewer than \TnCoverage{} of valid cells gives the class unknown. Otherwise the cell is
-plains if the relief is below \TnPlainsRelief~m and the gentle share above \TnPlainsGentle, hills if
-the relief is below \TnHillsRelief~m and it is not plains, low mountains from \TnHillsRelief{} to
-\TnLowRelief~m and high mountains from \TnLowRelief~m up.
+window with fewer than \TnCoverage{} of valid cells gives the class unknown.
+
+Otherwise the cell is plains if the relief is below \TnPlainsRelief~m and the gentle share above
+\TnPlainsGentle, hills if the relief is below \TnHillsRelief~m and it is not plains, low mountains from
+\TnHillsRelief{} to \TnLowRelief~m and high mountains from \TnLowRelief~m up.
 
 A piece takes the class of the cell under its grid points when at least \TnMajority\% of them are in
 it, and is mixed otherwise (\TnPiecesMixedG{} pieces of G), or unknown when its points have no class
 (\TnPiecesUnknownG). An event of the same-flight design takes a class when its four windows share it.
+
 Plains hold few pieces (\TnPiecesPlainsG{} pieces of G against \TnPiecesHillsG{} in the hills), so we
 join plains and hills as lowland. Of the grid points of G, \TnShareLowlandG\% lie over the lowland and
 \TnShareMountainG\% over the mountains, against \TnShareLowlandS\% and \TnShareMountainS\% for S.
-Table~\ref{tab:terrain} gives $\Delta\aK$ by class. Raw, the gap is alike in the lowland
-(\LtTnRawLowland) and in the low mountains (\LtTnRawLow), and several times larger in the high
-mountains (\LtTnRawHigh): a step at the high mountains. Alone, a pilot over the lowland already flies
-nearly straight, $\aK = \LtTnAlphaSLowland$ against \LtTnAlphaSHigh{} over high mountains, so that
-there is less to gain there.
 
-Few pieces of G over the lowland find a control on the same route: \TnRouteLowlandPiecesG{} of
-\TnRawLowlandPiecesG{} (\TnRouteMatchedShareLowland\%), against \TnRouteMountainPiecesG{} of
-\TnRawMountainPiecesG{} over the mountains (\TnRouteMatchedShareMountain\%). We did not test why. The
-class is that of the terrain under the piece and not of the day or of the pilot: the pieces over the
-mountains come from many more pilots (\TnRawMountainPilotsG{} against \TnRawLowlandPilotsG), who also
-differ in sites and in weather. We read three classes and two designs at once and make no correction
-for it.
+Table~\ref{tab:terrain} gives $\Delta\aK$ by class. Raw, the gap is alike in the lowland and in the low
+mountains, and several times larger in the high mountains: a step at the high mountains. Alone, a pilot
+over the lowland already flies nearly straight, $\aK = \LtTnAlphaSLowland$ against \LtTnAlphaSHigh{}
+over high mountains, so that there is less to gain there.
 
-\begin{table}[tbp]
+Few pieces of G over the lowland find a control on the same route (Table~\ref{tab:terrain}):
+\TnRouteMatchedShareLowland\% of them, against \TnRouteMatchedShareMountain\% over the mountains. We
+did not test why. The class comes from the terrain under the piece, and the pieces over the mountains
+come from many more pilots (Table~\ref{tab:terrain}), who also differ in sites and in weather. We read
+three classes and two designs at once and make no correction for it.
+
+\begin{table*}[t]
 \caption{$\Delta\aK$ by terrain class on the dataset to \LtTauOne~s, with \LtBandLevel\% bands. Raw: G $-$ S, on the pieces of G in
 the class. Same route: the effect of the group net of selection, on the matched pieces of G in the
 class. Same flight: $g$, on the events with the four windows in the class, windows of \LtWinMid~s.}
@@ -767,62 +651,14 @@ Same flight & Lowland & \TnFlightLowlandEvents & \TnFlightLowlandFlights & \TnFl
  & Mountains & \TnFlightMountainEvents & \TnFlightMountainFlights & \TnFlightMountainPilots & \vb{\LtTnFlightMountain}{\LtTnFlightMountainBand} \\
 \end{tabular}
 \end{ruledtabular}
-\end{table}
+\end{table*}
 
 What we keep: the gap is largest in the high mountains, both raw and within a flight; on the same route
 the classes are not resolved.
 
 \section{Group structure}\label{sm:structure}
 
-How does a group hold a route? The letter reports the order in a group, the headings, the marking of
-places and the encounters; this section defines them.
-
-\emph{Order.} In a group, the pilot ahead is the one that passes a place first. In groups of three or
-more, one pilot is ahead for \StOneLeader\% of the time in which the ordering is acyclic, against
-\StOneLeaderNull\% when the directions of the links are drawn at random. The pilot ahead changes
-\StSwitches{} times per hour of contact, against \StSwitchesChance{} in chance contacts of the same
-duration: the lead changes less often than by chance. In groups of two pilots with a known record, the
-leader has more earlier flights in the catalogue in \StExp\% of \StExpPairs{} pairs and the higher wing
-class in \StWing\% of \StWingPairs{} pairs.
-
-\emph{Headings.} In glide, with $\theta_i(t)$ the heading of pilot $i$ and $\theta_\mathrm{route}$ the
-direction of the displacement of the centroid over the glide, let $\varphi_i = \theta_i -
-\theta_\mathrm{route}$ wrapped to $(-\pi,\pi]$. For a pair with $i$ ahead,
-\begin{equation}
-C(\tau) = \operatorname{corr}_t\bigl(\varphi_i(t),\,\varphi_j(t+\tau)\bigr),
-\end{equation}
-over the instants of the glide where both exist, with $\tau > 0$ when $j$ follows $i$. A follower that
-retraces the track of the leader peaks at $\tau$ equal to the delay $\ell$ along the route. A follower
-that answers the turns of the leader peaks near $\tau = 0$ at every delay. For delays of \StHdLOne,
-\StHdLTwo, \StHdLThree{} and \StHdLFour~s (median per class) the peaks of the pairs lie at
-\StHdPeakOne, \StHdPeakTwo, \StHdPeakThree{} and \StHdPeakFour~s, close to the delay in each class
-though the peak of the longest class comes early, and there is no second peak near zero lag in the
-classes of \StHdLTwo~s and more. The null model is made of surrogate pairs, two pilots who never saw
-each other (\StHdChance{} against \StHdGlides{} pair-glides in groups).
-
-\emph{Marking of places.} The start of a climb is marked when a glider outside the pilot's group is in
-a climb within $R_\mathrm{m} = \StMkR$~m of it in the window of $T_\mathrm{m} = \StMkDT$~s before it.
-Both are the \StMkPercentile th percentiles of the distance and of the delay between the entries of two
-members of one thermal. Places keep producing climbs, so we shift the markers in time by $\pm s$ and
-call $m(s)$ the share of climb starts that are marked. We read $s_{1/2}$, the shift at which $m$ falls
-to half of $m(0)$, and the ratio $m(0)/m(s_\mathrm{n})$ with $s_\mathrm{n} = \StMkNear$~min, the
-average of the shifts of $+s_\mathrm{n}$ and $-s_\mathrm{n}$, which says how much a glider climbing
-right then adds over one that climbed there minutes before or after. The denominator of $m$ counts all
-climb starts, so $s_{1/2}$ is a lower bound of how long a place keeps being used for climbs.
-
-\emph{Encounters.} Two gliders not in contact that come close join when they enter a contact. A group
-offers more gliders to meet, so it is joined more often without any attraction. With $p(d)$ the share
-joined by two solo gliders at the closest distance $d$ and $nm$ the number of pairs of gliders of the
-two units, the expected number of joins is
-\begin{equation}
-E = \sum_\mathrm{passes} \Bigl[ 1 - \bigl(1 - p(d_\mathrm{min})\bigr)^{nm} \Bigr] ,
-\end{equation}
-and we read the observed joins over $E$. A solo glider that meets a pair joins it \StEnSoloPair{}
-times more often than expected, and one that meets a group of three or more as often as expected
-(\StEnSoloThree). This says how pairs attract a third glider and nothing on how groups form.
-Table~\ref{tab:structure} gives the values.
-
-\begin{table}[tbp]
+\begin{table*}[t]
 \caption{Group structure: observed values and their references, with \LtBandLevel\% bands where we have
 them. Heading correlation $C(\ell)$ read at the median delay of the class: for the pairs \StHdLOne{}
 and \StHdLThree~s, for the surrogate pairs \StHdLChanceOne{} and \StHdLChanceThree~s. Marking ratio
@@ -848,7 +684,63 @@ Joins over expected, a solo glider meets a pair & \vb{\StEnSoloPair}{\StEnSoloPa
 Joins over expected, a solo glider meets a group of three or more & \vb{\StEnSoloThree}{\StEnSoloThreeBand} & \\
 \end{tabular}
 \end{ruledtabular}
-\end{table}
+\end{table*}
+
+
+How does a group hold a route? The letter reports the order in a group, the headings, the marking of
+places and the encounters; this section defines them.
+
+\emph{Order.} In a group, the pilot ahead is the one that passes a place first. In groups of three or
+more, we count the share of the time in which one pilot is ahead, when the ordering is acyclic, and the
+changes of the pilot ahead per hour of contact. Table~\ref{tab:structure} compares them with the values
+when the directions of the links are drawn at random and with chance contacts of the same duration: the
+lead changes less often than by chance.
+
+In groups of two pilots with a known record we count the pairs in which the leader has more earlier
+flights in the catalogue (\StExpPairs{} pairs) and the pairs in which the leader has the higher wing
+class (\StWingPairs{} pairs). Table~\ref{tab:structure} gives the shares.
+
+\emph{Headings.} In glide, with $\theta_i(t)$ the heading of pilot $i$ and $\theta_\mathrm{route}$ the
+direction of the displacement of the centroid over the glide, let $\varphi_i = \theta_i -
+\theta_\mathrm{route}$ wrapped to $(-\pi,\pi]$. For a pair with $i$ ahead,
+\begin{equation}
+C(\tau) = \operatorname{corr}_t\bigl(\varphi_i(t),\,\varphi_j(t+\tau)\bigr),
+\end{equation}
+over the instants of the glide where both exist, with $\tau > 0$ when $j$ follows $i$. A follower that
+retraces the track of the leader peaks at $\tau$ equal to the delay $\ell$ along the route. A follower
+that answers the turns of the leader peaks near $\tau = 0$ at every delay.
+
+For delays of \StHdLOne, \StHdLTwo, \StHdLThree{} and \StHdLFour~s (median per class) the peaks of the
+pairs lie at \StHdPeakOne, \StHdPeakTwo, \StHdPeakThree{} and \StHdPeakFour~s, close to the delay in
+each class though the peak of the longest class comes early. There is no second peak near zero lag in
+the classes of \StHdLTwo~s and more. The null model is made of surrogate pairs, two pilots who never
+saw each other (\StHdChance{} against \StHdGlides{} pair-glides in groups).
+
+\emph{Marking of places.} The start of a climb is marked when a glider outside the pilot's group is in
+a climb within $R_\mathrm{m} = \StMkR$~m of it in the window of $T_\mathrm{m} = \StMkDT$~s before it.
+Both are the \StMkPercentile th percentiles of the distance and of the delay between the entries of two
+members of one thermal.
+
+Places keep producing climbs, so we shift the markers in time by $\pm s$ and call $m(s)$ the share of
+climb starts that are marked. We read $s_{1/2}$, the shift at which $m$ falls to half of $m(0)$, and
+the ratio $m(0)/m(s_\mathrm{n})$ with $s_\mathrm{n} = \StMkNear$~min, the average of the shifts of
+$+s_\mathrm{n}$ and $-s_\mathrm{n}$, which says how much a glider climbing right then adds over one
+that climbed there minutes before or after. The denominator of $m$ counts all climb starts, so
+$s_{1/2}$ is a lower bound of how long a place keeps being used for climbs.
+
+\emph{Encounters.} Two gliders not in contact that come close join when they enter a contact. A group
+offers more gliders to meet, so it is joined more often without any attraction. With $p(d)$ the share
+joined by two solo gliders at the closest distance $d$ and $nm$ the number of pairs of gliders of the
+two units, the expected number of joins is
+\begin{equation}
+E = \sum_\mathrm{passes} \Bigl[ 1 - \bigl(1 - p(d_\mathrm{min})\bigr)^{nm} \Bigr] ,
+\end{equation}
+and we read the observed joins over $E$.
+
+A solo glider that meets a pair joins it more often than expected, and one that meets a group of three
+or more as often as expected (Table~\ref{tab:structure}). This says how pairs attract a third glider
+and nothing on how groups form.
+
 
 What we keep: followers retrace the line, places stay marked for at least \StMkHalfGroup~min, and a
 glider climbing right then adds a factor of only \StMkNowGroup.
@@ -859,12 +751,16 @@ Does the same-route result depend on the choices of the match? We varied them.
 
 The gap of G against its matched controls, G $-$ S$|$G, keeps its sign over the \LtRobLines{} lines of
 the match. They vary the caliper (narrower, and the level of the wing instead of its class), the
-isolation of the piece, the radius and the cover. On the dataset to \LtTauOne~s, $\Delta\aK$ stays
-between \LtRobLowK{} and \LtRobHighK{} over \LtRobLinesK{} lines, with a band that includes 0 in
-\LtRobZeroK{} of them. On the dataset to \LtTauTwo~s, on the \LtRobLinesQ{} lines whose long series
-reaches \LtLagTwo~s, $\Delta\aQ$ stays between \LtRobLowQ{} and \LtRobHighQ, with a band that includes
-0 in \LtRobZeroQ. The lines keep between \LtRobPiecesLow{} and \LtRobPiecesHigh{} pieces. By level of
-the wing, the effect net of selection at \LtLagOne~s on the dataset to \LtTauOne~s is
+isolation of the piece, the radius and the cover.
+
+On the dataset to \LtTauOne~s, $\Delta\aK$ stays between \LtRobLowK{} and \LtRobHighK{} over
+\LtRobLinesK{} lines, with a band that includes 0 in \LtRobZeroK{} of them.
+
+On the dataset to \LtTauTwo~s, on the \LtRobLinesQ{} lines whose long series reaches \LtLagTwo~s,
+$\Delta\aQ$ stays between \LtRobLowQ{} and \LtRobHighQ, with a band that includes 0 in \LtRobZeroQ.
+The lines keep between \LtRobPiecesLow{} and \LtRobPiecesHigh{} pieces.
+
+By level of the wing, the effect net of selection at \LtLagOne~s on the dataset to \LtTauOne~s is
 \LtRouteLevelBegDiff{} for beginners (wings A and B) and \LtRouteLevelExpDiff{} for experienced pilots
 (wings C, D and CCC), against \LtRouteLevelAllDiff{} for all, as point values, which are alike at every
 level.

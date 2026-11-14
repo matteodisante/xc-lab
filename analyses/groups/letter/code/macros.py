@@ -240,6 +240,8 @@ def route_macros(folder):
             if at_lag(long, lag):
                 put(out, f"LtRouteAlpha{lt}{tag}Two", at_lag(long, lag), 3, 2, True)
         put(out, f"LtRouteXc{tag}", d[XC], 1, sign=True)
+    gain = m["deltas"][contrasts["Diff"]][XC]["value"] / m["sides"]["S|G"][XC]["value"]
+    out["LtRouteXcDiffPct"] = f"{100 * gain:.0f}"
     for side in "GA":
         n = m["counts"][side]
         for key, name in (("pieces", "Pieces"), ("controls", "Controls"), ("flights, %s side" % side, "Flights"),

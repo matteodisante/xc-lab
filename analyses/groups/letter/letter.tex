@@ -10,7 +10,6 @@
 \input{../vs-solo/generated/macros.tex}
 \input{../vs-solo/generated/structure_macros.tex}
 \input{generated/macros.tex}
-\input{../vs-solo/generated/comparisons/tail_macros.tex}
 \input{../vs-solo/generated/comparisons/terrain_macros.tex}
 
 \newcommand{\pending}[1]{\textcolor{red}{[#1]}}
@@ -22,24 +21,26 @@
 
 \begin{document}
 
-\title{The value of flying together}
+\title{Good company is a good route}
 
-\author{Matteo Di Sante}
+\author{Authors}
 \affiliation{\pending{affiliation}}
 
 \begin{abstract}
 Soaring pilots and birds travel across country by chaining invisible, short-lived thermals, and
-they often fly in groups. Whether company helps is hard to measure in the field, since groups form
-where and when flying is good. We identify groups in \LtFlights{} cross-country paraglider flights
-recorded in France between \LtFirstYear{} and \LtLastYear{}, with a rule calibrated against chance
-encounters, and compare group and solo flight in three designs. In a group the horizontal motion is
-more persistent, at time lags from tens of seconds to three quarters of an hour, and cross-country
-speed is higher. The gap remains against solo pilots who flew the same route in the same season and
-at the same hour, but the flights that join groups show a gap of similar size while they fly alone,
-so this comparison does not isolate the group. Within a single flight, persistence and speed rise when a pilot joins a group and fall back
-when they leave, a jump that flights without a group do not show at the same times of flight.
-Followers retrace the line of the pilot ahead, and lift stays tied to places for tens of minutes:
-what company provides may be the route.
+they often fly in groups. Whether company helps is hard to measure, since groups form where and
+when flying is good and gather those who fly well. We identify groups in \LtFlights{}
+cross-country paraglider flights recorded in France between \LtFirstYear{} and \LtLastYear{}, with
+a rule calibrated against chance encounters, and compare group and solo flight three times, each
+time removing more of this selection. Speed survives all three. On the same route, in the same
+season and at the same hour, the pilots who join groups are no faster than solo pilots when they
+fly alone, and in a group they gain \LtRouteXcDiff~km/h, \LtRouteXcDiffPct\% of the speed of their
+solo controls. Within a single flight, where the pilot, the wing and the day are fixed, speed
+rises by \LtFltMaxNetGXc~km/h when a pilot joins a group and falls back when the pilot leaves, a
+jump that flights without a group do not show at the same times of flight. The motion also
+becomes more persistent within the flight, while on the same route the pilots who join groups are
+more persistent even alone. Lift stays tied to places for tens of minutes and followers retrace
+the line of the pilot ahead: what company provides seems to be the route.
 \end{abstract}
 
 \maketitle
@@ -74,9 +75,14 @@ Here we measure it on human pilots. We find the pilots who fly together with a r
 against chance encounters, and compare group and solo flight three times: as they are; on the same
 route, against solo pilots who flew it, with the flights that join groups taken while alone as a
 control for selection; and within one flight, before, during and after a group, against mock
-events placed at the same times of flight in flights without a group. The three designs agree: in
-company pilots fly straighter and faster, and within a flight the gain comes and goes with the
-group.
+events placed at the same times of flight in flights without a group. Each design removes more of
+the selection than the one before, and the claim narrows as it goes. Speed survives all three: in
+company pilots fly faster, by about as much on the same route as within one flight, and within a
+flight the gain comes and goes with the group. Persistence survives the raw comparison and the
+comparison within the flight, while on the same route the pilots who join groups carry much of it
+when they fly alone. Where the gain comes from points to the route the group holds. The last
+design needs only tracks and a rule for who flies with whom, and applies as it is to soaring birds
+tagged in flocks.
 
 \section*{DATA AND GROUPS}
 
@@ -121,16 +127,11 @@ flight~\cite{Metzler2014}. We estimate it on a window of $\pm\LtDecade$ decades 
 also split into climbs, searches and transitions by the labelling of Ref.~\cite{Vilpellet2026};
 the statistics of phases rest on these flights (\SM{8}).
 
-A lag $\tau$ needs pieces of at least $\tau/\LtSupport$, so that the origins of a piece cover the
-lag in the same share of it. A dataset to the lag $T$ keeps the pieces of at least
-$T/\LtSupport$ and measures every lag up to $T$ on them, so that the population does not change
-along a curve. The main dataset has $T = \LtTauTwo$~s, with pieces of at least \RawShortestTwo~s.
-The check has $T = \LtTauOne$~s, with pieces of at least \RawShortestOne~s. We stop at
-\LtTauTwo~s for two reasons. Beyond it the same-route design has too few matched pieces of G: at
-$T = \LtLongerTau$~s no caliper reaches \LtMinPieces{} pieces per level of the wing. And longer
-pieces select flights with a larger exponent: on the dataset to \LtTauLong~s, $\aK$ of solo flights
-is \LtRawAlphaKSLong{}, against \LtRawAlphaKSTwo{} on the main dataset. The level shifts and the
-shape of $\alpha(\tau)$ at the shared lags is kept (\SM{2}).
+Every lag of a curve is measured on the same pieces, so that the population does not change along
+it. The main dataset keeps the pieces of at least \RawShortestTwo~s and reads lags up to
+\LtTauTwo~s; the check dataset keeps those of at least \RawShortestOne~s and reads lags up to
+\LtTauOne~s. Longer lags leave too few matched pieces on the same route and select straighter
+flights (\SM{2}).
 
 All bands are \LtBandLevel\% intervals of a bootstrap over pilots and over blocks of episodes and
 site-days, combined as in Ref.~\cite{Cameron2011} (Appendix~\ref{app:bands}). On synthetic data
@@ -140,23 +141,25 @@ with no group effect they hold zero in \CovNewMin--\CovNewMax\% of the cases (\S
 \includegraphics[width=\textwidth]{figures/msd.pdf}
 \caption{Time-averaged MSD (a) and local slope $\alpha(\tau)$ (b) of the horizontal position for
 solo flights (S), group flights while alone (A) and group time (G), main dataset, with
-\LtBandLevel\% bands. The fitted exponent $H$, from \LtFitFrom~s to \LtTauTwo~s, is \LtRawFitSTwo{}
+\LtBandLevel\% bands; colours as in (b), dotted lines the fitted power laws; the insets in (a) enlarge the
+lags from 10 to 20~s and from 1500~s to the end. The fitted exponent $H$, from \LtFitFrom~s to \LtTauTwo~s, is \LtRawFitSTwo{}
 for S, \LtRawFitATwo{} for A and \LtRawFitGTwo{} for G.}
 \label{fig:msd}
 \end{figure*}
 
 \section*{RAW COMPARISON}
 
-On the main dataset group time is more persistent than solo flight at every lag from
-\LtRawClearTwo~s to the end (Fig.~\ref{fig:msd}, Fig.~\ref{fig:designs}a). The gap is small at the
-shortest lags and largest near \LtLagOne~s, on both datasets: longer pieces shift its level and keep
-its shape. At \LtLagOne~s $\alpha$
-differs by \LtRawAlphaGapKGSTwo{} \LtRawAlphaGapKGSTwoBand{} and the fitted $H$ by
-\LtRawFitGapGSTwo{} (Table~\ref{tab:designs}). On the shorter pieces of the dataset to
-\LtTauOne~s the gap opens only beyond \LtRawClearOne~s. The flights that join groups, while alone,
-have the $\alpha$ of solo flights (A $-$ S is \LtRawAlphaGapKASTwo{} at \LtLagOne~s) but are
-faster by \LtRawXcGapAS{}~km/h over \LtXcMin~min, against \LtRawXcGapGS{}~km/h for group time. This
-is a first sign of selection.
+What does a raw comparison show? On the main dataset group time is more persistent than solo
+flight at every lag from \LtRawClearTwo~s to the end (Fig.~\ref{fig:msd},
+Fig.~\ref{fig:designs}a). The gap is small at the shortest lags and largest near \LtLagOne~s, where
+$\alpha$ differs by \LtRawAlphaGapKGSTwo{} \LtRawAlphaGapKGSTwoBand{}; the fitted $H$ differs by
+\LtRawFitGapGSTwo{} (Fig.~\ref{fig:forest}). On the shorter pieces of the check dataset the gap
+opens only beyond \LtRawClearOne~s. Up to a few minutes the order changes: the flights that join
+groups, while alone, are the most persistent of the three (Fig.~\ref{fig:msd}b). Group time is also faster, by \LtRawXcGapGS{}~km/h over
+\LtXcMin~min. The flights that join groups, while alone, have the $\alpha$ of solo flights at
+\LtLagOne~s (A $-$ S is \LtRawAlphaGapKASTwo{}), a fitted $H$ larger by \LtRawFitGapASTwo{}
+\LtRawFitGapASTwoBand, and are faster by \LtRawXcGapAS{}~km/h. The pilots who join groups fly
+better even alone, and the raw gap mixes them with the group.
 
 \begin{figure*}[t]
 \includegraphics[width=\textwidth]{figures/designs.pdf}
@@ -167,178 +170,56 @@ thin lines, the check dataset (windows of \LtWinMid~s in c).}
 \label{fig:designs}
 \end{figure*}
 
-\begin{table*}[t]
-\caption{Contrasts of the three designs on the main dataset, with \LtBandLevel\% bands: $\Delta\alpha$
-at \LtLagOne~s and \LtLagTwo~s, the change of the fitted $H$ and the change of cross-country speed
-over \LtXcMin~min (km/h). Samples. Raw: \LtRawFlightsSTwo{} flights of S, \LtRawFlightsATwo{} of A,
-\LtRawFlightsGTwo{} of G; speed, \LtRawXcFlightsS{}, \LtRawXcFlightsA{} and \LtRawXcFlightsG{}
-flights. Same route: \LtRoutePiecesGTwo{} pieces of G and \LtRoutePiecesATwo{} of A;
-speed, \LtRouteXcPiecesG{} and \LtRouteXcPiecesA{}. S$|$G and S$|$A are the solo pieces matched to
-G and to A, and the difference of the two contrasts is the effect of the group on the same route,
-net of the selection of the flights that join groups. Same flight: \LtFltMaxEvents{} events with
-windows of \LtWinMax~s; $g$ is the mean of the changes at entry and at exit, $d_w$ their half
-difference, the drift over one window, and mock events are the same four windows at the same times
-of flight in \LtFltMaxMockFlights{} flights never in a group (\LtFltMaxMockEvents{} mock events,
-month within \MatMonth, hour within \MatHour~h, wing of the same class).}
-\label{tab:designs}
-\begin{ruledtabular}
-\begin{tabular}{llcccc}
-Design & Contrast & $\Delta\aK$ & $\Delta\aQ$ & $\Delta H$ & Speed (km/h) \\
-\hline
-Raw & G $-$ S & \LtRawAlphaGapKGSTwo{} \LtRawAlphaGapKGSTwoBand & \LtRawAlphaGapQGSTwo{} \LtRawAlphaGapQGSTwoBand & \LtRawFitGapGSTwo{} \LtRawFitGapGSTwoBand & \LtRawXcGapGS{} \LtRawXcGapGSBand \\
- & A $-$ S & \LtRawAlphaGapKASTwo{} \LtRawAlphaGapKASTwoBand & \LtRawAlphaGapQASTwo{} \LtRawAlphaGapQASTwoBand & \LtRawFitGapASTwo{} \LtRawFitGapASTwoBand & \LtRawXcGapAS{} \LtRawXcGapASBand \\
-Same route & G $-$ S$|$G & \LtRouteAlphaKGSTwo{} \LtRouteAlphaKGSTwoBand & \LtRouteAlphaQGSTwo{} \LtRouteAlphaQGSTwoBand & \LtRouteFitGSTwo{} \LtRouteFitGSTwoBand & \LtRouteXcGS{} \LtRouteXcGSBand \\
- & A $-$ S$|$A & \LtRouteAlphaKASTwo{} \LtRouteAlphaKASTwoBand & \LtRouteAlphaQASTwo{} \LtRouteAlphaQASTwoBand & \LtRouteFitASTwo{} \LtRouteFitASTwoBand & \LtRouteXcAS{} \LtRouteXcASBand \\
- & difference & \LtRouteAlphaKDiffTwo{} \LtRouteAlphaKDiffTwoBand & \LtRouteAlphaQDiffTwo{} \LtRouteAlphaQDiffTwoBand & \LtRouteFitDiffTwo{} \LtRouteFitDiffTwoBand & \LtRouteXcDiff{} \LtRouteXcDiffBand \\
-Same flight & $g$ & \LtFltMaxGAlphaK{} \LtFltMaxGAlphaKBand & \LtFltMaxGAlphaQ{} \LtFltMaxGAlphaQBand & \LtFltMaxGFit{} \LtFltMaxGFitBand & \LtFltMaxGXc{} \LtFltMaxGXcBand \\
- & mock events & \LtFltMaxMockGAlphaK{} \LtFltMaxMockGAlphaKBand & \LtFltMaxMockGAlphaQ{} \LtFltMaxMockGAlphaQBand & \LtFltMaxMockGFit{} \LtFltMaxMockGFitBand & \LtFltMaxMockGXc{} \LtFltMaxMockGXcBand \\
- & $g$ minus mock & \LtFltMaxNetGAlphaK{} \LtFltMaxNetGAlphaKBand & \LtFltMaxNetGAlphaQ{} \LtFltMaxNetGAlphaQBand & \LtFltMaxNetGFit{} \LtFltMaxNetGFitBand & \LtFltMaxNetGXc{} \LtFltMaxNetGXcBand \\
- & drift $d_w$ & \LtFltMaxDwAlphaK{} \LtFltMaxDwAlphaKBand & \LtFltMaxDwAlphaQ{} \LtFltMaxDwAlphaQBand & \LtFltMaxDwFit{} \LtFltMaxDwFitBand & \LtFltMaxDwXc{} \LtFltMaxDwXcBand \\
- & after $-$ before & \LtFltMaxPostPreAlphaK{} \LtFltMaxPostPreAlphaKBand & \LtFltMaxPostPreAlphaQ{} \LtFltMaxPostPreAlphaQBand & \LtFltMaxPostPreFit{} \LtFltMaxPostPreFitBand & \LtFltMaxPostPreXc{} \LtFltMaxPostPreXcBand \\
-\end{tabular}
-\end{ruledtabular}
-\end{table*}
-
 \section*{SAME ROUTE}
 
-We matched every piece of G to pieces of solo flights along the same route, within \MatMonth{}
-months, within \MatHour~h of the hour and on a wing of the same class (\SM{6}). The solo pieces come
-from other pilots, who share only the route with the group. The gap remains. On the main dataset
-G $-$ S$|$G is \LtRouteAlphaKGSTwo{} at \LtLagOne~s and \LtRouteAlphaQGSTwo{} at \LtLagTwo~s
-(Fig.~\ref{fig:designs}b, Table~\ref{tab:designs}), no smaller than the raw gap of
-\LtRawAlphaGapKGSTwo{}. On the check dataset it is \LtRouteAlphaKGSOne{}, about half the raw gap
-of \LtRawAlphaGapKGSOne{}. The flights that join groups, taken while alone and matched in the same
-way, keep about half of the gap at \LtLagOne~s, where A $-$ S$|$A is \LtRouteAlphaKASTwo{}
-\LtRouteAlphaKASTwoBand, and all of it at \LtLagTwo~s (\LtRouteAlphaQASTwo{}
-\LtRouteAlphaQASTwoBand). This part is selection. The effect of the group on the same route, net of
-selection, is the difference of the two. For $\alpha$ and for the fitted $H$ it is not resolved on
-the main dataset: at \LtLagOne~s it is \LtRouteAlphaKDiffTwo{} \LtRouteAlphaKDiffTwoBand, a band
-that includes zero and values as large as the raw gap, so the design does not decide. On the check
-dataset the difference of $\alpha$ is not resolved either (\LtRouteAlphaKDiffOne{}
-\LtRouteAlphaKDiffOneBand), and that of the fitted $H$ is \LtRouteFitDiffOne{}
-\LtRouteFitDiffOneBand, small and of the opposite sign (\SM{6}). For speed it is resolved: net of
-selection the group gains \LtRouteXcDiff{} \LtRouteXcDiffBand~km/h over \LtXcMin~min, on
-\LtRouteXcPiecesG{} pieces of G and \LtRouteXcPiecesA{} of A (\SM{8}). The sign of G $-$ S$|$G holds
-over the \LtRobLines{} lines of the match (\SM{12}). The main dataset keeps \LtRoutePiecesGTwo{}
-pieces of G and \LtRoutePiecesATwo{} of A, and the check dataset \LtRoutePiecesGOne{} and
-\LtRoutePiecesAOne{}.
+Does the gap belong to the route? We matched every piece of G to pieces of solo flights along the
+same route, within \MatMonth{} months, within \MatHour~h of the hour and on a wing of the same
+class (\SM{6}). The solo pieces come from other pilots, who share only the route with the group.
+Against them the gap of persistence remains: G $-$ S$|$G is \LtRouteAlphaKGSTwo{} at \LtLagOne~s
+(Fig.~\ref{fig:designs}b, Fig.~\ref{fig:forest}), no smaller than the raw gap. The same match
+applied to the flights that join groups, while alone, shows where it comes from: A $-$ S$|$A is
+\LtRouteAlphaKASTwo{} \LtRouteAlphaKASTwoBand{} at \LtLagOne~s, half of the gap, and
+\LtRouteAlphaQASTwo{} \LtRouteAlphaQASTwoBand{} at \LtLagTwo~s, all of it. These pilots fly
+straighter than others on the same line even without company. Net of this selection, the effect
+of the group on persistence, (G $-$ S$|$G) $-$ (A $-$ S$|$A), is \LtRouteAlphaKDiffTwo{}
+\LtRouteAlphaKDiffTwoBand{} at \LtLagOne~s, and the design does not decide.
+
+Speed tells a different story. Alone, the pilots who join groups are as fast as their controls (A
+$-$ S$|$A is \LtRouteXcAS{} \LtRouteXcASBand~km/h). In a group they are faster, and net of
+selection the group adds \LtRouteXcDiff{} \LtRouteXcDiffBand~km/h over \LtXcMin~min,
+\LtRouteXcDiffPct\% of the speed of the solo controls, on \LtRouteXcPiecesG{} pieces of G and
+\LtRouteXcPiecesA{} of A (\SM{8}). Their time in climb rises by
+\MatDeltaClimbD{} percentage points \MatDeltaClimbDBand, while the glide speed and the height lost
+per km are not resolved. The sign of G $-$ S$|$G holds over the \LtRobLines{} lines of the match
+(\SM{12}). On the same route, company makes pilots faster; whether it makes them straighter, this
+design cannot say.
 
 \section*{SAME FLIGHT}
 
-Within one flight the pilot, the glider and the day are fixed. In the flights that join a group and
-later leave it, we cut four windows: before the group, at its start, at its end and after it. The
-changes at entry, $D_\mathrm{in}$, and at exit, $D_\mathrm{out}$, have a mean $g =
-(D_\mathrm{in} + D_\mathrm{out})/2$ free of any linear drift along the flight, and a half
-difference $d_w = (D_\mathrm{in} - D_\mathrm{out})/2$ that measures this drift (\SM{7}). A
-profile with curvature along the flight is not removed by $g$. Mock events test for it. A mock
-event is the same four windows placed at the same times of flight in a flight never in a group,
-within \MatMonth{} months, \MatHour~h of the hour and a wing of the same class as the real event.
+Does the gain follow the group within one flight? There the pilot, the glider and the day are
+fixed. In the flights that join a group and later leave it, we cut four windows: before the
+group, at its start, at its end and after it. The changes at entry, $D_\mathrm{in}$, and at exit,
+$D_\mathrm{out}$, have a mean $g = (D_\mathrm{in} + D_\mathrm{out})/2$ free of any linear drift
+along the flight, and a half difference $d_w = (D_\mathrm{in} - D_\mathrm{out})/2$ that measures
+this drift (\SM{7}). A profile with curvature along the flight is not removed by $g$. Mock events
+test for it: the same four windows placed at the same times of flight in a flight never in a
+group, within \MatMonth{} months, \MatHour~h of the hour and a wing of the same class as the real
+event.
 
-Net of the mock events, $\alpha$ rises by \LtFltMaxNetGAlphaK{} at \LtLagOne~s and by
-\LtFltMaxNetGAlphaQ{} at \LtLagTwo~s when the group begins and falls back when it ends
-(Fig.~\ref{fig:designs}c). The fitted $H$ rises by \LtFltMaxNetGFit{} and the speed by
-\LtFltMaxNetGXc{}~km/h, on \LtFltMaxEvents{} events with windows of \LtWinMax~s. With windows of
-\LtWinMid~s, on \LtFltMidEvents{} events, the change at \LtLagOne~s is the same
-(\LtFltMidNetGAlphaK{}). The drift $d_w$ is compatible with zero on both. The mock events are
-small but not always zero: they give \LtFltMaxMockGXc{}~km/h of speed. Mock events drawn at the
-takeoff site of the real event give a net change of \LtFltMaxNetSiteGAlphaK{} at \LtLagOne~s. On
-the windows of \LtWinMax~s their net change at \LtLagTwo~s (\LtFltMaxNetSiteGAlphaQ{}) and in speed
-(\LtFltMaxNetSiteGXc{}~km/h) has a band that includes zero (\SM{7}). In
-the phases of flight, with windows of \LtWinMid~s and net of the mock events, the time in climb
-rises by \PreNetGClimb{} percentage points, the share of searches that end in a climb by
-\PreNetGFound{} points, glides become faster by \PreNetGGlide{}~km/h and the height lost per km
-changes by \PreNetGSink{}~m/km, and the climb rate is not resolved (Fig.~\ref{fig:how}b, \SM{8}).
-
-\section*{HOW A GROUP HOLDS A ROUTE}
-
-Lift is tied to places. We call the start of a climb marked when a glider outside the group climbs
-within \StMkR~m of it in the \StMkDT~s before. The share of marked starts is \StMkNowGroup{} times
-its value when the same gliders are shifted by \StMkNear~min before or after: a glider climbing
-right then adds little to what the place gives. The share falls to half of its value at no shift
-only after \StMkHalfGroup~min, so a place keeps being used for climbs for at least that long
-(\SM{11}). A route is a chain of such places. Groups fly it as files. The pilot ahead changes
-\StSwitches{} times per hour of contact, less often than the \StSwitchesChance{} of chance
-contacts of the same duration. The lead goes slightly more often to the pilot with the higher wing
-class (\StWing\% of the pairs) or with more flights in the archive (\StExp\%), two markers of
-experience. Followers turn where the leader turned: the correlation of the headings of a pair
-peaks at a time lag close to their delay along the route in the four classes of delay, from
-\StHdLOne{} to \StHdLFour~s, with no second peak near zero lag from \StHdLTwo~s of delay
-(Fig.~\ref{fig:how}a). A follower retraces the line and does not answer the leader's turns, and
-surrogate pairs, who never saw each other, correlate as much from \StHdLChanceThree~s of delay. A
-solo glider that meets an existing pair joins it \StEnSoloPair{} times more often than expected
-from the number of gliders, and one that meets a group of three or more as often as expected
-(\StEnSoloThree{}).
-
-On the same route, net of selection, the time in climb rises by \MatDeltaClimbD{} percentage points
-\MatDeltaClimbDBand, and the glide speed and the height lost per km are not resolved
-(\SM{8}). The gain is largest in the high mountains. We classed every point
-by the relief within a square window of \TnWindowKm~km and gave a piece the class of at least
-\TnMajority\% of its points (\SM{10}). On the check dataset, raw, $\Delta\aK$ is \LtTerRawLow{} in plains and
-hills, \LtTerRawLowMtn{} in low mountains and \LtTerRawHigh{} in high mountains
-(Fig.~\ref{fig:how}c). Within the flight, with windows of \LtWinMid~s, it is \LtTerFlightMtn{} in the mountains, on \LtTerFlightMtnEvents{} events, and
-not resolved in plains and hills, on \LtTerFlightLowEvents{} events. Alone, a pilot in plains and
-hills already flies nearly straight, with $\alpha(\LtLagOne\,\mathrm{s}) = \LtTerAlphaSLow$ for S
-against \LtTerAlphaSHigh{} in high mountains.
-
-\begin{figure*}[t]
-\includegraphics[width=\textwidth]{figures/how.pdf}
-\caption{How a group holds a route. (a) Correlation of the headings of two pilots of a pair in
-glide, against the time lag $\tau$ minus their delay $\ell$ along the route, for four classes of
-delay: the follower turns where the leader turned. (b) Within the same flight, change of the phase
-statistics in the group, as a percentage of their level outside it, with \LtBandLevel\% bands.
-(c) $\Delta\aK$ by terrain class, raw (G $-$ S) and within the same flight ($g$); darker for higher
-relief. Panel (b) shows $g$ with windows of \LtWinMid~s, before the subtraction of the mock events;
-the values net of them are in the text.}
-\label{fig:how}
-\end{figure*}
-
-The transitions between climbs last longer in group time (Fig.~\ref{fig:survival}). We compare the
-tails of their durations through the Hill estimator~\cite{Hill1975},
-\begin{equation}
-\hat\mu = n\Bigl/\sum_{i=1}^{n}\ln\frac{x_i}{x_\mathrm{min}},
-\end{equation}
-of the survival $P(X>x)\sim x^{-\mu}$ over the $n$ durations $x_i$ above $x_\mathrm{min}$. We read
-every population at one threshold, $x_\mathrm{min} = \TlXmin$~s, chosen on S by the
-Kolmogorov--Smirnov distance~\cite{Clauset2009}; the bands are those of Appendix~\ref{app:bands} at
-fixed threshold, and the index changes with the threshold (\SM{9}). Raw, the tail of group time is
-heavier, $\hat\mu = \TlRawMuG$ against \TlRawMuS{} for solo flights (Table~\ref{tab:tail}). The
-other two designs do not confirm it. On the same route the effect of the group on $\hat\mu$ cannot
-be told from zero, with a wide band. Within the flight, the transitions flown entirely in a group
-have the index of those flown before and after it, and the heavy tail of group time comes from the
-transitions that cross the start or the end of a group. The long transitions of a group cost less
-height per km, and so do those of solo pilots on the same route: a long, cheap glide belongs to the
-line.
-
-\begin{figure}[t]
-\includegraphics[width=\columnwidth]{figures/survival.pdf}
-\caption{Survival of the durations of the transitions between climbs in solo flights (S), group
-flights while alone (A) and group time (G), raw design, with \LtBandLevel\% bands. The dotted line
-marks the threshold $x_\mathrm{min} = \TlXmin$~s of the Hill estimator.}
-\label{fig:survival}
-\end{figure}
-
-\begin{table}[b]
-\caption{Hill index $\hat\mu$ of the durations of the transitions above $x_\mathrm{min} = \TlXmin$~s,
-with \LtBandLevel\% bands at fixed threshold. Same route: the effect of the group net of selection, in
-analogy with Table~\ref{tab:designs}. Same flight: transitions flown entirely before, in and
-after a group, and the change in the group against the mean of before and after. After a group the
-long transitions include the final glides to landing, so before and after differ (\SM{9}).}
-\label{tab:tail}
-\begin{ruledtabular}
-\begin{tabular}{llr}
-Design & Population or contrast & $\hat\mu$ \\
-\hline
-Raw & S & \TlRawMuS{} \TlRawMuSBand \\
- & A & \TlRawMuA{} \TlRawMuABand \\
- & G & \TlRawMuG{} \TlRawMuGBand \\
-Same route & difference & \TlRouteMuCtlD{} \TlRouteMuCtlDBand \\
-Same flight & before & \TlFlightMuBefore{} \TlFlightMuBeforeBand \\
- & in group & \TlFlightMuIn{} \TlFlightMuInBand \\
- & after & \TlFlightMuAfter{} \TlFlightMuAfterBand \\
- & in $-$ mean(before, after) & \TlFlightDeltaIn{} \TlFlightDeltaInBand \\
-\end{tabular}
-\end{ruledtabular}
-\end{table}
+Net of the mock events, speed rises by \LtFltMaxNetGXc{} \LtFltMaxNetGXcBand~km/h when the group
+begins and falls back when it ends, on \LtFltMaxEvents{} events with windows of \LtWinMax~s.
+Persistence follows: $\alpha$ rises by \LtFltMaxNetGAlphaK{} at \LtLagOne~s and by
+\LtFltMaxNetGAlphaQ{} at \LtLagTwo~s (Fig.~\ref{fig:designs}c, Fig.~\ref{fig:forest}), and the
+fitted $H$ by \LtFltMaxNetGFit. Windows of \LtWinMid~s, on \LtFltMidEvents{} events, give the same
+change at \LtLagOne~s (\LtFltMidNetGAlphaK), and the drift $d_w$ is compatible with zero on both.
+Mock events drawn at the takeoff site of the real event, which hold the place as well, leave
+\LtFltMaxNetSiteGAlphaK{} at \LtLagOne~s; their change of speed, \LtFltMaxNetSiteGXc~km/h, has a
+band that includes zero (\SM{7}). The phases show where the time goes (Fig.~\ref{fig:how}b,
+\SM{8}). With windows of \LtWinMid~s and net of the mock events, the time in climb rises by
+\PreNetGClimb{} percentage points, the share of searches that end in a climb by \PreNetGFound{}
+points, glides become faster by \PreNetGGlide{}~km/h and the height lost per km changes by
+\PreNetGSink{}~m/km, while the climb rate is not resolved. Within a flight, the gain comes and goes
+with the group.
 
 \begin{figure*}[t]
 \includegraphics[width=\textwidth]{figures/forest.pdf}
@@ -346,27 +227,83 @@ Same flight & before & \TlFlightMuBefore{} \TlFlightMuBeforeBand \\
 \LtWinMax~s) and the check (lags to \LtTauOne~s, windows of \LtWinMid~s), with \LtBandLevel\% bands:
 $\Delta\aK$, $\Delta\aQ$, the change of the fitted $H$ and the change of cross-country speed. Raw:
 G $-$ S and A $-$ S. Same route: G $-$ S$|$G, A $-$ S$|$A and their difference. Same flight: $g$, the
-mock events and $g$ minus the mock events.}
+mock events and $g$ minus the mock events. Samples on the main dataset: raw, \LtRawFlightsSTwo{} flights of S,
+\LtRawFlightsATwo{} of A and \LtRawFlightsGTwo{} of G; same route, \LtRoutePiecesGTwo{} pieces of G and
+\LtRoutePiecesATwo{} of A; same flight, \LtFltMaxEvents{} events and \LtFltMaxMockEvents{} mock events. Speed has its
+own samples: raw, \LtRawXcFlightsS{}, \LtRawXcFlightsA{} and \LtRawXcFlightsG{} flights; same route,
+\LtRouteXcPiecesG{} pieces of G and \LtRouteXcPiecesA{} of A. The values are in \SM{6}.}
 \label{fig:forest}
+\end{figure*}
+
+\section*{HOW A GROUP HOLDS A ROUTE}
+
+What does a group give its members? Lift is tied to places. We call the start of a climb marked
+when a glider outside the group climbs within \StMkR~m of it in the \StMkDT~s before. The share of
+marked starts is \StMkNowGroup{} times its value when the same gliders are shifted by
+\StMkNear~min before or after: a glider climbing right then adds little to what the place gives.
+The share falls to half of its value at no shift only after \StMkHalfGroup~min (Fig.~\ref{fig:how}c), so a place keeps
+being used for climbs for at least that long (\SM{11}). A route is a chain of such places. Groups
+fly it as files. The pilot ahead changes \StSwitches{} times per hour of contact, less often than
+the \StSwitchesChance{} of chance contacts of the same duration. The lead goes slightly more often
+to the pilot with the higher wing class (\StWing\% of the pairs) or with more flights in the
+archive (\StExp\%), two markers of experience. Followers turn where the leader turned: the
+correlation of the headings of a pair peaks at a time lag close to their delay along the route in
+the four classes of delay, from \StHdLOne{} to \StHdLFour~s, with no second peak near zero lag from
+\StHdLTwo~s of delay (Fig.~\ref{fig:how}a). A follower retraces the line and does not answer the
+leader's turns, and surrogate pairs, who never saw each other, correlate as much from
+\StHdLChanceThree~s of delay. Pairs also attract. A solo glider that passes close to a pair joins
+it \StEnSoloPair{} \StEnSoloPairBand{} times as often as if each glider of the pair were a separate
+encounter between two solo gliders at the same distance. A group of three or more gets the joins
+its size predicts (\StEnSoloThree{} \StEnSoloThreeBand). What a group holds is a line: places that
+keep giving lift, and followers who retrace it.
+
+\section*{WHERE COMPANY PAYS}
+
+Is the gain the same everywhere? We classed every point by the relief within a square window of
+\TnWindowKm~km and gave a piece the class of at least \TnMajority\% of its points (\SM{10}). On the
+check dataset, raw, $\Delta\aK$ is \LtTerRawLow{} in plains and hills, \LtTerRawLowMtn{} in low
+mountains and \LtTerRawHigh{} in high mountains. Within the flight, with
+windows of \LtWinMid~s, it is \LtTerFlightMtn{} \LtTerFlightMtnBand{} in the mountains, on
+\LtTerFlightMtnEvents{} events, and not resolved in plains and hills, on \LtTerFlightLowEvents{}
+events. Alone, a pilot in plains and hills already flies with $\aK = \LtTerAlphaSLow$, against
+\LtTerAlphaSHigh{} in high mountains. The gain in persistence is concentrated where solo pilots fly
+least straight.
+
+\begin{figure*}[t]
+\includegraphics[width=\textwidth]{figures/how.pdf}
+\caption{How a group holds a route. (a) Correlation of the headings of two pilots of a pair in
+glide, against the time lag $\tau$ minus their delay $\ell$ along the route, for four classes of
+delay: the follower turns where the leader turned. (b) Within the same flight, change of the phase
+statistics in the group net of the mock events, as a percentage of their level outside it, windows
+of \LtWinMid~s. (c) Share of climb starts marked by a glider outside the group, against the shift
+in time of the markers, relative to its value at no shift, for group members and solo pilots; the
+dotted line marks half. Bands at \LtBandLevel\%.}
+\label{fig:how}
 \end{figure*}
 
 \section*{DISCUSSION}
 
-In company, paraglider pilots fly straighter and faster. A raw comparison could not establish it,
-since groups form on good days and good routes and gather pilots who fly well. Two results carry
-the claim. Against solo pilots on the same route the gap remains. And within one flight
-persistence and speed rise at the entry into a group and return at the exit, while flights
-without a group show no such jump at the same times of flight. How much of the gap belongs to the
-group is less certain: on the same route the flights that join groups keep half of it or more when
-they fly alone, and the remainder is resolved for speed and not for persistence
-(Fig.~\ref{fig:forest}).
+In company, paraglider pilots fly faster, and within a flight they fly straighter. A raw
+comparison could not establish it, since groups form on good days and good routes and gather
+pilots who fly well. The two other designs remove this selection in different ways, and each
+leaves something in. The same-route design holds the line and the hour but compares different
+pilots. The same-flight design holds the pilot, the wing and the day, but a pilot joins a group
+where groups are. On speed they agree: net of selection the group adds \LtRouteXcDiff{}
+\LtRouteXcDiffBand~km/h on the same route, and \LtFltMaxNetGXc{} \LtFltMaxNetGXcBand~km/h within
+the flight (Fig.~\ref{fig:forest}). On persistence they part. Within the flight $\aK$ rises by
+\LtFltMaxNetGAlphaK{}, and by \LtFltMaxNetSiteGAlphaK{} against mock events drawn at the same
+takeoff. On the same route the pilots who join groups keep half of the gap or more when they fly
+alone, and what remains for the group is not resolved. Speed is the robust result; the gain in
+persistence is seen only where the pilot is held fixed.
 
 What does company provide? Our data favour the route over the instant. Lift stays tied to places
-for tens of minutes, and a glider climbing now adds little to what the place gives. Followers
-retrace the line of the pilot ahead and do not answer its turns. Long glides that cost little
-height are found by solo pilots on the same route as well. Faster glides are what speed-to-fly
-theory prescribes when the next climb is surer or stronger~\cite{MacCready1954,Cochrane1999}, and
-what vultures do when others reveal the next thermal~\cite{Williams2018}. We cannot tell a group
+for tens of minutes, and a glider climbing right then adds little to what the place gives.
+Followers retrace the line of the pilot ahead and do not answer its turns. Within the flight, in
+the group, pilots spend more time climbing, more of their searches end in a climb, and their
+glides are faster and cost less height per km. Faster glides are what speed-to-fly theory
+prescribes when the next climb is surer or stronger~\cite{MacCready1954,Cochrane1999}, and what
+vultures do when others reveal the next thermal~\cite{Williams2018}. A pilot who knows where the
+line goes can afford to glide fast towards it. We cannot tell a group
 that leads its members to a good line from a group that gathers on it. Our groups are defined by
 flight alone: pilots who arranged to fly together, who talk by radio or who follow the known
 routes of a site are among them, and the archive does not tell them apart.
@@ -377,11 +314,18 @@ The same-flight design needs only tracks and a rule for who flies with whom. Eac
 own control, and mock events remove what the course of a flight produces by itself. It applies as
 it is to soaring birds tagged in flocks, where the value of company has been read from leaders
 and followers~\cite{Flack2018} or from single thermals~\cite{Williams2018,Sassi2024}. For pilots
-it puts a number on a question asked at every takeoff: within a flight, company is worth about
-\LtFltMaxNetGXc{}~km/h of cross-country speed.
+it puts a number on a question asked at every takeoff: within a flight, company is worth
+\LtFltMaxNetGXc{} \LtFltMaxNetGXcBand~km/h of cross-country speed, and the same-route design,
+which compares different pilots on the same line, finds as much: about \LtRouteXcDiffPct\% of the
+speed of a solo pilot on the same line.
 
 \begin{acknowledgments}
-\pending{FFVL for the tracks; supervisors; funding.}
+We thank the F\'ed\'eration Fran\c{c}aise de Vol Libre (FFVL) for the archive of cross-country
+tracks. This research was conducted within the Econophysics \& Complex Systems Research Chair,
+under the aegis of the Fondation du Risque and Capital Fund Management. Portions of the writing,
+editing and code of this work were assisted by Claude, a large language model developed by
+Anthropic. All scientific content, analysis and interpretations are the sole responsibility of the
+authors.
 \end{acknowledgments}
 
 \bibliography{letter}

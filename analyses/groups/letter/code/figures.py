@@ -127,7 +127,7 @@ def how(folder, out):
     groups_out = folder.parent
     h = json.loads((groups_out / "headings.json").read_text())
     prepost = json.loads((folder / f"prepost_{WINDOW}.json").read_text())
-    terrain = json.loads((folder / "terrain_compare.json").read_text())
+    marking = json.loads((groups_out / "marking.json").read_text())
     fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.4), constrained_layout=True,
                              gridspec_kw={"width_ratios": [1.1, 1, 1]})
 
@@ -148,20 +148,24 @@ def how(folder, out):
     stats = (("searches that end in a climb (%)", "searches ending\nin a climb"), ("time in climb (%)", "time in climb"),
              ("climb rate (m/s)", "climb rate"), ("glide speed (km/h)", "glide speed"),
              ("height lost per km of glide (m/km)", "height lost\nper km"))
-    stages, g = prepost["phase statistics"]["stages"], prepost["differences"]["g"]
+    stages = prepost["phase statistics"]["stages"]
+    g = prepost["mock"]["variants"]["any site"]["real minus mock"]["g"]
     rows = [(label, *relative(g[key], stages["pre"][key], stages["post"][key]), "G") for key, label in stats]
     forest(axes[1], rows, lambda _: GROUP)
-    axes[1].set_xlabel("change in the group (%)")
+    axes[1].set_xlabel("change in the group, net of mock events (%)")
 
-    raw4, flight = terrain["raw"]["four classes"], terrain["flight"]
-    rows = [("raw, plains and hills", *quote(raw4["hills"]["H_loc(1000 s) gaps"]["G - S"], 2), "low"),
-            ("raw, low mountains", *quote(raw4["low mountains"]["H_loc(1000 s) gaps"]["G - S"], 2), "mid"),
-            ("raw, high mountains", *quote(raw4["high mountains"]["H_loc(1000 s) gaps"]["G - S"], 2), "high"),
-            ("flight, plains and hills", *quote(flight["lowland"]["effects"]["g"]["H_loc(1000 s)"], 2), "low"),
-            ("flight, mountains", *quote(flight["mountain"]["effects"]["g"]["H_loc(1000 s)"], 2), "high")]
-    relief = dict(zip(("low", "mid", "high"), plt.cm.Greys(np.linspace(0.45, 0.95, 3))))
-    forest(axes[2], rows, relief.get)
-    axes[2].set_xlabel(r"$\Delta\alpha(1000\ \mathrm{s})$")
+    ax = axes[2]
+    shifts = np.asarray(marking["params"]["shifts_min"], dtype=float)
+    for who, label in (("group", "group members"), ("solo", "solo pilots")):
+        curve = marking["curve"][who]["any"]
+        m0 = curve[0]["value"]
+        ax.fill_between(shifts, [c["band"][0] / m0 for c in curve], [c["band"][1] / m0 for c in curve],
+                        color=POP_COLOR["G" if who == "group" else "S"], alpha=0.2, lw=0)
+        ax.plot(shifts, [c["value"] / m0 for c in curve], color=POP_COLOR["G" if who == "group" else "S"], lw=1.3,
+                marker="o", ms=2.5, label=label)
+    ax.axhline(0.5, color="#888888", lw=0.7, ls=":")
+    ax.set(xlabel="shift of the markers (min)", ylabel="marked share / at no shift", ylim=(0, 1.05))
+    ax.legend(loc="upper right", fontsize=7, handlelength=1.4)
 
     for ax, letter in zip(axes, "abc"):
         ax.set_title(f"({letter})", fontsize=8, loc="left")
@@ -384,11 +388,21 @@ def msd(folder, out):
         assert abs(slope / 2 - pops[pop]["H"]) < 1e-9
         line(ax, lags, m, c["msd_band"], POP_COLOR[pop], f"{pop}, $H$ = {pops[pop]['H']:.3f}", "--" if pop == "A" else "-")
         ax.plot([10, 2760], 10 ** (intercept + slope * np.log10([10, 2760])), color="black", lw=0.6, ls=":", zorder=3)
-    ax.plot([], [], color="black", lw=0.6, ls=":", label=r"fit $\propto \tau^{2H}$")
     ax.set(yscale="log", ylabel=r"MSD (m$^2$)")
     lag_axis(ax)
-    ax.legend(loc="lower right", handlelength=1.8)
     tag(ax, "(a)")
+    for lo, hi, box in ((10, 20, [0.58, 0.08, 0.38, 0.4]), (1500, 2760, [0.1, 0.52, 0.38, 0.4])):
+        zoom = ax.inset_axes(box)
+        for pop in "SAG":
+            c = pops[pop]["curve"]
+            lags = np.array(c["lags"], float)
+            keep = (lags >= lo) & (lags <= hi)
+            band = [np.asarray(b)[keep] for b in c["msd_band"]]
+            line(zoom, lags[keep], np.asarray(c["msd"])[keep], band, POP_COLOR[pop], ls="--" if pop == "A" else "-")
+        zoom.set(xscale="log", yscale="log")
+        zoom.tick_params(labelsize=6, which="both")
+        zoom.xaxis.set_minor_formatter(NullFormatter())
+        ax.indicate_inset_zoom(zoom, edgecolor="#777777")
     ax = axes[1]
     for pop in "SAG":
         c = pops[pop]["curve"]

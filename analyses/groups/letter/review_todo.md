@@ -21,7 +21,11 @@ Decisions:
 - Figures of the letter: (1) one group in 3D from the viewer with the time strip; (2) MSD and
   `\alpha(\tau)` of S, A, G with the fitted H; (3) the three designs against the lag; (4) forest
   plot of fitted H, `\alpha` at two lags, speed and phases in the three designs; (5) how a group
-  holds a route; (6) survival of the long glides.
+  holds a route. The survival of the long glides was dropped on 2026-11-14: the same-route and
+  same-flight designs do not confirm the raw heavier tail (it stays in S9 only).
+  On 2026-11-14: Fig. 2a has an inset on the last lags; Table I moved to S6 (the forest, now Fig. 4,
+  carries it); Fig. 5b shows the phases net of mock events; Fig. 5c is the marking curve m(s), terrain
+  stays as text.
 - Supplement: every section has its figure and is cited from the letter by its number. S1 open
   flights (histogram of the opening, threshold 0.1: the smallest selection that removes the closed
   flights declared open; a high threshold inflates the exponent); S2 datasets and the tau/0.8 rule
