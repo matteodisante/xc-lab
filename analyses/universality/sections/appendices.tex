@@ -1,0 +1,20 @@
+\section{Bootstrap}\label{app:bootstrap}
+
+A flight is tied to the other flights of its pilot, and to the flights of its block, the flights whose takeoffs lie within
+\UniSiteKm{} km of each other on the same day (chained). There are \UniBlocks{} blocks, and \UniCells{} cells (pilot $\times$ block) among the open
+flights. Pilots, blocks and cells are resampled with replacement, \UniNBoot{} draws each, and in a draw every flight weighs the count of
+its pilot, of its block or of its cell. With $V_p,V_b,V_c$ the variances of an estimate over the three sets of draws (Cameron,
+Gelbach and Miller 2011),
+\[
+  V=\max(V_p+V_b-V_c,\ V_p,\ V_b),\qquad \text{band}=\text{estimate}\pm 1.645\sqrt V,
+\]
+a 90\% band. The draws are the same for every population: a pilot who flew both disciplines is drawn once, and the draws of
+$\alpha_{\rm para}-\alpha_{\rm hang}$ and $\Hpara-\Hhang$ are paired, so their bands are those of the difference. Each draw gives
+a mean of $\MSD_f$ per lag over the flights that count at that lag, and from it $\alpha(\tau)$ and $H$.
+
+\section{Reproduction}\label{app:repro}
+
+The scripts are in \texttt{analyses/universality/}; the README gives the map and the data and code versions. \texttt{terrain.py
+--build} makes the 200 m elevation grid, \texttt{measure.py} the pass over the fixes (flights, ends, pieces, ground),
+\texttt{analysis.py} the curves and exponents (in \texttt{out/full/}), \texttt{example.py} the flight of
+Fig.~\ref{fig:rule}, and \texttt{report.py} the figures, tables and macros. The tests are in \texttt{test\_*.py}.

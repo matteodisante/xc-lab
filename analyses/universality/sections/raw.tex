@@ -1,0 +1,44 @@
+\section{Raw comparison}\label{sec:raw}
+
+Do paragliders and hang gliders have the same $H$ when all terrain is taken together?
+
+\paragraph{A, fixed population.} With $T=$ \UniTauFixed{} s the population is the \UniNFirstAllAfixed{} paraglider flights
+(\UniPFirstAllAfixed{} pilots) and the \UniNSecondAllAfixed{} hang glider flights (\UniPSecondAllAfixed{} pilots) that have a
+piece of \UniPieceFixed{} s. The exponent is $H=$ \UniHFirstAllAfixed{} \UniHBandFirstAllAfixed{} for paragliders and
+\UniHSecondAllAfixed{} \UniHBandSecondAllAfixed{} for hang gliders; the difference is $\Hpara-\Hhang=$ \UniDHAllAfixed{}
+with the band \UniDHBandAllAfixed{} (Table~\ref{tab:raw}). Fig.~\ref{fig:raw-A}(a) shows why: the curve of the paragliders lies
+above the other at every lag, by \UniDAlphaAllAfixedHundred{} in $\alpha$ at 100 s and \UniDAlphaAllAfixedThousand{} at 1000 s.
+Both curves rise to a maximum at some tens of seconds and fall to a plateau.
+
+With the longest $T$, \UniTAllAlongest{} s, the populations are \UniNFirstAllAlongest{} paraglider and \UniNSecondAllAlongest{} hang
+glider flights (Fig.~\ref{fig:raw-A}(b)): $H=$ \UniHFirstAllAlongest{} and \UniHSecondAllAlongest, a difference of
+\UniDHAllAlongest{} with the band \UniDHBandAllAlongest, which includes 0. Above 1000 s the curves cross and the band of the
+difference of $\alpha$ is wide, since only \UniNSecondAllAlongest{} hang glider flights are left.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{raw_A.pdf}
+\caption{On a fixed population, $\alpha(\tau)$ of paragliders lies above that of hang gliders up to 1000 s, and the difference
+with the longest $T$ is no longer distinguishable from 0 above that lag. All terrain, design A, (a) $T=$ \UniTauFixed{} s, (b) the
+longest $T$. Top: $\alpha(\tau)$ with the dashed $2H$ of each fit; bottom: $\Delta\alpha=\alpha_{\rm para}-\alpha_{\rm hang}$ with the dashed $2(\Hpara-\Hhang)$.
+Bands 90\%; numbers of flights above the panels.}\label{fig:raw-A}
+\end{figure}
+
+\paragraph{B, all flights.} Taking all the flights each lag can use, $H$ is \UniHFirstAllBkilo{} and \UniHSecondAllBkilo{}
+over the lags up to $1000$ s, and \UniHFirstAllBlongest{} and \UniHSecondAllBlongest{} over the lags up to \UniTAllBlongest{} s;
+the differences are \UniDHAllBkilo{} \UniDHBandAllBkilo{} and \UniDHAllBlongest{} \UniDHBandAllBlongest{}. Fig.~\ref{fig:raw-B} shows
+the population: at long lags the number of flights falls and $\alpha(\tau)$ of both disciplines bends upward, which a fixed
+population does not do. Section~\ref{sec:fixed} compares the two designs.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{raw_B.pdf}
+\caption{When each lag takes all the flights it can, the flights fall at long lags and $\alpha(\tau)$ bends upward there. All terrain,
+design B; same panels as Fig.~\ref{fig:raw-A} and, bottom, the number of flights at each lag.}\label{fig:raw-B}
+\end{figure}
+
+\input{generated/table_raw}
+
+\keep{All terrain, on the fixed population: $\Hpara-\Hhang=$ \UniDHAllAfixed{} \UniDHBandAllAfixed{} at $T=$ \UniTauFixed{} s,
+\UniDHAllAlongest{} \UniDHBandAllAlongest{} at $T=$ \UniTAllAlongest{} s. Paragliders have the larger $H$ at 1000 s; the difference
+is small, and at the longest $T$ it is not resolved.}

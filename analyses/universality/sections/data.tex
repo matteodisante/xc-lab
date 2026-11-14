@@ -1,0 +1,91 @@
+\section{Data and selection}\label{sec:data}
+
+Which flights are compared, and what is measured on them?
+
+\paragraph{Flights.} The flights are the cleaned tracks of the FFVL archive, both disciplines (the tracks of the old
+repository, on the disk of the lab). The flight table of the reference run of the group-identification note gives, for
+each flight, the interval of its logger, its departure (the first fix farther than 3 km from the takeoff) and its
+landing. It holds \UniFunnelParaRunTable{} paraglider and \UniFunnelHangRunTable{} hang glider flights. A flight is
+\emph{eligible} when its logger interval is at most $h_{\max}=$ \UniHMax{} s (so that every instant of the grid below lies in
+a continuous stretch), when it has positions on the grid and when it departs. No group label is used: every flight is
+taken, whoever it flew with.
+
+\paragraph{Declared open, and open.} The FFVL catalogue gives the type of each flight. A flight is
+\emph{declared open} when the pilot declared a distance flight: free distance, or distance with 1, 2 or 3 turn points. Triangles,
+quadrilaterals and out-and-returns are declared closed. The \emph{opening} of a flight is
+\[
+  o \;=\; \frac{d}{L},\qquad d=\lVert \mathbf r_{\rm landing}-\mathbf r_{\rm takeoff}\rVert,\quad L=\text{path flown},
+\]
+with $\mathbf r_{\rm takeoff}$ and $\mathbf r_{\rm landing}$ the first and last fix of the flight and $L$ the length of its
+track (Fig.~\ref{fig:opening}). A flight is \emph{open} when it is declared open and $o>$ \UniMinOpening{} (strictly): this
+drops the declared open flights that come back near their takeoff. Table~\ref{tab:funnel} gives the flights at each step.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{opening_sketch.pdf}
+\caption{A flight is open when the distance from its takeoff to its landing, $d$ (dashed), is more than a tenth of the path
+flown $L$. Two illustrative tracks; the openings printed are computed on them.}\label{fig:opening}
+\end{figure}
+
+\input{generated/table_funnel}
+
+\paragraph{Pieces.} On the grid of $\Delta=$ \UniGridS{} s the track of a flight is cut into \emph{pieces}: the stretches inside one
+segment of the cleaned track (the segments end at the gaps of the logger) and between the departure and the landing of the
+flight. Positions are interpolated linearly on the grid within a segment, never across a gap. A piece shorter than \UniShortest{} s
+is dropped. The pieces are whole: they are not cut by any label.
+
+\paragraph{MSD, $\alpha(\tau)$ and $H$.} Let a piece have positions $\mathbf r_0,\dots,\mathbf r_{n-1}$ on the grid and
+$\tau=m\Delta$ a lag with $m<n$. The sum and the number of origins at the lag $\tau$ are
+\[
+  S_p(\tau)=\sum_{k=0}^{n-1-m}\lVert \mathbf r_{k+m}-\mathbf r_k\rVert^2,\qquad N_p(\tau)=n-m .
+\]
+The MSD of a flight $f$ pools the origins of its pieces $p\in f$, and the MSD of a population is the mean over its flights, each
+with the same weight:
+\[
+  \MSD_f(\tau)=\frac{\sum_{p\in f}S_p(\tau)}{\sum_{p\in f}N_p(\tau)},\qquad
+  \overline{\MSD}(\tau)=\frac1{|P|}\sum_{f\in P}\MSD_f(\tau).
+\]
+The lags are \UniNLags{} lags of the earlier chapter of the thesis, geometric from \UniFirstLag{} s to \UniTauFixed{} s and then with the same
+step up to \UniMaxLag{} s. The local exponent is the slope of $\log\overline{\MSD}$ against $\log\tau$ within $\pm0.25$
+decades of $\tau$ (the three nearest lags when fewer lie there); we write
+\[
+  \alpha(\tau)=\frac{d\log\overline{\MSD}}{d\log\tau}\Big|_{\pm0.25\ \rm dec}=2H_{\rm loc}(\tau).
+\]
+The exponent $H$ is half the slope of the least-squares line through $\log\overline{\MSD}(\tau)$ against $\log\tau$, equal weight
+per lag, over the lags from $10$ s to the longest lag $T$ of the curve:
+$\overline{\MSD}(\tau)\propto\tau^{2H}$ (Fig.~\ref{fig:msd}). A line at $\alpha=2H$ marks it on the plots of $\alpha(\tau)$.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.55\textwidth]{msd_raw.pdf}
+\caption{Over 10 to 1000 s the MSD of both disciplines follows a power law of exponent $2H$ (dashed fits). Open flights of
+the fixed population of Section~\ref{sec:raw}, all terrain; bands 90\%.}\label{fig:msd}
+\end{figure}
+
+\paragraph{Two designs.} A lag $\tau$ needs a piece of at least $\tau/0.8$ s, so that a lag is at most 80\% of the piece (the
+rule of the earlier chapter). Longer lags therefore leave out the flights that have only short pieces, and two
+designs differ in how they treat them (Fig.~\ref{fig:design}).
+\begin{itemize}
+\item \textbf{A, fixed population.} A curve up to the lag $T$ uses only the flights that have a piece of at least $T/0.8$ s,
+for every lag of the curve, so that the set of flights does not change along the curve. We use two values of $T$: the same
+$T=$ \UniTauFixed{} s for every cell compared (``fixed''), and the longest lag of the grid at which both populations
+compared keep at least \UniMinFlights{} flights (``longest''), stated for each comparison.
+\item \textbf{B, all flights.} Each lag $\tau$ uses every flight that has a piece of at least $\tau/0.8$ s: the number of flights
+falls with the lag.
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{design_sketch.pdf}
+\caption{The fixed population (A) keeps the same flights at every lag, the all-flights design (B) lets them fall with the lag.
+Seven illustrative flights, with the duration of their longest piece; dashed lines at $\tau/0.8$ for the lags marked.}\label{fig:design}
+\end{figure}
+
+\paragraph{Bands.} Bands are 90\% bands of a two-way bootstrap that resamples the pilots and the site-days (flights whose
+takeoffs lie within \UniSiteKm{} km on the same day), with \UniNBoot{} draws each, shared by all populations so that the draws of a
+difference between disciplines are paired (Appendix~\ref{app:bootstrap}). The pilots are those of the catalogue;
+\UniPilotsBoth{} pilots have open flights in both disciplines.
+
+\keep{Open flights of both disciplines, whole pieces on a 10-s grid, one MSD per flight, equal weight per flight;
+$\alpha(\tau)$ is the local slope of the MSD, $H$ the slope from $10$ s to $T$. Design A compares the same flights at every lag,
+design B all the flights each lag can use.}

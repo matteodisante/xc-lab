@@ -1,0 +1,701 @@
+% Written by report.py; do not edit.
+\newcommand{\UniMinOpening}{0.1}
+\newcommand{\UniTauFixed}{1000}
+\newcommand{\UniSupport}{0.8}
+\newcommand{\UniNBoot}{1000}
+\newcommand{\UniSiteKm}{3}
+\newcommand{\UniMinFlights}{100}
+\newcommand{\UniMinCell}{30}
+\newcommand{\UniMinOnDem}{50\%}
+\newcommand{\UniBlocks}{31\,594}
+\newcommand{\UniCells}{57\,123}
+\newcommand{\UniGridS}{10}
+\newcommand{\UniHMax}{10}
+\newcommand{\UniPieceFixed}{1250}
+\newcommand{\UniShortest}{12.5}
+\newcommand{\UniNLags}{37}
+\newcommand{\UniMaxLag}{25\,810}
+\newcommand{\UniFirstLag}{10}
+\newcommand{\UniEdgePlains}{300}
+\newcommand{\UniEdgeHills}{800}
+\newcommand{\UniEdgeLow}{1500}
+\newcommand{\UniFunnelParaRunTable}{156\,391}
+\newcommand{\UniFunnelParaEligible}{154\,598}
+\newcommand{\UniFunnelParaDeclaredOpen}{66\,845}
+\newcommand{\UniFunnelParaOpen}{55\,879}
+\newcommand{\UniFunnelParaKnownTerrain}{52\,583}
+\newcommand{\UniFunnelParaPilots}{5\,540}
+\newcommand{\UniMedianPara}{933}
+\newcommand{\UniCellParaPlainsFlights}{12\,212}
+\newcommand{\UniCellParaPlainsPilots}{1\,383}
+\newcommand{\UniCellParaHillsFlights}{10\,414}
+\newcommand{\UniCellParaHillsPilots}{1\,930}
+\newcommand{\UniCellParaLowFlights}{21\,090}
+\newcommand{\UniCellParaLowPilots}{4\,097}
+\newcommand{\UniCellParaHighFlights}{8\,867}
+\newcommand{\UniCellParaHighPilots}{2\,713}
+\newcommand{\UniCellParaUnknownFlights}{3\,296}
+\newcommand{\UniCellParaUnknownPilots}{747}
+\newcommand{\UniCellParaAllFlights}{55\,879}
+\newcommand{\UniCellParaAllPilots}{5\,540}
+\newcommand{\UniRegionParaAlpsFlights}{21\,891}
+\newcommand{\UniRegionParaPyrFlights}{1\,575}
+\newcommand{\UniRegionParaChannelFlights}{4\,414}
+\newcommand{\UniRegionParaChampagneFlights}{3\,231}
+\newcommand{\UniFunnelHangRunTable}{6\,094}
+\newcommand{\UniFunnelHangEligible}{6\,039}
+\newcommand{\UniFunnelHangDeclaredOpen}{2\,178}
+\newcommand{\UniFunnelHangOpen}{1\,417}
+\newcommand{\UniFunnelHangKnownTerrain}{1\,285}
+\newcommand{\UniFunnelHangPilots}{191}
+\newcommand{\UniMedianHang}{1170}
+\newcommand{\UniCellHangPlainsFlights}{174}
+\newcommand{\UniCellHangPlainsPilots}{35}
+\newcommand{\UniCellHangHillsFlights}{104}
+\newcommand{\UniCellHangHillsPilots}{43}
+\newcommand{\UniCellHangLowFlights}{782}
+\newcommand{\UniCellHangLowPilots}{152}
+\newcommand{\UniCellHangHighFlights}{225}
+\newcommand{\UniCellHangHighPilots}{81}
+\newcommand{\UniCellHangUnknownFlights}{132}
+\newcommand{\UniCellHangUnknownPilots}{36}
+\newcommand{\UniCellHangAllFlights}{1\,417}
+\newcommand{\UniCellHangAllPilots}{191}
+\newcommand{\UniRegionHangAlpsFlights}{842}
+\newcommand{\UniRegionHangPyrFlights}{11}
+\newcommand{\UniRegionHangChannelFlights}{20}
+\newcommand{\UniRegionHangChampagneFlights}{29}
+\newcommand{\UniPilotsBoth}{28}
+\newcommand{\UniDHAllAfixed}{$+$0.024}
+\newcommand{\UniDHBandAllAfixed}{[$+$0.017, $+$0.031]}
+\newcommand{\UniTAllAfixed}{1000}
+\newcommand{\UniDAlphaAllAfixedHundred}{$+$0.042}
+\newcommand{\UniDAlphaAllAfixedThousand}{$+$0.058}
+\newcommand{\UniHFirstAllAfixed}{0.922}
+\newcommand{\UniHBandFirstAllAfixed}{[0.921, 0.923]}
+\newcommand{\UniNFirstAllAfixed}{55\,074}
+\newcommand{\UniPFirstAllAfixed}{5\,505}
+\newcommand{\UniHSecondAllAfixed}{0.898}
+\newcommand{\UniHBandSecondAllAfixed}{[0.890, 0.905]}
+\newcommand{\UniNSecondAllAfixed}{1\,400}
+\newcommand{\UniPSecondAllAfixed}{189}
+\newcommand{\UniDHAllAlongest}{$+$0.007}
+\newcommand{\UniDHBandAllAlongest}{[$-$0.006, $+$0.020]}
+\newcommand{\UniTAllAlongest}{11450}
+\newcommand{\UniDAlphaAllAlongestHundred}{$+$0.026}
+\newcommand{\UniDAlphaAllAlongestThousand}{$+$0.008}
+\newcommand{\UniHFirstAllAlongest}{0.923}
+\newcommand{\UniHBandFirstAllAlongest}{[0.920, 0.926]}
+\newcommand{\UniNFirstAllAlongest}{7\,599}
+\newcommand{\UniPFirstAllAlongest}{2\,074}
+\newcommand{\UniHSecondAllAlongest}{0.915}
+\newcommand{\UniHBandSecondAllAlongest}{[0.902, 0.928]}
+\newcommand{\UniNSecondAllAlongest}{172}
+\newcommand{\UniPSecondAllAlongest}{60}
+\newcommand{\UniDHAllBkilo}{$+$0.024}
+\newcommand{\UniDHBandAllBkilo}{[$+$0.017, $+$0.032]}
+\newcommand{\UniTAllBkilo}{1000}
+\newcommand{\UniDAlphaAllBkiloHundred}{$+$0.042}
+\newcommand{\UniDAlphaAllBkiloThousand}{$+$0.046}
+\newcommand{\UniHFirstAllBkilo}{0.922}
+\newcommand{\UniHBandFirstAllBkilo}{[0.921, 0.923]}
+\newcommand{\UniNFirstAllBkilo}{55\,074}
+\newcommand{\UniPFirstAllBkilo}{5\,505}
+\newcommand{\UniHSecondAllBkilo}{0.897}
+\newcommand{\UniHBandSecondAllBkilo}{[0.890, 0.905]}
+\newcommand{\UniNSecondAllBkilo}{1\,400}
+\newcommand{\UniPSecondAllBkilo}{189}
+\newcommand{\UniDHAllBlongest}{$+$0.020}
+\newcommand{\UniDHBandAllBlongest}{[$+$0.006, $+$0.033]}
+\newcommand{\UniTAllBlongest}{11450}
+\newcommand{\UniDAlphaAllBlongestHundred}{$+$0.042}
+\newcommand{\UniDAlphaAllBlongestThousand}{$+$0.045}
+\newcommand{\UniHFirstAllBlongest}{0.917}
+\newcommand{\UniHBandFirstAllBlongest}{[0.914, 0.920]}
+\newcommand{\UniNFirstAllBlongest}{7\,599}
+\newcommand{\UniPFirstAllBlongest}{2\,074}
+\newcommand{\UniHSecondAllBlongest}{0.897}
+\newcommand{\UniHBandSecondAllBlongest}{[0.883, 0.911]}
+\newcommand{\UniNSecondAllBlongest}{172}
+\newcommand{\UniPSecondAllBlongest}{60}
+\newcommand{\UniDHPlainsAfixed}{$+$0.009}
+\newcommand{\UniDHBandPlainsAfixed}{[$+$0.000, $+$0.018]}
+\newcommand{\UniTPlainsAfixed}{1000}
+\newcommand{\UniDAlphaPlainsAfixedHundred}{$+$0.021}
+\newcommand{\UniDAlphaPlainsAfixedThousand}{$-$0.001}
+\newcommand{\UniHFirstPlainsAfixed}{0.941}
+\newcommand{\UniHBandFirstPlainsAfixed}{[0.940, 0.942]}
+\newcommand{\UniNFirstPlainsAfixed}{11\,990}
+\newcommand{\UniPFirstPlainsAfixed}{1\,368}
+\newcommand{\UniHSecondPlainsAfixed}{0.932}
+\newcommand{\UniHBandSecondPlainsAfixed}{[0.923, 0.941]}
+\newcommand{\UniNSecondPlainsAfixed}{170}
+\newcommand{\UniPSecondPlainsAfixed}{34}
+\newcommand{\UniDHPlainsAlongest}{$+$0.013}
+\newcommand{\UniDHBandPlainsAlongest}{[$+$0.005, $+$0.021]}
+\newcommand{\UniTPlainsAlongest}{4150}
+\newcommand{\UniDAlphaPlainsAlongestHundred}{$+$0.025}
+\newcommand{\UniDAlphaPlainsAlongestThousand}{$+$0.018}
+\newcommand{\UniHFirstPlainsAlongest}{0.946}
+\newcommand{\UniHBandFirstPlainsAlongest}{[0.944, 0.947]}
+\newcommand{\UniNFirstPlainsAlongest}{6\,541}
+\newcommand{\UniPFirstPlainsAlongest}{981}
+\newcommand{\UniHSecondPlainsAlongest}{0.933}
+\newcommand{\UniHBandSecondPlainsAlongest}{[0.925, 0.941]}
+\newcommand{\UniNSecondPlainsAlongest}{117}
+\newcommand{\UniPSecondPlainsAlongest}{29}
+\newcommand{\UniDHPlainsBkilo}{$+$0.010}
+\newcommand{\UniDHBandPlainsBkilo}{[$+$0.000, $+$0.020]}
+\newcommand{\UniTPlainsBkilo}{1000}
+\newcommand{\UniDAlphaPlainsBkiloHundred}{$+$0.019}
+\newcommand{\UniDAlphaPlainsBkiloThousand}{$-$0.003}
+\newcommand{\UniHFirstPlainsBkilo}{0.941}
+\newcommand{\UniHBandFirstPlainsBkilo}{[0.940, 0.942]}
+\newcommand{\UniNFirstPlainsBkilo}{11\,990}
+\newcommand{\UniPFirstPlainsBkilo}{1\,368}
+\newcommand{\UniHSecondPlainsBkilo}{0.931}
+\newcommand{\UniHBandSecondPlainsBkilo}{[0.921, 0.940]}
+\newcommand{\UniNSecondPlainsBkilo}{170}
+\newcommand{\UniPSecondPlainsBkilo}{34}
+\newcommand{\UniDHPlainsBlongest}{$+$0.013}
+\newcommand{\UniDHBandPlainsBlongest}{[$+$0.005, $+$0.021]}
+\newcommand{\UniTPlainsBlongest}{4150}
+\newcommand{\UniDAlphaPlainsBlongestHundred}{$+$0.019}
+\newcommand{\UniDAlphaPlainsBlongestThousand}{$+$0.001}
+\newcommand{\UniHFirstPlainsBlongest}{0.944}
+\newcommand{\UniHBandFirstPlainsBlongest}{[0.942, 0.945]}
+\newcommand{\UniNFirstPlainsBlongest}{6\,541}
+\newcommand{\UniPFirstPlainsBlongest}{981}
+\newcommand{\UniHSecondPlainsBlongest}{0.931}
+\newcommand{\UniHBandSecondPlainsBlongest}{[0.923, 0.939]}
+\newcommand{\UniNSecondPlainsBlongest}{117}
+\newcommand{\UniPSecondPlainsBlongest}{29}
+\newcommand{\UniDHHillsAfixed}{$+$0.018}
+\newcommand{\UniDHBandHillsAfixed}{[$+$0.010, $+$0.025]}
+\newcommand{\UniTHillsAfixed}{1000}
+\newcommand{\UniDAlphaHillsAfixedHundred}{$+$0.036}
+\newcommand{\UniDAlphaHillsAfixedThousand}{$+$0.018}
+\newcommand{\UniHFirstHillsAfixed}{0.927}
+\newcommand{\UniHBandFirstHillsAfixed}{[0.926, 0.928]}
+\newcommand{\UniNFirstHillsAfixed}{10\,218}
+\newcommand{\UniPFirstHillsAfixed}{1\,900}
+\newcommand{\UniHSecondHillsAfixed}{0.909}
+\newcommand{\UniHBandSecondHillsAfixed}{[0.902, 0.916]}
+\newcommand{\UniNSecondHillsAfixed}{100}
+\newcommand{\UniPSecondHillsAfixed}{42}
+\newcommand{\UniDHHillsAlongest}{$+$0.018}
+\newcommand{\UniDHBandHillsAlongest}{[$+$0.010, $+$0.025]}
+\newcommand{\UniTHillsAlongest}{1000}
+\newcommand{\UniDAlphaHillsAlongestHundred}{$+$0.036}
+\newcommand{\UniDAlphaHillsAlongestThousand}{$+$0.018}
+\newcommand{\UniHFirstHillsAlongest}{0.927}
+\newcommand{\UniHBandFirstHillsAlongest}{[0.926, 0.928]}
+\newcommand{\UniNFirstHillsAlongest}{10\,218}
+\newcommand{\UniPFirstHillsAlongest}{1\,900}
+\newcommand{\UniHSecondHillsAlongest}{0.909}
+\newcommand{\UniHBandSecondHillsAlongest}{[0.902, 0.916]}
+\newcommand{\UniNSecondHillsAlongest}{100}
+\newcommand{\UniPSecondHillsAlongest}{42}
+\newcommand{\UniDHHillsBkilo}{$+$0.017}
+\newcommand{\UniDHBandHillsBkilo}{[$+$0.010, $+$0.025]}
+\newcommand{\UniTHillsBkilo}{1000}
+\newcommand{\UniDAlphaHillsBkiloHundred}{$+$0.039}
+\newcommand{\UniDAlphaHillsBkiloThousand}{$-$0.012}
+\newcommand{\UniHFirstHillsBkilo}{0.927}
+\newcommand{\UniHBandFirstHillsBkilo}{[0.926, 0.928]}
+\newcommand{\UniNFirstHillsBkilo}{10\,218}
+\newcommand{\UniPFirstHillsBkilo}{1\,900}
+\newcommand{\UniHSecondHillsBkilo}{0.909}
+\newcommand{\UniHBandSecondHillsBkilo}{[0.902, 0.917]}
+\newcommand{\UniNSecondHillsBkilo}{100}
+\newcommand{\UniPSecondHillsBkilo}{42}
+\newcommand{\UniDHHillsBlongest}{$+$0.017}
+\newcommand{\UniDHBandHillsBlongest}{[$+$0.010, $+$0.025]}
+\newcommand{\UniTHillsBlongest}{1000}
+\newcommand{\UniDAlphaHillsBlongestHundred}{$+$0.039}
+\newcommand{\UniDAlphaHillsBlongestThousand}{$-$0.012}
+\newcommand{\UniHFirstHillsBlongest}{0.927}
+\newcommand{\UniHBandFirstHillsBlongest}{[0.926, 0.928]}
+\newcommand{\UniNFirstHillsBlongest}{10\,218}
+\newcommand{\UniPFirstHillsBlongest}{1\,900}
+\newcommand{\UniHSecondHillsBlongest}{0.909}
+\newcommand{\UniHBandSecondHillsBlongest}{[0.902, 0.917]}
+\newcommand{\UniNSecondHillsBlongest}{100}
+\newcommand{\UniPSecondHillsBlongest}{42}
+\newcommand{\UniDHLowAfixed}{$+$0.027}
+\newcommand{\UniDHBandLowAfixed}{[$+$0.022, $+$0.032]}
+\newcommand{\UniTLowAfixed}{1000}
+\newcommand{\UniDAlphaLowAfixedHundred}{$+$0.044}
+\newcommand{\UniDAlphaLowAfixedThousand}{$+$0.076}
+\newcommand{\UniHFirstLowAfixed}{0.909}
+\newcommand{\UniHBandFirstLowAfixed}{[0.908, 0.910]}
+\newcommand{\UniNFirstLowAfixed}{20\,841}
+\newcommand{\UniPFirstLowAfixed}{4\,064}
+\newcommand{\UniHSecondLowAfixed}{0.882}
+\newcommand{\UniHBandSecondLowAfixed}{[0.877, 0.887]}
+\newcommand{\UniNSecondLowAfixed}{775}
+\newcommand{\UniPSecondLowAfixed}{150}
+\newcommand{\UniDHLowAlongest}{$+$0.040}
+\newcommand{\UniDHBandLowAlongest}{[$+$0.030, $+$0.050]}
+\newcommand{\UniTLowAlongest}{9350}
+\newcommand{\UniDAlphaLowAlongestHundred}{$+$0.047}
+\newcommand{\UniDAlphaLowAlongestThousand}{$+$0.092}
+\newcommand{\UniHFirstLowAlongest}{0.902}
+\newcommand{\UniHBandFirstLowAlongest}{[0.900, 0.904]}
+\newcommand{\UniNFirstLowAlongest}{5\,188}
+\newcommand{\UniPFirstLowAlongest}{1\,871}
+\newcommand{\UniHSecondLowAlongest}{0.861}
+\newcommand{\UniHBandSecondLowAlongest}{[0.852, 0.871]}
+\newcommand{\UniNSecondLowAlongest}{113}
+\newcommand{\UniPSecondLowAlongest}{57}
+\newcommand{\UniDHLowBkilo}{$+$0.027}
+\newcommand{\UniDHBandLowBkilo}{[$+$0.022, $+$0.032]}
+\newcommand{\UniTLowBkilo}{1000}
+\newcommand{\UniDAlphaLowBkiloHundred}{$+$0.044}
+\newcommand{\UniDAlphaLowBkiloThousand}{$+$0.063}
+\newcommand{\UniHFirstLowBkilo}{0.909}
+\newcommand{\UniHBandFirstLowBkilo}{[0.908, 0.910]}
+\newcommand{\UniNFirstLowBkilo}{20\,841}
+\newcommand{\UniPFirstLowBkilo}{4\,064}
+\newcommand{\UniHSecondLowBkilo}{0.882}
+\newcommand{\UniHBandSecondLowBkilo}{[0.877, 0.887]}
+\newcommand{\UniNSecondLowBkilo}{775}
+\newcommand{\UniPSecondLowBkilo}{150}
+\newcommand{\UniDHLowBlongest}{$+$0.042}
+\newcommand{\UniDHBandLowBlongest}{[$+$0.035, $+$0.049]}
+\newcommand{\UniTLowBlongest}{9350}
+\newcommand{\UniDAlphaLowBlongestHundred}{$+$0.044}
+\newcommand{\UniDAlphaLowBlongestThousand}{$+$0.068}
+\newcommand{\UniHFirstLowBlongest}{0.893}
+\newcommand{\UniHBandFirstLowBlongest}{[0.891, 0.895]}
+\newcommand{\UniNFirstLowBlongest}{5\,188}
+\newcommand{\UniPFirstLowBlongest}{1\,871}
+\newcommand{\UniHSecondLowBlongest}{0.851}
+\newcommand{\UniHBandSecondLowBlongest}{[0.844, 0.858]}
+\newcommand{\UniNSecondLowBlongest}{113}
+\newcommand{\UniPSecondLowBlongest}{57}
+\newcommand{\UniDHHighAfixed}{$+$0.026}
+\newcommand{\UniDHBandHighAfixed}{[$+$0.019, $+$0.034]}
+\newcommand{\UniTHighAfixed}{1000}
+\newcommand{\UniDAlphaHighAfixedHundred}{$+$0.045}
+\newcommand{\UniDAlphaHighAfixedThousand}{$+$0.039}
+\newcommand{\UniHFirstHighAfixed}{0.907}
+\newcommand{\UniHBandFirstHighAfixed}{[0.906, 0.908]}
+\newcommand{\UniNFirstHighAfixed}{8\,774}
+\newcommand{\UniPFirstHighAfixed}{2\,691}
+\newcommand{\UniHSecondHighAfixed}{0.880}
+\newcommand{\UniHBandSecondHighAfixed}{[0.873, 0.887]}
+\newcommand{\UniNSecondHighAfixed}{224}
+\newcommand{\UniPSecondHighAfixed}{81}
+\newcommand{\UniDHHighAlongest}{$+$0.028}
+\newcommand{\UniDHBandHighAlongest}{[$+$0.016, $+$0.040]}
+\newcommand{\UniTHighAlongest}{7630}
+\newcommand{\UniDAlphaHighAlongestHundred}{$+$0.041}
+\newcommand{\UniDAlphaHighAlongestThousand}{$+$0.033}
+\newcommand{\UniHFirstHighAlongest}{0.897}
+\newcommand{\UniHBandFirstHighAlongest}{[0.895, 0.899]}
+\newcommand{\UniNFirstHighAlongest}{4\,026}
+\newcommand{\UniPFirstHighAlongest}{1\,597}
+\newcommand{\UniHSecondHighAlongest}{0.869}
+\newcommand{\UniHBandSecondHighAlongest}{[0.857, 0.881]}
+\newcommand{\UniNSecondHighAlongest}{109}
+\newcommand{\UniPSecondHighAlongest}{47}
+\newcommand{\UniDHHighBkilo}{$+$0.027}
+\newcommand{\UniDHBandHighBkilo}{[$+$0.020, $+$0.034]}
+\newcommand{\UniTHighBkilo}{1000}
+\newcommand{\UniDAlphaHighBkiloHundred}{$+$0.046}
+\newcommand{\UniDAlphaHighBkiloThousand}{$+$0.027}
+\newcommand{\UniHFirstHighBkilo}{0.907}
+\newcommand{\UniHBandFirstHighBkilo}{[0.906, 0.908]}
+\newcommand{\UniNFirstHighBkilo}{8\,774}
+\newcommand{\UniPFirstHighBkilo}{2\,691}
+\newcommand{\UniHSecondHighBkilo}{0.880}
+\newcommand{\UniHBandSecondHighBkilo}{[0.873, 0.887]}
+\newcommand{\UniNSecondHighBkilo}{224}
+\newcommand{\UniPSecondHighBkilo}{81}
+\newcommand{\UniDHHighBlongest}{$+$0.028}
+\newcommand{\UniDHBandHighBlongest}{[$+$0.015, $+$0.041]}
+\newcommand{\UniTHighBlongest}{7630}
+\newcommand{\UniDAlphaHighBlongestHundred}{$+$0.046}
+\newcommand{\UniDAlphaHighBlongestThousand}{$+$0.014}
+\newcommand{\UniHFirstHighBlongest}{0.889}
+\newcommand{\UniHBandFirstHighBlongest}{[0.887, 0.891]}
+\newcommand{\UniNFirstHighBlongest}{4\,026}
+\newcommand{\UniPFirstHighBlongest}{1\,597}
+\newcommand{\UniHSecondHighBlongest}{0.861}
+\newcommand{\UniHBandSecondHighBlongest}{[0.849, 0.874]}
+\newcommand{\UniNSecondHighBlongest}{109}
+\newcommand{\UniPSecondHighBlongest}{47}
+\newcommand{\UniRegDHAlpsAfixed}{$+$0.026}
+\newcommand{\UniRegDHBandAlpsAfixed}{[$+$0.021, $+$0.030]}
+\newcommand{\UniRegTAlpsAfixed}{1000}
+\newcommand{\UniRegDAlphaAlpsAfixedHundred}{$+$0.041}
+\newcommand{\UniRegDAlphaAlpsAfixedThousand}{$+$0.059}
+\newcommand{\UniRegHFirstAlpsAfixed}{0.906}
+\newcommand{\UniRegHBandFirstAlpsAfixed}{[0.905, 0.907]}
+\newcommand{\UniRegNFirstAlpsAfixed}{21\,672}
+\newcommand{\UniRegPFirstAlpsAfixed}{3\,942}
+\newcommand{\UniRegHSecondAlpsAfixed}{0.881}
+\newcommand{\UniRegHBandSecondAlpsAfixed}{[0.876, 0.885]}
+\newcommand{\UniRegNSecondAlpsAfixed}{837}
+\newcommand{\UniRegPSecondAlpsAfixed}{149}
+\newcommand{\UniRegDHAlpsAlongest}{$+$0.029}
+\newcommand{\UniRegDHBandAlpsAlongest}{[$+$0.020, $+$0.038]}
+\newcommand{\UniRegTAlpsAlongest}{9350}
+\newcommand{\UniRegDAlphaAlpsAlongestHundred}{$+$0.042}
+\newcommand{\UniRegDAlphaAlpsAlongestThousand}{$+$0.057}
+\newcommand{\UniRegHFirstAlpsAlongest}{0.895}
+\newcommand{\UniRegHBandFirstAlpsAlongest}{[0.894, 0.897]}
+\newcommand{\UniRegNFirstAlpsAlongest}{6\,743}
+\newcommand{\UniRegPFirstAlpsAlongest}{2\,051}
+\newcommand{\UniRegHSecondAlpsAlongest}{0.866}
+\newcommand{\UniRegHBandSecondAlpsAlongest}{[0.857, 0.875]}
+\newcommand{\UniRegNSecondAlpsAlongest}{169}
+\newcommand{\UniRegPSecondAlpsAlongest}{72}
+\newcommand{\UniRegDHAlpsBkilo}{$+$0.026}
+\newcommand{\UniRegDHBandAlpsBkilo}{[$+$0.021, $+$0.030]}
+\newcommand{\UniRegTAlpsBkilo}{1000}
+\newcommand{\UniRegDAlphaAlpsBkiloHundred}{$+$0.042}
+\newcommand{\UniRegDAlphaAlpsBkiloThousand}{$+$0.048}
+\newcommand{\UniRegHFirstAlpsBkilo}{0.906}
+\newcommand{\UniRegHBandFirstAlpsBkilo}{[0.905, 0.907]}
+\newcommand{\UniRegNFirstAlpsBkilo}{21\,672}
+\newcommand{\UniRegPFirstAlpsBkilo}{3\,942}
+\newcommand{\UniRegHSecondAlpsBkilo}{0.880}
+\newcommand{\UniRegHBandSecondAlpsBkilo}{[0.876, 0.885]}
+\newcommand{\UniRegNSecondAlpsBkilo}{837}
+\newcommand{\UniRegPSecondAlpsBkilo}{149}
+\newcommand{\UniRegDHAlpsBlongest}{$+$0.032}
+\newcommand{\UniRegDHBandAlpsBlongest}{[$+$0.024, $+$0.040]}
+\newcommand{\UniRegTAlpsBlongest}{9350}
+\newcommand{\UniRegDAlphaAlpsBlongestHundred}{$+$0.042}
+\newcommand{\UniRegDAlphaAlpsBlongestThousand}{$+$0.038}
+\newcommand{\UniRegHFirstAlpsBlongest}{0.887}
+\newcommand{\UniRegHBandFirstAlpsBlongest}{[0.885, 0.888]}
+\newcommand{\UniRegNFirstAlpsBlongest}{6\,743}
+\newcommand{\UniRegPFirstAlpsBlongest}{2\,051}
+\newcommand{\UniRegHSecondAlpsBlongest}{0.855}
+\newcommand{\UniRegHBandSecondAlpsBlongest}{[0.847, 0.862]}
+\newcommand{\UniRegNSecondAlpsBlongest}{169}
+\newcommand{\UniRegPSecondAlpsBlongest}{72}
+\newcommand{\UniBetweenParaDHAlpsPyrAfixed}{$+$0.010}
+\newcommand{\UniBetweenParaDHBandAlpsPyrAfixed}{[$+$0.007, $+$0.013]}
+\newcommand{\UniBetweenParaTAlpsPyrAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrAfixedHundred}{$+$0.013}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrAfixedThousand}{$+$0.027}
+\newcommand{\UniBetweenParaHFirstAlpsPyrAfixed}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsPyrAfixed}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsPyrAfixed}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsPyrAfixed}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsPyrAfixed}{0.896}
+\newcommand{\UniBetweenParaHBandSecondAlpsPyrAfixed}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNSecondAlpsPyrAfixed}{1\,558}
+\newcommand{\UniBetweenParaPSecondAlpsPyrAfixed}{396}
+\newcommand{\UniBetweenParaDHAlpsPyrAlongest}{$+$0.000}
+\newcommand{\UniBetweenParaDHBandAlpsPyrAlongest}{[$-$0.007, $+$0.006]}
+\newcommand{\UniBetweenParaTAlpsPyrAlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrAlongestHundred}{$+$0.013}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrAlongestThousand}{$+$0.017}
+\newcommand{\UniBetweenParaHFirstAlpsPyrAlongest}{0.897}
+\newcommand{\UniBetweenParaHBandFirstAlpsPyrAlongest}{[0.895, 0.899]}
+\newcommand{\UniBetweenParaNFirstAlpsPyrAlongest}{4\,465}
+\newcommand{\UniBetweenParaPFirstAlpsPyrAlongest}{1\,582}
+\newcommand{\UniBetweenParaHSecondAlpsPyrAlongest}{0.897}
+\newcommand{\UniBetweenParaHBandSecondAlpsPyrAlongest}{[0.891, 0.904]}
+\newcommand{\UniBetweenParaNSecondAlpsPyrAlongest}{182}
+\newcommand{\UniBetweenParaPSecondAlpsPyrAlongest}{74}
+\newcommand{\UniBetweenParaDHAlpsPyrBkilo}{$+$0.011}
+\newcommand{\UniBetweenParaDHBandAlpsPyrBkilo}{[$+$0.007, $+$0.014]}
+\newcommand{\UniBetweenParaTAlpsPyrBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrBkiloHundred}{$+$0.014}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrBkiloThousand}{$+$0.022}
+\newcommand{\UniBetweenParaHFirstAlpsPyrBkilo}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsPyrBkilo}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsPyrBkilo}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsPyrBkilo}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsPyrBkilo}{0.896}
+\newcommand{\UniBetweenParaHBandSecondAlpsPyrBkilo}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNSecondAlpsPyrBkilo}{1\,558}
+\newcommand{\UniBetweenParaPSecondAlpsPyrBkilo}{396}
+\newcommand{\UniBetweenParaDHAlpsPyrBlongest}{$+$0.000}
+\newcommand{\UniBetweenParaDHBandAlpsPyrBlongest}{[$-$0.006, $+$0.007]}
+\newcommand{\UniBetweenParaTAlpsPyrBlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrBlongestHundred}{$+$0.014}
+\newcommand{\UniBetweenParaDAlphaAlpsPyrBlongestThousand}{$+$0.018}
+\newcommand{\UniBetweenParaHFirstAlpsPyrBlongest}{0.887}
+\newcommand{\UniBetweenParaHBandFirstAlpsPyrBlongest}{[0.885, 0.888]}
+\newcommand{\UniBetweenParaNFirstAlpsPyrBlongest}{4\,465}
+\newcommand{\UniBetweenParaPFirstAlpsPyrBlongest}{1\,582}
+\newcommand{\UniBetweenParaHSecondAlpsPyrBlongest}{0.887}
+\newcommand{\UniBetweenParaHBandSecondAlpsPyrBlongest}{[0.880, 0.893]}
+\newcommand{\UniBetweenParaNSecondAlpsPyrBlongest}{182}
+\newcommand{\UniBetweenParaPSecondAlpsPyrBlongest}{74}
+\newcommand{\UniBetweenParaDHAlpsChannelAfixed}{$-$0.035}
+\newcommand{\UniBetweenParaDHBandAlpsChannelAfixed}{[$-$0.037, $-$0.033]}
+\newcommand{\UniBetweenParaTAlpsChannelAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelAfixedHundred}{$-$0.056}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelAfixedThousand}{$-$0.171}
+\newcommand{\UniBetweenParaHFirstAlpsChannelAfixed}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsChannelAfixed}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChannelAfixed}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsChannelAfixed}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsChannelAfixed}{0.941}
+\newcommand{\UniBetweenParaHBandSecondAlpsChannelAfixed}{[0.939, 0.943]}
+\newcommand{\UniBetweenParaNSecondAlpsChannelAfixed}{4\,314}
+\newcommand{\UniBetweenParaPSecondAlpsChannelAfixed}{395}
+\newcommand{\UniBetweenParaDHAlpsChannelAlongest}{$-$0.062}
+\newcommand{\UniBetweenParaDHBandAlpsChannelAlongest}{[$-$0.066, $-$0.059]}
+\newcommand{\UniBetweenParaTAlpsChannelAlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelAlongestHundred}{$-$0.041}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelAlongestThousand}{$-$0.140}
+\newcommand{\UniBetweenParaHFirstAlpsChannelAlongest}{0.904}
+\newcommand{\UniBetweenParaHBandFirstAlpsChannelAlongest}{[0.901, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChannelAlongest}{1\,164}
+\newcommand{\UniBetweenParaPFirstAlpsChannelAlongest}{586}
+\newcommand{\UniBetweenParaHSecondAlpsChannelAlongest}{0.967}
+\newcommand{\UniBetweenParaHBandSecondAlpsChannelAlongest}{[0.964, 0.969]}
+\newcommand{\UniBetweenParaNSecondAlpsChannelAlongest}{161}
+\newcommand{\UniBetweenParaPSecondAlpsChannelAlongest}{61}
+\newcommand{\UniBetweenParaDHAlpsChannelBkilo}{$-$0.034}
+\newcommand{\UniBetweenParaDHBandAlpsChannelBkilo}{[$-$0.036, $-$0.032]}
+\newcommand{\UniBetweenParaTAlpsChannelBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelBkiloHundred}{$-$0.056}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelBkiloThousand}{$-$0.166}
+\newcommand{\UniBetweenParaHFirstAlpsChannelBkilo}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsChannelBkilo}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChannelBkilo}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsChannelBkilo}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsChannelBkilo}{0.941}
+\newcommand{\UniBetweenParaHBandSecondAlpsChannelBkilo}{[0.939, 0.942]}
+\newcommand{\UniBetweenParaNSecondAlpsChannelBkilo}{4\,314}
+\newcommand{\UniBetweenParaPSecondAlpsChannelBkilo}{395}
+\newcommand{\UniBetweenParaDHAlpsChannelBlongest}{$-$0.079}
+\newcommand{\UniBetweenParaDHBandAlpsChannelBlongest}{[$-$0.084, $-$0.074]}
+\newcommand{\UniBetweenParaTAlpsChannelBlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelBlongestHundred}{$-$0.056}
+\newcommand{\UniBetweenParaDAlphaAlpsChannelBlongestThousand}{$-$0.189}
+\newcommand{\UniBetweenParaHFirstAlpsChannelBlongest}{0.889}
+\newcommand{\UniBetweenParaHBandFirstAlpsChannelBlongest}{[0.887, 0.892]}
+\newcommand{\UniBetweenParaNFirstAlpsChannelBlongest}{1\,164}
+\newcommand{\UniBetweenParaPFirstAlpsChannelBlongest}{586}
+\newcommand{\UniBetweenParaHSecondAlpsChannelBlongest}{0.968}
+\newcommand{\UniBetweenParaHBandSecondAlpsChannelBlongest}{[0.964, 0.973]}
+\newcommand{\UniBetweenParaNSecondAlpsChannelBlongest}{161}
+\newcommand{\UniBetweenParaPSecondAlpsChannelBlongest}{61}
+\newcommand{\UniBetweenParaDHAlpsChampagneAfixed}{$-$0.041}
+\newcommand{\UniBetweenParaDHBandAlpsChampagneAfixed}{[$-$0.043, $-$0.039]}
+\newcommand{\UniBetweenParaTAlpsChampagneAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneAfixedHundred}{$-$0.067}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneAfixedThousand}{$-$0.176}
+\newcommand{\UniBetweenParaHFirstAlpsChampagneAfixed}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsChampagneAfixed}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChampagneAfixed}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsChampagneAfixed}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsChampagneAfixed}{0.947}
+\newcommand{\UniBetweenParaHBandSecondAlpsChampagneAfixed}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondAlpsChampagneAfixed}{3\,155}
+\newcommand{\UniBetweenParaPSecondAlpsChampagneAfixed}{457}
+\newcommand{\UniBetweenParaDHAlpsChampagneAlongest}{$-$0.061}
+\newcommand{\UniBetweenParaDHBandAlpsChampagneAlongest}{[$-$0.065, $-$0.058]}
+\newcommand{\UniBetweenParaTAlpsChampagneAlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneAlongestHundred}{$-$0.041}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneAlongestThousand}{$-$0.135}
+\newcommand{\UniBetweenParaHFirstAlpsChampagneAlongest}{0.904}
+\newcommand{\UniBetweenParaHBandFirstAlpsChampagneAlongest}{[0.901, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChampagneAlongest}{1\,164}
+\newcommand{\UniBetweenParaPFirstAlpsChampagneAlongest}{586}
+\newcommand{\UniBetweenParaHSecondAlpsChampagneAlongest}{0.965}
+\newcommand{\UniBetweenParaHBandSecondAlpsChampagneAlongest}{[0.963, 0.967]}
+\newcommand{\UniBetweenParaNSecondAlpsChampagneAlongest}{124}
+\newcommand{\UniBetweenParaPSecondAlpsChampagneAlongest}{52}
+\newcommand{\UniBetweenParaDHAlpsChampagneBkilo}{$-$0.041}
+\newcommand{\UniBetweenParaDHBandAlpsChampagneBkilo}{[$-$0.043, $-$0.039]}
+\newcommand{\UniBetweenParaTAlpsChampagneBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneBkiloHundred}{$-$0.068}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneBkiloThousand}{$-$0.169}
+\newcommand{\UniBetweenParaHFirstAlpsChampagneBkilo}{0.906}
+\newcommand{\UniBetweenParaHBandFirstAlpsChampagneBkilo}{[0.905, 0.907]}
+\newcommand{\UniBetweenParaNFirstAlpsChampagneBkilo}{21\,672}
+\newcommand{\UniBetweenParaPFirstAlpsChampagneBkilo}{3\,942}
+\newcommand{\UniBetweenParaHSecondAlpsChampagneBkilo}{0.947}
+\newcommand{\UniBetweenParaHBandSecondAlpsChampagneBkilo}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondAlpsChampagneBkilo}{3\,155}
+\newcommand{\UniBetweenParaPSecondAlpsChampagneBkilo}{457}
+\newcommand{\UniBetweenParaDHAlpsChampagneBlongest}{$-$0.078}
+\newcommand{\UniBetweenParaDHBandAlpsChampagneBlongest}{[$-$0.082, $-$0.074]}
+\newcommand{\UniBetweenParaTAlpsChampagneBlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneBlongestHundred}{$-$0.068}
+\newcommand{\UniBetweenParaDAlphaAlpsChampagneBlongestThousand}{$-$0.189}
+\newcommand{\UniBetweenParaHFirstAlpsChampagneBlongest}{0.889}
+\newcommand{\UniBetweenParaHBandFirstAlpsChampagneBlongest}{[0.887, 0.892]}
+\newcommand{\UniBetweenParaNFirstAlpsChampagneBlongest}{1\,164}
+\newcommand{\UniBetweenParaPFirstAlpsChampagneBlongest}{586}
+\newcommand{\UniBetweenParaHSecondAlpsChampagneBlongest}{0.967}
+\newcommand{\UniBetweenParaHBandSecondAlpsChampagneBlongest}{[0.964, 0.971]}
+\newcommand{\UniBetweenParaNSecondAlpsChampagneBlongest}{124}
+\newcommand{\UniBetweenParaPSecondAlpsChampagneBlongest}{52}
+\newcommand{\UniBetweenParaDHPyrChannelAfixed}{$-$0.045}
+\newcommand{\UniBetweenParaDHBandPyrChannelAfixed}{[$-$0.048, $-$0.042]}
+\newcommand{\UniBetweenParaTPyrChannelAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaPyrChannelAfixedHundred}{$-$0.069}
+\newcommand{\UniBetweenParaDAlphaPyrChannelAfixedThousand}{$-$0.198}
+\newcommand{\UniBetweenParaHFirstPyrChannelAfixed}{0.896}
+\newcommand{\UniBetweenParaHBandFirstPyrChannelAfixed}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNFirstPyrChannelAfixed}{1\,558}
+\newcommand{\UniBetweenParaPFirstPyrChannelAfixed}{396}
+\newcommand{\UniBetweenParaHSecondPyrChannelAfixed}{0.941}
+\newcommand{\UniBetweenParaHBandSecondPyrChannelAfixed}{[0.939, 0.943]}
+\newcommand{\UniBetweenParaNSecondPyrChannelAfixed}{4\,314}
+\newcommand{\UniBetweenParaPSecondPyrChannelAfixed}{395}
+\newcommand{\UniBetweenParaDHPyrChannelAlongest}{$-$0.063}
+\newcommand{\UniBetweenParaDHBandPyrChannelAlongest}{[$-$0.070, $-$0.055]}
+\newcommand{\UniBetweenParaTPyrChannelAlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaPyrChannelAlongestHundred}{$-$0.059}
+\newcommand{\UniBetweenParaDAlphaPyrChannelAlongestThousand}{$-$0.170}
+\newcommand{\UniBetweenParaHFirstPyrChannelAlongest}{0.897}
+\newcommand{\UniBetweenParaHBandFirstPyrChannelAlongest}{[0.891, 0.904]}
+\newcommand{\UniBetweenParaNFirstPyrChannelAlongest}{182}
+\newcommand{\UniBetweenParaPFirstPyrChannelAlongest}{74}
+\newcommand{\UniBetweenParaHSecondPyrChannelAlongest}{0.960}
+\newcommand{\UniBetweenParaHBandSecondPyrChannelAlongest}{[0.957, 0.963]}
+\newcommand{\UniBetweenParaNSecondPyrChannelAlongest}{528}
+\newcommand{\UniBetweenParaPSecondPyrChannelAlongest}{126}
+\newcommand{\UniBetweenParaDHPyrChannelBkilo}{$-$0.045}
+\newcommand{\UniBetweenParaDHBandPyrChannelBkilo}{[$-$0.048, $-$0.041]}
+\newcommand{\UniBetweenParaTPyrChannelBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaPyrChannelBkiloHundred}{$-$0.070}
+\newcommand{\UniBetweenParaDAlphaPyrChannelBkiloThousand}{$-$0.188}
+\newcommand{\UniBetweenParaHFirstPyrChannelBkilo}{0.896}
+\newcommand{\UniBetweenParaHBandFirstPyrChannelBkilo}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNFirstPyrChannelBkilo}{1\,558}
+\newcommand{\UniBetweenParaPFirstPyrChannelBkilo}{396}
+\newcommand{\UniBetweenParaHSecondPyrChannelBkilo}{0.941}
+\newcommand{\UniBetweenParaHBandSecondPyrChannelBkilo}{[0.939, 0.942]}
+\newcommand{\UniBetweenParaNSecondPyrChannelBkilo}{4\,314}
+\newcommand{\UniBetweenParaPSecondPyrChannelBkilo}{395}
+\newcommand{\UniBetweenParaDHPyrChannelBlongest}{$-$0.072}
+\newcommand{\UniBetweenParaDHBandPyrChannelBlongest}{[$-$0.080, $-$0.065]}
+\newcommand{\UniBetweenParaTPyrChannelBlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaPyrChannelBlongestHundred}{$-$0.070}
+\newcommand{\UniBetweenParaDAlphaPyrChannelBlongestThousand}{$-$0.206}
+\newcommand{\UniBetweenParaHFirstPyrChannelBlongest}{0.887}
+\newcommand{\UniBetweenParaHBandFirstPyrChannelBlongest}{[0.880, 0.893]}
+\newcommand{\UniBetweenParaNFirstPyrChannelBlongest}{182}
+\newcommand{\UniBetweenParaPFirstPyrChannelBlongest}{74}
+\newcommand{\UniBetweenParaHSecondPyrChannelBlongest}{0.959}
+\newcommand{\UniBetweenParaHBandSecondPyrChannelBlongest}{[0.955, 0.963]}
+\newcommand{\UniBetweenParaNSecondPyrChannelBlongest}{528}
+\newcommand{\UniBetweenParaPSecondPyrChannelBlongest}{126}
+\newcommand{\UniBetweenParaDHPyrChampagneAfixed}{$-$0.051}
+\newcommand{\UniBetweenParaDHBandPyrChampagneAfixed}{[$-$0.055, $-$0.048]}
+\newcommand{\UniBetweenParaTPyrChampagneAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneAfixedHundred}{$-$0.080}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneAfixedThousand}{$-$0.203}
+\newcommand{\UniBetweenParaHFirstPyrChampagneAfixed}{0.896}
+\newcommand{\UniBetweenParaHBandFirstPyrChampagneAfixed}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNFirstPyrChampagneAfixed}{1\,558}
+\newcommand{\UniBetweenParaPFirstPyrChampagneAfixed}{396}
+\newcommand{\UniBetweenParaHSecondPyrChampagneAfixed}{0.947}
+\newcommand{\UniBetweenParaHBandSecondPyrChampagneAfixed}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondPyrChampagneAfixed}{3\,155}
+\newcommand{\UniBetweenParaPSecondPyrChampagneAfixed}{457}
+\newcommand{\UniBetweenParaDHPyrChampagneAlongest}{$-$0.062}
+\newcommand{\UniBetweenParaDHBandPyrChampagneAlongest}{[$-$0.069, $-$0.055]}
+\newcommand{\UniBetweenParaTPyrChampagneAlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneAlongestHundred}{$-$0.062}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneAlongestThousand}{$-$0.166}
+\newcommand{\UniBetweenParaHFirstPyrChampagneAlongest}{0.897}
+\newcommand{\UniBetweenParaHBandFirstPyrChampagneAlongest}{[0.891, 0.904]}
+\newcommand{\UniBetweenParaNFirstPyrChampagneAlongest}{182}
+\newcommand{\UniBetweenParaPFirstPyrChampagneAlongest}{74}
+\newcommand{\UniBetweenParaHSecondPyrChampagneAlongest}{0.960}
+\newcommand{\UniBetweenParaHBandSecondPyrChampagneAlongest}{[0.957, 0.962]}
+\newcommand{\UniBetweenParaNSecondPyrChampagneAlongest}{409}
+\newcommand{\UniBetweenParaPSecondPyrChampagneAlongest}{137}
+\newcommand{\UniBetweenParaDHPyrChampagneBkilo}{$-$0.051}
+\newcommand{\UniBetweenParaDHBandPyrChampagneBkilo}{[$-$0.055, $-$0.048]}
+\newcommand{\UniBetweenParaTPyrChampagneBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneBkiloHundred}{$-$0.082}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneBkiloThousand}{$-$0.190}
+\newcommand{\UniBetweenParaHFirstPyrChampagneBkilo}{0.896}
+\newcommand{\UniBetweenParaHBandFirstPyrChampagneBkilo}{[0.893, 0.899]}
+\newcommand{\UniBetweenParaNFirstPyrChampagneBkilo}{1\,558}
+\newcommand{\UniBetweenParaPFirstPyrChampagneBkilo}{396}
+\newcommand{\UniBetweenParaHSecondPyrChampagneBkilo}{0.947}
+\newcommand{\UniBetweenParaHBandSecondPyrChampagneBkilo}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondPyrChampagneBkilo}{3\,155}
+\newcommand{\UniBetweenParaPSecondPyrChampagneBkilo}{457}
+\newcommand{\UniBetweenParaDHPyrChampagneBlongest}{$-$0.074}
+\newcommand{\UniBetweenParaDHBandPyrChampagneBlongest}{[$-$0.081, $-$0.067]}
+\newcommand{\UniBetweenParaTPyrChampagneBlongest}{11450}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneBlongestHundred}{$-$0.082}
+\newcommand{\UniBetweenParaDAlphaPyrChampagneBlongestThousand}{$-$0.207}
+\newcommand{\UniBetweenParaHFirstPyrChampagneBlongest}{0.887}
+\newcommand{\UniBetweenParaHBandFirstPyrChampagneBlongest}{[0.880, 0.893]}
+\newcommand{\UniBetweenParaNFirstPyrChampagneBlongest}{182}
+\newcommand{\UniBetweenParaPFirstPyrChampagneBlongest}{74}
+\newcommand{\UniBetweenParaHSecondPyrChampagneBlongest}{0.961}
+\newcommand{\UniBetweenParaHBandSecondPyrChampagneBlongest}{[0.957, 0.964]}
+\newcommand{\UniBetweenParaNSecondPyrChampagneBlongest}{409}
+\newcommand{\UniBetweenParaPSecondPyrChampagneBlongest}{137}
+\newcommand{\UniBetweenParaDHChannelChampagneAfixed}{$-$0.006}
+\newcommand{\UniBetweenParaDHBandChannelChampagneAfixed}{[$-$0.009, $-$0.004]}
+\newcommand{\UniBetweenParaTChannelChampagneAfixed}{1000}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneAfixedHundred}{$-$0.011}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneAfixedThousand}{$-$0.005}
+\newcommand{\UniBetweenParaHFirstChannelChampagneAfixed}{0.941}
+\newcommand{\UniBetweenParaHBandFirstChannelChampagneAfixed}{[0.939, 0.943]}
+\newcommand{\UniBetweenParaNFirstChannelChampagneAfixed}{4\,314}
+\newcommand{\UniBetweenParaPFirstChannelChampagneAfixed}{395}
+\newcommand{\UniBetweenParaHSecondChannelChampagneAfixed}{0.947}
+\newcommand{\UniBetweenParaHBandSecondChannelChampagneAfixed}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondChannelChampagneAfixed}{3\,155}
+\newcommand{\UniBetweenParaPSecondChannelChampagneAfixed}{457}
+\newcommand{\UniBetweenParaDHChannelChampagneAlongest}{$+$0.001}
+\newcommand{\UniBetweenParaDHBandChannelChampagneAlongest}{[$-$0.002, $+$0.005]}
+\newcommand{\UniBetweenParaTChannelChampagneAlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneAlongestHundred}{$+$0.000}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneAlongestThousand}{$+$0.005}
+\newcommand{\UniBetweenParaHFirstChannelChampagneAlongest}{0.967}
+\newcommand{\UniBetweenParaHBandFirstChannelChampagneAlongest}{[0.964, 0.969]}
+\newcommand{\UniBetweenParaNFirstChannelChampagneAlongest}{161}
+\newcommand{\UniBetweenParaPFirstChannelChampagneAlongest}{61}
+\newcommand{\UniBetweenParaHSecondChannelChampagneAlongest}{0.965}
+\newcommand{\UniBetweenParaHBandSecondChannelChampagneAlongest}{[0.963, 0.967]}
+\newcommand{\UniBetweenParaNSecondChannelChampagneAlongest}{124}
+\newcommand{\UniBetweenParaPSecondChannelChampagneAlongest}{52}
+\newcommand{\UniBetweenParaDHChannelChampagneBkilo}{$-$0.007}
+\newcommand{\UniBetweenParaDHBandChannelChampagneBkilo}{[$-$0.009, $-$0.004]}
+\newcommand{\UniBetweenParaTChannelChampagneBkilo}{1000}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneBkiloHundred}{$-$0.012}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneBkiloThousand}{$-$0.003}
+\newcommand{\UniBetweenParaHFirstChannelChampagneBkilo}{0.941}
+\newcommand{\UniBetweenParaHBandFirstChannelChampagneBkilo}{[0.939, 0.942]}
+\newcommand{\UniBetweenParaNFirstChannelChampagneBkilo}{4\,314}
+\newcommand{\UniBetweenParaPFirstChannelChampagneBkilo}{395}
+\newcommand{\UniBetweenParaHSecondChannelChampagneBkilo}{0.947}
+\newcommand{\UniBetweenParaHBandSecondChannelChampagneBkilo}{[0.945, 0.949]}
+\newcommand{\UniBetweenParaNSecondChannelChampagneBkilo}{3\,155}
+\newcommand{\UniBetweenParaPSecondChannelChampagneBkilo}{457}
+\newcommand{\UniBetweenParaDHChannelChampagneBlongest}{$+$0.001}
+\newcommand{\UniBetweenParaDHBandChannelChampagneBlongest}{[$-$0.004, $+$0.006]}
+\newcommand{\UniBetweenParaTChannelChampagneBlongest}{17190}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneBlongestHundred}{$-$0.012}
+\newcommand{\UniBetweenParaDAlphaChannelChampagneBlongestThousand}{$+$0.000}
+\newcommand{\UniBetweenParaHFirstChannelChampagneBlongest}{0.968}
+\newcommand{\UniBetweenParaHBandFirstChannelChampagneBlongest}{[0.964, 0.973]}
+\newcommand{\UniBetweenParaNFirstChannelChampagneBlongest}{161}
+\newcommand{\UniBetweenParaPFirstChannelChampagneBlongest}{61}
+\newcommand{\UniBetweenParaHSecondChannelChampagneBlongest}{0.967}
+\newcommand{\UniBetweenParaHBandSecondChannelChampagneBlongest}{[0.964, 0.971]}
+\newcommand{\UniBetweenParaNSecondChannelChampagneBlongest}{124}
+\newcommand{\UniBetweenParaPSecondChannelChampagneBlongest}{52}
+\newcommand{\UniForestN}{24}
+\newcommand{\UniForestPos}{22}
+\newcommand{\UniForestMin}{$+$0.007}
+\newcommand{\UniForestMax}{$+$0.042}
+\newcommand{\UniForestAllPositive}{24}
+\newcommand{\UniGapKilo}{0.001}
+\newcommand{\UniGapLongest}{0.012}
+\newcommand{\UniMaxDropB}{0.018}
+\newcommand{\UniMinDropB}{0.000}

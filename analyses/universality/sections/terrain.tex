@@ -1,0 +1,56 @@
+\section{Terrain classification}\label{sec:terrain}
+
+What kind of ground does a flight fly over, and how is this written for a whole flight?
+
+\paragraph{The rule.} The class of a flight is not the altitude of its takeoff. Take every point of the flight on the
+\UniGridS-s grid, in every segment of the cleaned track, from the takeoff to the landing. The ground elevation under a point
+is read from the IGN BD ALTI v2 DEM of 25 m (Lambert-93), averaged over blocks of $8\times8$ cells on a grid of 200 m aligned
+on multiples of 200 m: a point takes the mean of the block that holds it. A block with more than half of its cells without
+data takes no value, and neither does a block of which all cells are exactly 0 m (the sea, which the DEM delivers as 0 m): a
+point on such a block, or outside the DEM, is dropped. The tiles of the DEM are read one at a time and added into the blocks,
+never the whole of France at 25 m. With $z_1,\dots,z_n$ the ground elevations of the points that remain, the
+\emph{median ground elevation} of the flight is $\tilde z=\operatorname{median}(z_k)$ and its class is
+\begin{align*}
+  \text{plains}&:\ \tilde z<\UniEdgePlains\ \text{m}, &
+  \text{hills}&:\ \UniEdgePlains\le\tilde z<\UniEdgeHills\ \text{m},\\
+  \text{low mountains}&:\ \UniEdgeHills\le\tilde z<\UniEdgeLow\ \text{m}, &
+  \text{high mountains}&:\ \tilde z\ge\UniEdgeLow\ \text{m}.
+\end{align*}
+A flight with less than \UniMinOnDem{} of its points on the DEM is \emph{unknown}: it is counted, kept in the raw comparison
+(all terrain together) and left out of the comparison by class and by region. Fig.~\ref{fig:rule} shows the rule on one
+flight.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{terrain_rule.pdf}
+\caption{The class of a flight is the class of the median ground elevation under its \UniGridS-s points, whatever its
+takeoff altitude. A real paraglider flight: the ground under its points (grey), its altitude (blue), the median (black) and the
+class edges (dashed).}\label{fig:rule}
+\end{figure}
+
+\paragraph{What it gives.} Table~\ref{tab:counts} counts the flights and the pilots of each cell. Of the \UniFunnelParaOpen{}
+open paraglider flights \UniCellParaUnknownFlights{} are unknown, and \UniCellHangUnknownFlights{} of the \UniFunnelHangOpen{} hang glider flights.
+Fig.~\ref{fig:hist} gives the median ground elevation of the flights with the edges; the median of the medians is
+\UniMedianPara{} m for paragliders and \UniMedianHang{} m for hang gliders. Fig.~\ref{fig:map} places the takeoffs.
+
+\input{generated/table_counts}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{terrain_hist.pdf}
+\caption{Hang gliders concentrate on low mountains, paragliders spread over every class. Median ground elevation of the open
+flights that have one, per discipline, with the class edges (dashed).}\label{fig:hist}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{map.pdf}
+\caption{The takeoffs concentrate in the Alps for both disciplines, and the hang glider takeoffs elsewhere are scattered. Takeoffs of
+the open flights, coloured by the class of the flight, and the four regions of Section~\ref{sec:regions}.}\label{fig:map}
+\end{figure}
+
+\paragraph{Limits.} The DEM covers France: a flight that leaves it, over Switzerland or Italy, loses those points, and is
+unknown when it spends more than half of its points there. The 200 m blocks smooth the ridges and the sea is not ground.
+
+\keep{A flight is classified by the median ground elevation under its points, with edges $\UniEdgePlains$, $\UniEdgeHills$ and
+$\UniEdgeLow$ m; flights with less than \UniMinOnDem{} of their points on the DEM are unknown and only enter the raw comparison.}

@@ -1,0 +1,39 @@
+\section{Fixed population or all flights}\label{sec:fixed}
+
+Does letting the population shrink with the lag change the answer?
+
+In design B the flights that enter a lag are those with a piece of at least $\tau/0.8$ s. They are not a random subset: they are
+the flights with the longest continuous pieces, and their MSD is larger. Along a curve the MSD of design B thus mixes the growth of
+the MSD of one flight with a change of the flights, and $\alpha(\tau)$ bends upward where the population is small
+(Fig.~\ref{fig:fixed-vs-all}). On the same lags, $H$ of design B is below or equal to that of design A in every population and both
+disciplines (equal in hills, where $T=$ \UniTauFixed{} s) (Table~\ref{tab:fixed-vs-all-H}); for all terrain and the lags up to \UniTAllAlongest{} s, \UniHFirstAllAlongest{} against
+\UniHFirstAllBlongest{} for paragliders and \UniHSecondAllAlongest{} against \UniHSecondAllBlongest{} for hang gliders.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fixed_vs_all.pdf}
+\caption{A shrinking population bends $\alpha(\tau)$ upward at long lags, which the fixed population does not do. All terrain,
+lags up to the longest $T$; solid: fixed population (A); dash-dot: all flights (B); the dashed and dotted horizontal lines are
+$2H$ of A and of B. Both panels share the vertical axis, clipped at 2.8 (the hang band exceeds it above $10^4$ s).}\label{fig:fixed-vs-all}
+\end{figure}
+
+\input{generated/table_fixed_vs_all_H}
+
+The question is whether the difference between the disciplines depends on the design. Up to $1000$ s, where the two designs
+differ only by the flights whose pieces are shorter than \UniPieceFixed{} s, the differences $\Hpara-\Hhang$ of A and B agree to within
+\UniGapKilo{} in every population (Table~\ref{tab:fixed-vs-all}, Fig.~\ref{fig:forest}). Up to the longest $T$ the point values differ by up to \UniGapLongest, \UniDHAllBlongest{} against \UniDHAllAlongest{} for all
+terrain, since the hang glider flights fall to \UniNSecondAllBlongest; the bands of A and B overlap in every population.
+
+\input{generated/table_fixed_vs_all}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.62\textwidth]{forest.pdf}
+\caption{The paragliders have the larger $H$ in every population and every design, with $\Hpara-\Hhang$ between \UniForestMin{} and \UniForestMax; the band
+excludes 0 in \UniForestPos{} of the \UniForestN{} cases. $\Hpara-\Hhang$ with its 90\% band; the number of hang glider flights in
+brackets; filled: fixed population (A); open: all flights (B); circle: lags to 1000 s; square: to the longest $T$ of the
+population.}\label{fig:forest}
+\end{figure}
+
+\keep{The shrinking population lowers $H$ by up to \UniMaxDropB{} and bends $\alpha(\tau)$ at long lags; the
+difference between the disciplines is the same in the two designs up to 1000 s, and within the bands to the longest $T$.}

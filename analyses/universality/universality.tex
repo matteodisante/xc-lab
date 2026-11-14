@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+% Floats go where they fit.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.8}
+\setcounter{topnumber}{3}
+
+% The figures are written by report.py in out/full/ (git-ignored); the macros and tables in generated/.
+\graphicspath{{out/full/}}
+\input{generated/macros}
+
+\newcommand{\MSD}{\mathrm{MSD}}
+\newcommand{\Hpara}{H_{\mathrm{para}}}
+\newcommand{\Hhang}{H_{\mathrm{hang}}}
+\newcommand{\keep}[1]{\paragraph{What we keep.} #1}
+
+\title{\textbf{Is the Hurst exponent universal?}\\[4pt]
+  \large Paragliders and hang gliders on declared open flights}
+\author{Matteo Di Sante}
+\date{xc-lab note, working version, 14 November 2026}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\tableofcontents
+\input{sections/data}
+\input{sections/terrain}
+\input{sections/raw}
+\input{sections/stratified}
+\input{sections/regions}
+\input{sections/fixed_vs_all}
+\input{sections/conclusion}
+\appendix
+\input{sections/appendices}
+
+\end{document}

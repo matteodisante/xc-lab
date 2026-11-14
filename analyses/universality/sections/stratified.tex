@@ -1,0 +1,52 @@
+\section{Comparison by terrain class}\label{sec:strat}
+
+Does the difference come from the ground the two disciplines fly over?
+
+Hang gliders fly higher ground than paragliders (Fig.~\ref{fig:hist}), and $H$ depends on the ground. The comparison is
+therefore made within each class of Section~\ref{sec:terrain}, on the flights whose class is known. The classes with fewer
+than \UniMinCell{} hang glider flights would not be fitted; none is in this case.
+
+\paragraph{A, fixed population.} At $T=$ \UniTauFixed{} s (Fig.~\ref{fig:strat-A}, Table~\ref{tab:strat-A}) the paragliders have
+the larger $H$ in every class: $\Hpara-\Hhang=$ \UniDHPlainsAfixed{} \UniDHBandPlainsAfixed{} in plains,
+\UniDHHillsAfixed{} \UniDHBandHillsAfixed{} in hills, \UniDHLowAfixed{} \UniDHBandLowAfixed{} in low mountains and
+\UniDHHighAfixed{} \UniDHBandHighAfixed{} in high mountains. $H$ falls with the ruggedness of the ground in both disciplines: from
+\UniHFirstPlainsAfixed{} in plains to \UniHFirstHighAfixed{} in high mountains for paragliders, from \UniHSecondPlainsAfixed{} to
+\UniHSecondHighAfixed{} for hang gliders. The raw difference (\UniDHAllAfixed) lies within the range of the differences by class, so the terrain mix does not
+account for it.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{strat_A_fixed.pdf}
+\caption{Within every class the curve of the paragliders lies above that of the hang gliders at lags up to 1000 s, the two
+curves overlapping most in plains. Design A, $T=$ \UniTauFixed{} s. Panels as Fig.~\ref{fig:raw-A}; flights above each panel.}\label{fig:strat-A}
+\end{figure}
+
+With the longest $T$ of each class (Fig.~\ref{fig:strat-A-longest}) the differences are \UniDHPlainsAlongest{} (plains, $T=$
+\UniTPlainsAlongest{} s), \UniDHHillsAlongest{} (hills, $T=$ \UniTHillsAlongest{} s, the same as the fixed one), \UniDHLowAlongest{} (low mountains,
+$T=$ \UniTLowAlongest{} s) and \UniDHHighAlongest{} (high mountains, $T=$ \UniTHighAlongest{} s). In the two mountain classes
+$\alpha(\tau)$ falls above 1000 s for both disciplines and the hang curve ends lower.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{strat_A_longest.pdf}
+\caption{With the longest $T$ of each class the difference persists in the mountains, and the bands of the hang gliders widen
+above 1000 s. Design A, $T$ in the panel labels.}\label{fig:strat-A-longest}
+\end{figure}
+
+\input{generated/table_strat_A}
+
+\paragraph{B, all flights.} The same comparison on all flights (Fig.~\ref{fig:strat-B}, Table~\ref{tab:strat-B}) gives, up to 1000 s,
+\UniDHPlainsBkilo, \UniDHHillsBkilo, \UniDHLowBkilo{} and \UniDHHighBkilo{} in the four classes and, up to the longest $T$ of the class,
+\UniDHPlainsBlongest, \UniDHHillsBlongest, \UniDHLowBlongest{} and \UniDHHighBlongest.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{strat_B.pdf}
+\caption{In every class the number of flights falls at long lags and the curves bend away from those of the fixed population there.
+Design B; panels as Fig.~\ref{fig:raw-B}.}\label{fig:strat-B}
+\end{figure}
+
+\input{generated/table_strat_B}
+
+\keep{In each class of ground the paragliders have the larger $H$ at 1000 s, $\Hpara-\Hhang$ going from \UniDHPlainsAfixed{} to \UniDHLowAfixed{}; the
+terrain mix does not account for the raw difference. In both disciplines $H$ falls from plains to mountains.}

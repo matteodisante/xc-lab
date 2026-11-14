@@ -1,0 +1,63 @@
+\section{Regions}\label{sec:regions}
+
+Is the result the same in named regions, two of lowland and two of mountains?
+
+\paragraph{The regions.} The four boxes come from the earlier project (soaring-anomalous-transport,
+\texttt{soaring/analysis/regions.py}) and are copied here. They are given in degrees as (west, east, south, north) with the bounds
+included:
+\begin{itemize}
+\item Alps $(5.4,\,10.0,\,43.8,\,46.6)$;
+\item Pyrenees $(-1.9,\,3.3,\,42.0,\,43.5)$;
+\item Channel Coast $(-1.8,\,2.0,\,48.3,\,51.2)$;
+\item Champagne-Lorraine $(2.1,\,6.2,\,48.0,\,50.6)$
+\end{itemize}
+The regions are drawn in Fig.~\ref{fig:map}. As in the earlier project, a flight belongs to a region when
+its takeoff, the first fix of the flight, lies in the box \emph{and} its terrain class, by the rule of Section~\ref{sec:terrain},
+agrees: plains or hills for Channel Coast and Champagne-Lorraine, low or high mountains for Alps and Pyrenees. The boxes do not
+overlap, so a flight is in at most one region.
+
+\input{generated/table_region_counts}
+
+Table~\ref{tab:regions-counts} gives the cells. A cell with fewer than \UniMinCell{} flights is shown but not fitted, and a
+comparison of two cells is made only when both are fitted. This leaves one comparison of the two disciplines, in the Alps
+(\UniRegionHangAlpsFlights{} hang glider flights), and, within a discipline, the comparisons between regions of the paragliders. The
+hang glider cells of the Pyrenees (\UniRegionHangPyrFlights{} flights), of Channel Coast (\UniRegionHangChannelFlights{}) and of
+Champagne-Lorraine (\UniRegionHangChampagneFlights{}) are too small.
+
+\paragraph{Para against hang, in the Alps.} The fixed population at $T=$ \UniTauFixed{} s has \UniRegNFirstAlpsAfixed{} paraglider
+and \UniRegNSecondAlpsAfixed{} hang glider flights; $H=$ \UniRegHFirstAlpsAfixed{} \UniRegHBandFirstAlpsAfixed{} and
+\UniRegHSecondAlpsAfixed{} \UniRegHBandSecondAlpsAfixed{}, a difference of \UniRegDHAlpsAfixed{} \UniRegDHBandAlpsAfixed.
+With the longest $T=$ \UniRegTAlpsAlongest{} s it is \UniRegDHAlpsAlongest{} \UniRegDHBandAlpsAlongest, and on all flights
+\UniRegDHAlpsBkilo{} (to 1000 s) and \UniRegDHAlpsBlongest{} (to the longest $T$) (Fig.~\ref{fig:regions-ph}, Table~\ref{tab:regions}).
+The Alps give the same answer as the two mountain classes.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{regions_para_hang.pdf}
+\caption{In the Alps the hang gliders have the lower $\alpha(\tau)$ in the three designs. (a) fixed population at 1000 s,
+(b) fixed population at the longest $T$, (c) all flights; panels as Fig.~\ref{fig:raw-A}.}\label{fig:regions-ph}
+\end{figure}
+
+\input{generated/table_regions}
+
+\paragraph{Region against region.} For the paragliders (Fig.~\ref{fig:regions-between}, Table~\ref{tab:between}) the two mountain
+regions differ little, \UniBetweenParaDHAlpsPyrAfixed{} \UniBetweenParaDHBandAlpsPyrAfixed{} for Alps minus Pyrenees at 1000 s, and the two lowland
+regions differ little too, \UniBetweenParaDHChannelChampagneAfixed{} \UniBetweenParaDHBandChannelChampagneAfixed{}. Between a mountain and a lowland region
+the difference of $H$, mountain minus lowland, is \UniBetweenParaDHAlpsChannelAfixed{} (Alps and Channel Coast),
+\UniBetweenParaDHAlpsChampagneAfixed{} (Alps and Champagne-Lorraine), \UniBetweenParaDHPyrChannelAfixed{} (Pyrenees and Channel Coast) and
+\UniBetweenParaDHPyrChampagneAfixed{} (Pyrenees and Champagne-Lorraine). The hang gliders have too few flights outside the Alps to be compared between regions.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{regions_between.pdf}
+\caption{Paragliders have a lower $H$ over the Alps and the Pyrenees than over the two lowland regions, and the two regions of
+each kind are close. (a) $\alpha(\tau)$ of the four regions on the fixed population at 1000 s; (b) the difference of $H$ between
+two regions, first minus second, in the four designs (filled: fixed population; open: all flights; circle: to 1000 s;
+square: to the longest $T$), with 90\% bands.}\label{fig:regions-between}
+\end{figure}
+
+\input{generated/table_between}
+
+\keep{Of the four regions only the Alps have enough hang glider flights; there $\Hpara-\Hhang=$ \UniRegDHAlpsAfixed{} at 1000 s,
+as in the mountain classes. For the paragliders the regions order as their terrain: mountain minus lowland $H$ is \UniBetweenParaDHAlpsChannelAfixed{} to
+\UniBetweenParaDHPyrChampagneAfixed, and two regions of one kind differ by \UniBetweenParaDHAlpsPyrAfixed{} or less in absolute value.}
