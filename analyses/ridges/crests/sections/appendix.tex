@@ -1,0 +1,95 @@
+\section{Parameters}\label{app:params}
+
+Every constant is a named constant at the top of its module in \code{analyses/ridges/}; the values below are written
+by \code{report\_figures.py} from those modules.
+
+\begin{table}[h]
+\centering
+\caption{Parameters of the pipeline.}
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+Step & Parameter & Module \\
+\midrule
+DEM & IGN BD~ALTI v2, 25~m, Lambert-93; Alps: departments 04, 05, 06, 26, 38, 73, 74, 83, 84; Pyrenees: 09, 11, 31, 64, 65, 66 & \code{geo} \\
+Mountain area & UNEP-WCMC classes on 1~km cells, local range within \CgPMountainRadius~km above \CgPMountainRange~m, basins up to \CgPBasinKm~km$^2$, largest piece, tiles of the departments only; curves with at least \CgPMaskShare\% in it & \code{mountains}, \code{build} \\
+Valleys & cells draining at least \CgPValley~km$^2$ (\CgPValleyCells{} cells) & \code{ridges} \\
+Cross-section & ground \CgPXsecCells{} cells (\CgPXsecM~m) away on each side at least \CgPXsecDrop~m lower & \code{ridges} \\
+Height above streams & at least \CgPHandMin~m on both sides & \code{ridges} \\
+Bridges & flat stretches up to \CgPBridgeSides{} sides (\CgPBridgeM~m) & \code{curves} \\
+Pruning & dead ends shorter than \CgPPruneSides{} sides (\CgPPruneM~m) & \code{curves} \\
+Strokes & deflection at most \CgPDeflection$^\circ$, direction measured \CgPDirectionM~m from the junction & \code{curves} \\
+Curves & smoothing spline with cut-off \CgPSmooth~m, resampled every \CgPStep~m, shorter than \CgPMinLengthKm~km dropped & \code{curves} \\
+Data edge & within \CgPEdgeCells{} cells (\CgPEdgeM~m) of a cell without data & \code{curves} \\
+Joins & straight, at most \CgPJoinM~m, within \CgPCone$^\circ$ of the run-out direction (measured \CgPRunout~m back), every touched cell at least \CgPHandMin~m above the streams, snapped to a dead end within \CgPSnap~m, \CgPJoinComponents{} components tried per dead end & \code{joined} \\
+TAMSD & \CgPLags{} log-spaced lags up to \CgPLagFrac\% of each path, at least \CgPMinCurves{} paths per lag, $v=\CgPSpeed$~km/h, fit from \CgPFitFrom~m, \CgPBoot{} bootstrap resamples & \code{tamsd} \\
+Export & longest path of each tree with one of at least \CgPLongPathKm~km & \code{hgeo} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\section{Two choices that need a reason}\label{app:choices}
+
+\textbf{Spline cut-off of \CgPSmooth~m.} The staircase of cell sides has steps of one cell, and the smoothing has to remove them
+without bending the curve at the scale of the terrain. A cut-off of four cells is the scale below which the shape of a
+curve is set by the grid, which is also where the fit of $\Hgeo$ starts (Section~\ref{sec:tamsd}); the two scales are one
+choice.
+
+\textbf{Mountain area on the tiles of the departments.} A massif is the set of the departments of its loi Montagne
+massif, so its mountain area is computed on their tiles; the cells of neighbouring tiles in the bounding box serve the
+water routing (Section~\ref{sec:data}) and count as no data when classes and the largest connected piece are found.
+Taking them as data would add the mountains of neighbouring departments that touch the massif.
+
+
+\section{Tests}\label{app:tests}
+
+The \CgNTests{} tests of \code{analyses/ridges/} (run with \code{uv run --with numba python -m pytest -q}) cover:
+
+\begin{itemize}[nosep]
+  \item \code{test\_ridges.py} (\CgNTestsRidges): a ridge between two valleys gives one crest on the line between the
+        valleys; the two valleys are different links on either side of the ridge; a tilted plane gives no crest
+        away from the border; a pit is filled and every cell drains to an outlet; a ridge too low for the
+        cross-section gives only flat candidates.
+  \item \code{test\_curves.py} (\CgNTestsCurves): a T junction gives the bar and the stem as two strokes; a short spur
+        is pruned; the deflection limit decides the pairing at a Y junction; a flat stretch between two pieces is bridged
+        and a spur that touches the network once is not; a straight line is resampled every \CgPStep~m.
+  \item \code{test\_joined.py} (\CgNTestsJoined): a gap between two collinear curves is joined and gives one path; a valley
+        of ten cells blocks the join; a one-cell stream between two crests blocks it; a stream of diagonal cells blocks
+        it; a flat col across 250~m is crossed; a join that is too far and off the cone is not made; a join snaps to a
+        dead end; a junction gives two paths from the root; the cells crossed by a segment include those touched at
+        corners.
+  \item \code{test\_tamsd.py} (\CgNTestsTamsd): a straight line has $\delta^2=s^2$ and $H=1$ at every lag and window; lags with
+        fewer than \CgPMinCurves{} curves are dropped; the lag grid is log-spaced up to a quarter of the longest curve; the
+        bootstrap resamples whole groups; a circle has a bounded TAMSD.
+  \item \code{test\_mountains.py} (\CgNTestsMountains): lowland is not mountain and high ground is; an enclosed basin is added and a
+        smaller second massif dropped; an open valley is not filled; the local range rule.
+  \item \code{test\_geo.py} (\CgNTestsGeo): the boxes of the regions, the cell centres on multiples of 25~m, the tiles of the
+        departments (skipped without the disk).
+\end{itemize}
+
+
+\section{More results and the computation}\label{app:more}
+
+\begin{table}[h]
+\centering
+\caption{As Table~\ref{tab:hgeo} without the curves and paths that reach the edge of the data.}
+\label{tab:noedge}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+\toprule
+ & \multicolumn{2}{c}{Alps} & \multicolumn{2}{c}{Pyrenees} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+window of $s$ & paths & curves & paths & curves \\
+\midrule
+\input{generated/hgeo_noedge_table}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Computation.} \code{build.py} (mosaic, mountain area, flow routing, crest sides, curves) has a peak resident memory of
+\CgAlpsRamDrain~GB for the Alps and \CgPyrRamDrain~GB for the Pyrenees; \code{hgeo.py} (joins, trees, paths, TAMSD,
+bootstrap) \CgAlpsRamHgeo~GB and \CgPyrRamHgeo~GB. The elevations are float32, the link labels int32, and the flow
+routing and the divide scan are compiled with numba. Results are in
+\code{/Volumes/SSD\_DISANTE/xc-lab/ridges/} in a folder named by its parameters, with a \code{PARAMETERS.md}.

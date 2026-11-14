@@ -1,0 +1,95 @@
+# Ridges: how much of H the terrain alone explains
+
+Question: how much of the Hurst exponent H of a mountain flight does the geometry of the crests alone explain,
+and how much comes from the intermittent motion of the pilot? The first term is the exponent H_geo of a ball at
+constant speed (35 km/h) along the crest paths of the French Alps and Pyrenees, extracted from the 25 m IGN DEM;
+the second part compares it with the FFVL flights and an intermittent model on the same paths.
+
+| Question | Scripts | Document |
+|---|---|---|
+| H_geo of the crests: DEM to mountain area, divides, curves, joins, trees, paths, TAMSD | `geo.py` `mountains.py` `ridges.py` `curves.py` `joined.py` `tamsd.py` `hgeo.py` `build.py`; figures and macros `report_figures.py` `fig_joins.py` | `crests/crest_geometry.pdf`, sections 1-9 (`crests/sections/geometry.tex`, appendices `appendix.tex`) |
+| H of the flights, intermittent model, split of 1 - H into geometry and intermittency | the flight part (`flights.py`, `run_flights.py`, `pauses.py`, `model.py`, `decompose.py`, `glide_speed.py`, `report.py`) | `crests/crest_geometry.pdf`, `crests/sections/flights_model.tex` (written by the flight part; included when it exists) |
+| Recipe and definitions of the flight comparison | | `paper/FLIGHTS.md` |
+
+`paper/` holds the folder of an earlier paper on the same question (`main.tex`, `FLIGHTS.md`); the pipeline here is
+built from scratch and does not use or reproduce its numbers.
+
+## Procedure
+
+1. **Ground.** IGN BD ALTI v2, 25 m, Lambert-93, `/Volumes/SSD_DISANTE/IGN_France_Elevation_25m/` (read-only). A
+   region is the departments of its massif (Alps 04, 05, 06, 26, 38, 73, 74, 83, 84; Pyrenees 09, 11, 31, 64, 65,
+   66); the mosaic covers the bounding box of their tiles.
+2. **Mountain area.** UNEP-WCMC classes on 1 km cells (local range within 7 km, enclosed basins up to 25 km2, largest
+   piece), computed on the tiles of the departments themselves: they define the massif, and the neighbouring tiles of
+   the box serve only the water routing.
+3. **Crests as divides.** Priority flood, D8 steepest descent, valleys of at least 0.5 km2 cut into links at the
+   confluences; a side between two cells draining into different links, neither downstream of the other, is a divide.
+   Tests: ground 6 cells (150 m) away on each side at least 10 m lower; crest at least 20 m above the streams.
+4. **Curves.** Flat stretches up to 40 sides bridged, dead ends under 4 sides pruned, strokes through junctions
+   (deflection at most 135 deg, direction measured 200 m out), smoothing spline with a cut-off of 100 m (the scale
+   below which the shape is set by the grid, where the fit starts), resampled every 5 m, curves under 1 km dropped,
+   at least half in the mountain area.
+5. **Joins.** Straight, at most 1 km, within 45 deg of the run-out direction, snapped to a dead end within 200 m, up
+   to 3 other components per dead end, shortest first, one per dead end. A join is accepted only if every DEM cell the
+   segment touches (corners included) is at least 20 m above the streams: it never crosses a valley, however narrow.
+6. **Trees and paths.** Curves, junctions and joins form a graph; a tree is a component, its root one end of its
+   longest path, its paths run from the root to every other end.
+7. **TAMSD.** 80 log-spaced lags up to a quarter of each path, equal weight per path, lags with at least 10 paths,
+   local H(s) = half the log-log slope of the mean, H_geo on windows from 0.1 km, 0.1-1, 1-10 and beyond 10 km,
+   1000 bootstrap resamples of whole trees (of curves for the curves).
+
+Every constant is a named constant at the top of its module; `PARAMETERS.md` in the cache folder lists them.
+
+## Run
+
+```
+uv run --with numba python build.py <alps|pyrenees>   # DEM -> mask, crest sides, curves (about 3 min)
+uv run --with numba python hgeo.py <alps|pyrenees>    # joins, trees, paths, TAMSD, H_geo, exports (about 1 min)
+uv run --with numba --with pyproj python report_figures.py   # figures, macros and tables of the report
+cd crests && latexmk -pdf crest_geometry.tex
+uv run --with numba python -m pytest -q               # synthetic DEMs, curves, joins, TAMSD; DEM tests skip without the disk
+```
+
+One heavy process at a time. Peak resident memory (`getrusage`, recorded in `peak_ram.json`): `build.py` 1.8 GB for
+the Alps and 1.4 GB for the Pyrenees (`/usr/bin/time -l` read 2.4 and 2.1 GB), `hgeo.py` 0.4 and 0.3 GB.
+
+## Files in the cache folder
+
+`/Volumes/SSD_DISANTE/xc-lab/ridges/bdalti25_valley0.5_xsec6-10_hand20_gap40_prune4_defl135-200_min1000_step5_smooth100_join1000-45-200/`
+
+| File | Content |
+|---|---|
+| `mask_<region>.npz` | mountain area on 1 km cells: `mask` (rows go south), `left`, `top` (west and north edges, Lambert-93 m), `cell` = 1000 |
+| `tamsd_rows_<region>_<kind>.npz` | kind `curves` or `paths`: `rows` (TAMSD in m2 of every curve or path on the common lags, NaN beyond a quarter of it), `k` (lags in samples), `s_m`, `group` (what the bootstrap resamples: the curve, or the tree of a path), `tree`, `length` (m), `edge` (reaches the data edge), `step` |
+| `hgeo_<region>_<kind>.csv` | per lag: `s_m`, `tau_s` at 35 km/h, `n`, `mean`, `q05`, `q95` (over curves), `H`, `H_lo`, `H_hi` (95% bootstrap) |
+| `hgeo_windows.csv` | H on the windows of s, per region and kind (`curves`, `paths`, `_noedge`), with 95% interval |
+| `paths_<region>.npz` | longest path of every tree with one of at least 10 km, every 5 m: `xy` float32 offsets from `origin` (Lambert-93 = `xy` + `origin`), `off`, `tree`, `length` |
+| `joins_<region>.npz` | the joins (`a`, `b` end points, `length`, `tree`) and the longest tree (`big_*`) |
+| `curves_<region>.npz`, `edges_*`, `hand_*` | intermediate: curves every 5 m, crest sides, height above the streams (int16 m) |
+| `peak_ram.json`, `PARAMETERS.md` | peak memory of each stage; the parameters |
+
+## Results
+
+Counts (Alps / Pyrenees): mountain area 47,754 / 20,640 km2; curves 13,542 / 6,438 (33,470 / 16,397 km, median
+1.94 / 2.04 km); joins 1,789 / 705, none touching a cell below 20 m above the streams on an independent 0.25 m
+sampling; trees 2,040 / 841; paths 12,981 / 6,202 (median 14 / 15 km, longest 114 / 91 km); trees with a path of at
+least 10 km exported 309 / 159.
+
+H_geo of the paths (95% bootstrap interval over trees):
+
+| window of s | Alps | Pyrenees |
+|---|---|---|
+| from 0.1 km | 0.933 (0.929-0.940) | 0.930 (0.925-0.933) |
+| 0.1-1 km | 0.960 (0.959-0.961) | 0.960 (0.959-0.962) |
+| 1-10 km | 0.927 (0.921-0.934) | 0.917 (0.912-0.922) |
+| beyond 10 km | 0.867 (0.812-0.933) | 0.931 (0.774-0.974) |
+
+Single curves (from 0.1 km): 0.974 / 0.965. Their 1-10 km window mixes populations (only the longest curves reach
+the large lags) and is not used.
+
+Local H(s) of the paths, Alps / Pyrenees: 0.983 / 0.982 at 100 m, 0.951 / 0.950 at 500 m, 0.940 / 0.933 at 1 km,
+0.935 / 0.927 at 2 km, 0.920 / 0.912 at 5 km, 0.905 / 0.850 at 10 km. Without the curves and paths that reach the
+data edge the windows are the same to the third decimal (report, Appendix D).
+
+Limits: the DEM stops at the border (edge-flagged curves and paths), the shape below 100 m is set by the grid, and the
+last window rests on few trees (42 in the Alps and 16 in the Pyrenees at a lag of 10 km).

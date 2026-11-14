@@ -1,0 +1,538 @@
+% The geometric Hurst exponent of the crests of the French Alps and Pyrenees.
+% Figures in figs/ (code/fig_paper.py), numbers in data/ (code/hgeo.py).
+% Compile with `make' in this folder (pdflatex twice, for the references).
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,
+            urlcolor=blue!50!black]{hyperref}
+\graphicspath{{figs/}}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\newcommand{\Hgeo}{H_{\mathrm{geo}}}
+\newcommand{\Hroute}{H_{\mathrm{route}}}
+\newcommand{\Hdyn}{H_{\mathrm{dyn}}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{How straight is a ridge?\\
+The geometric Hurst exponent of the crests of the French Alps and Pyrenees}
+\author{Matteo Di Sante}
+\date{Draft, 12 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A paraglider that flies cross-country in the mountains follows the ridges, and
+its track inherits their shape. Before the Hurst exponent of such a track can
+say anything about how pilots fly, one must know how much of it the terrain
+alone sets. We give that baseline. We extract the crest lines of the French
+Alps and Pyrenees from the 25~m IGN elevation model, join the pieces into
+long crest paths, and let a ball run along them at constant speed. The
+time-averaged mean squared displacement of the ball, fitted from 100~m (four
+grid cells) up, gives a geometric Hurst exponent $\Hgeo = 0.922$
+(0.918--0.929) in the Alps and $0.916$ (0.910--0.931) in the Pyrenees. The
+exponent is not a constant: it falls from about 0.98 at 100~m to 0.94 at
+1~km and 0.87 beyond 10~km, along the same curve in both massifs. Box
+counting, an independent geometric measure, agrees: $1/D$ follows the local
+$H$ to within 0.01--0.03 up to about 10~km. A flight with $H$ close to these
+values is therefore as straight as the ridges it follows, and no straighter.
+We give the definitions, data and code needed to put real flights on the
+same scale, and the decomposition (terrain, route, time) the comparison
+calls for.
+\end{abstract}
+
+\section{Introduction}
+
+Cross-country paragliding in the mountains is ridge flying. Thermals rise
+from the sunny slopes and the lift is strongest close to the crests, so a
+pilot who wants to go far follows the ridges, climbs in a thermal, glides
+to the next one, and so on. The GPS track of a flight records two things at once:
+the shape of the terrain and the way the pilot moves through it, with
+straight glides, detours and long pauses spent circling in thermals.
+
+A common way to describe such a track is the mean squared displacement and
+its exponent. If $\delta^2(\tau) \sim \tau^{2H}$, a Hurst exponent $H=1$ means
+a ballistic, straight motion and $H=1/2$ a diffusive one. Measured on a flight,
+$H$ mixes the two ingredients. A pilot who flies perfectly straight at constant
+speed along a winding ridge has $H<1$, and the shortfall is the terrain's, not
+the pilot's. The question of this paper is therefore simple: \emph{how much of
+the Hurst exponent of a ridge flight can the terrain alone explain?}
+
+To answer it we need the Hurst exponent of the crests themselves, measured
+exactly as it would be on a flight. We extract every crest line of the French
+Alps and of the French Pyrenees from a 25~m digital elevation model (DEM),
+join the pieces into long paths that follow the main ridges, and let a ball
+run along each path at a constant speed. The ball is a pilot with no pauses
+and no choices, and its time-averaged mean squared displacement (TAMSD) gives
+a geometric exponent, $\Hgeo$, that depends on the crest shape only.
+
+Three findings come out. First, $\Hgeo$ is close to one but not one: about 0.92
+over lags from 100~m to tens of kilometres. Second, it is scale dependent,
+falling steadily from 0.98 to below 0.9 with no plateau, so a single number is
+a summary and the local exponent $H(s)$ is the real result. Third, it is almost
+the same in the two massifs, which have very different structures: the Alps
+are a wide band of parallel chains, the Pyrenees a single long divide.
+Box counting confirms the TAMSD result independently.
+
+The paper is the first half of a comparison. Its companion (on real flights,
+with the code and data shipped here) will put the tracks of paragliders on the
+same axes and split their exponent into terrain, route and time. We only
+sketch that step in the discussion.
+
+\section{Crest lines from a DEM}
+\label{sec:crests}
+
+\paragraph{Data and region.}
+We use the IGN BD ALTI elevation model at 25~m resolution \citep{ign_bdalti},
+in Lambert-93. A massif is the set of departments of its loi Montagne massif,
+nine in the Alps and six in the Pyrenees (Appendix~\ref{app:params}); within
+them we keep the mountain area of the UNEP-WCMC definition \citep{kapos2000},
+evaluated on 1~km cells from the DEM itself. The mountain area is
+47\,700~km$^2$ in the Alps and 20\,600~km$^2$ in the Pyrenees
+(Figure~\ref{fig:map}; Appendix~\ref{app:pyrenees}). The DEM stops at the
+national border, which in the Pyrenees and in much of the Alps runs along the
+main divide; we flag the crests that reach the edge of the data and repeat
+every result without them (Appendix~\ref{app:edge}).
+
+\paragraph{Crests are divides.}
+A crest is where the ground falls away on both sides: a drop of water just
+on one side of it ends in one valley, a drop on the other side in another
+(Figure~\ref{fig:schematic}a). We therefore find crests as the boundaries
+between the areas drained by different valleys. The DEM is depression-filled
+with a priority flood \citep{barnes2014}, every cell drains to its steepest
+neighbour, and the valley network is the set of cells draining at least
+0.5~km$^2$, cut into links at the confluences. Two neighbouring cells that
+drain into different links sit on a crest, unless one link is downstream of
+the other. Divides are thus continuous through summits and cols, as crest
+lines should be. Two tests remove divides that are not crests: the ground
+150~m away on each side must be at least 10~m lower, and the crest must stand
+at least 20~m above the streams on both sides, which rejects divides that run
+across valley floors.
+
+\paragraph{From a network to curves.}
+The crest cells' sides form a planar network. At each junction a curve goes on
+along the straightest continuation (deflection at most $135^\circ$), as a pilot
+who keeps following the ridge would, and the other branches become curves of
+their own. Flat stretches up to 1~km are bridged, dead ends shorter than 100~m
+are pruned, and curves shorter than 1~km are dropped. Each curve is then
+smoothed by a spline and resampled every $\Delta s = 5$~m of arc length
+(Figure~\ref{fig:schematic}b). The Alps give 15\,205 curves (42\,000~km in
+total, median 1.8~km), the Pyrenees 6\,707 (19\,500~km, median 1.9~km).
+
+\paragraph{Joined paths.}
+These curves are short: a ridge breaks wherever it flattens or where the
+divide jumps to a parallel line. A pilot does not stop there, so we join the
+pieces (Figure~\ref{fig:schematic}c). From every dead end we look for a
+straight join of at most 1~km to another piece of the crest network, within
+$45^\circ$ of the direction in which the curve runs out, that never drops
+below 20~m above the streams: the ball does not cross a valley. Joins are made
+shortest first, each dead end taking part in one join at most, so the pieces
+grow into trees. A tree's root is one end of its longest path, and its paths
+run from the root to every other end. The Alps give 1\,413 trees and 16\,096
+paths (median 40~km, longest 309~km), the Pyrenees 483 trees and 7\,154 paths
+(median 62~km, longest 252~km). Paths of one tree share their trunk, so every
+bootstrap below resamples whole trees.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{schematic}
+\caption{Method, stylized (not data).
+\textbf{a}~A crest is the divide between two valleys: water released on either
+side of it drains into a different stream.
+\textbf{b}~Divides are found on the sides of the 25~m DEM cells (grey steps) and
+smoothed by a spline (black). Below about four cells, 100~m, the shape of a
+curve is set by the grid and the spline, not by the terrain.
+\textbf{c}~Crest curves broken at flat cols are joined into trees (red: a join);
+a path runs from the root to a tip (blue: one of the four paths of this tree).
+\textbf{d}~A ball runs along a path at constant speed $v$; the TAMSD
+$\delta^2(s)$ is the mean squared distance between its positions an arc length
+$s = v\tau$ apart.}
+\label{fig:schematic}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{map_alps}
+\caption{The crest curves of the French Alps, from the 25~m IGN DEM.
+\textbf{a}~The whole massif inside its mountain area (black outline), with
+the curves shaded by importance, the area of the smaller valley a curve
+separates, and the gap joins in red.
+\textbf{b}~Detail of the \'Ecrins.
+\textbf{c}~Detail of the Haute-Maurienne, where the data stop at the border
+and the curves reaching the edge (orange) are flagged
+(Appendix~\ref{app:edge}). The Pyrenees are in Appendix~\ref{app:pyrenees}.}
+\label{fig:map}
+\end{figure}
+
+\section{A ball on the crest}
+\label{sec:tamsd}
+
+A ball runs along each curve or path at constant speed $v$. Since the curve is
+sampled every $\Delta s$ of arc length, the ball is at $\mathbf r_i =
+\mathbf r(i\,\Delta s)$ at time $t_i = i\,\Delta s/v$, and a time lag $\tau$ is
+an arc length $s = v\tau$. For a curve of $N$ points the TAMSD is
+\begin{equation}
+  \delta^2(s = k\,\Delta s) = \frac{1}{N-k}\sum_{i=0}^{N-k-1}
+  \left|\mathbf r_{i+k} - \mathbf r_i\right|^2 ,
+  \label{eq:tamsd}
+\end{equation}
+the standard time average of single-particle tracking \citep{metzler2014}.
+It does not depend on the origin nor on the direction of travel. The speed
+only rescales the time axis; we use $v = 35$~km/h, a typical cross-country
+speed, so 100~m is 10.3~s and 10~km is about 17 minutes, but every result is
+really a function of $s$. A straight line has $\delta^2 = s^2$; any bending
+makes $\delta^2 < s^2$.
+
+The lags $k$ are 80 log-spaced values, and on each curve they go up to a
+quarter of its length: longer lags rest on too few independent windows. At
+each lag we average $\delta^2$ over curves with equal weight per curve, and use
+only lags with at least 10 curves. The local exponent of the mean is
+\begin{equation}
+  H(s) = \frac12\,\frac{d\ln\overline{\delta^2}}{d\ln s},
+  \label{eq:hlocal}
+\end{equation}
+and $\Hgeo$ is the least-squares slope of $\ln\overline{\delta^2}$ against
+$\ln s$, divided by two, over a window of lags. Since the lags are
+log-spaced, every decade weighs the same. The 95\% intervals come from 1000
+bootstrap resamples of the curves, or of whole trees for the paths.
+
+\paragraph{Where the fit starts.}
+Below a few grid cells the shape of a crest is not the terrain's: the divide
+runs on cell sides, and the spline that smooths these steps makes the curve
+straight below its own scale (Figure~\ref{fig:schematic}b). The fit therefore
+starts at four cells, $s = 100$~m, and every window below begins there or
+later. Below 100~m the curves are almost straight by construction
+($H(s) > 0.98$), and including those lags would push $H$ towards one.
+
+\section{Results: the terrain alone}
+\label{sec:results}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{geometric}
+\caption{The geometric TAMSD of the crests of the French Alps (blue) and
+Pyrenees (orange), for the joined paths (solid) and the single curves
+(dashed). Bottom axis: lag $\tau$ of a ball at 35~km/h; top axis: the same lag
+as arc length. Grey: below four DEM cells, where the shape is set by the grid.
+\textbf{a}~Mean TAMSD over its value on a straight line.
+\textbf{b}~Local Hurst exponent, Eq.~\eqref{eq:hlocal}, with its 95\% interval
+(bootstrap over trees; shown for the paths).
+\textbf{c}~$\Hgeo$ fitted on windows of arc length, with 95\% intervals (filled:
+paths; open: single curves, which are too short for the last window).}
+\label{fig:geometric}
+\end{figure}
+
+Figure~\ref{fig:geometric} and Table~\ref{tab:hgeo} hold the main result.
+Over the whole range from 100~m, the joined paths have $\Hgeo = 0.922$ in the
+Alps and $0.916$ in the Pyrenees; the single curves, which are shorter and
+straighter, $0.944$ and $0.939$. The difference between the massifs is within
+the bootstrap intervals for the paths and about 0.005 for the curves.
+
+The single number hides the main feature: the exponent is scale dependent.
+The local exponent of the Alps paths is 0.987 at 100~m, 0.973 at 230~m, 0.949
+at 550~m, 0.94 at 2~km, 0.89 at 4.6~km and 0.87 at 11~km
+(Figure~\ref{fig:geometric}b). There is no plateau. Fitted on windows, $\Hgeo$
+goes from 0.96 between 0.1 and 1~km to 0.925 between 1 and 10~km and about
+0.86--0.87 beyond 10~km (Figure~\ref{fig:geometric}c). The same happens in
+the Pyrenees, along nearly the same curve.
+
+The ratio $\overline{\delta^2}/s^2$ (Figure~\ref{fig:geometric}a) gives the same
+information in a more direct form. Its square root is the end-to-end distance
+over the arc length: about 0.9 at 1~km and about 0.6 at 50~km. A ball that
+follows the ridges for 50~km of arc gets about 30~km away from where it
+started.
+
+\begin{table}[t]
+\centering
+\caption{$\Hgeo$ fitted on windows of arc length $s$, with 95\% bootstrap
+intervals (over curves, or over whole trees for the paths). The single curves
+are too short for the last window.}
+\label{tab:hgeo}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+\toprule
+ & \multicolumn{2}{c}{Alps} & \multicolumn{2}{c}{Pyrenees} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+window of $s$ & paths & curves & paths & curves \\
+\midrule
+from 0.1~km & 0.922 (0.918--0.929) & 0.944 (0.940--0.948) & 0.916 (0.910--0.931) & 0.939 (0.933--0.943) \\
+0.1--1~km   & 0.960 (0.959--0.961) & 0.965 (0.964--0.965) & 0.957 (0.953--0.960) & 0.964 (0.963--0.965) \\
+1--10~km    & 0.925 (0.920--0.933) & 0.928 (0.919--0.936) & 0.910 (0.900--0.925) & 0.912 (0.894--0.925) \\
+beyond 10~km & 0.868 (0.773--0.877) & -- & 0.859 (0.841--0.946) & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The intervals beyond 10~km are wide and asymmetric. The paths are many, but
+the long lags rest on a few big trees. A lag of 10~km needs a path of at
+least 40~km, since lags stop at a quarter of a path, and only 32 of the
+1\,413 trees of the Alps have one, 12 of the 483 in the Pyrenees. A
+bootstrap that draws whole trees sees whether one of them is in or out, so
+the last window carries more uncertainty than its number of paths suggests.
+
+\section{Box counting as an independent check}
+\label{sec:box}
+
+The TAMSD measures how far the ball gets; box counting measures how much room
+the curve takes. For a curve parametrized by arc length with $R(s) =
+\sqrt{\delta^2(s)} \sim s^H$, boxes of size $\varepsilon = R(s)$ each hold a
+stretch of length about $s$, so a curve of length $L$ needs $N(\varepsilon)
+\approx L/s \sim \varepsilon^{-1/H}$ of them. The box dimension of the curve is
+then
+\begin{equation}
+  D = 1/H,
+  \label{eq:dh}
+\end{equation}
+the relation of self-similar curves \citep{mandelbrot1967,mandelbrot1985}, as
+opposed to $D = 2 - H$ for the graph of a self-affine profile. More generally,
+$D(\varepsilon)$ at $\varepsilon = R(s)$ should equal $1/H(s)$.
+
+The difficulty is finite size. A box count over a population of curves of
+different lengths saturates at both ends: below the sampling step every point
+is its own box, and beyond the length of a curve one box holds all of it. We
+take this out with a control: each curve or path is matched with a straight
+segment of the same arc length, first point and end-to-end direction, counted
+on the same grids. The ratio of the mean counts $N/N_{\mathrm{straight}}$ keeps
+only what the shape of the crests changes, and
+\begin{equation}
+  D(\varepsilon) = 1 + \frac{d \ln (N/N_{\mathrm{straight}})}{d\ln(1/\varepsilon)}.
+\end{equation}
+Every curve is counted on four rotated grids at 73 box sizes from 1~m to
+1000~km, and the 95\% interval of $D$ comes from a bootstrap over curves, or
+over trees for the paths.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{boxcount}
+\caption{Box counting. \textbf{a}~Mean number of boxes against the inverse box
+size, for the crests and for straight segments of the same lengths (paths
+only; the curves' controls overlap the curves). Grey: boxes smaller than four
+DEM cells. \textbf{b}~Ratio of the counts of crests and of straight segments.
+\textbf{c}~Local Hurst exponent of the TAMSD of the paths (solid, as in
+Figure~\ref{fig:geometric}b) and $1/D$ at $\varepsilon = R(s)$ (dotted), with
+95\% intervals.}
+\label{fig:box}
+\end{figure}
+
+Figure~\ref{fig:box} shows the result. The two saturations are clear in
+panel~a, and the ratio in panel~b removes them: for the paths it dips to
+0.7--0.75 at boxes of tens of kilometres, for the single curves only to 0.95
+at about 2~km, since they are short and nearly straight. The box count of the
+single curves carries information only up to about 1~km.
+
+For the joined paths, $1/D$ follows $H(s)$ (panel~c). In the Pyrenees it is
+0.990 against 0.982 at 100~m, 0.959 against 0.946 at 750~m and 0.935 against
+0.926 at 3.4~km; in the Alps it is 0.01--0.02 above $H(s)$ over the same
+range. Beyond about 10~km the box count of both massifs drifts up towards one
+while $H(s)$ keeps falling: a few long paths fill the largest boxes, and the
+finite-size control can only take out a straight line's share of that. Up to
+10~km the two measures, built on different averages, agree on the shape of
+the crests to within 0.01--0.03, with $1/D$ slightly higher.
+
+\section{Discussion and outlook}
+\label{sec:discussion}
+
+\paragraph{The baseline.}
+A ball at constant speed along the crests of the Alps or the Pyrenees has a
+Hurst exponent of about 0.96 between 0.1 and 1~km, 0.92 between 1 and 10~km,
+and below 0.9 beyond. These are not small corrections. A flight track with
+$H = 0.92$ on the 1--10~km window is exactly as straight as the ridges, and
+departures from ballistic motion of that size need no explanation in terms of
+the pilot. That the two massifs, so different in layout, give the same curve
+suggests that the result is a property of eroded mountain ridges in general,
+in the spirit of the scale invariance of river networks
+\citep{rodriguez1997}; we have only two massifs, so this remains a hint.
+
+\paragraph{Terrain, route, time.}
+A real flight differs from the ball in two ways (Figure~\ref{fig:outlook}).
+The pilot's route is not the crest: it takes shortcuts across valleys, flies
+beside the ridge, and circles in thermals. And the motion along the route is
+not uniform: glides alternate with long climbs in which the pilot circles and
+makes little progress. This suggests three exponents measured with the same
+TAMSD and on the same windows of arc length:
+\begin{itemize}
+\item $\Hgeo(s)$, the crests, this paper;
+\item $\Hroute(s)$, the pilot's track resampled by arc length with the
+  thermalling circles replaced by their chords;
+\item $\Hdyn(\tau)$, the track in time, as it is recorded.
+\end{itemize}
+$\Hroute - \Hgeo$ measures how the pilot's choices bend or straighten the
+path relative to the ridges; $\Hdyn$ against $\Hroute$ measures what the
+pauses do. If the progress along the route over a lag $\tau$ grows as
+$\tau^\beta$, the displacement in time is that of the route evaluated at that
+progress, so
+\begin{equation}
+  \Hdyn(\tau) \approx \beta(\tau)\,\Hroute\bigl(s(\tau)\bigr),
+\end{equation}
+a subordination in the sense of walks with waiting times
+\citep{havlin1987,metzler2014}. When the pauses have a finite mean, as
+expected for thermal climbs, $\beta$ is one at lags much longer than a glide
+and a climb, and the pauses act only on the crossover between the two;
+heavy-tailed pauses would lower $\beta$ over a wide range of lags. Which of
+the two holds is a question for the data.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{outlook}
+\caption{The decomposition proposed for real flights, stylized.
+\textbf{a}~The crest sets $\Hgeo(s)$.
+\textbf{b}~The pilot's route follows it with shortcuts and thermalling circles;
+with the circles replaced by their chords it gives $\Hroute(s)$.
+\textbf{c}~In time the pilot alternates progress (gliding) with pauses
+(circling), which gives $\Hdyn(\tau)$.}
+\label{fig:outlook}
+\end{figure}
+
+\paragraph{A test of the flight analysis.}
+The folder that comes with this paper contains a reference implementation of
+the three measurements for IGC flight files (\code{code/flights.py}) and a
+test on synthetic flights. A synthetic pilot flies 60 of the Alps paths at
+35~km/h, with glides and climbs of random durations, circles of 40~m radius in
+the climbs and, in one variant, a 3~m correlated GPS error and two minutes on
+the ground at each end. The route exponent comes back within 0.004 of the
+paths' own $\Hgeo$ (0.937--0.940 against 0.939 from 100~m), with or without
+noise. Without the circles collapsed, the track has $H = 0.906$: the circles
+alone lower $H$ by 0.03, mostly below 1~km. Thermalling circles must
+therefore be removed before a flight is compared with the terrain.
+
+\paragraph{Limits.}
+The crest network is a proxy for the ridges pilots follow, not a map of them.
+Its shape below 100~m is the grid's, which is why the fits start there. The
+joins across gaps, though restricted to 1~km and never through a valley,
+decide which pieces form a path, and the longest lags rest on a few big trees.
+The DEM stops at the border, and in both massifs the main divide is partly
+outside it; dropping the curves that reach the edge of the data leaves every
+exponent unchanged to the third decimal (Appendix~\ref{app:edge}), but the
+longest paths are still cut there. Finally, 35~km/h only labels the time axis:
+every comparison with flights should be made in arc length.
+
+\section*{Data and code}
+Everything needed to reproduce the figures from the DEM, and to run the
+flight analysis, is in the folder of this paper: \code{code/} (the pipeline and
+\code{flights.py}), \code{data/} (the per-curve TAMSD, the window fits, the box
+counts, the crests, the masks) and \code{FLIGHTS.md}, a recipe for the
+comparison with real flights.
+
+\begin{thebibliography}{9}
+
+\bibitem[Barnes et al.(2014)]{barnes2014}
+Barnes, R., Lehman, C. and Mulla, D. (2014).
+Priority-flood: an optimal depression-filling and watershed-labeling
+algorithm for digital elevation models.
+\emph{Computers \& Geosciences} 62, 117--127.
+
+\bibitem[Havlin and Ben-Avraham(1987)]{havlin1987}
+Havlin, S. and Ben-Avraham, D. (1987).
+Diffusion in disordered media.
+\emph{Advances in Physics} 36, 695--798.
+
+\bibitem[IGN(2021)]{ign_bdalti}
+IGN (2021).
+\emph{BD ALTI version 2.0, 25~m}. Institut national de l'information
+g\'eographique et foresti\`ere, Licence Ouverte 2.0.
+
+\bibitem[Kapos et al.(2000)]{kapos2000}
+Kapos, V., Rhind, J., Edwards, M., Price, M. F. and Ravilious, C. (2000).
+Developing a map of the world's mountain forests.
+In Price, M. F. and Butt, N. (eds.), \emph{Forests in Sustainable Mountain
+Development}, CABI, Wallingford, 4--9.
+
+\bibitem[Mandelbrot(1967)]{mandelbrot1967}
+Mandelbrot, B. (1967).
+How long is the coast of Britain? Statistical self-similarity and fractional
+dimension.
+\emph{Science} 156, 636--638.
+
+\bibitem[Mandelbrot(1985)]{mandelbrot1985}
+Mandelbrot, B. B. (1985).
+Self-affine fractals and fractal dimension.
+\emph{Physica Scripta} 32, 257--260.
+
+\bibitem[Metzler et al.(2014)]{metzler2014}
+Metzler, R., Jeon, J.-H., Cherstvy, A. G. and Barkai, E. (2014).
+Anomalous diffusion models and their properties: non-stationarity,
+non-ergodicity, and ageing at the centenary of single particle tracking.
+\emph{Physical Chemistry Chemical Physics} 16, 24128--24164.
+
+\bibitem[Rodr\'iguez-Iturbe and Rinaldo(1997)]{rodriguez1997}
+Rodr\'iguez-Iturbe, I. and Rinaldo, A. (1997).
+\emph{Fractal River Basins: Chance and Self-Organization}.
+Cambridge University Press.
+
+\end{thebibliography}
+
+\appendix
+
+\section{Extraction parameters}
+\label{app:params}
+
+\begin{table}[h]
+\centering
+\caption{Parameters of the crest extraction (\code{code/build.py},
+\code{code/joined.py}, \code{code/mountains.py}).}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+DEM & IGN BD ALTI v2, 25~m, Lambert-93 \\
+Alps & departments 04, 05, 06, 26, 38, 73, 74, 83, 84 \\
+Pyrenees & departments 09, 11, 31, 64, 65, 66 \\
+Mountain area & UNEP-WCMC classes \citep{kapos2000} on 1~km cells, local
+  elevation range within 7~km, enclosed basins up to 25~km$^2$ added, largest
+  connected piece kept; a curve belongs to the massif if at least half of it
+  lies in this area \\
+Valleys & cells draining at least 0.5~km$^2$ \\
+Cross-section & ground 6 cells (150~m) away on each side at least 10~m lower \\
+Height above streams & at least 20~m on both sides \\
+Gaps bridged & flat stretches up to 40 cell sides (1~km) \\
+Pruning & dead ends shorter than 4 cell sides (100~m) \\
+Junctions & a stroke goes on if it deflects by at most $135^\circ$, direction
+  measured 200~m from the junction \\
+Curves & spline, resampled every 5~m; shorter than 1~km dropped \\
+Joins & straight, at most 1~km, within $45^\circ$ of the direction the curve
+  runs out, never lower than 20~m above the streams, snapped to the other
+  curve's dead end within 200~m, up to 3 components tried per dead end \\
+Edge of the data & within 4 cells (100~m) of a cell without data \\
+TAMSD & 80 log-spaced lags up to a quarter of each curve, lags with at least
+  10 curves, fit from 100~m, 1000 bootstrap resamples \\
+Box counting & 73 sizes from 1~m to 1000~km, 4 rotated grids, 400 bootstrap
+  resamples, local slope over half a decade \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The loi Montagne is used only as a list of departments: the mountain area
+itself is recomputed from the DEM.
+
+\section{The Pyrenees}
+\label{app:pyrenees}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{map_pyrenees}
+\caption{The crest curves of the French Pyrenees, as in Figure~\ref{fig:map}.}
+\label{fig:map_pyrenees}
+\end{figure}
+
+\section{Curves at the edge of the data}
+\label{app:edge}
+
+Without the curves and paths that reach the edge of the data (within 100~m of
+a cell without data), the exponents from 100~m are: Alps paths 0.922
+(0.918--0.931), Alps curves 0.944 (0.940--0.948), Pyrenees paths 0.916
+(0.910--0.931), Pyrenees curves 0.939 (0.933--0.943). They are the values of
+Table~\ref{tab:hgeo} to the third decimal.
+
+\end{document}

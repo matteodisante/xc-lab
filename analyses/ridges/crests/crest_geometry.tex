@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\usepackage[hidelinks]{hyperref}
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+\newcommand{\Hgeo}{H_{\mathrm{geo}}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Numbers of the crest pipeline (report_figures.py) and of the flight part.
+\input{generated/macros}
+\IfFileExists{generated/flights_macros.tex}{\input{generated/flights_macros}}{}
+
+\title{\textbf{Crest geometry and the Hurst exponent of mountain flights}\\[4pt]
+  \large From the 25~m elevation model to the geometric exponent $\Hgeo$ of the crests of the French Alps
+  and Pyrenees, and how much of the exponent of real flights it explains}
+\author{Matteo Di Sante}
+\date{Working version, 13 November 2026}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\input{sections/geometry}
+\IfFileExists{sections/flights_model.tex}{\input{sections/flights_model}}{%
+  \section{Flights and the intermittent model}\label{sec:flights}
+  This part (phase survivals, the intermittent model on the crest paths, the real flights and the split of
+  $1-H$ into geometry and intermittency) is written separately and not yet included.}
+\appendix
+\input{sections/appendix}
+
+\end{document}

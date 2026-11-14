@@ -1,0 +1,381 @@
+\section{The question and the plan}\label{sec:question}
+
+A pilot who flies a ridge follows a line that bends. How much of the Hurst exponent $H$ of such a flight
+does the geometry of the crests alone explain, and how much comes from the intermittent motion of the pilot,
+who glides, circles in thermals and waits? To split the two we need the first term measured by itself: the
+exponent $\Hgeo$ of a ball that runs at constant speed along the crests of the same mountains. The second part of
+this report (Section~\ref{sec:flights}) compares it with real flights and with an intermittent model run on
+the same paths. The first part, Sections~\ref{sec:data} to~\ref{sec:limits}, is the procedure that leads from
+the elevation model to $\Hgeo$, written so that each step can be checked:
+
+\begin{enumerate}[nosep]
+  \item the ground and its mountain area (Section~\ref{sec:data});
+  \item the crests as divides between valleys (Section~\ref{sec:divides});
+  \item the crest network as curves (Section~\ref{sec:curves});
+  \item the joins of broken ridges (Section~\ref{sec:joins}), trees and paths (Section~\ref{sec:trees});
+  \item the time-averaged mean square displacement (TAMSD) of a ball on a path and the exponent
+        (Section~\ref{sec:tamsd}), its values (Section~\ref{sec:results}) and where they hold
+        (Section~\ref{sec:limits}).
+\end{enumerate}
+
+\noindent The French Alps and the Pyrenees are treated alike. Every constant of the method is a named constant
+at the top of its module in \code{analyses/ridges/}, listed in Appendix~\ref{app:params}.
+
+
+\section{Data and mountain area}\label{sec:data}
+
+On which ground do we measure, and which part of it is mountain? The elevations are the IGN BD~ALTI v2 model
+at 25~m, in Lambert-93 (EPSG:2154), delivered in tiles of $25\times25$~km. A massif is the set of departments
+of Appendix~\ref{app:params}; its mosaic covers the bounding box of their tiles, \CgAlpsCells{} million cells in
+the Alps and \CgPyrCells{} million in the Pyrenees. The tiles of neighbouring departments that fall in the box are read, so that
+water can leave a department; outside France there is no data.
+
+The mountain area follows the classes of UNEP-WCMC (Kapos et al.\ 2000), evaluated on 1~km cells from the model
+itself. For a cell of $40\times40$ model cells let $\bar z$ be its mean elevation, $\sigma$ the slope of the
+1~km grid and $\Delta z$ the local elevation range, the difference between the highest and the lowest $\bar z$
+within \CgPMountainRadius~km. A cell is mountain if
+\begin{equation}
+  \begin{aligned}
+  &\bar z \ge 2500~\mathrm{m},\ \text{or}\\
+  &\bar z \ge 1500~\mathrm{m}\text{ and }\sigma \ge 2^\circ,\ \text{or}\\
+  &\bar z \ge 1000~\mathrm{m}\text{ and }(\sigma \ge 5^\circ\text{ or }\Delta z > \CgPMountainRange~\mathrm{m}),\ \text{or}\\
+  &\bar z \ge 300~\mathrm{m}\text{ and }\Delta z > \CgPMountainRange~\mathrm{m}.
+  \end{aligned}
+  \label{eq:kapos}
+\end{equation}
+Enclosed pieces of at most \CgPBasinKm~km$^2$ that are not mountain, surrounded by mountain, are added, and the
+largest connected piece is kept. The area is computed on the tiles of the departments themselves; the cells of
+neighbouring tiles count as no data (Appendix~\ref{app:choices}). It is \CgAlpsArea~km$^2$ in the Alps and
+\CgPyrArea~km$^2$ in the Pyrenees (Figure~\ref{fig:map}). A curve belongs to a massif if at least
+\CgPMaskShare\% of it lies in this area.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/map.pdf}
+\caption{The mountain area (grey) of the Alps and the Pyrenees, with the crest curves of Section~\ref{sec:curves}
+and the joins of Section~\ref{sec:joins} (red). The Alps have \CgAlpsCurves{} curves of \CgAlpsCurveKm~km in total and
+the Pyrenees \CgPyrCurves{} of \CgPyrCurveKm~km.}
+\label{fig:map}
+\end{figure}
+
+\paragraph{What we keep.} The ground is the 25~m model on the departments of each massif, and the mountain area
+is the UNEP-WCMC definition computed on it: \CgAlpsArea~km$^2$ in the Alps and \CgPyrArea~km$^2$ in the Pyrenees.
+The model stops at the national border, so crests that reach it are flagged (Section~\ref{sec:limits}).
+
+
+\section{Crests as divides}\label{sec:divides}
+
+Where is a crest on a grid of elevations? A crest is where the ground falls away on both sides: water released on
+one side of it ends in one valley, water released on the other side in another. We therefore find crests as the
+boundaries between the areas drained by different valleys, and test that each boundary runs along a ridge and
+stays clear of valley floors.
+
+\paragraph{Valleys and links.} The elevations are depression-filled by a priority flood (Barnes, Lehman and
+Mulla 2014), starting from the cells at the border of the mosaic and next to cells without data. Every cell $c$
+drains to its steepest lower neighbour among the eight around it; cells of a filled depression or of a flat
+drain to the cell that reached them. The drainage area $A(c)$ is the number of cells that drain through $c$
+times 625~m$^2$. The valleys are the cells with $A(c)\ge A_{\min}=\CgPValley$~km$^2$ (\CgPValleyCells{} cells), cut
+into links at the confluences. Let $\ell(c)$ be the link into which $c$ drains, undefined if $c$ drains to the
+edge of the data without meeting a valley.
+
+\paragraph{Divide sides.} Two neighbouring cells $a$ and $b$ (sharing a side) are on a divide if
+$\ell(a)\ne\ell(b)$, both defined, and neither link is downstream of the other: a drop of water on either side
+reaches different valleys that do not flow into each other. Divides are thus continuous through summits and
+cols. The divide is the set of the shared sides; they form a planar network on the cell corners.
+
+\paragraph{Two tests.} Divides that are not crests are removed by two tests. Let $d$ be the unit step from $a$
+to $b$, $z$ the elevation and $n=\CgPXsecCells$ cells ($\CgPXsecM$~m):
+\begin{equation}
+  z(a)-z(a-n\,d)\ \ge\ \Delta_z,\qquad z(b)-z(b+n\,d)\ \ge\ \Delta_z,\qquad \Delta_z=\CgPXsecDrop~\mathrm{m},
+  \label{eq:xsec}
+\end{equation}
+the cross-section: the ground $\CgPXsecM$~m away on each side is at least $\Delta_z$ lower; where it is missing the
+side passes. The second test is on the height above the streams. Let $z_s(c)$ be the filled elevation of the
+valley cell where $c$ enters the valley network and
+\begin{equation}
+  h(c)=z(c)-z_s(c),\qquad h(a)\ge h_{\min},\quad h(b)\ge h_{\min},\quad h_{\min}=\CgPHandMin~\mathrm{m}.
+  \label{eq:hand}
+\end{equation}
+A valley cell has $h=0$; a cell in a filled depression has $h<0$. Figure~\ref{fig:divides} shows both on the
+Écrins: the sides that pass are red, the sides that fail only the cross-section are yellow (they are kept as
+candidates to bridge flat stretches, Section~\ref{sec:curves}), and the profile across a crest side and across a
+failing side shows what Eq.~\eqref{eq:xsec} measures.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/divides.pdf}
+\caption{\textbf{a}~Divide sides on the hillshade of a part of the Écrins. Green: valley cells ($h=0$); light blue:
+cells with $h<h_{\min}$. \textbf{b}~Elevation $z-z_{\mathrm{crest}}$ along the axis through the two cells of a
+side, for a side that passes and a side that fails the cross-section. Dotted lines: $n$ cells from the side;
+dashed: $-\Delta_z$.}
+\label{fig:divides}
+\end{figure}
+
+In the Alps \CgAlpsSides{} sides pass both tests and \CgAlpsFlat{} fail only the cross-section; in the Pyrenees
+\CgPyrSides{} and \CgPyrFlat.
+
+\paragraph{What we keep.} A crest is a side between cells that drain into two valleys, neither downstream of the
+other, with the ground $\CgPXsecM$~m away at least $\CgPXsecDrop$~m lower on both sides (Eq.~\eqref{eq:xsec}) and
+the crest at least $\CgPHandMin$~m above the streams (Eq.~\eqref{eq:hand}). Every threshold is a named constant.
+
+
+\section{From the network to curves}\label{sec:curves}
+
+How do the sides of cells become curves that have a length and a direction? The steps follow the order below
+(Figure~\ref{fig:curves}).
+
+\begin{enumerate}[nosep]
+  \item \textbf{Bridges.} A ridge that flattens fails the cross-section over a stretch. The sides that pass the
+        height test but fail the cross-section are candidates; a stretch of at most \CgPBridgeSides{} sides
+        (\CgPBridgeM~m) that joins the network at two or more places is added, after removing the candidate
+        spurs that touch it once. There are \CgAlpsBridged{} such sides in the Alps and \CgPyrBridged{} in the Pyrenees.
+  \item \textbf{Pruning.} Dead ends shorter than \CgPPruneSides{} sides (\CgPPruneM~m) are removed, repeatedly.
+  \item \textbf{Strokes.} At a junction of three or four branches a curve goes on along the straightest
+        continuation, as a pilot who keeps following the ridge would. Let $u_i$ be the unit vector from the junction
+        to the point of branch $i$ at \CgPDirectionM~m along it. The deflection between two branches is
+        $\theta_{ij}=\pi-\angle(u_i,u_j)$. The branches are paired from the smallest $\theta_{ij}$ up, each branch
+        once, and a pair is kept if $\theta_{ij}\le\CgPDeflection^\circ$. A paired branch continues the curve; an unpaired branch
+        starts a curve of its own.
+  \item \textbf{Spline and resampling.} The sides of a curve make a staircase of 25~m steps. A smoothing spline
+        $f(t)$ through the corners, with $t$ the arc length along the staircase, minimizes
+        $\sum_i|f(t_i)-r_i|^2+\lambda\int|f''|^2\,\mathrm{d}t$ with $\lambda=(L_s/2\pi)^4$ and
+        $L_s=\CgPSmooth$~m, so that waves shorter than $L_s$ are removed (Appendix~\ref{app:choices}). The curve is then
+        resampled every $\Delta s=\CgPStep$~m of arc length.
+  \item \textbf{Selection.} Curves shorter than \CgPMinLengthKm~km are dropped, and a curve is kept if at
+        least \CgPMaskShare\% of it lies in the mountain area. A curve is flagged as reaching the edge of the data
+        if one of its corners is within \CgPEdgeCells{} cells (\CgPEdgeM~m) of a cell without data.
+\end{enumerate}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/curves.pdf}
+\caption{\textbf{a}~Sides after the tests (red) and the bridged stretches (yellow), in the area of
+Figure~\ref{fig:divides}. \textbf{b}~The curves drawn from them, one colour each. \textbf{c}~Detail of 150~m:
+the staircase of sides and the points every $\Delta s$ of the spline.}
+\label{fig:curves}
+\end{figure}
+
+The Alps give \CgAlpsCurves{} curves, \CgAlpsCurveKm~km in total, median \CgAlpsCurveMedianKm~km; the Pyrenees
+\CgPyrCurves{} curves, \CgPyrCurveKm~km, median \CgPyrCurveMedianKm~km.
+
+\paragraph{What we keep.} The network of sides becomes \CgAlpsCurves{} curves in the Alps and \CgPyrCurves{} in the
+Pyrenees, each sampled every \CgPStep~m of arc length. Below about four cells (100~m) the shape of a curve is set by
+the grid and the spline; the exponent is fitted from 100~m up (Section~\ref{sec:tamsd}).
+
+
+\section{Joins}\label{sec:joins}
+
+Where a ridge breaks, when can a pilot follow it on, and why must each join be checked cell by cell? A ridge breaks
+wherever it flattens beyond the bridges or where the divide jumps to a parallel line, and a pilot does not stop
+there. From every dead end of a curve, at point $p$, we look for a straight join to another piece of the crest
+network with these rules:
+
+\begin{itemize}[nosep]
+  \item the target $q$ is on a curve of another component, at distance $|q-p|\le\CgPJoinM$~m;
+  \item $q$ lies within $\CgPCone^\circ$ of the direction $u$ in which the curve runs out, the unit vector from the
+        point \CgPRunout~m back along the curve to $p$: $u\cdot(q-p)\ge|q-p|\cos\CgPCone^\circ$;
+  \item if a dead end of the target curve lies within \CgPSnap~m of $q$, the join goes to that dead end;
+  \item up to \CgPJoinComponents{} other components are tried per dead end;
+  \item \textbf{the join never crosses a valley.} Let $C(p,q)$ be the set of all model cells that the segment $pq$
+        touches, corners included. The join is accepted only if
+        \begin{equation}
+          \min_{c\in C(p,q)} h(c)\ \ge\ h_{\min}=\CgPHandMin~\mathrm{m},
+          \label{eq:joincells}
+        \end{equation}
+        with $h$ of Eq.~\eqref{eq:hand}. A stream cell has $h=0$ and a cell that drains to no valley has no $h$, so
+        both block the join.
+\end{itemize}
+
+Joins are made shortest first; a dead end takes part in at most one, and a join is never made inside a component,
+so the pieces grow into trees.
+
+\paragraph{Why every cell.} A valley floor is a few cells wide and a stream is one cell. A test on points sampled
+along the line can step over the corner between two diagonal stream cells and let the join through; the set
+$C(p,q)$ cannot. Two tests of \code{test\_joined.py} fix this: two crests separated by a one-cell stream are not
+joined, nor across a diagonal stream, while two crests across a flat col 25~m above the streams are. After the run
+every join was checked again on a sampling every 0.25~m: \CgAlpsJoinsLow{} of the \CgAlpsJoins{} Alps joins and
+\CgPyrJoinsLow{} of the \CgPyrJoins{} Pyrenees joins touch a cell below $h_{\min}$.
+Figure~\ref{fig:joins} shows 24 joins drawn at random in the Alps on the hillshade. None enters a green stream cell or
+a light blue cell, and several run beside a valley and stop short of it.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/joins_alps.png}
+\caption{24 joins of the Alps drawn at random (red), each in a window of its own with the length of the join. Orange:
+the crest curves; green: valley cells; light blue: cells with $h<h_{\min}$; grey: hillshade.}
+\label{fig:joins}
+\end{figure}
+
+The Alps have \CgAlpsJoins{} joins (median \CgAlpsJoinMedianM~m) and the Pyrenees \CgPyrJoins{} (median
+\CgPyrJoinMedianM~m).
+
+\paragraph{What we keep.} A join is a straight line of at most \CgPJoinM~m, within \CgPCone$^\circ$ of the
+direction in which the curve runs out, and every cell it touches is at least \CgPHandMin~m above the streams. A
+ball therefore does not cross a valley, and the check is on cells because a valley floor can be as narrow as one.
+
+
+\section{Trees and paths}\label{sec:trees}
+
+What does the ball run along? The curves, their junctions and the joins form a graph whose nodes are the ends of the
+curves and the points where one curve meets another, and whose edges are the pieces between nodes, with their length.
+A \emph{tree} is a connected component of this graph. Its ends of degree one are the tips. The root is one end of the
+longest path of the tree, found by two sweeps of Dijkstra's algorithm: from any tip to the farthest tip $a$, then from
+$a$ to the farthest tip $b$. A tree with $m$ tips gives $m-1$ \emph{paths}, the shortest routes from the root to every
+other tip. Each path is resampled every $\Delta s=\CgPStep$~m of arc length. Paths of one tree share their trunk, so
+every bootstrap below resamples whole trees.
+
+The Alps give \CgAlpsTrees{} trees and \CgAlpsPaths{} paths (median \CgAlpsPathMedianKm~km, longest
+\CgAlpsPathLongestKm~km); the Pyrenees \CgPyrTrees{} trees and \CgPyrPaths{} paths (median \CgPyrPathMedianKm~km, longest
+\CgPyrPathLongestKm~km). Figure~\ref{fig:trees} shows the longest tree of the Alps and the lengths.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/trees.pdf}
+\caption{\textbf{a}~The longest tree of the Alps (blue: curves, red: joins), its root (star), its longest path (black)
+and the tip at its end (circle). \textbf{b}~Share of paths longer than $L$. \textbf{c}~Number of trees whose
+longest path is at least $L$; dotted line: 40~km, the length a path needs for a lag of 10~km (Section~\ref{sec:tamsd}).}
+\label{fig:trees}
+\end{figure}
+
+\paragraph{What we keep.} The curves, junctions and joins make \CgAlpsTrees{} trees in the Alps and \CgPyrTrees{} in the
+Pyrenees, and \CgAlpsPaths{} and \CgPyrPaths{} root-to-tip paths. Most trees are small; the long paths belong to few trees.
+
+
+\section{The ball and its TAMSD}\label{sec:tamsd}
+
+How is the straightness of a path measured at every scale? A ball runs along a path at constant speed $v$. A path of
+$N$ points $\mathbf r_i=\mathbf r(i\,\Delta s)$ is sampled every $\Delta s$ of arc length, so the ball is at
+$\mathbf r_i$ at time $t_i=i\,\Delta s/v$ and a time lag $\tau$ is an arc length $s=v\tau$. The TAMSD at a lag of
+$k$ samples is
+\begin{equation}
+  \delta^2(s=k\,\Delta s)=\frac1{N-k}\sum_{i=0}^{N-k-1}\left|\mathbf r_{i+k}-\mathbf r_i\right|^2 ,
+  \label{eq:tamsd}
+\end{equation}
+the squared distance between the positions an arc length $s$ apart, averaged over the path. A straight line gives
+$\delta^2=s^2$ and any bend makes $\delta^2<s^2$. We use $v=\CgPSpeed$~km/h, so 100~m is \CgSecHundred~s; every result
+is a function of $s$, and $v$ only labels the time axis. The lags are $\CgPLags$ log-spaced integers $k$ from 1 up to
+\CgPLagFrac\% of the longest path, and on each path only the lags up to \CgPLagFrac\% of its length are used, since longer
+lags rest on too few independent windows.
+
+\paragraph{Mean over paths.} With equal weight per path,
+\begin{equation}
+  \overline{\delta^2}(s)=\frac1{n(s)}\sum_{c}\delta_c^2(s),
+  \label{eq:mean}
+\end{equation}
+where the sum is over the $n(s)$ paths that have the lag $s$, and only lags with $n(s)\ge\CgPMinCurves$ are kept.
+
+\paragraph{Local exponent and windows.} The local exponent of the mean is
+\begin{equation}
+  H(s)=\frac12\,\frac{\mathrm{d}\ln\overline{\delta^2}}{\mathrm{d}\ln s},
+  \label{eq:hlocal}
+\end{equation}
+computed by central differences on the log-spaced lags. $\Hgeo$ on a window $[s_1,s_2)$ is half the least-squares
+slope of $\ln\overline{\delta^2}$ against $\ln s$ over the lags of the window; as the lags are log-spaced, every
+decade weighs the same. The windows are $s\ge\CgPFitFrom$~m, $\CgPFitFrom$~m to 1~km, 1 to 10~km and beyond 10~km; the fit
+never starts below $\CgPFitFrom$~m (Section~\ref{sec:curves}). In the figures we also plot $\sqrt{\overline{\delta^2}}/s$,
+the end-to-end distance over the arc length, which is 1 on a straight line.
+
+\paragraph{Bootstrap.} The intervals are the 2.5\% and 97.5\% percentiles of $B=\CgPBoot$ resamples. For paths, a
+resample draws $T$ trees with replacement out of the $T$ of the region; a path takes the multiplicity $m_t$ of its
+tree, and the mean of Eq.~\eqref{eq:mean} becomes $\sum_c m_{t(c)}\delta_c^2/\sum_c m_{t(c)}$ over the paths that have
+the lag, with the same rule of at least \CgPMinCurves{} paths. For curves a resample draws curves. The same resamples
+give the bands of $H(s)$ and the intervals of $\Hgeo$.
+
+\paragraph{What we keep.} $\delta^2$ of Eq.~\eqref{eq:tamsd} on every path, its mean over paths with at least
+\CgPMinCurves{} paths per lag, $H(s)$ of Eq.~\eqref{eq:hlocal} and $\Hgeo$ as a slope on four windows, with
+\CgPBoot{} bootstrap resamples of whole trees. A straight line gives $H=1$ at every scale (checked in
+\code{test\_tamsd.py}).
+
+
+\section{How straight are the crests}\label{sec:results}
+
+How does the straightness of crests depend on the scale, and do the Alps and the Pyrenees differ?
+Figure~\ref{fig:tamsd} gives the answer on the paths (solid) and the single curves (dashed), and
+Table~\ref{tab:hgeo} the exponents on the windows.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/tamsd.pdf}
+\caption{\textbf{a}~End-to-end distance over arc length, $\sqrt{\overline{\delta^2}}/s$, of the Alps (blue) and the
+Pyrenees (orange), for the paths (solid) and the curves (dashed). Bottom axis: arc length $s$; top axis: lag $\tau$ of a
+ball at 35~km/h; grey: below four cells. \textbf{b}~Local exponent $H(s)$, Eq.~\eqref{eq:hlocal}, with its 95\% band for
+the paths. \textbf{c}~$\Hgeo$ on the windows of $s$ with 95\% intervals (filled: paths; open: curves, too short for the
+last window).}
+\label{fig:tamsd}
+\end{figure}
+
+\begin{table}
+\centering
+\caption{$\Hgeo$ on windows of arc length $s$, with 95\% bootstrap intervals (over trees for the paths, over curves for
+the curves). Single curves are too short for the last window.}
+\label{tab:hgeo}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllll}
+\toprule
+ & \multicolumn{2}{c}{Alps} & \multicolumn{2}{c}{Pyrenees} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+window of $s$ & paths & curves & paths & curves \\
+\midrule
+\input{generated/hgeo_table}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The exponent depends on the scale and has no plateau. The local exponent of the Alps paths is \CgAlpsPathsHHundred{} at
+100~m, \CgAlpsPathsHFiveHundred{} at 500~m, \CgAlpsPathsHKm{} at 1~km, \CgAlpsPathsHTwoKm{} at 2~km,
+\CgAlpsPathsHFiveKm{} at 5~km and \CgAlpsPathsHTenKm{} at 10~km; the Pyrenees give \CgPyrPathsHHundred, \CgPyrPathsHFiveHundred,
+\CgPyrPathsHKm, \CgPyrPathsHTwoKm, \CgPyrPathsHFiveKm{} and \CgPyrPathsHTenKm{} at the same lags (the values are read at the
+nearest lag of the grid). The end-to-end distance over the arc length is \CgAlpsPathsRatioKm{} at 1~km and
+\CgAlpsPathsRatioTenKm{} at 10~km in the Alps, \CgPyrPathsRatioKm{} and \CgPyrPathsRatioTenKm{} in the Pyrenees.
+From 0.1~km on, $\Hgeo$ is \CgAlpsPathsFrom{} (\CgAlpsPathsFromLo--\CgAlpsPathsFromHi) in the Alps and
+\CgPyrPathsFrom{} (\CgPyrPathsFromLo--\CgPyrPathsFromHi) in the Pyrenees, and the two intervals overlap.
+Between 0.1 and 1~km both are at \CgAlpsPathsShort{} and \CgPyrPathsShort; between 1 and 10~km the Alps give
+\CgAlpsPathsMid{} (\CgAlpsPathsMidLo--\CgAlpsPathsMidHi) and the Pyrenees \CgPyrPathsMid{}
+(\CgPyrPathsMidLo--\CgPyrPathsMidHi), the Pyrenees slightly lower, with intervals that just overlap. Beyond 10~km the
+intervals are wide: \CgAlpsPathsLongLo--\CgAlpsPathsLongHi{} and \CgPyrPathsLongLo--\CgPyrPathsLongHi, the last
+window resting on \CgAlpsTreesTenKm{} trees of the Alps and \CgPyrTreesTenKm{} of the Pyrenees at a lag of 10~km.
+
+The single curves are straighter than the paths: from 0.1~km on $\Hgeo$ is \CgAlpsCurvesFrom{} (Alps) and
+\CgPyrCurvesFrom{} (Pyrenees), and between 1 and 10~km \CgAlpsCurvesMid{} and \CgPyrCurvesMid. The curve value
+over 1 to 10~km needs care (Section~\ref{sec:limits}).
+
+\paragraph{What we keep.} A ball at constant speed on a crest path of either massif has $\Hgeo$ near
+\CgAlpsPathsFrom{} from 100~m up, with $H(s)$ falling from \CgAlpsPathsHHundred{} at 100~m to \CgAlpsPathsHFiveKm{} at 5~km
+and no plateau. The exponent depends on the window, so the flights are compared with the function of Figure~\ref{fig:tamsd}b
+as well as with the windows. The Alps and the Pyrenees agree from 0.1 to 1~km and
+differ little beyond.
+
+
+\section{Where the numbers hold}\label{sec:limits}
+
+Where can the exponent not be trusted? Three limits, shown in Figure~\ref{fig:limits}.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/limits.pdf}
+\caption{\textbf{a}~The data edge where most flagged curves of the Alps are: red, no data; orange, curves that reach the edge. \textbf{b}~Local
+exponent near the grid scale; grey: below four cells. \textbf{c}~Number of trees (solid) and of paths (dotted) that
+have each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
+\label{fig:limits}
+\end{figure}
+
+\paragraph{The data edge.} The model stops at the national border, which in the Pyrenees and in much of the Alps runs
+along the main divide, so a crest that reaches it is cut. \CgAlpsEdgeCurves{} Alps curves and \CgPyrEdgeCurves{}
+Pyrenees curves are flagged, and so are \CgAlpsEdgePaths{} and \CgPyrEdgePaths{} paths. Table~\ref{tab:noedge} in
+Appendix~\ref{app:more} repeats the exponents without them.
+
+\paragraph{The grid scale.} Below four cells the divide runs on cell sides and the spline that smooths the steps makes
+the curve straighter than the terrain: $H(s)$ is at least \CgGridHmin{} there (Figure~\ref{fig:limits}b). The fit starts at
+$\CgPFitFrom$~m and no window includes shorter lags.
+
+\paragraph{Few trees at long lags.} A lag of 10~km needs a path of at least 40~km, since lags stop at a quarter
+of the path. Figure~\ref{fig:limits}c shows how many trees carry each lag; the last window rests on \CgAlpsTreesTenKm{}
+trees in the Alps and \CgPyrTreesTenKm{} in the Pyrenees, and a bootstrap that draws whole trees sees whether one of them
+is in or out. For the curves the population changes with the lag: only the longest curves reach large lags, so the mean at
+large $s$ is that of straighter curves and the local slope can exceed 1, as for the Alps curves between 1 and
+10~km (\CgAlpsCurvesMid). That value measures the change of population, so we use the paths for every comparison.
+
+\paragraph{What we keep.} The exponent holds from 100~m to a few kilometres, where \CgPMinCurves{} or more trees
+carry the lag and the edge changes it little; beyond 10~km it is an estimate with a wide interval, and the
+curves are used only below 1~km.
