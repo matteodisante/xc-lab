@@ -1,77 +1,138 @@
-\section{Parameters}\label{app:params}
+\section{The crest construction in detail}\label{app:construction}
 
-Every constant is a named constant at the top of its module in \code{analyses/ridges/}; the values below are written
-by \code{report\_figures.py} from those modules.
+\subsection{Ground and mountain area}\label{sec:data}
 
-\begin{table}[ht]
+The elevations are delivered in tiles of $25\times25$~km. A massif is the set of departments of Appendix~\ref{app:params}; its mosaic covers the
+bounding box of their tiles, \CgAlpsCells{} million cells in the Alps and \CgPyrCells{} million in the Pyrenees. The tiles of neighbouring departments that fall in the box are read, so that water can leave a department;
+outside France there is no data.
+
+The mountain area follows the classes of UNEP-WCMC (Kapos et al.\ 2000~\cite{kapos}), evaluated on 1~km cells from the model itself. For a cell of $40\times40$ model cells let $\bar z$ be its mean elevation, $\sigma$ the
+slope of the 1~km grid and $\Delta z$ the local elevation range, the difference between the highest and the lowest $\bar z$ within \CgPMountainRadius~km. A cell is mountain if
+\begin{equation}
+  \begin{aligned}
+  &\bar z \ge 2500~\mathrm{m},\ \text{or}\\
+  &\bar z \ge 1500~\mathrm{m}\text{ and }\sigma \ge 2^\circ,\ \text{or}\\
+  &\bar z \ge 1000~\mathrm{m}\text{ and }(\sigma \ge 5^\circ\text{ or }\Delta z > \CgPMountainRange~\mathrm{m}),\ \text{or}\\
+  &\bar z \ge 300~\mathrm{m}\text{ and }\Delta z > \CgPMountainRange~\mathrm{m}.
+  \end{aligned}
+  \label{eq:kapos}
+\end{equation}
+Enclosed pieces of at most \CgPBasinKm~km$^2$ that are not mountain, surrounded by mountain, are added, and the largest connected piece is kept. The area is computed on the tiles
+of the departments themselves, and the cells of neighbouring tiles count as no data. A massif is the set of the departments of its \emph{loi Montagne} massif; taking the neighbouring tiles
+as data would add the mountains of neighbouring departments that touch it. Figure~\ref{fig:map} shows the area and the crest curves of both massifs.
+
+\begin{figure}
 \centering
-\caption{Parameters of the pipeline.}
-\small
-\begin{tabularx}{\textwidth}{lXl}
-\toprule
-Step & Parameter & Module \\
-\midrule
-DEM & IGN BD~ALTI v2, 25~m, Lambert-93; Alps: departments 04, 05, 06, 26, 38, 73, 74, 83, 84; Pyrenees: 09, 11, 31, 64, 65, 66 & \code{geo} \\
-Mountain area & UNEP-WCMC classes on 1~km cells, local range within \CgPMountainRadius~km above \CgPMountainRange~m, basins up to \CgPBasinKm~km$^2$, largest piece, tiles of the departments only; curves with at least \CgPMaskShare\% in it & \code{mountains}, \code{build} \\
-Valleys & cells draining at least \CgPValley~km$^2$ (\CgPValleyCells{} cells) & \code{ridges} \\
-Cross-section & ground \CgPXsecCells{} cells (\CgPXsecM~m) away on each side at least \CgPXsecDrop~m lower & \code{ridges} \\
-Height above streams & at least \CgPHandMin~m on both sides & \code{ridges} \\
-Bridges & flat stretches up to \CgPBridgeSides{} sides (\CgPBridgeM~m) & \code{curves} \\
-Pruning & dead ends shorter than \CgPPruneSides{} sides (\CgPPruneM~m) & \code{curves} \\
-Strokes & deflection at most \CgPDeflection$^\circ$, direction measured \CgPDirectionM~m from the junction & \code{curves} \\
-Curves & smoothing spline with cut-off \CgPSmooth~m, resampled every \CgPStep~m, shorter than \CgPMinLengthKm~km dropped & \code{curves} \\
-Data edge & within \CgPEdgeCells{} cells (\CgPEdgeM~m) of a cell without data & \code{curves} \\
-Joins & straight, at most \CgPJoinM~m, within \CgPCone$^\circ$ of the run-out direction (measured \CgPRunout~m back), every touched cell at least \CgPHandMin~m above the streams, snapped to a dead end within \CgPSnap~m, \CgPJoinComponents{} components tried per dead end & \code{joined} \\
-TAMSD & \CgPLags{} log-spaced lags up to \CgPLagFrac\% of each path, at least \CgPMinCurves{} paths per lag, $v=\CgPSpeed$~km/h, fit from \CgPFitFrom~m, \CgPBoot{} bootstrap resamples & \code{tamsd} \\
-Export & longest path of each tree with one of at least \CgPLongPathKm~km & \code{hgeo} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\includegraphics[width=\textwidth]{figures/map.pdf}
+\caption{The crest curves cover the mountain area of both massifs. Mountain area in grey, crest curves of the Alps (indigo) and the Pyrenees (olive); the curves are drawn every 10th point.}
+\label{fig:map}
+\end{figure}
 
+\subsection{Crests as divides}\label{sec:divides}
 
-\section{Two choices that need a reason}\label{app:choices}
+\paragraph{Valleys and links.} The elevations are depression-filled by a priority flood, starting from the cells at the border of the mosaic and next to cells without data. Every cell $c$ drains to its steepest lower
+neighbour among the eight around it; cells of a filled depression or of a flat drain to the cell that reached them. The drainage area $A(c)$ is the number of cells that drain through $c$ times
+625~m$^2$. The valleys are the cells with $A(c)\ge A_{\min}=\CgPValley$~km$^2$ (\CgPValleyCells{} cells), cut into links at the confluences. Let $\ell(c)$ be the link into which $c$ drains, undefined if
+$c$ drains to the edge of the data without meeting a valley.
 
-\textbf{Spline cut-off of \CgPSmooth~m.} The staircase of cell sides has steps of one cell, and the smoothing has to remove them
-without bending the curve at the scale of the terrain. A cut-off of four cells is the scale below which the shape of a
-curve is set by the grid, which is also where the fit of $\Hgeo$ starts (Section~\ref{sec:tamsd}); the two scales are one
-choice.
+\paragraph{Divide sides.} Two neighbouring cells $a$ and $b$ are on a divide if $\ell(a)\ne\ell(b)$, both defined, and neither link is downstream of the other. Divides are thus continuous through summits
+and cols. The divide is the set of the shared sides; they form a planar network on the cell corners.
 
-\textbf{Mountain area on the tiles of the departments.} A massif is the set of the departments of its loi Montagne
-massif, so its mountain area is computed on their tiles; the cells of neighbouring tiles in the bounding box serve the
-water routing (Section~\ref{sec:data}) and count as no data when classes and the largest connected piece are found.
-Taking them as data would add the mountains of neighbouring departments that touch the massif.
+\paragraph{Two tests.} The cross-section test is Eq.~\eqref{eq:xsec}; where the ground is missing the side passes. The second test is on the height above the streams. Let $z_s(c)$ be the filled elevation of the valley cell where $c$
+enters the valley network and
+\begin{equation}
+  h(c)=z(c)-z_s(c),\qquad h(a)\ge h_{\min},\quad h(b)\ge h_{\min},\quad h_{\min}=\CgPHandMin~\mathrm{m}.
+  \label{eq:hand}
+\end{equation}
+A valley cell has $h=0$; a cell in a filled depression has $h<0$. Figure~\ref{fig:divides} shows both tests. In the Alps \CgAlpsSides{} sides pass both and \CgAlpsFlat{} fail only the cross-section; in the Pyrenees
+\CgPyrSides{} and \CgPyrFlat. The sides that fail only the cross-section are candidates to bridge flat stretches.
 
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/divides.pdf}
+\caption{A divide side is a crest if the ground falls away on both sides. \textbf{a}~Divide sides on the hillshade of a part of the Écrins. \textbf{b}~Elevation $z-z_{\mathrm{crest}}$ along the axis through the two cells of a
+side that passes the cross-section: dotted lines mark $n$ cells ($\CgPXsecM$~m) from the side and the dashed red line the drop $-\Delta_z$ the ground must reach there. \textbf{c}~The same for a side that fails.}
+\label{fig:divides}
+\end{figure}
 
-\section{Tests}\label{app:tests}
+\subsection{From the network to curves}\label{sec:curves}
 
-The \CgNTests{} tests of \code{analyses/ridges/} (run with \code{uv run --with numba python -m pytest -q}) cover:
+\begin{enumerate}[nosep]
+  \item \textbf{Bridges.} A ridge that flattens fails the cross-section over a stretch. The sides that pass the height test but fail the cross-section are candidates; a stretch of at most \CgPBridgeSides{} sides
+        (\CgPBridgeM~m) that joins the network at two or more places is added, after removing the candidate spurs that touch it once. There are \CgAlpsBridged{} such sides in the Alps and \CgPyrBridged{} in the Pyrenees.
+  \item \textbf{Pruning.} Dead ends shorter than \CgPPruneSides{} sides (\CgPPruneM~m) are removed, repeatedly.
+  \item \textbf{Strokes.} At a junction of three or four branches a curve goes on along the straightest continuation. Let $u_i$ be the unit vector from the junction to the point of branch $i$ at \CgPDirectionM~m along it.
+        The deflection between two branches is $\theta_{ij}=\pi-\angle(u_i,u_j)$. The branches are paired from the smallest $\theta_{ij}$ up, each branch once, and a pair is kept if $\theta_{ij}\le\CgPDeflection^\circ$. A paired branch
+        continues the curve; an unpaired branch starts a curve of its own.
+  \item \textbf{Spline and resampling.} The sides of a curve make a staircase of 25~m steps. A smoothing spline $f(t)$ through the corners, with $t$ the arc length along the staircase, minimizes
+        $\sum_i|f(t_i)-r_i|^2+\lambda\int|f''|^2\,\mathrm{d}t$ with $\lambda=(L_s/2\pi)^4$ and $L_s=\CgPSmooth$~m, so that waves shorter than $L_s$ are removed. The curve is then resampled every $\Delta s=\CgPStep$~m of arc length.
+        A cut-off of four cells is the scale below which the shape of a curve is set by the grid, which is also where the fit of $\Hgeo$ starts: the two scales are one choice.
+  \item \textbf{Selection.} Curves shorter than \CgPMinLengthKm~km are dropped, and a curve is kept if at least \CgPMaskShare\% of it lies in the mountain area. A curve is flagged as reaching the edge of the data if one of its
+        corners is within \CgPEdgeCells{} cells (\CgPEdgeM~m) of a cell without data.
+\end{enumerate}
 
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/curves.pdf}
+\caption{Sides that pass the tests become smooth curves, which are sampled every $\Delta s$. \textbf{a}~Cell sides of the tests (red) and bridged stretches (orange) under the smoothed curve (indigo) on a hillshade; the rectangle is the window
+of b. \textbf{b}~Detail of 150~m: the staircase of cell sides, the curve and its points every $\Delta s$.}
+\label{fig:curves}
+\end{figure}
+
+\subsection{Joins}\label{sec:joins}
+
+From every dead end of a curve, at point $p$, we look for a straight join to another piece of the crest network with these rules:
 \begin{itemize}[nosep]
-  \item \code{test\_ridges.py} (\CgNTestsRidges): a ridge between two valleys gives one crest on the line between the
-        valleys; the two valleys are different links on either side of the ridge; a tilted plane gives no crest
-        away from the border; a pit is filled and every cell drains to an outlet; a ridge too low for the
-        cross-section gives only flat candidates.
-  \item \code{test\_curves.py} (\CgNTestsCurves): a T junction gives the bar and the stem as two strokes; a short spur
-        is pruned; the deflection limit decides the pairing at a Y junction; a flat stretch between two pieces is bridged
-        and a spur that touches the network once is not; a straight line is resampled every \CgPStep~m.
-  \item \code{test\_joined.py} (\CgNTestsJoined): a gap between two collinear curves is joined and gives one path; a valley
-        of ten cells blocks the join; a one-cell stream between two crests blocks it; a stream of diagonal cells blocks
-        it; a flat col across 250~m is crossed; a join that is too far and off the cone is not made; a join snaps to a
-        dead end; a junction gives two paths from the root; the cells crossed by a segment include those touched at
-        corners.
-  \item \code{test\_tamsd.py} (\CgNTestsTamsd): a straight line has $\delta^2=s^2$ and $H=1$ at every lag and window; lags with
-        fewer than \CgPMinCurves{} curves are dropped; the lag grid is log-spaced up to a quarter of the longest curve; the
-        bootstrap resamples whole groups; a circle has a bounded TAMSD.
-  \item \code{test\_mountains.py} (\CgNTestsMountains): lowland is not mountain and high ground is; an enclosed basin is added and a
-        smaller second massif dropped; an open valley is not filled; the local range rule.
-  \item \code{test\_geo.py} (\CgNTestsGeo): the boxes of the regions, the cell centres on multiples of 25~m, the tiles of the
-        departments (skipped without the disk).
+  \item the target $q$ is on a curve of another component, at distance $|q-p|\le\CgPJoinM$~m;
+  \item $q$ lies within $\CgPCone^\circ$ of the direction $u$ in which the curve runs out, the unit vector from the point \CgPRunout~m back along the curve to $p$: $u\cdot(q-p)\ge|q-p|\cos\CgPCone^\circ$;
+  \item if a dead end of the target curve lies within \CgPSnap~m of $q$, the join goes to that dead end;
+  \item up to \CgPJoinComponents{} other components are tried per dead end;
+  \item \textbf{the join never crosses a valley.} Let $C(p,q)$ be the set of all model cells that the segment $pq$ touches, corners included. The join is accepted only if
+        \begin{equation}
+          \min_{c\in C(p,q)} h(c)\ \ge\ h_{\min}=\CgPHandMin~\mathrm{m},
+          \label{eq:joincells}
+        \end{equation}
+        with $h$ of Eq.~\eqref{eq:hand}. A stream cell has $h=0$ and a cell that drains to no valley has no $h$, so both block the join.
 \end{itemize}
+Joins are made shortest first; a dead end takes part in at most one, and a join is never made inside a component, so the pieces grow into trees.
 
+\paragraph{Why every cell.} A valley floor is a few cells wide and a stream is one cell. A test on points sampled along the line can step over the corner between two diagonal stream cells and let the join through; the set $C(p,q)$ cannot.
+Two tests of \code{test\_joined.py} fix this: two crests separated by a one-cell stream are not joined, nor across a diagonal stream, while two crests across a flat col 25~m above the streams are. After the run every join was checked again
+on a sampling every 0.25~m: \CgAlpsJoinsLow{} of the \CgAlpsJoins{} Alps joins and \CgPyrJoinsLow{} of the \CgPyrJoins{} Pyrenees joins touch a cell below $h_{\min}$. Figure~\ref{fig:joins} shows joins on the hillshade: none enters a
+green stream cell or a light blue cell, and several run beside a valley and stop short of it.
 
-\section{More results and the computation}\label{app:more}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{figures/joins_alps.png}
+\caption{A join is a short straight link between two crest curves that stays on the ridge. Eight joins of the Alps, from the shortest to the longest of the range, each in a window of the same size: the join (red), the crest curves,
+the stream cells and the cells less than 20~m above a stream.}
+\label{fig:joins}
+\end{figure}
 
-\begin{table}[ht]
+\section{Where the numbers hold}\label{app:limits}
+
+Figure~\ref{fig:limits} shows the three limits of the exponent.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{figures/limits.pdf}
+\caption{Three things limit the exponent: the data edge, the grid scale and the number of trees at long lags. \textbf{a}~The data edge where most flagged curves of the Alps are: pink, no elevation data; orange, curves that
+reach the edge. \textbf{b}~Local slope of the MSD, $\alpha(s)$, near the grid scale; grey: below four cells. Dashed lines: $\Hgeo$ of the window from 0.1~km, as in Figure~\ref{fig:tamsd}b. \textbf{c}~Number of trees
+(solid) and of paths (dotted) that reach each lag; the grey line is the minimum of \CgPMinCurves{} paths.}
+\label{fig:limits}
+\end{figure}
+
+\paragraph{The data edge.} The model stops at the national border, which in the Pyrenees and in much of the Alps runs along the main divide, so a crest that reaches it is cut. \CgAlpsEdgeCurves{} Alps curves and
+\CgPyrEdgeCurves{} Pyrenees curves are flagged, and so are \CgAlpsEdgePaths{} and \CgPyrEdgePaths{} paths. Table~\ref{tab:noedge} repeats the exponents without them; the point values of the paths are those of Table~\ref{tab:hgeo} to the third decimal, and only the ends of some intervals move in the last digit.
+
+\paragraph{The grid scale.} Below four cells the divide runs on cell sides and the spline that smooths the steps makes the curve straighter than the terrain: $\alpha(s)$ is at least \CgGridAlphaMin{} there (panel b). The fit starts at
+$\CgPFitFrom$~m and no window includes shorter lags.
+
+\paragraph{Few trees at long lags.} A lag of 10~km needs a path of at least 40~km, since lags stop at a quarter of the path. Panel c shows how many trees carry each lag; the last window rests on \CgAlpsTreesTenKm{} trees in the Alps and
+\CgPyrTreesTenKm{} in the Pyrenees, and a bootstrap that draws whole trees sees whether one of them is in or out. For the curves the population changes with the lag: only the longest curves reach large lags, so the mean at large $s$
+is that of straighter curves and the local slope can exceed 1, as for the Alps curves between 1 and 10~km (\CgAlpsCurvesMid). That value measures the change of population, so the curves are used only below 1~km.
+
+\begin{table}[H]
 \centering
 \caption{As Table~\ref{tab:hgeo} without the curves and paths that reach the edge of the data.}
 \label{tab:noedge}
@@ -88,8 +149,49 @@ window of $s$ & paths & curves & paths & curves \\
 \end{tabular}
 \end{table}
 
-\paragraph{Computation.} \code{build.py} (mosaic, mountain area, flow routing, crest sides, curves) has a peak resident memory of
-\CgAlpsRamDrain~GB for the Alps and \CgPyrRamDrain~GB for the Pyrenees; \code{hgeo.py} (joins, trees, paths, TAMSD,
-bootstrap) \CgAlpsRamHgeo~GB and \CgPyrRamHgeo~GB. The elevations are float32, the link labels int32, and the flow
-routing and the divide scan are compiled with numba. Results are in
-\code{/Volumes/SSD\_DISANTE/xc-lab/ridges/} in a folder named by its parameters, with a \code{PARAMETERS.md}.
+\section{Checks on the flights}\label{app:checks}
+
+\subsection{Fixed windows of arc length}\label{sec:flwindows}
+
+Does the picture of the rule change on fixed windows? Table~\ref{tab:flwindows} gives $H$ of the three curves on the windows of Table~\ref{tab:hgeo}, divided by $v$ to give lags. The window from 0.1~km starts at the floor and each curve
+runs to its last lag with at least \flMinRows{} flights or paths, not to $\tau_b$. The order is that of the rule: the flights in time below the route and the route below the crests. The window beyond 10~km gives $H$ above 1 for the flights in time
+and for the route. We attribute it to the selection of the longest flights at these lags, since only they reach them, and we do not interpret it.
+
+\begin{table}[H]
+\centering
+\caption{$H$ on fixed windows of arc length $s = v\tau$, with 95\% intervals.}
+\label{tab:flwindows}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\input{generated/flights_table_route_windows}
+\end{table}
+
+\subsection{The flights alone from 10 s}\label{sec:flhten}
+
+What is $H$ of the flights in time if the fit runs from 10~s to the last lag that at least ten flights reach? Table~\ref{tab:flhten} gives it with equal weight per flight and \flNBoot{} resamples of whole flights. It is higher
+than the one of the rule (Table~\ref{tab:flh}), because only the longest flights reach the longest lags and $\alpha$ rises there (Figure~\ref{fig:routealpha}). It is therefore not the number compared with the crests.
+
+\begin{table}[H]
+\centering
+\caption{$H$ of the flights in time fitted from 10~s to the last lag with at least ten flights, with 95\% intervals.}
+\label{tab:flhten}
+\small
+\input{generated/flights_table_route_h10}
+\end{table}
+
+\subsection{Raw tracks and cleaned fixes}\label{sec:flraw}
+
+Does the cleaning of the earlier analysis change $H$? The cleaning puts the fixes on a uniform time grid at the native cadence of the track (a shape-preserving cubic interpolation fills holes) and smooths east and north with a cubic
+Savitzky--Golay filter whose timescale is 5~s and whose window has at least five samples; the filtered values replace the stored positions. On the sample run of \flRawNInSample{} paragliders, \flRawNBoth{} flights pass the selection from both
+the raw IGC file (cut to the time in the air, spikes removed) and the cleaned fixes. The same resamples of flights give the difference of $H$ between the two, at $v = 35$~km/h (Table~\ref{tab:flrawcheck}). On the rule the difference raw
+minus cleaned is \flRawDynRule{} for the flights in time (interval \flRawDynRuleLo{} to \flRawDynRuleHi) and \flRawRouteRule{} for the route (\flRawRouteRuleLo{} to \flRawRouteRuleHi). Both intervals contain zero: the cleaning does not change the
+exponent within the interval of this sample, which is small.
+
+\begin{table}[H]
+\centering
+\caption{$H$ of the same \flRawNBoth{} flights from the raw IGC files and from the cleaned fixes, and the difference, with 95\% intervals from the same resamples of flights.}
+\label{tab:flrawcheck}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\input{generated/flights_table_rawcheck}
+\end{table}

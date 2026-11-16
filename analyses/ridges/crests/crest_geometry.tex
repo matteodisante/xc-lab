@@ -9,6 +9,7 @@
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,mathtools}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{booktabs,tabularx,array}
 \usepackage{enumitem}
 \usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
@@ -34,26 +35,37 @@
 \newcommand{\Hgeo}{H_{\mathrm{geo}}}
 \newcommand{\code}[1]{\texttt{#1}}
 
-% Numbers of the crest pipeline (report_figures.py) and of the flight part.
+% Numbers of the crest pipeline (report_figures.py), of the flights (report.py) and of the box dimension.
 \input{generated/macros}
 \IfFileExists{generated/flights_macros.tex}{\input{generated/flights_macros}}{}
+\IfFileExists{generated/dimension_macros.tex}{\input{generated/dimension_macros}}{}
 
-\title{\textbf{Crest geometry and the Hurst exponent of mountain flights}\\[4pt]
-  \large From the 25~m elevation model to the geometric exponent $\Hgeo$ of the crests of the French Alps
-  and Pyrenees, and how much of the exponent of real flights it explains}
+\title{\vspace{-1.8cm}\textbf{Crest geometry and the route of mountain flights}\\[3pt]
+  \large The crests of the French Alps and Pyrenees against paraglider flights}
 \author{Matteo Di Sante}
-\date{Working version, 13 November 2026}
+\date{Working version, 16 November 2026\vspace{-0.6cm}}
 
 \begin{document}
 \maketitle
 
-\tableofcontents
+\input{sections/summary}
 \input{sections/geometry}
-\IfFileExists{sections/flights_model.tex}{\input{sections/flights_model}}{%
-  \section{Flights and the intermittent model}\label{sec:flights}
-  This part (phase survivals, the intermittent model on the crest paths, the real flights and the split of
-  $1-H$ into geometry and intermittency) is written separately and not yet included.}
+\input{sections/flights_route}
+\IfFileExists{sections/dimension.tex}{\input{sections/dimension}}{\section{Box dimension and \texorpdfstring{$D=1/H$}{D = 1/H}}\label{sec:dimension} In preparation.}
+\input{sections/method}
 \appendix
 \input{sections/appendix}
+\IfFileExists{sections/dimension_appendix.tex}{\input{sections/dimension_appendix}}{}
+\input{sections/appendix_parameters}
+
+\begin{thebibliography}{9}
+\bibitem{kapos} V.\ Kapos, J.\ Rhind, M.\ Edwards, M.\,F.\ Price and C.\ Ravilious, Developing a map of the world's mountain forests, in M.\,F.\ Price and N.\ Butt (eds), \emph{Forests in Sustainable Mountain Development: A State of Knowledge Report for 2000}, CABI, 2000, pp.\ 4--19.
+\bibitem{barnes} R.\ Barnes, C.\ Lehman and D.\ Mulla, Priority-flood: an optimal depression-filling and watershed-labeling algorithm for digital elevation models, \emph{Computers \& Geosciences} 62 (2014) 117--127.
+\bibitem{falconer} K.\ Falconer, \emph{Fractal Geometry: Mathematical Foundations and Applications}, 3rd ed., Wiley, 2014 (chapters on Hausdorff dimension, box dimensions and random fractals).
+\bibitem{kahane} J.-P.\ Kahane, \emph{Some Random Series of Functions}, 2nd ed., Cambridge University Press, 1985, chapter 18.
+\bibitem{degennes} P.-G.\ de Gennes, \emph{Scaling Concepts in Polymer Physics}, Cornell University Press, 1979.
+\bibitem{fehr} E.\ Fehr, J.\,S.\ Andrade Jr., S.\,D.\ da Cunha, L.\,R.\ da Silva, H.\,J.\ Herrmann, D.\ Kadau, C.\,F.\ Moukarzel and E.\,A.\ Oliveira, New efficient methods to calculate watersheds, 2009, arXiv:0909.2780.
+\bibitem{rak} R.\ Rak, J.\ Kwapie\'n, P.\ O\'swi\k{e}cimka, P.\ Zi\k{e}ba and S.\ Dro\.zd\.z, Universal features of mountain ridge networks on Earth, 2019, arXiv:1804.03457.
+\end{thebibliography}
 
 \end{document}

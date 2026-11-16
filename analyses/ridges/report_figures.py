@@ -41,7 +41,8 @@ INK, GREY = "#0B0B0B", "#9A9893"
 LAGS = {100: "Hundred", 250: "TwoFifty", 500: "FiveHundred", 1000: "Km", 2000: "TwoKm", 5000: "FiveKm", 10000: "TenKm"}
 WINDOW_KEY = {"from 0.1 km": "From", "0.1-1 km": "Short", "1-10 km": "Mid", "beyond 10 km": "Long"}
 SITES = {"ecrins": (6.30, 44.97), "maurienne": (6.98, 45.27), "pyrenees": (-0.05, 42.75)}  # lon, lat
-figstyle.apply()
+FS = 9  # font size of every figure, in points at the printed width
+figstyle.apply(FS)
 
 
 def lambert(lon, lat):
@@ -120,7 +121,7 @@ def scalebar(ax, box, length, label, frac=(0.05, 0.06)):
     x0, y0 = box[0] + frac[0] * (box[2] - box[0]), box[1] + frac[1] * (box[3] - box[1])
     ax.plot([x0, x0 + length], [y0, y0], color="white", lw=4, solid_capstyle="butt", zorder=9)
     ax.plot([x0, x0 + length], [y0, y0], color="black", lw=2, solid_capstyle="butt", zorder=10)
-    ax.text(x0 + length / 2, y0 + 0.025 * (box[3] - box[1]), label, ha="center", va="bottom", fontsize=8, zorder=10,
+    ax.text(x0 + length / 2, y0 + 0.025 * (box[3] - box[1]), label, ha="center", va="bottom", fontsize=FS, zorder=10,
             bbox=dict(facecolor="white", alpha=0.75, pad=0.8, edgecolor="none"))
 
 
@@ -155,9 +156,8 @@ def legend_below(fig, handles, ncol, y=-0.02):
 # ---- map ------------------------------------------------------------------------------------------------
 
 def fig_map(data):
-    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 5.0))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.5, 1], width_ratios=[1, 1.5], hspace=0.12, wspace=0.08)
-    sites = {"alps": "ecrins", "pyrenees": "pyrenees"}
+    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 2.6))
+    gs = fig.add_gridspec(1, 2, width_ratios=[1, 1.45], wspace=0.05)
     for k, r in enumerate(("alps", "pyrenees")):
         D = data[r]
         ax = fig.add_subplot(gs[0, k])
@@ -166,39 +166,19 @@ def fig_map(data):
         mk = m["mask"]
         ext = (left, left + cell * mk.shape[1], top - cell * mk.shape[0], top)
         ax.imshow(np.ma.masked_where(~mk, np.ones(mk.shape)), cmap=ListedColormap(["#E3E1DA"]), extent=ext)
-        ax.add_collection(LineCollection([p[::10] for p in D.curve_list()], colors=COLOR[r], linewidths=0.25))
+        ax.add_collection(LineCollection([p[::10] for p in D.curve_list()], colors=COLOR[r], linewidths=0.3))
         ax.set_xlim(ext[0], ext[1])
         ax.set_ylim(ext[2], ext[3])
         ax.set_aspect("equal")
         ax.axis("off")
-        J = D.joins
-        sx, sy = lambert(*SITES[sites[r]])
-        mid = (J["a"] + J["b"]) / 2
-        cand = np.flatnonzero((J["length"] > 400) & (J["length"] < 800))
-        k0 = cand[np.argmin(np.hypot(mid[cand, 0] - sx, mid[cand, 1] - sy))]
-        box = (mid[k0, 0] - 2000, mid[k0, 1] - 1400, mid[k0, 0] + 2000, mid[k0, 1] + 1400)
-        ax.add_patch(plt.Rectangle((box[0], box[1]), box[2] - box[0], box[3] - box[1], fill=False, ec="black", lw=1.0))
-        ax.text(0.0, 1.0, "ab"[k] + "  " + REGIONS[r], transform=ax.transAxes, ha="left", va="top", fontsize=8, fontweight="bold")
+        ax.text(0.0, 1.0, "ab"[k] + "  " + REGIONS[r], transform=ax.transAxes, ha="left", va="top", fontsize=FS, fontweight="bold")
         x0, x1, y0, y1 = ax.axis()
         xs = x1 - 60000 if k == 0 else x0 + 10000
         ax.plot([xs, xs + 50000], [y0 + 8000] * 2, color="black", lw=2)
-        ax.text(xs + 25000, y0 + 14000, "50 km", ha="center", fontsize=8)
-        bx = fig.add_subplot(gs[1, k])
-        hill(bx, box)
-        bx.add_collection(LineCollection([p for p in D.curve_list()], colors=COLOR[r], linewidths=1.3))
-        inside = ((J["a"][:, 0] > box[0]) & (J["a"][:, 0] < box[2]) & (J["a"][:, 1] > box[1]) & (J["a"][:, 1] < box[3]))
-        bx.add_collection(LineCollection(np.stack([J["a"][inside], J["b"][inside]], axis=1), colors="red", linewidths=1.8))
-        bx.set_xlim(box[0], box[2])
-        bx.set_ylim(box[1], box[3])
-        scalebar(bx, box, 1000, "1 km")
-        bx.text(0.0, 1.0, "cd"[k] + "  " + "zoom, " + REGIONS[r], transform=bx.transAxes, ha="left", va="top", fontsize=8, fontweight="bold",
-                bbox=dict(facecolor="white", alpha=0.7, pad=1.0, edgecolor="none"))
-    legend_below(fig, [plt.Rectangle((0, 0), 1, 1, fc="#E3E1DA"), plt.Line2D([], [], color=COLOR["alps"], lw=1.3), plt.Line2D([], [], color=COLOR["pyrenees"], lw=1.3),
-                       plt.Line2D([], [], color="red", lw=1.8), plt.Rectangle((0, 0), 1, 1, fill=False, ec="black")],
-                 5, y=0.0) if False else None
-    fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, fc="#E3E1DA", label="mountain area"), plt.Line2D([], [], color=COLOR["alps"], lw=1.3, label="crest curves, Alps"),
-                        plt.Line2D([], [], color=COLOR["pyrenees"], lw=1.3, label="crest curves, Pyrenees"), plt.Line2D([], [], color="red", lw=1.8, label="joins"),
-                        plt.Rectangle((0, 0), 1, 1, fill=False, ec="black", label="zoom window")], loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.04))
+        ax.text(xs + 25000, y0 + 14000, "50 km", ha="center", fontsize=FS)
+    fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, fc="#E3E1DA", label="mountain area"), plt.Line2D([], [], color=COLOR["alps"], lw=1.5, label="crest curves, Alps"),
+                        plt.Line2D([], [], color=COLOR["pyrenees"], lw=1.5, label="crest curves, Pyrenees")], loc="lower center", ncol=3, frameon=False,
+               bbox_to_anchor=(0.5, -0.06))
     save(fig, "map.pdf")
 
 
@@ -209,8 +189,8 @@ def fig_divides(data):
     box = window_for("ecrins")
     e = D.edges
     acc, flat = sides_in(D, e["acc"], box), sides_in(D, e["flat"], box)
-    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 3.9))
-    gs = fig.add_gridspec(2, 2, width_ratios=[1.5, 1], hspace=0.55, wspace=0.3)
+    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 3.3))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.5, 1], hspace=0.6, wspace=0.3)
     ax = fig.add_subplot(gs[:, 0])
     z, (zx, zy) = hill(ax, box)
     streams(ax, D, box, z, (zx, zy))
@@ -222,7 +202,7 @@ def fig_divides(data):
                plt.Line2D([], [], color="#F0E442", lw=1.5, label="side that fails the cross-section only"),
                plt.Rectangle((0, 0), 1, 1, fc=VALLEY, label="valley cell ($h = 0$)"),
                plt.Rectangle((0, 0), 1, 1, fc=LOW, alpha=0.6, label="cell less than 20 m above a stream")]
-    ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.02), frameon=False, ncol=1)
+    ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.0, -0.02), frameon=False, ncol=1)
     cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
     pick = lambda ids: ids[np.argmin(((D.corner_xy(ids[:, 0]) - [cx, cy]) ** 2).sum(axis=1))]
     ids_in = lambda arr: arr[(lambda xy: ((xy[:, 0] > box[0]) & (xy[:, 0] < box[2]) & (xy[:, 1] > box[1]) & (xy[:, 1] < box[3])))(D.corner_xy(arr[:, 0]))]
@@ -234,12 +214,12 @@ def fig_divides(data):
             top = max(p[ridges.XSEC_CELLS], p[ridges.XSEC_CELLS + 1])
             a.plot(u, p - top, "o-", color=INK, ms=3, lw=0.8)
             a.axhline(-ridges.XSEC_DROP, color="red", lw=0.8, ls="--")
-            a.text(u.max(), -ridges.XSEC_DROP, f" $-\\Delta_z = -{ridges.XSEC_DROP:g}$ m", color="red", fontsize=8, ha="right", va="bottom")
+            a.text(u.max(), -ridges.XSEC_DROP, f" $-\\Delta_z = -{ridges.XSEC_DROP:g}$ m", color="red", fontsize=FS, ha="right", va="bottom")
             a.axvline(0, color=GREY, lw=0.6)
             for sgn in (-1, 1):
                 a.axvline(sgn * (ridges.XSEC_CELLS * 25 + 12.5), color=GREY, lw=0.6, ls=":")
-            a.text(-(ridges.XSEC_CELLS * 25 + 12.5), a.get_ylim()[0], f" {ridges.XSEC_CELLS * 25} m", color="0.4", fontsize=8, ha="left", va="bottom")
-        a.set_title(name, fontsize=8, loc="left")
+            a.text(-(ridges.XSEC_CELLS * 25 + 12.5), a.get_ylim()[0], f" {ridges.XSEC_CELLS * 25} m", color="0.4", fontsize=FS, ha="left", va="bottom")
+        a.set_title(name, fontsize=FS, loc="left")
         a.set_ylabel("$z-z_{\\mathrm{crest}}$ [m]")
         if k == 1:
             a.set_xlabel("distance across the side [m]")
@@ -248,8 +228,8 @@ def fig_divides(data):
 
 # ---- curves ---------------------------------------------------------------------------------------------
 
-def fig_curves(data):
-    D = data["alps"]
+def curves_view(D):
+    """The window of the curves figure: its box, the detail box, the curves that cross the zoom, the curve with the detail and the bridged sides."""
     e = D.edges
     big = window_for("ecrins")
     br = curves.bridge(e["acc"], e["flat"])[len(e["acc"]):]
@@ -265,15 +245,26 @@ def fig_curves(data):
                 best_score, centre, best = score, q, p
     box = (centre[0] - 850, centre[1] - 600, centre[0] + 850, centre[1] + 600)
     zb = (centre[0] - 75, centre[1] - 55, centre[0] + 75, centre[1] + 55)
+    return box, zb, best, cl, br
+
+
+def draw_curves(ax, D, bx, cl, br, lw_s, lw_c):
+    """Sides that pass the tests (red), bridged stretches (orange) and smoothed curves under the window bx."""
+    hill(ax, bx)
+    ax.add_collection(LineCollection(sides_in(D, D.edges["acc"], bx), colors="red", linewidths=lw_s * 1.6))
+    ax.add_collection(LineCollection(sides_in(D, br, bx), colors="#E69F00", linewidths=lw_s))
+    for p in cl:
+        ax.plot(p[:, 0], p[:, 1], color=COLOR["alps"], lw=lw_c, solid_capstyle="round")
+    ax.set_xlim(bx[0], bx[2])
+    ax.set_ylim(bx[1], bx[3])
+
+
+def fig_curves(data):
+    D = data["alps"]
+    box, zb, best, cl, br = curves_view(D)
     fig, axs = plt.subplots(1, 2, figsize=(figstyle.TEXT_WIDTH_IN, 2.9), gridspec_kw={"width_ratios": [1.3, 1]})
     for ax, bx, lw_s, lw_c in ((axs[0], box, 0.7, 1.8), (axs[1], zb, 1.2, 2.2)):
-        hill(ax, bx)
-        ax.add_collection(LineCollection(sides_in(D, e["acc"], bx), colors="red", linewidths=lw_s * 1.6))
-        ax.add_collection(LineCollection(sides_in(D, br, bx), colors="#E69F00", linewidths=lw_s))
-        for p in cl:
-            ax.plot(p[:, 0], p[:, 1], color=COLOR["alps"], lw=lw_c, solid_capstyle="round")
-        ax.set_xlim(bx[0], bx[2])
-        ax.set_ylim(bx[1], bx[3])
+        draw_curves(ax, D, bx, cl, br, lw_s, lw_c)
     q = best[(best[:, 0] > zb[0]) & (best[:, 0] < zb[2]) & (best[:, 1] > zb[1]) & (best[:, 1] < zb[3])]
     axs[1].plot(q[:, 0], q[:, 1], "o", color="white", mec="black", mew=0.7, ms=3.5, zorder=5)
     axs[0].add_patch(plt.Rectangle((zb[0], zb[1]), zb[2] - zb[0], zb[3] - zb[1], fill=False, ec="black", lw=1.0))
@@ -284,7 +275,7 @@ def fig_curves(data):
     handles = [plt.Line2D([], [], color="red", lw=1.2, label="cell sides that pass the tests"), plt.Line2D([], [], color="#E69F00", lw=1.2, label="bridged stretches"),
                plt.Line2D([], [], color=COLOR["alps"], lw=2.0, label="smoothed curve"),
                plt.Line2D([], [], color="white", marker="o", mec="black", mew=0.7, ms=4, ls="", label="points every 5 m")]
-    legend_below(fig, handles, 2, y=-0.1)
+    legend_below(fig, handles, 2, y=-0.03)
     save(fig, "curves.pdf")
 
 
@@ -298,44 +289,66 @@ def fig_joins_small(data):
     print("wrote joins_alps.png", flush=True)
 
 
-# ---- trees and paths ------------------------------------------------------------------------------------
+# ---- overview of the construction -----------------------------------------------------------------------
 
-def fig_trees(data):
+def fig_pipeline(data):
+    """Four steps of the crest construction on the Alps: divides, curves, a join, the longest tree with its longest path."""
     D = data["alps"]
+    fig, axs = plt.subplots(2, 2, figsize=(figstyle.TEXT_WIDTH_IN, 4.5), gridspec_kw={"hspace": 0.12, "wspace": 0.04})
+    # a: divide sides
+    ax, box = axs[0, 0], window_for("ecrins")
+    z, (zx, zy) = hill(ax, box)
+    streams(ax, D, box, z, (zx, zy))
+    ax.add_collection(LineCollection(sides_in(D, D.edges["flat"], box), colors="#F0E442", linewidths=0.9))
+    ax.add_collection(LineCollection(sides_in(D, D.edges["acc"], box), colors="red", linewidths=1.2))
+    scalebar(ax, box, 1000, "1 km")
+    # b: curves
+    cbox, zb, best, cl, br = curves_view(D)
+    draw_curves(axs[0, 1], D, cbox, cl, br, 0.7, 1.8)
+    scalebar(axs[0, 1], cbox, 200, "200 m")
+    # c: a join
     J = D.joins
-    cl = D.curve_list()
-    p = J["big_path"]
-    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 3.0))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1.5, 1], wspace=0.35)
-    ax = fig.add_subplot(gs[0])
+    sx, sy = lambert(*SITES["ecrins"])
+    mid = (J["a"] + J["b"]) / 2
+    cand = np.flatnonzero((J["length"] > 400) & (J["length"] < 800))
+    k0 = cand[np.argmin(np.hypot(mid[cand, 0] - sx, mid[cand, 1] - sy))]
+    jbox = (mid[k0, 0] - 1500, mid[k0, 1] - 1050, mid[k0, 0] + 1500, mid[k0, 1] + 1050)
+    ax = axs[1, 0]
+    hill(ax, jbox)
+    ax.add_collection(LineCollection(D.curve_list(), colors=COLOR["alps"], linewidths=1.3))
+    inside = ((J["a"][:, 0] > jbox[0]) & (J["a"][:, 0] < jbox[2]) & (J["a"][:, 1] > jbox[1]) & (J["a"][:, 1] < jbox[3]))
+    ax.add_collection(LineCollection(np.stack([J["a"][inside], J["b"][inside]], axis=1), colors="red", linewidths=2.0))
+    ax.set_xlim(jbox[0], jbox[2])
+    ax.set_ylim(jbox[1], jbox[3])
+    scalebar(ax, jbox, 500, "500 m")
+    # d: the longest tree and its longest path
+    ax, p = axs[1, 1], J["big_path"]
     for c in J["big_curves"]:
-        ax.plot(cl[c][:, 0], cl[c][:, 1], color=COLOR["alps"], lw=0.5)
+        ax.plot(cl_all(D)[c][:, 0], cl_all(D)[c][:, 1], color=COLOR["alps"], lw=0.5)
     for a_, b_ in zip(J["a"][J["tree"] == J["big_tree"]], J["b"][J["tree"] == J["big_tree"]]):
         ax.plot([a_[0], b_[0]], [a_[1], b_[1]], color="red", lw=1.0)
     ax.plot(p[:, 0], p[:, 1], color=INK, lw=1.1)
-    ax.plot(*p[0], marker="*", color="gold", mec=INK, ms=9, ls="")
+    ax.plot(*p[0], marker="*", color="gold", mec=INK, ms=10, ls="")
     ax.plot(*p[-1], marker="o", color="white", mec=INK, ms=4, ls="")
     ax.set_aspect("equal")
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_title("a", loc="left", fontweight="bold")
+    ax.axis("off")
     x0, x1, y0, y1 = ax.axis()
-    ax.plot([x0 + 3000, x0 + 13000], [y0 + 3000] * 2, color="black", lw=2)
-    ax.text(x0 + 8000, y0 + 4000, "10 km", ha="center", fontsize=8)
-    ax.legend(handles=[plt.Line2D([], [], color=COLOR["alps"], lw=1, label="curves"), plt.Line2D([], [], color="red", lw=1, label="joins"),
-                       plt.Line2D([], [], color=INK, lw=1.1, label="longest path"), plt.Line2D([], [], marker="*", color="gold", mec=INK, ls="", label="root"),
-                       plt.Line2D([], [], marker="o", color="white", mec=INK, ls="", label="tip")], loc="upper left", frameon=False)
-    ax = fig.add_subplot(gs[1])
-    for r in REGIONS:
-        L = np.sort(data[r].rows["paths"]["length"]) / 1e3
-        ax.plot(L, 1 - np.arange(len(L)) / len(L), color=COLOR[r], label=REGIONS[r])
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_xlabel("path length $L$ [km]")
-    ax.set_ylabel("share of paths longer than $L$")
-    ax.legend(frameon=False, loc="lower left")
-    ax.set_title("b", loc="left", fontweight="bold")
-    save(fig, "trees.pdf")
+    ax.plot([x1 - 13000, x1 - 3000], [y0 + 3000] * 2, color="black", lw=2)
+    ax.text(x1 - 8000, y0 + 4500, "10 km", ha="center", fontsize=FS)
+    for a_, t in zip(axs.flat, ("a  divides", "b  curves", "c  a join", "d  paths")):
+        a_.text(0.02, 0.98, t, transform=a_.transAxes, ha="left", va="top", fontsize=FS, fontweight="bold", bbox=dict(facecolor="white", alpha=0.75, pad=1.0, edgecolor="none"))
+    handles = [plt.Line2D([], [], color="red", lw=1.5, label="divide side that passes"), plt.Line2D([], [], color="#F0E442", lw=1.5, label="side that fails the cross-section"),
+               plt.Rectangle((0, 0), 1, 1, fc=VALLEY, label="valley cell"), plt.Line2D([], [], color="#E69F00", lw=1.5, label="bridged stretch"),
+               plt.Line2D([], [], color=COLOR["alps"], lw=1.5, label="smoothed curve"), plt.Line2D([], [], color="red", lw=2.0, label="join"),
+               plt.Line2D([], [], color=INK, lw=1.1, label="longest path"), plt.Line2D([], [], marker="*", color="gold", mec=INK, ls="", label="root")]
+    fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.07))
+    save(fig, "pipeline.pdf")
+
+
+def cl_all(D):
+    if not hasattr(D, "_cl"):
+        D._cl = D.curve_list()
+    return D._cl
 
 
 # ---- TAMSD results --------------------------------------------------------------------------------------
@@ -354,17 +367,17 @@ def fit_line(ax, data, r, kind, w):
 
 
 def fig_tamsd(data):
-    fig, axs = plt.subplots(1, 3, figsize=(figstyle.TEXT_WIDTH_IN, 2.9), gridspec_kw={"width_ratios": [1, 1, 0.9], "wspace": 0.55})
+    fig, axs = plt.subplots(1, 2, figsize=(figstyle.TEXT_WIDTH_IN, 3.0), gridspec_kw={"wspace": 0.38})
     for r in REGIONS:
         for kind, ls in (("paths", "-"), ("curves", "--")):
             t = data[r].h[kind]
             ok = supported(t)
-            axs[0].plot(t.s_m[ok], np.sqrt(t["mean"][ok]) / t.s_m[ok], ls, color=COLOR[r], lw=1.2)
+            axs[0].plot(t.s_m[ok], np.sqrt(t["mean"][ok]) / t.s_m[ok], ls, color=COLOR[r], lw=1.4)
             okh = ok & ((t.s_m <= 1000) if kind == "curves" else True) & ((t.H_hi - t.H_lo) <= 0.05)
-            axs[1].plot(t.s_m[okh], t.H[okh], ls, color=COLOR[r], lw=1.2)
+            axs[1].plot(t.s_m[okh], t.H[okh], ls, color=COLOR[r], lw=1.4)
             if kind == "paths":
                 axs[1].fill_between(t.s_m[okh], t.H_lo[okh], t.H_hi[okh], color=COLOR[r], alpha=0.2, lw=0)
-    for a in axs[:2]:
+    for a in axs:
         ghost(a)
         a.set_xscale("log")
         a.set_xlim(5, 5e4)
@@ -381,26 +394,12 @@ def fig_tamsd(data):
     for r in REGIONS:
         for kind in ("paths", "curves"):
             fit_line(axs[1], data, r, kind, wins)
-    w = wins
-    xs = {"from 0.1 km": 0, "0.1-1 km": 1, "1-10 km": 2, "beyond 10 km": 3}
-    for i, r in enumerate(REGIONS):
-        for kind, fill, dx in (("paths", True, -0.12), ("curves", False, 0.12)):
-            sub = w[(w.region == r) & (w.kind == kind)]
-            if kind == "curves":  # the curves are too short beyond 1 km: not used there
-                sub = sub[sub.window.isin(["0.1-1 km"])]
-            x = np.array([xs[n] for n in sub.window]) + dx + (i - 0.5) * 0.2
-            axs[2].errorbar(x, sub.H, yerr=[sub.H - sub.ci_lo, sub.ci_hi - sub.H], fmt="o", ms=4, lw=0.9, color=COLOR[r],
-                            mfc=COLOR[r] if fill else "white", capsize=1.5)
-    axs[2].set_xticks(range(4))
-    axs[2].set_xticklabels(["$\\geq$0.1", "0.1\u20131", "1\u201310", "$>$10"])
-    axs[2].set_xlabel("window of $s$ [km]")
-    axs[2].set_ylabel("$H_{\\mathrm{geo}}$ on the window")
-    for a, t in zip(axs, "abc"):
-        a.set_title(t, loc="left", fontsize=8, fontweight="bold")
+    for a, t in zip(axs, "ab"):
+        a.set_title(t, loc="left", fontsize=FS, fontweight="bold")
     legend_below(fig, [plt.Line2D([], [], color=COLOR["alps"], lw=1.5, label="Alps"), plt.Line2D([], [], color=COLOR["pyrenees"], lw=1.5, label="Pyrenees"),
-                       plt.Line2D([], [], color="black", lw=1.2, label="paths (filled)"), plt.Line2D([], [], color="black", lw=1.2, ls="--", label="curves (open)"),
-                       plt.Line2D([], [], color="black", lw=1.0, ls=(0, (4, 2)), label="fitted $H_{geo}$ from 0.1 km")], 5, y=0.0)
-    fig.subplots_adjust(bottom=0.3, top=0.82)
+                       plt.Line2D([], [], color="black", lw=1.2, label="paths"), plt.Line2D([], [], color="black", lw=1.2, ls="--", label="single curves"),
+                       plt.Line2D([], [], color="black", lw=1.0, ls=(0, (4, 2)), label="$H_{geo}$ from 0.1 km")], 5, y=0.0)
+    fig.subplots_adjust(bottom=0.25, top=0.82)
     save(fig, "tamsd.pdf")
 
 
@@ -413,9 +412,9 @@ def fig_limits(data):
     cells, cnt = np.unique(g, axis=0, return_counts=True)
     cx, cy = (cells[np.argmax(cnt)] + 0.5) * 10000
     box = (cx - 7000, cy - 5000, cx + 7000, cy + 5000)
-    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 3.1))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.4, 1, 1], wspace=0.5)
-    ax = fig.add_subplot(gs[0])
+    fig = plt.figure(figsize=(figstyle.TEXT_WIDTH_IN, 4.0))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.25, 1], hspace=0.5, wspace=0.3)
+    ax = fig.add_subplot(gs[:, 0])
     z, (zx, zy) = geo.window(*box)
     ny, nx = z.shape
     ext = (zx - 12.5, zx + 25 * nx - 12.5, zy - 25 * ny + 12.5, zy + 12.5)
@@ -435,13 +434,13 @@ def fig_limits(data):
     scalebar(ax, box, 2000, "2 km")
     ax.set_title("a", loc="left", fontweight="bold")
     ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, fc="#F4B6C2", label="no elevation data"), plt.Line2D([], [], color="#E69F00", lw=1.5, label="curve that reaches the edge"),
-                       plt.Line2D([], [], color=COLOR["alps"], lw=1.5, label="other curve")], loc="upper center", bbox_to_anchor=(0.5, -0.02), frameon=False, ncol=1)
-    ax = fig.add_subplot(gs[1])
+                       plt.Line2D([], [], color=COLOR["alps"], lw=1.5, label="other curve")], loc="upper left", bbox_to_anchor=(0.0, -0.02), frameon=False, ncol=1)
+    ax = fig.add_subplot(gs[0, 1])
     for r in REGIONS:
         for kind, ls in (("paths", "-"), ("curves", "--")):
             t = data[r].h[kind]
             ok = supported(t) & (t.s_m <= 1000)
-            ax.plot(t.s_m[ok], t.H[ok], ls, color=COLOR[r], lw=1.2)
+            ax.plot(t.s_m[ok], t.H[ok], ls, color=COLOR[r], lw=1.4)
     wins = pd.read_csv(data["alps"].d / "hgeo_windows.csv")
     for r in REGIONS:
         for kind in ("paths", "curves"):
@@ -452,14 +451,14 @@ def fig_limits(data):
     ax.set_xlabel("arc length $s$ [m]")
     ax.set_ylabel("local slope $\\alpha(s)$")
     ax.set_title("b", loc="left", fontweight="bold")
-    ax = fig.add_subplot(gs[2])
+    ax = fig.add_subplot(gs[1, 1])
     for r in REGIONS:
         rw = data[r].rows["paths"]
         rows, grp, s = rw["rows"], rw["group"], rw["s_m"]
         nt = np.array([len(np.unique(grp[np.isfinite(rows[:, j])])) for j in range(rows.shape[1])])
         npth = np.isfinite(rows).sum(axis=0)
-        ax.plot(s, nt, color=COLOR[r], lw=1.2)
-        ax.plot(s, npth, ":", color=COLOR[r], lw=1.2)
+        ax.plot(s, nt, color=COLOR[r], lw=1.4)
+        ax.plot(s, npth, ":", color=COLOR[r], lw=1.4)
     ax.axhline(tamsd.MIN_CURVES, color=GREY, lw=0.6)
     ax.set_xscale("log")
     ax.set_yscale("log")
@@ -586,7 +585,7 @@ def macros(data):
     print("wrote macros and tables", flush=True)
 
 
-STEPS = {"map": fig_map, "divides": fig_divides, "curves": fig_curves, "joins": fig_joins_small, "trees": fig_trees,
+STEPS = {"map": fig_map, "divides": fig_divides, "curves": fig_curves, "joins": fig_joins_small, "pipeline": fig_pipeline,
          "tamsd": fig_tamsd, "limits": fig_limits, "macros": macros}
 
 if __name__ == "__main__":

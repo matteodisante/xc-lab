@@ -1,14 +1,16 @@
 # Ridges: how much of H the terrain alone explains
 
-Question: how much of the Hurst exponent H of a mountain flight does the geometry of the crests alone explain,
-and how much comes from the intermittent motion of the pilot? The first term is the exponent H_geo of a ball at
-constant speed (35 km/h) along the crest paths of the French Alps and Pyrenees, extracted from the 25 m IGN DEM;
-the second part compares it with the FFVL flights and an intermittent model on the same paths.
+Question: how much of the Hurst exponent H of a mountain flight does the geometry of the crests alone explain? The
+geometric exponent H_geo is that of a ball at constant speed (35 km/h) along the crest paths of the French Alps and
+Pyrenees, extracted from the 25 m IGN DEM; the active report compares it with the paraglider flights in time and along
+their route. The intermittent model of the flights is a separate, frozen report.
 
 | Question | Scripts | Document |
 |---|---|---|
-| H_geo of the crests: DEM to mountain area, divides, curves, joins, trees, paths, TAMSD | `geo.py` `mountains.py` `ridges.py` `curves.py` `joined.py` `tamsd.py` `hgeo.py` `build.py`; figures and macros `report_figures.py` `fig_joins.py` | `crests/crest_geometry.pdf`, sections 1-9 (`crests/sections/geometry.tex`, appendices `appendix.tex`) |
-| H of the flights, intermittent model, split of 1 - H into geometry and intermittency | the flight part (`flights.py`, `run_flights.py`, `pauses.py`, `model.py`, `decompose.py`, `glide_speed.py`, `report.py`) | `crests/crest_geometry.pdf`, `crests/sections/flights_model.tex` (written by the flight part; included when it exists) |
+| H_geo of the crests: DEM to mountain area, divides, curves, joins, trees, paths, TAMSD | `geo.py` `mountains.py` `ridges.py` `curves.py` `joined.py` `tamsd.py` `hgeo.py` `build.py`; figures and macros `report_figures.py` `fig_joins.py` | active: `crests/crest_geometry.pdf`; results in Section 2 (`crests/sections/geometry.tex`), the construction in Section 5 (`method.tex`) and Appendix A (`appendix.tex`) |
+| H of the paraglider flights in time (H_dyn) and along the route (H_route) against H_geo | `flights.py` `run_flights.py` `decompose.py` `report.py --part route` (figures `route_*`, tables, macros) | active: `crests/crest_geometry.pdf`, Section 3 (`crests/sections/flights_route.tex`), flight selection and rule in Sections 5.3-5.4, checks in Appendix C |
+| Box dimension of the crests and the test D = 1/H_route | `boxdim.py` `run_dimension.py` | active: `crests/crest_geometry.pdf`, Section 4 (`crests/sections/dimension.tex`), details in Appendix D (`dimension_appendix.tex`) |
+| Phases, glide and pause laws, intermittent ball, split of 1 - H, null models (H_dyn vs H_route, subordinated process X(t) = R(S(t))) | `pauses.py` `model.py` `glide_speed.py` `decompose.py` `report.py --part model` | on hold: `intermittency/crest_intermittency.pdf`, a frozen snapshot with its own copies of figures and generated files; it refers to the active report for the crests and the flight selection |
 | Recipe and definitions of the flight comparison | | `paper/FLIGHTS.md` |
 
 `paper/` holds the folder of an earlier paper on the same question (`main.tex`, `FLIGHTS.md`); the pipeline here is
@@ -45,8 +47,10 @@ Every constant is a named constant at the top of its module; `PARAMETERS.md` in 
 ```
 uv run --with numba python build.py <alps|pyrenees>   # DEM -> mask, crest sides, curves (about 3 min)
 uv run --with numba python hgeo.py <alps|pyrenees>    # joins, trees, paths, TAMSD, H_geo, exports (about 1 min)
-uv run --with numba --with pyproj python report_figures.py   # figures, macros and tables of the report
-cd crests && latexmk -pdf crest_geometry.tex
+uv run --with numba --with pyproj python report_figures.py   # figures, macros and tables of the crest part
+uv run --with numba python report.py                          # route figures, tables and macros of the flight part (--part model: the frozen report)
+cd crests && latexmk -pdf crest_geometry.tex                  # the active report
+cd intermittency && latexmk -pdf crest_intermittency.tex      # the on-hold report (needs crests/crest_geometry.aux for its references)
 uv run --with numba python -m pytest -q               # synthetic DEMs, curves, joins, TAMSD; DEM tests skip without the disk
 ```
 
@@ -89,7 +93,7 @@ the large lags) and is not used.
 
 Local H(s) of the paths, Alps / Pyrenees: 0.983 / 0.982 at 100 m, 0.951 / 0.950 at 500 m, 0.940 / 0.933 at 1 km,
 0.935 / 0.927 at 2 km, 0.920 / 0.912 at 5 km, 0.905 / 0.850 at 10 km. Without the curves and paths that reach the
-data edge the windows are the same to the third decimal (report, Appendix D).
+data edge the windows are the same to the third decimal (report, Appendix B).
 
 Limits: the DEM stops at the border (edge-flagged curves and paths), the shape below 100 m is set by the grid, and the
 last window rests on few trees (42 in the Alps and 16 in the Pyrenees at a lag of 10 km).

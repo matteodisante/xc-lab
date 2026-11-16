@@ -1,9 +1,11 @@
-"""Figures, tables and macros of the flight part of the crest report, from decompose.py's decomposition.json.
+"""Figures, tables and macros of the flight part of the reports, from decompose.py's decomposition.json.
 
-Writes in crests/: figures/flights_{phases,msd,alpha,decomposition}.{pdf,png}, generated/flights_macros.tex (every
-number the text quotes) and generated/flights_table_*.tex (the tabulars of the tables).
+Writes in --out (default crests/): figures/route_{msd,alpha}.{pdf,png} and generated/flights_table_route_*.tex (the
+flights against the crests, in crest_geometry.tex); with --part model also figures/flights_*.{pdf,png} and
+generated/flights_table_*.tex (the intermittent model, in the frozen intermittency/ report). Always
+generated/flights_macros.tex (every number the text quotes).
 
-    uv run python report.py [--cache DIR]
+    uv run python report.py [--cache DIR] [--part route|model|all]
 """
 
 import argparse
@@ -142,37 +144,37 @@ def shade_after(ax, tau_b, right):
     ax.axvspan(tau_b, right, color="#EDEDED", lw=0, zorder=0)
 
 
-def curves_figure(res, what, name):
+def curves_figure(res, name, kinds=ALL, label=LABEL, groups=SHOWN, ncol=4, color=COLOR, size=(None, 3.0)):
     """MSD over the ballistic value against the lag, one panel per group, legend below."""
-    right = SHOW_BEYOND * max(res["groups"][gkey(r, d)]["tau_max"] for r, d in SHOWN)
-    fig, axs = plt.subplots(1, 3, figsize=(fs.TEXT_WIDTH_IN, 3.0), sharex=True, sharey=True)
-    for k_, (ax, (r, d)) in enumerate(zip(axs, SHOWN)):
+    right = SHOW_BEYOND * max(res["groups"][gkey(r, d)]["tau_max"] for r, d in groups)
+    fig, axs = plt.subplots(1, len(groups), figsize=(size[0] or fs.TEXT_WIDTH_IN * len(groups) / 3, size[1]), sharex=True, sharey=True, squeeze=False)
+    for k_, (ax, (r, d)) in enumerate(zip(axs[0], groups)):
         g = res["groups"].get(gkey(r, d))
         ax.set_xscale("log")
         ax.set_yscale("log")
         fs.letter(ax, "abc"[k_])
-        ax.set_title(GROUP_LABEL[(r, d)], fontsize=8)
+        ax.set_title(GROUP_LABEL[(r, d)])
         shade_after(ax, g["tau_max"], right)
         ax.axhline(1, color=fs.GUIDE, lw=0.6, zorder=0)
         ax.set_ylim(0.1, 1.3)
         ax.set_yticks([0.1, 0.2, 0.5, 1.0], ["0.1", "0.2", "0.5", "1"])
         ax.minorticks_off()
-        for k in ALL:
+        for k in kinds:
             c = g["curves"][k]
             tau = np.array(c["tau"])
             ball = (g["v"] * tau) ** 2
             y, (lo, hi) = np.exp(c["lnm"]) / ball, np.exp(np.array(c["lnm_band"])) / ball
             keep = tau <= SHOW_BEYOND * g["tau_max"]
             tau, y, lo, hi = tau[keep], y[keep], lo[keep], hi[keep]
-            ax.fill_between(tau, lo, hi, color=COLOR[k], alpha=0.15, lw=0, zorder=1)
-            ax.plot(tau, y, color=COLOR[k], lw=fs.LW, zorder=2)
+            ax.fill_between(tau, lo, hi, color=color[k], alpha=0.15, lw=0, zorder=1)
+            ax.plot(tau, y, color=color[k], lw=fs.LW, zorder=2)
         ax.set_xlim(1, right)
         ax.set_xlabel("lag $\\tau$ [s]")
-    axs[0].set_ylabel("MSD$\\,/\\,(v\\tau)^2$")
-    handles = [plt.Line2D([], [], color=COLOR[k], lw=fs.LW, label=LABEL[k]) for k in ALL]
+    axs[0, 0].set_ylabel("MSD$\\,/\\,(v\\tau)^2$")
+    handles = [plt.Line2D([], [], color=color[k], lw=fs.LW, label=label[k]) for k in kinds]
     handles += [plt.Line2D([], [], color=fs.GUIDE, lw=0.8, label="ballistic motion at $v$")]
-    fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.15, 1, 1))
+    fig.legend(handles=handles, loc="lower center", ncol=ncol, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.11 if size[0] else 0.15, 1, 1))
     save(fig, name)
 
 
@@ -180,15 +182,15 @@ ROWS = [("comparison", ("geo", "model", "dyn", "route"), (0.75, 1.02), (1.0,)),
         ("null models", ("model", "dyn", "straight", "random"), (0.45, 1.02), (1.0, 0.5))]
 
 
-def alpha_figure(res, name="flights_alpha"):
-    """Local slope against the lag: a row for the comparison of crests, model and flights, a row for the null models."""
-    right = SHOW_BEYOND * max(res["groups"][gkey(r, d)]["tau_max"] for r, d in SHOWN)
-    fig, axs = plt.subplots(2, 3, figsize=(fs.TEXT_WIDTH_IN, 4.4), sharex=True, sharey="row")
-    for i, (_, kinds, ylim, guides) in enumerate(ROWS):
-        for j, (r, d) in enumerate(SHOWN):
+def alpha_figure(res, name="flights_alpha", rows=ROWS, label=LABEL, groups=SHOWN, ncol=4, color=COLOR, size=(None, None)):
+    """Local slope against the lag: a row per set of curves."""
+    right = SHOW_BEYOND * max(res["groups"][gkey(r, d)]["tau_max"] for r, d in groups)
+    fig, axs = plt.subplots(len(rows), len(groups), figsize=(size[0] or fs.TEXT_WIDTH_IN * len(groups) / 3, size[1] or 2.2 * len(rows)), sharex=True, sharey="row", squeeze=False)
+    for i, (_, kinds, ylim, guides) in enumerate(rows):
+        for j, (r, d) in enumerate(groups):
             ax, g = axs[i, j], res["groups"][gkey(r, d)]
             ax.set_xscale("log")
-            fs.letter(ax, "abcdef"[3 * i + j])
+            fs.letter(ax, "abcdef"[len(groups) * i + j])
             shade_after(ax, g["tau_max"], right)
             for level in guides:
                 ax.axhline(level, color=fs.GUIDE, lw=0.6, zorder=0)
@@ -198,24 +200,24 @@ def alpha_figure(res, name="flights_alpha"):
                 y, (lo, hi) = np.array(c["alpha"]), np.array(c["alpha_band"])
                 keep = tau <= SHOW_BEYOND * g["tau_max"]
                 tau, y, lo, hi = tau[keep], y[keep], lo[keep], hi[keep]
-                ax.fill_between(tau, lo, hi, color=COLOR[k], alpha=0.15, lw=0, zorder=1)
-                ax.plot(tau, y, color=COLOR[k], lw=fs.LW, zorder=2)
+                ax.fill_between(tau, lo, hi, color=color[k], alpha=0.15, lw=0, zorder=1)
+                ax.plot(tau, y, color=color[k], lw=fs.LW, zorder=2)
                 s = g["start"][k][0]
                 if np.isfinite(s):
-                    ax.plot([s, g["tau_max"]], [g["H"][k][0]] * 2, color=COLOR[k], lw=1.0, ls=fs.FIT_DASH, zorder=3)
+                    ax.plot([s, g["tau_max"]], [g["H"][k][0]] * 2, color=color[k], lw=1.0, ls=fs.FIT_DASH, zorder=3)
             ax.set_xlim(1, right)
             ax.set_ylim(*ylim)
             if i == 0:
-                ax.set_title(GROUP_LABEL[(r, d)], fontsize=8)
-            if i == 1:
+                ax.set_title(GROUP_LABEL[(r, d)])
+            if i == len(rows) - 1:
                 ax.set_xlabel("lag $\\tau$ [s]")
             if j == 0:
                 ax.set_ylabel("local slope $\\alpha(\\tau)$")
-    handles = [plt.Line2D([], [], color=COLOR[k], lw=fs.LW, label=LABEL[k]) for k in ALL]
+    handles = [plt.Line2D([], [], color=color[k], lw=fs.LW, label=label[k]) for k in dict.fromkeys(k for _, ks, _, _ in rows for k in ks)]
     handles += [plt.Line2D([], [], color="black", lw=1.0, ls=fs.FIT_DASH, label="fitted $H$ (same colour)"),
-                plt.Line2D([], [], color=fs.GUIDE, lw=0.8, label="$\\alpha = 1$ and $0.5$")]
-    fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.02))
-    fig.tight_layout(rect=(0, 0.1, 1, 1))
+                plt.Line2D([], [], color=fs.GUIDE, lw=0.8, label="$\\alpha = 1$" + (" and $0.5$" if len(rows) > 1 else ""))]
+    fig.legend(handles=handles, loc="lower center", ncol=ncol, frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.tight_layout(rect=(0, 0.11 if size[0] else 0.2 / len(rows), 1, 1))
     save(fig, name)
 
 
@@ -292,6 +294,38 @@ def fig_models():
         fs.letter(ax, s_, x=-0.02, y=1.0)
     fig.subplots_adjust(wspace=0.08, hspace=0.12)
     save(fig, "flights_models")
+
+
+# figures and tables of the active document: crests, flights in time and route of the flights, paragliders only
+ROUTE_KINDS = ("geo", "dyn", "route")
+ROUTE_LABEL = {"geo": "crests", "dyn": "flights in time", "route": "flights, route"}
+ROUTE_GROUPS = [(r, "para") for r in dc.REGIONS]
+
+
+def route_figures(res):
+    """Full-width figures at 9 pt, in the colours of the active report (flights in time blue, route orange)."""
+    color = {**COLOR, **fs.ACTIVE_COLOR}
+    w = fs.TEXT_WIDTH_IN
+    with plt.rc_context(fs.rc(9)):
+        curves_figure(res, "route_msd", ROUTE_KINDS, ROUTE_LABEL, ROUTE_GROUPS, ncol=4, color=color, size=(w, 2.6))
+        alpha_figure(res, "route_alpha", [("route", ROUTE_KINDS, (0.75, 1.02), (1.0,))], ROUTE_LABEL, ROUTE_GROUPS, ncol=5, color=color, size=(w, 2.2))
+
+
+def win_label(w):
+    return f"from {w[:-4]}" if w.endswith("-inf") else w.replace("-", "--")
+
+
+def route_tables(res):
+    gl = lambda r, d: f"{RLONG[r]}, {DLONG[d]}"
+    gs = [res["groups"][gkey(r, d)] for r, d in ROUTE_GROUPS]
+    head = "curve & " + " & ".join(gl(r, d) for r, d in ROUTE_GROUPS)
+    rows = [["number of flights"] + [str(g["n_flights"]) for g in gs]]
+    rows += [[label] + [fmt_ci(g["H"][k]) for g in gs] for k, label in (("geo", r"crests, $\Hgeo$"), ("route", r"route of the flights, $\Hroute$"), ("dyn", r"flights in time, $\Hdyn$"))]
+    table("route_h", head, rows, "lll")
+    rows = [[gl(r, d), win_label(w)] + [fmt_ci(g["window"][k][w]) for k in ROUTE_KINDS] for (r, d), g in zip(ROUTE_GROUPS, gs) for w in g["window"]["geo"]]
+    table("route_windows", r"group & window of $s$ (km) & crests & flights in time & flights, route", rows, "llccc")
+    rows = [[gl(r, d), str(g["n_flights"]), fmt_ci(g["h10"]["H"]), f"{g['h10']['last_lag']:.0f}"] for (r, d), g in zip(ROUTE_GROUPS, gs)]
+    table("route_h10", r"group & flights & $H$ & last lag (s)", rows, "lrll")
 
 
 # macros and tables
@@ -374,7 +408,7 @@ def rawcheck_table(check):
     rows = []
     for k, label in (("dyn", "dyn"), ("route", "route")):
         for w, x in check["h"][k].items():
-            rows.append([label, "rule" if w == "rule" else w, fmt_ci(x["raw"]), fmt_ci(x["clean"]), fmt_ci(x["raw_minus_clean"])])
+            rows.append([label, "rule" if w == "rule" else win_label(w), fmt_ci(x["raw"]), fmt_ci(x["clean"]), fmt_ci(x["raw_minus_clean"])])
     table("rawcheck", r"curve & window of $s$ (km) & raw IGC & cleaned fixes & raw $-$ cleaned", rows, "llccc")
     m = Macros()
     for key in ("n_in_sample", "n_clean", "n_raw", "n_both"):
@@ -436,17 +470,22 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache", default=None)
     ap.add_argument("--out", default=str(OUT), help="the crests folder that receives figures/ and generated/")
+    ap.add_argument("--part", choices=("route", "model", "all"), default="route", help="route: crest_geometry.tex; model: the frozen intermittency/ report; all: both")
     a = ap.parse_args()
     OUT = Path(a.out)
     cache = Path(a.cache) if a.cache else dc.newest_cache()
     res = json.loads((cache / "decomposition.json").read_text())
     (OUT / "generated").mkdir(parents=True, exist_ok=True)
-    fig_phases(res)
-    curves_figure(res, "msd", "flights_msd")
-    alpha_figure(res)
-    fig_decomposition(res)
-    fig_models()
+    if a.part in ("route", "all"):
+        route_figures(res)
+        route_tables(res)
+    if a.part in ("model", "all"):
+        fig_phases(res)
+        curves_figure(res, "flights_msd")
+        alpha_figure(res)
+        fig_decomposition(res)
+        fig_models()
+        tables(res)
     macros(res, cache)
-    tables(res)
     if (cache / "rawcheck.json").exists():
         rawcheck_table(json.loads((cache / "rawcheck.json").read_text()))

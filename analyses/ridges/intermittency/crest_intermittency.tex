@@ -1,35 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage[font=small,labelfont=bf,labelsep=colon]{caption}
+\usepackage{xcolor}
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xr-hyper}
+\externaldocument[crest-]{../crests/crest_geometry}[../crests/crest_geometry.pdf]
+% Floats go where they fit, so that few pages hold a float alone.
+\makeatletter
+\def\fps@figure{htbp}
+\def\fps@table{htbp}
+\makeatother
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+\newcommand{\Hgeo}{H_{\mathrm{geo}}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Numbers of the flight part (report.py --part model): a frozen copy.
+\input{generated/flights_macros}
+
+\title{\textbf{Crest geometry and the intermittency of mountain flights}\\[4pt]
+  \large Glides and pauses of paragliders and hang gliders, an intermittent ball on the crest paths, and the split of
+  $1-H$ into geometry and intermittency}
+\author{Matteo Di Sante}
+\date{Working version, 16 November 2026}
+
+\begin{document}
+\maketitle
+
+\noindent\emph{On hold since 16 November 2026: the geometric part (crests/crest\_geometry.pdf) comes first.}
+
+\tableofcontents
+
 \section{Flights and the intermittent model}\label{sec:flights}
 
-How much of $1-H$ of a real flight does the geometry of the crests explain, and how much comes from the way the
-pilot moves along them? We answer for the Alps and the Pyrenees and for paragliders and hang gliders
-separately. The steps are: the flights and their phases (Section~\ref{sec:flsel}), the durations of glides and
-pauses (Section~\ref{sec:flphases}), a ball that moves and stops on the crest paths (Section~\ref{sec:flmodel}),
-the four curves compared (Section~\ref{sec:flcurves}) and the split of $1-H$ (Section~\ref{sec:fldecomp}), then two null
-models without the crest geometry (Section~\ref{sec:flnull}).
-Sections~\ref{sec:flwindows} and~\ref{sec:flraw} give the fits on fixed windows and a check of the cleaned
-tracks against the raw ones.
+This document is a frozen snapshot. The crest construction, the selection of the flights, the curves and the rule for
+the exponent are in the crest report (\code{crests/crest\_geometry.pdf}); references marked ``of the crest report''
+point there.
 
-\subsection{Flights and phases}\label{sec:flsel}
+The dynamic exponent $\Hdyn$ of a flight differs from the geometric exponent $\Hroute$ of its route because of how the
+route is travelled in time: the pilot glides, circles in a thermal and waits. The frame planned for this is a
+subordinated process $X(t) = R(S(t))$, with $R$ the route in arc length and $S(t)$ the arc length covered by time $t$.
+Here we take a first step with an intermittent ball on the crest paths. How much of $1-H$ of a real flight does the
+geometry of the crests explain, and how much comes from the way the pilot moves along them? We answer for the Alps and
+the Pyrenees and for paragliders and hang gliders separately. The steps are: the phases of the flights
+(Section~\ref{sec:flsel}), the durations of glides and pauses (Section~\ref{sec:flphases}), a ball that moves and stops
+on the crest paths (Section~\ref{sec:flmodel}), the four curves compared (Section~\ref{sec:flcurves}) and the split of
+$1-H$ (Section~\ref{sec:fldecomp}), then two null models without the crest geometry (Section~\ref{sec:flnull}).
+Section~\ref{sec:flwindows} gives the fits on fixed windows of arc length.
 
-Which flights do we compare with the crests, and what do they do between thermals? We take the paragliders and
-hang gliders of the FFVL archive that declared a distance flight (free distance, or distance with one, two or
-three points) and whose track the cleaning of the earlier analysis kept: \flCandPara{} paragliders and
-\flCandHang{} hang gliders. Their positions are the cleaned fixes, a local east-north frame per flight that we
-convert to latitude and longitude and then to Lambert-93. The cleaning has put each flight on a uniform time
-grid at its native cadence and smoothed the horizontal positions with a cubic Savitzky--Golay filter of
-timescale 5~s (Section~\ref{sec:flraw}). A flight stays if it satisfies three conditions:
-\begin{itemize}[nosep]
-  \item its \emph{opening}, the distance from the first to the last fix over the path flown, is at least 0.1;
-  \item the median interval between its fixes is at most 5~s;
-  \item at least 80\% of its fixes lie over the mountain area of one massif (Section~\ref{sec:data}).
-\end{itemize}
-Each flight is counted once, at the first condition in the order sampling interval, opening, region that it
-fails (a few are too short to give a piece of track). Of the paragliders, \flStatDtPara{} fail on the sampling
-interval, \flStatOpeningPara{} on the opening and \flStatRegionPara{} on the region, which leaves
-\flStatOkPara{}: \flSelAlpsPara{} in the Alps and \flSelPyrPara{} in the Pyrenees. Of the hang gliders
-\flStatDtHang{}, \flStatOpeningHang{} and \flStatRegionHang{} fail, which leaves \flStatOkHang{}:
-\flSelAlpsHang{} in the Alps and \flSelPyrHang{} in the Pyrenees. The Pyrenees hang gliders are too few for
-anything below.
+\subsection{Phases and the speed in glides}\label{sec:flsel}
+
+What do the flights do between thermals? The flights are those selected in Section~\ref{crest-sec:flsel} of the crest
+report, for the paragliders and the hang gliders. The Pyrenees hang gliders are too few for anything below.
 
 Each continuous piece of track (a segment of the cleaning, without a gap longer than 30~s) is interpolated to
 one fix per second by a cubic spline.
@@ -63,6 +106,7 @@ interval of at most 5~s and 80\% of its fixes over one massif. A glide is a tran
 climb run; search runs are left out. The mean ground speed in glides is $v = \flVGlideAlpsPara$~m/s for the Alps
 paragliders, \flVGlidePyrPara~m/s for the Pyrenees paragliders and \flVGlideAlpsHang~m/s for the Alps hang
 gliders.
+
 
 \subsection{Durations of glides and pauses}\label{sec:flphases}
 
@@ -145,11 +189,11 @@ and the random model (d). Dot area: duration of the pause; black square: start.}
 \label{fig:flmodels}
 \end{figure}
 
-The paths are all the joined paths of the region, those of Section~\ref{sec:trees}: \flNPathsAlpsPara{} in the
+The paths are all the joined paths of the region, those of Section~\ref{crest-sec:trees} of the crest report: \flNPathsAlpsPara{} in the
 Alps and \flNPathsPyrPara{} in the Pyrenees, the same rows as the TAMSD of the crests, so that $\Hgeo$ and the
 model have the same population. For each path we draw \flNReal{} realisations and pool their pairs. The TAMSD
-$\delta^2_{\mathrm{mod}}(\tau)$ is Eq.~\eqref{eq:tamsd} at a lag of $\tau$ seconds, on 80 log-spaced lags up to a
-quarter of the realisation, and the mean is taken with equal weight per path (Eq.~\eqref{eq:mean}). The
+$\delta^2_{\mathrm{mod}}(\tau)$ is Eq.~\eqref{crest-eq:tamsd} of the crest report at a lag of $\tau$ seconds, on 80 log-spaced lags up to a
+quarter of the realisation, and the mean is taken with equal weight per path (Eq.~\eqref{crest-eq:mean} of the crest report). The
 bootstrap draws whole trees, with the same draws for the crests and for the model, so that the difference
 $\Hgeo - \Hmod$ is a paired one.
 
@@ -162,13 +206,11 @@ glides and pauses, and one from the ground, the path. On a straight line and wit
 How do the mean squared displacements of the crests, the model and the flights compare, and where does each stop
 being ballistic? Four curves are drawn for each region and discipline, all as functions of the lag $\tau$:
 \begin{itemize}[nosep]
-  \item \emph{crests}: $\overline{\delta^2}(s)$ of the crest paths, Eq.~\eqref{eq:mean}, at $\tau = s/v$;
+  \item \emph{crests}: $\overline{\delta^2}(s)$ of the crest paths, Eq.~\eqref{crest-eq:mean} of the crest report, at $\tau = s/v$;
   \item \emph{model}: $\overline{\delta^2_{\mathrm{mod}}}(\tau)$ of the intermittent ball;
   \item \emph{flights} (dyn): the TAMSD of the positions every second, circles included;
-  \item \emph{flights} (route): the TAMSD of the track resampled every 5~m of arc length after a smoothing
-        spline, with every thermalling circle replaced by its chord, at $\tau = s/v$. Circles are runs where the
-        heading turns faster than 8$^\circ$/s averaged over 20~s, merged across gaps shorter than 10~s and kept
-        if longer than 20~s.
+  \item \emph{flights} (route): the track in arc length with every thermalling circle replaced by its chord, at
+        $\tau = s/v$ (Section~\ref{crest-sec:flcurves} of the crest report).
 \end{itemize}
 The two null models of Section~\ref{sec:flnull}, straight and random, are drawn in the same figures and fitted by the
 same rule. Figure~\ref{fig:flmsd} plots the ratio $\overline{\delta^2}(\tau)/(v\tau)^2$, which is 1 for a ballistic motion at
@@ -177,14 +219,14 @@ speed $v$, and Figure~\ref{fig:flalpha} the local slope of the MSD
   \alpha(\tau) = \frac12\,\frac{d\ln\overline{\delta^2}}{d\ln\tau},
   \label{eq:alpha}
 \end{equation}
-which is Eq.~\eqref{eq:alphaloc} in time. The bands are the 2.5\% and 97.5\% percentiles of the bootstrap.
+which is Eq.~\eqref{crest-eq:alphaloc} of the crest report in time. The bands are the 2.5\% and 97.5\% percentiles of the bootstrap.
 
-\paragraph{One rule for the exponent.} The fit of $H$ starts at the end of the initial ballistic regime. For each
+\paragraph{One rule for the exponent.} The rule is that of Section~\ref{crest-sec:flcurves} of the crest report. The fit of $H$ starts at the end of the initial ballistic regime. For each
 curve, $H$ is half the least-squares slope of $\ln\overline{\delta^2}$ against $\ln\tau$ over the lags
 $\tau_a \le \tau \le \tau_b$, where $\tau_a$ is the first lag not below $\flFloorM/v$ at which
 $\alpha(\tau) < \flAlphaEnd$, and $\tau_b$ is the last lag that at least \flMinRows{} flights or paths reach, in every curve of the group
 (\flTauMaxAlpsPara~s for the Alps paragliders). The floor of $\flFloorM$~m is the start of the fit of
-Section~\ref{sec:tamsd}, converted to time. The rule is applied to the four curves alike and again in every
+Section~\ref{crest-sec:tamsd} of the crest report, converted to time. The rule is applied to the four curves alike and again in every
 resample. For the Alps paragliders it starts the fit of the flights at \flStartDynAlpsPara~s, that of the model at \flStartModAlpsPara~s
 and that of the crests at \flStartGeoAlpsPara~s: the floor decides, and the four curves are fitted over the same
 range of lags within about a second. Table~\ref{tab:flh} gives $H$, and
@@ -351,27 +393,10 @@ forgets its direction at every glide has $H$ below them, and the crest model lie
 therefore matters: the same durations and speed give $H$ from \flHRandomAlpsPara{} to \flHStraightAlpsPara{} for the Alps
 paragliders according to the geometry of the motion, and the crests put it at \flHModAlpsPara, close to the flights' \flHDynAlpsPara.
 
-\subsection{The flights alone from 10 s}\label{sec:flhten}
-
-What is $H$ of the flights if the fit runs from 10~s to the last lag that at least ten flights reach?
-Table~\ref{tab:flhten} gives it for $\Hdyn$ with equal weight per flight and \flNBoot{} resamples of whole flights.
-
-\begin{table}[t]
-\centering
-\caption{$H$ of the flights (dyn) fitted from 10~s to the last lag with at least ten flights, with 95\% intervals.}
-\label{tab:flhten}
-\small
-\input{generated/flights_table_h10}
-\end{table}
-
-This $H$ is higher than the one of the rule (Table~\ref{tab:flh}), because only the longest flights reach the
-longest lags and $\alpha$ rises there (Figure~\ref{fig:flalpha}). It is therefore not the number compared with
-the crests.
-
 \subsection{Fixed windows of arc length}\label{sec:flwindows}
 
 Does the picture of the rule change on fixed windows? Table~\ref{tab:flwindows} gives $H$ of the four curves on
-the windows of Table~\ref{tab:hgeo}, divided by $v$ to give lags. The window from 0.1~km starts at the floor and each curve runs to its last lag with
+the windows of Table~\ref{crest-tab:hgeo} of the crest report, divided by $v$ to give lags. The window from 0.1~km starts at the floor and each curve runs to its last lag with
 at least \flMinRows{} flights or paths, not to $\tau_b$.
 
 \begin{table}[t]
@@ -392,29 +417,5 @@ the flights and the flights below the route. On the window from 0.1 to 1~km the 
 is consistent with the circles of the flights bending them at these scales while the model has none. The window
 beyond 10~km is not interpreted.
 
-\subsection{Raw tracks and cleaned fixes}\label{sec:flraw}
 
-Does the cleaning of the earlier analysis change $H$? The cleaning puts the fixes on a uniform time grid at the
-native cadence of the track (a shape-preserving cubic interpolation fills holes) and smooths east and north with a
-cubic Savitzky--Golay filter whose timescale is 5~s and whose window has at least five samples; the filtered
-values replace the stored positions. On the sample run of \flRawNInSample{} flights, \flRawNBoth{} flights pass the
-selection from both the raw IGC file (cut to the time in the air, spikes removed) and the cleaned fixes. The same
-resamples of flights give the difference of $H$ between the two, at $v = 35$~km/h. Table~\ref{tab:flrawcheck}
-reports it.
-
-\begin{table}[t]
-\centering
-\caption{$H$ of the same \flRawNBoth{} flights from the raw IGC files and from the cleaned fixes, and the
-difference, with 95\% intervals from the same resamples of flights.}
-\label{tab:flrawcheck}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
-\input{generated/flights_table_rawcheck}
-\end{table}
-
-\paragraph{What we keep.} The cleaning smooths the horizontal positions and does not resample them beyond the
-uniform grid. On the rule the difference raw minus cleaned is \flRawDynRule{} for the flights (interval
-\flRawDynRuleLo{} to \flRawDynRuleHi) and \flRawRouteRule{} for the route (\flRawRouteRuleLo{} to
-\flRawRouteRuleHi). The raw tracks give a slightly lower exponent of the flights with circles than the cleaned fixes, and the same
-exponent of the route within its interval. The sample is small and the upper limit of the interval of the
-flights is \flRawDynRuleHi.
+\end{document}
