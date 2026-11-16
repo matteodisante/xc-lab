@@ -1,4 +1,4 @@
-"""Raw IGC tracks against the cleaned fixes, on the flights of a sample run of run_flights.py.
+"""Raw IGC tracks against the cleaned fixes, on the paragliders of a sample run of run_flights.py.
 
 The same flights are run through flights.py from the raw IGC file (raw_igc.py: cut to the air) and from the
 cleaned fixes (the sample's flights_rows_*.npz). H of dyn and route is fitted by the rule of decompose.py and on
@@ -27,6 +27,7 @@ import raw_igc as ri
 import run_flights as rf
 
 CURVES = ("dyn", "route")
+DISC = "paragliders"  # the discipline of the report
 
 
 def raw_rows(sample, cfg):
@@ -53,8 +54,9 @@ def compare(sample_dir, v_kmh=fl.V_KMH, n_boot=dc.N_BOOT, seed=1):
     cfg = fl.configure(data)
     fl._init(cfg)
     flights = pd.read_csv(sample_dir / "flights.csv", dtype={"flight": str})
+    flights = flights[flights["discipline"] == DISC]
     z = {k: np.load(sample_dir / f"flights_rows_{k}.npz") for k in CURVES}
-    clean = {(d, f): i for i, (d, f) in enumerate(zip(z["dyn"]["discipline"], z["dyn"]["flight"]))}
+    clean = {(d, f): i for i, (d, f) in enumerate(zip(z["dyn"]["discipline"], z["dyn"]["flight"])) if d == DISC}
     raw = raw_rows(flights, cfg)
     keys = sorted(set(clean) & set(raw))
     rows = {("clean", k): np.array([z[k]["rows"][clean[x]] for x in keys]) for k in CURVES}
