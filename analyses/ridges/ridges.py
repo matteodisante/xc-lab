@@ -15,14 +15,22 @@ import numpy as np
 from numba import njit
 
 FLATS = os.environ.get("RIDGES_FLATS", "flood")  # "flood" or "blm"
-CELL = 25.0
+CELL = 25.0  # m, the reference grid (the 25 m DEM); every grid constant below is a length in metres
 VALLEY_KM2 = 0.5
-XSEC_CELLS = 6  # cells from the crest to the ground of the cross-section
+XSEC_M = 150.0  # m from the crest to the ground of the cross-section
 XSEC_DROP = 10.0  # m, ground this far below the crest on each side
 HAND_MIN = 20.0  # m, crest above the stream on both sides
 DR = np.array([0, 1, 1, 1, 0, -1, -1, -1], np.int64)
 DC = np.array([1, 1, 0, -1, -1, -1, 0, 1], np.int64)
 OUTLET, NODATA, UNSEEN, INHEAP = -1, -2, -3, -4  # codes of the direction array besides 0..7
+
+
+def cells(metres, cell):
+    """Number of cells of a length in metres on a grid of `cell` m (at least 1)."""
+    return max(1, int(round(metres / cell)))
+
+
+XSEC_CELLS = cells(XSEC_M, CELL)  # 6 on the 25 m grid, 30 on the 5 m grid
 
 
 def valley_cells(valley_km2=VALLEY_KM2, cell=CELL):
@@ -512,8 +520,9 @@ def _scan(z, lid, sz, tin, tout, xsec, drop, hand_min, fill, ea, eb, fa, fb):
 def crest_edges(z, lid, sz, tin, tout, xsec=XSEC_CELLS, drop=XSEC_DROP, hand_min=HAND_MIN):
     """Crest sides as pairs of corner ids (r * (w + 1) + c): those passing every test, and those failing only
     the cross-section (candidates to bridge flat stretches)."""
-    e0 = np.empty(0, np.int32)
+    dt = np.int32 if (z.shape[0] + 1) * (z.shape[1] + 1) < 2**31 else np.int64
+    e0 = np.empty(0, dt)
     ne, nf = _scan(z, lid, sz, tin, tout, xsec, drop, hand_min, False, e0, e0, e0, e0)
-    ea, eb, fa, fb = (np.empty(n, np.int32) for n in (ne, ne, nf, nf))
+    ea, eb, fa, fb = (np.empty(n, dt) for n in (ne, ne, nf, nf))
     _scan(z, lid, sz, tin, tout, xsec, drop, hand_min, True, ea, eb, fa, fb)
     return np.c_[ea, eb], np.c_[fa, fb]

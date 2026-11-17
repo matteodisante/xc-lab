@@ -4,8 +4,7 @@
     uv run --with numba python dem_resolution.py --all --stage report   # comparison, JSON, figures, report files
 
 A window is a 25 x 25 km interior with a margin for the water routing. Every grid constant of the pipeline is a
-length in metres (those of the 25 m runs: ridges.XSEC_CELLS, curves.BRIDGE_EDGES, curves.PRUNE_EDGES times the cell)
-and goes back to cells at the cell size of the run; the thresholds in metres (valley area, heights, spline cut-off,
+length in metres (ridges.XSEC_M, curves.BRIDGE_M, curves.PRUNE_M) and goes back to cells at the cell size of the run; the thresholds in metres (valley area, heights, spline cut-off,
 minimum length) do not change. Runs: A 25 m; B 5 m; C 5 m with a spline cut-off of 25 m; D as B with a larger margin.
 Crests are kept in the interior only: curves of the window of at least MIN_LENGTH, cut at the interior, pieces of at
 least MIN_LENGTH kept; no joins and no mountain-area rule (the interiors lie inside the mountain area).
@@ -48,9 +47,10 @@ MARGIN_M = 5000.0  # water routing margin around the interior
 RUNS = {"A": (25.0, curves.SMOOTH_M, MARGIN_M), "B": (5.0, curves.SMOOTH_M, MARGIN_M),
         "C": (5.0, 25.0, MARGIN_M), "D": (5.0, curves.SMOOTH_M, 10000.0)}
 # the grid constants of the 25 m pipeline, in metres
-XSEC_M = ridges.XSEC_CELLS * ridges.CELL
-BRIDGE_M = curves.BRIDGE_EDGES * curves.CELL
-PRUNE_M = curves.PRUNE_EDGES * curves.CELL
+XSEC_M = ridges.XSEC_M
+BRIDGE_M = curves.BRIDGE_M
+PRUNE_M = curves.PRUNE_M
+EDGE_M = curves.EDGE_M
 BLOCK_M = 5000.0  # blocks of the paired bootstrap
 KS = tamsd.lags(8000)  # lags of every TAMSD (up to a quarter of a 40 km curve)
 H_WINDOWS = {"low": (100.0, 1000.0), "high": (1000.0, 5000.0), "grid": (25.0, 100.0)}  # m, 0.1-1 km, 1-5 km
@@ -61,9 +61,7 @@ RUN_COLOR = {"A": "#000000", "B": "#0072B2", "C": "#D55E00"}
 RUN_LABEL = {"A": "25 m", "B": "5 m", "C": "5 m, cut-off 25 m"}
 
 
-def cells(metres, cell):
-    """Number of cells of a length in metres at a cell size (at least 1)."""
-    return max(1, int(round(metres / cell)))
+cells = ridges.cells
 
 
 # --- DEM windows ---------------------------------------------------------------------------------------------

@@ -9,15 +9,19 @@ from scipy.interpolate import make_smoothing_spline
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 
-CELL = 25.0
+from ridges import CELL, cells
+
 STEP = 5.0  # m, resampling of the curves
-BRIDGE_EDGES = 40  # flat stretches up to 1 km are bridged
-PRUNE_EDGES = 4  # dead ends shorter than 100 m are removed
+BRIDGE_M = 1000.0  # flat stretches up to this length (in sides) are bridged
+PRUNE_M = 100.0  # dead ends shorter than this are removed
 MAX_DEFLECTION = 135.0  # deg, a stroke goes on if it turns by at most this
 DIRECTION_M = 200.0  # distance from a junction at which the direction of a branch is measured
 MIN_LENGTH = 1000.0  # m, shorter curves are dropped
 SMOOTH_M = 100.0  # m, wavelength below which the smoothing spline removes the steps of the cell sides
-EDGE_CELLS = 4  # a curve reaches the edge of the data within this many cells of a cell without data
+EDGE_M = 100.0  # a curve reaches the edge of the data within this distance of a cell without data
+BRIDGE_EDGES = cells(BRIDGE_M, CELL)  # 40 sides on the 25 m grid
+PRUNE_EDGES = cells(PRUNE_M, CELL)  # 4 sides
+EDGE_CELLS = cells(EDGE_M, CELL)  # 4 cells
 
 
 def bridge(acc, flat, max_edges=BRIDGE_EDGES):
@@ -47,7 +51,7 @@ def bridge(acc, flat, max_edges=BRIDGE_EDGES):
     size = np.bincount(lab[f[:, 0]], minlength=lab.max() + 1)
     ntouch = np.bincount(lab[touch], minlength=lab.max() + 1)
     ok = (size[lab[f[:, 0]]] <= max_edges) & (ntouch[lab[f[:, 0]]] >= 2)
-    return np.r_[acc, vid[f[ok]].astype(np.int32)]
+    return np.r_[acc, vid[f[ok]].astype(acc.dtype)]
 
 
 @njit(cache=True)

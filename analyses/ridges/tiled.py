@@ -105,7 +105,8 @@ class Run:
     """A tiled run: the folder of its arrays and tables, the grid shape, the tile size and the parameters."""
 
     def __init__(self, folder, shape, T, cell=ridges.CELL, valley_km2=ridges.VALLEY_KM2, xsec=ridges.XSEC_CELLS,
-                 drop=ridges.XSEC_DROP, hand_min=ridges.HAND_MIN, out=None, name="tiled", keep=False, log=None):
+                 drop=ridges.XSEC_DROP, hand_min=ridges.HAND_MIN, edge_cells=curves.EDGE_CELLS, out=None, name="tiled",
+                 keep=False, log=None):
         self.dir = Path(folder)
         self.dir.mkdir(parents=True, exist_ok=True)
         self.out = Path(out) if out else self.dir
@@ -113,7 +114,8 @@ class Run:
         self.shape, self.T = tuple(int(s) for s in shape), int(T)
         self.cell, self.xsec, self.drop, self.hand_min = cell, int(xsec), drop, hand_min
         self.min_cells = ridges.valley_cells(valley_km2, cell)
-        self.halo = max(self.xsec + 1, curves.EDGE_CELLS + 1)
+        self.edge_cells = int(edge_cells)
+        self.halo = max(self.xsec + 1, self.edge_cells + 1)
         self.name, self.keep = name, keep
         self.log = log or (lambda m: print(m, flush=True))
         self.t0 = time.time()
@@ -841,7 +843,7 @@ def edges_tile(run, i, j, r0, r1, c0, c1, v):
         out[name + "_ids"] = ids
         verts.append(ids.ravel())
     vid = np.unique(np.concatenate(verts))
-    near = curves.near_nodata(zb, vid // (W + 1) - ro, vid % (W + 1) - co, curves.EDGE_CELLS)
+    near = curves.near_nodata(zb, vid // (W + 1) - ro, vid % (W + 1) - co, run.edge_cells)
     return {**out, "vid": vid, "near": near, "cnt": np.array([len(out["a_key"]), len(out["f_key"])])}
 
 
@@ -877,7 +879,7 @@ def edges_merge(run, x0, y0):
         vids.append(v[out].astype(dt)), nears.append(nr[out])
         carry = v[~out], nr[~out]
     np.savez_compressed(run.out / f"edges_{run.name}.npz", acc=res[0], flat=res[1], vid=np.concatenate(vids),
-                        near=np.concatenate(nears), shape=np.array(run.shape), x0=x0, y0=y0)
+                        near=np.concatenate(nears), shape=np.array(run.shape), x0=x0, y0=y0, cell=run.cell)
     run.log(f"  edges: {len(res[0])} crest sides, {len(res[1])} flat candidates")
 
 

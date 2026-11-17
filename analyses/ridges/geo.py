@@ -13,7 +13,8 @@ import rasterio
 
 DEM = Path("/Volumes/SSD_DISANTE/IGN_France_Elevation_25m/mainland_france/geotiff")
 CACHE = Path(os.environ.get("RIDGES_CACHE", "/Volumes/SSD_DISANTE/xc-lab/ridges"))
-CELL = 25.0
+DEM_M = float(os.environ.get("RIDGES_DEM", "25"))  # cell size (m) of the run: 25 (BD ALTI) or 5 (RGE ALTI)
+CELL = 25.0  # cell of the BD ALTI tiles read here
 TILE = 1000  # cells per tile side
 REGIONS = {
     "alps": ["04", "05", "06", "26", "38", "73", "74", "83", "84"],

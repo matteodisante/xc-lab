@@ -20,7 +20,12 @@ N_COMPONENTS = 3
 RUNOUT_M = 200.0  # the direction a curve runs out in is measured over this length
 HAND_MIN = 20.0  # m above the streams along a join
 ATTACH_M = 50.0  # a junction this close to the end of a curve makes the end attached
-CELL = 25.0
+CELL = 25.0  # m, DEM cell size of a curves file without a `cell` entry
+
+
+def cell_of(curves_file):
+    """DEM cell size (m) of a curves_<region>.npz."""
+    return float(curves_file["cell"]) if "cell" in curves_file.files else CELL
 
 
 class Net:
@@ -96,11 +101,11 @@ def resample_line(a, b, step=STEP):
     return a + t * (b - a)
 
 
-def cells_crossed(a, b, x0, y0):
+def cells_crossed(a, b, x0, y0, cell=CELL):
     """(rows, cols) of every DEM cell the segment a-b touches, corners included (cell (r, c) is the square of
-    side CELL centred at (x0 + c CELL, y0 - r CELL))."""
-    pa = np.array([(a[0] - x0) / CELL, (y0 - a[1]) / CELL])  # (col, row) in cell units
-    pb = np.array([(b[0] - x0) / CELL, (y0 - b[1]) / CELL])
+    side `cell` centred at (x0 + c cell, y0 - r cell))."""
+    pa = np.array([(a[0] - x0) / cell, (y0 - a[1]) / cell])  # (col, row) in cell units
+    pb = np.array([(b[0] - x0) / cell, (y0 - b[1]) / cell])
     d = pb - pa
     t = [0.0, 1.0]
     for k in range(2):
@@ -121,10 +126,10 @@ def cells_crossed(a, b, x0, y0):
     return cells[:, 1], cells[:, 0]
 
 
-def hand_ok(hand, x0, y0, a, b, hand_min=HAND_MIN):
+def hand_ok(hand, x0, y0, a, b, hand_min=HAND_MIN, cell=CELL):
     """True if every DEM cell the straight segment a-b crosses is at least hand_min above the streams
-    (hand: int16 raster; stream cells are 0, cells draining to no valley are negative)."""
-    r, c = cells_crossed(a, b, x0, y0)
+    (hand: int16 raster of cell size `cell`; stream cells are 0, cells draining to no valley are negative)."""
+    r, c = cells_crossed(a, b, x0, y0, cell)
     if (r < 0).any() or (c < 0).any() or (r >= hand.shape[0]).any() or (c >= hand.shape[1]).any():
         return False
     return bool((hand[r, c] >= hand_min).all())
@@ -138,7 +143,7 @@ def runout(net, c, end, length=RUNOUT_M):
     return d / max(np.hypot(*d), 1e-9)
 
 
-def find_joins(net, hand, x0, y0, join_m=JOIN_M, cone_deg=CONE_DEG, snap_m=SNAP_M, n_comp=N_COMPONENTS):
+def find_joins(net, hand, x0, y0, join_m=JOIN_M, cone_deg=CONE_DEG, snap_m=SNAP_M, n_comp=N_COMPONENTS, cell=CELL):
     """Candidate joins (length, dead end node, target node or (curve, index), target is a dead end)."""
     lab = net.labels()
     cl = lab[[net.node(c, 0) for c in range(net.nc)]]
@@ -179,7 +184,7 @@ def find_joins(net, hand, x0, y0, join_m=JOIN_M, cone_deg=CONE_DEG, snap_m=SNAP_
                     pw = net.pt(*net.key[w])
                     vv = pw - p
                     dd = np.hypot(*vv)
-                    if 0 < dd <= join_m and vv @ d >= cos_min * dd and hand_ok(hand, x0, y0, p, pw):
+                    if 0 < dd <= join_m and vv @ d >= cos_min * dd and hand_ok(hand, x0, y0, p, pw, cell=cell):
                         if target is None or dd < target[0]:
                             target = (dd, w)
             if target is not None:
@@ -192,7 +197,7 @@ def find_joins(net, hand, x0, y0, join_m=JOIN_M, cone_deg=CONE_DEG, snap_m=SNAP_
                     pk = net.xy[k]
                     vv = pk - p
                     dd = np.hypot(*vv)
-                    if 0 < dd <= join_m and vv @ d >= cos_min * dd and hand_ok(hand, x0, y0, p, pk):
+                    if 0 < dd <= join_m and vv @ d >= cos_min * dd and hand_ok(hand, x0, y0, p, pk, cell=cell):
                         out.append((dd, u, (cj, int(k - net.off[cj])), False))
                         taken.append(comp[j])
                         break

@@ -1,6 +1,7 @@
 """Compares a tiled run (run_tiled.py) with the in-memory routing of ridges.py on the same DEM (FLATS = "blm").
 
-    RIDGES_FLATS=blm RIDGES_CACHE=<cache> uv run --with numba python check_tiled.py <region> --dem 25 --tile 400
+    RIDGES_FLATS=blm RIDGES_CACHE=<cache> [RIDGES_DEM=5] uv run --with numba python check_tiled.py <region> --dem 25 --tile 400
+    ... check_tiled.py alps --dem 5 --tile 2500 --window alps1     # a 5 m window (the DEM is the run's own raster)
 
 Prints the number of cells or sides that differ for filled, d, acc, the partition into links, the link forest, sz,
 hand and the crest sides (acc, flat, vid, near). The in-memory arrays of the Alps take about 3 GB.
@@ -13,8 +14,10 @@ import numpy as np
 from numba import njit
 
 import build
+import curves
 import geo
 import ridges
+import run_tiled
 import tiled
 
 STRIP = 1000  # rows compared at a time
@@ -45,13 +48,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("region", choices=list(geo.REGIONS))
     ap.add_argument("--dem", type=int, default=25)
+    ap.add_argument("--window", help="a name of dem_resolution.WINDOWS or x0,x1,y0,y1 in km")
     ap.add_argument("--tile", type=int, default=400)
     a = ap.parse_args()
-    z, (x0, y0) = geo.mosaic(a.region)
-    H, W = z.shape
-    folder = geo.CACHE / f"tiled_{a.region}_{a.dem}m_T{a.tile}"
-    run = tiled.Run(folder, z.shape, a.tile, xsec=ridges.XSEC_CELLS, out=build.folder(), name=a.region)
-    assert np.array_equal(run.z.array(), z, equal_nan=True)
+    cell = float(a.dem)
+    H, W, (x0, y0) = run_tiled.box_shape(a.region, a.dem, a.window)
+    folder = geo.CACHE / f"tiled_{run_tiled.window_tag(a.window) if a.window else a.region}_{a.dem}m_T{a.tile}"
+    run = tiled.Run(folder, (H, W), a.tile, cell=cell, xsec=ridges.cells(ridges.XSEC_M, cell),
+                    edge_cells=ridges.cells(curves.EDGE_M, cell), out=build.folder(a.dem), name=a.region)
+    z = run.z.array()
+    if a.dem == 25 and not a.window:
+        assert np.array_equal(z, geo.mosaic(a.region)[0], equal_nan=True)
     out = {}
     filled, d, order = ridges.route(z, "blm")
     out["filled"] = diff(run.grid("filled", np.float32), filled, np.float32, nan=True)
@@ -59,7 +66,7 @@ def main():
     acc = count_cells(d, order, W)
     out["acc"] = diff(run.grid("acc", np.int32), acc, np.int32)
     del acc
-    lid, down = ridges._links(filled, d, order, W, ridges.valley_cells(ridges.VALLEY_KM2, ridges.CELL))
+    lid, down = ridges._links(filled, d, order, W, ridges.valley_cells(ridges.VALLEY_KM2, cell))
     del d, order
     sz = filled
     out["sz"] = diff(run.grid("sz", np.float32), sz, np.float32, nan=True)
@@ -73,7 +80,7 @@ def main():
     out["forest"] = sum(down[link[k]] != link[tdown[k]] for k in range(1, tdown.size))
     out["n_links"] = (int(tdown.size - 1), int(down.size - 1))
     tin, tout = ridges._euler(down)
-    ref_edges = ridges.crest_edges(z, lid, sz, tin, tout)
+    ref_edges = ridges.crest_edges(z, lid, sz, tin, tout, run.xsec)
     hand = run.grid("hand", np.int16, run.out / f"hand_{a.region}.npy")
     n = 0
     for r in range(0, H, STRIP):
@@ -84,8 +91,7 @@ def main():
     out["hand"] = n
     del lid, sz, filled
     vid = np.unique(np.r_[ref_edges[0].ravel(), ref_edges[1].ravel()])
-    import curves
-    near = curves.near_nodata(z, vid // (W + 1), vid % (W + 1), curves.EDGE_CELLS)
+    near = curves.near_nodata(z, vid // (W + 1), vid % (W + 1), run.edge_cells)
     e = np.load(run.out / f"edges_{a.region}.npz")
     for k, ref in (("acc", ref_edges[0]), ("flat", ref_edges[1]), ("vid", vid), ("near", near)):
         out["edges_" + k] = int(abs(len(e[k]) - len(ref))) if e[k].shape != ref.shape else int((e[k] != ref).sum())

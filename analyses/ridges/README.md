@@ -41,7 +41,14 @@ built from scratch and does not use or reproduce its numbers.
    local H(s) = half the log-log slope of the mean, H_geo on windows from 0.1 km, 0.1-1, 1-10 and beyond 10 km,
    1000 bootstrap resamples of whole trees (of curves for the curves).
 
-Every constant is a named constant at the top of its module; `PARAMETERS.md` in the cache folder lists them.
+Every constant is a named constant at the top of its module; `PARAMETERS.md` in the cache folder lists them. Every grid
+constant is a length in metres (`ridges.XSEC_M`, `curves.BRIDGE_M`, `PRUNE_M`, `EDGE_M`, `mountains.BLOCK_M`) and goes
+to cells with `ridges.cells(metres, cell)` at the cell size of the run (25 or 5 m): the 25 m runs give the same numbers
+as before (cross-section 6 cells, bridges 40 sides, pruning 4 sides, edge 4 cells, 40 x 40 cells per 1 km cell), the 5 m
+runs 30, 200, 20, 20 and 200 x 200. `RIDGES_DEM=5` (default 25) makes `build.folder()` the 5 m folder
+(`rgealti5_..._flats-blm`, grid constants in cells as in the 25 m name); `curves_`/`edges_<region>.npz` carry the cell
+size (`cell`, 25 when absent) and `hgeo.py`/`export_paths.py` read it. Side ids (corner `r (w + 1) + c`) are int64 as soon
+as a grid has more than 2^31 corners (both 5 m boxes have 3-4 x 10^9).
 
 ## Run
 
@@ -67,6 +74,32 @@ parameter folder so that `build.py --stage curves` and `hgeo.py` run on them unc
 tiled run with the in-memory arrays (0 differences: Alps at T = 400, Pyrenees at T = 400 and 1000); `test_tiled.py`
 does it on synthetic DEMs and a real window. Link numbers differ from the in-memory ones (the partition and the
 link forest are the same).
+
+The 5 m run of a massif is one command (`RIDGES_FLATS`, `RIDGES_DEM` and `RIDGES_CACHE` are set by the driver):
+
+```
+uv run --with numba python run_massif.py alps        # then: ... pyrenees (one region at a time)
+uv run --with numba python run_massif.py alps --window alps1    # trial on a 35 x 35 km window (or --window x0,x1,y0,y1 in km)
+```
+
+`run_massif.py` runs, each stage in its own process under `/usr/bin/time -l`: the tiled stages (`run_tiled.py`, tile 2500
+cells), `build.py --stage curves`, `hgeo.py`, `export_paths.py` and `run_dimension.py crests|network` (inputs of the box
+dimension; `--no-dimension` skips them) and `run_tiled.py --stage clean` (the big rasters; `mask_`, `edges_` and `hand_` stay
+in the parameter folder). It resumes after a crash (run the same command: finished stages are in `driver_<region>.json`,
+the tiled stages resume tile by tile) and logs every line with a timestamp to `run.log` in the folder
+`/Volumes/SSD_DATA/xc-lab/ridges/rgealti5_..._flats-blm/` (a window: `trial_<window>/`). The 5 m mosaic is read from the VRT of
+`/Volumes/SSD_DATA/dem/rge_alti_5m/` (README there): what lies outside it, or has no tile, is no data and no BD ALTI cell
+enters. The mountain area is recomputed from the 5 m block means (200 x 200 cells per 1 km cell; `compare_masks.py` compares
+it with the 25 m one); `check_tiled.py --dem 5 --window <w>` compares the tiled run of a window with the in-memory routing
+and `check_window.py <w>` the interior crests with run B of `dem_resolution.py`.
+
+Trials of the driver (2026-11-17, T = 2500): on the 35 x 35 km window `alps1` the chain takes about 75 s with a peak of
+0.4 GB per stage (the tiled run equals the in-memory routing bit for bit, T = 1700 and 2500; its interior crests differ from
+run B of `dem_resolution.py` by 0.7% and 1.0% of the sides, the flat rule); on a 100 x 100 km box of the Alps (6,957 km2 of
+data) 14 min, 0.74 GB (`paths-all`), 5.2 GB of disk at the peak; `build.py` read 0.47 GB for 1.5 M sides. Mountain area from
+the 5 m block means: Alps 40,460 km2 against 47,754 at 25 m, Pyrenees 15,494 against 20,640; of the cells that differ, 98% lie
+where the 5 m mosaic has no data (the 25 m tiles reach beyond the border), and on the footprint of the 5 m mosaic the two masks
+differ in 118 and 27 cells of 1 km (`compare_masks.py`); the four windows of `dem_resolution.py` are identical.
 
 One heavy process at a time. Peak resident memory (`getrusage`, recorded in `peak_ram.json`): `build.py` 1.8 GB for
 the Alps and 1.4 GB for the Pyrenees (`/usr/bin/time -l` read 2.4 and 2.1 GB), `hgeo.py` 0.4 and 0.3 GB.

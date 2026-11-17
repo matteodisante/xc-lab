@@ -64,7 +64,7 @@ def run(region):
     xy, off = c["xy"], c["off"]
     x0, y0 = float(c["x0"]), float(c["y0"])
     net = joined.Net(xy, off, c["jc"], c["jxy"])
-    nj = joined.make_joins(net, hand, x0, y0)
+    nj = joined.make_joins(net, hand, x0, y0, cell=joined.cell_of(c))
     emap = joined.edge_map(net)
     tr = list(joined.trees(net))
     n_paths = sum(len(t["tips"]) for t in tr)

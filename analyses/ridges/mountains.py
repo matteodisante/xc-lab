@@ -1,4 +1,5 @@
-"""Mountain area (UNEP-WCMC, Kapos et al. 2000) on 1 km cells computed from the 25 m DEM.
+"""Mountain area (UNEP-WCMC, Kapos et al. 2000) on 1 km cells computed from the DEM (block means of `block_cells(cell)`
+square blocks, 40 cells at 25 m and 200 at 5 m).
 
 Classes on the 1 km mean elevation z, its slope and its local elevation range (LER, max - min within RADIUS
 cells): 1-3 z >= 2500 m; 4 z >= 1500 m and slope >= 2 deg; 5 z >= 1000 m and (slope >= 5 deg or LER > 300 m);
@@ -9,8 +10,16 @@ connected piece is kept.
 import numpy as np
 from scipy import ndimage as ndi
 
-BLOCK = 40  # 25 m cells per 1 km cell
-MIN_VALID = 0.5  # share of valid 25 m cells for a 1 km cell to have data
+BLOCK_M = 1000.0  # m, side of the cells of the classification
+
+
+def block_cells(cell):
+    """DEM cells per side of a 1 km cell on a grid of `cell` m."""
+    return int(round(BLOCK_M / cell))
+
+
+BLOCK = block_cells(25.0)  # 40 on the 25 m grid, 200 on the 5 m grid
+MIN_VALID = 0.5  # share of valid DEM cells for a 1 km cell to have data
 RADIUS = 7  # km, local elevation range
 LER = 300.0
 Z_HIGH, Z_MID, Z_LOW = 2500.0, 1500.0, 1000.0

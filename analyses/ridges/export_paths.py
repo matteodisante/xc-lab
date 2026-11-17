@@ -20,7 +20,7 @@ def export(region):
     c = np.load(d / f"curves_{region}.npz")
     hand = np.load(d / f"hand_{region}.npy", mmap_mode="r")
     net = joined.Net(c["xy"], c["off"], c["jc"], c["jxy"])
-    joined.make_joins(net, hand, float(c["x0"]), float(c["y0"]))
+    joined.make_joins(net, hand, float(c["x0"]), float(c["y0"]), cell=joined.cell_of(c))
     emap = joined.edge_map(net)
     origin = np.array([float(c["x0"]), float(c["y0"])])
     pts, tree = [], []
