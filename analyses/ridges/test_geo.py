@@ -27,3 +27,15 @@ def test_own_cells_marks_department_tiles_only():
     own = geo.own_cells("alps")
     assert own.shape == (400, 275)
     assert 0.3 < own.mean() < 1.0
+
+
+def test_bd_alti_is_the_5m_dem_every_fifth_cell():
+    import dem_resolution as dr
+
+    box = (561000, 6189000, 566000, 6194000)  # one corner of the window pyr1
+    z25, o25 = geo.window(*box)
+    z5, o5 = dr.read5(box)
+    assert o25 == o5
+    sub = z5[::5, ::5][:z25.shape[0], :z25.shape[1]]
+    both = np.isfinite(z25) & np.isfinite(sub)
+    assert both.mean() > 0.5 and np.array_equal(z25[both], sub[both])

@@ -101,6 +101,12 @@ the 5 m block means: Alps 40,460 km2 against 47,754 at 25 m, Pyrenees 15,494 aga
 where the 5 m mosaic has no data (the 25 m tiles reach beyond the border), and on the footprint of the 5 m mosaic the two masks
 differ in 118 and 27 cells of 1 km (`compare_masks.py`); the four windows of `dem_resolution.py` are identical.
 
+25 m reference on the footprint of the 5 m run: `RIDGES_DEM=5to25` (with `RIDGES_FLATS=blm` and `RIDGES_CACHE`) makes
+`geo.mosaic` read the 5 m VRT every fifth cell (rows and columns 0, 5, 10... of the 5 m box, the BD ALTI grid; NaN outside the
+5 m mosaic) and `build.folder()` the folder `rgealti5to25_..._flats-blm`; `build.py`, `hgeo.py`, `export_paths.py` and
+`run_dimension.py` then run in memory as at 25 m. Where both exist, this DEM equals BD ALTI 25 m exactly (max difference 0 m
+over 58.5 M cells in the Pyrenees box and 87.5 M in the Alps box).
+
 One heavy process at a time. Peak resident memory (`getrusage`, recorded in `peak_ram.json`): `build.py` 1.8 GB for
 the Alps and 1.4 GB for the Pyrenees (`/usr/bin/time -l` read 2.4 and 2.1 GB), `hgeo.py` 0.4 and 0.3 GB.
 

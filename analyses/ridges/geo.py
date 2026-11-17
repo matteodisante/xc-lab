@@ -13,7 +13,9 @@ import rasterio
 
 DEM = Path("/Volumes/SSD_DISANTE/IGN_France_Elevation_25m/mainland_france/geotiff")
 CACHE = Path(os.environ.get("RIDGES_CACHE", "/Volumes/SSD_DISANTE/xc-lab/ridges"))
-DEM_M = float(os.environ.get("RIDGES_DEM", "25"))  # cell size (m) of the run: 25 (BD ALTI) or 5 (RGE ALTI)
+_DEM = os.environ.get("RIDGES_DEM", "25")  # 25 (BD ALTI), 5 (RGE ALTI) or 5to25 (RGE ALTI 5 m taken every fifth cell)
+FROM5 = _DEM == "5to25"
+DEM_M = 25.0 if FROM5 else float(_DEM)  # cell size (m) of the run
 CELL = 25.0  # cell of the BD ALTI tiles read here
 TILE = 1000  # cells per tile side
 REGIONS = {
@@ -42,8 +44,25 @@ def region_box(region):
     return min(xs), max(xs) + 25, min(ys) - 25, max(ys)
 
 
+def mosaic_from5(region):
+    """The 25 m mosaic of the region read from the 5 m VRT, every fifth cell (the 25 m centres are 5 m centres: rows and
+    columns 0, 5, 10... of the 5 m box). NaN where the 5 m mosaic has no data; no BD ALTI cell enters."""
+    import run_tiled  # run_tiled imports geo: imported here to avoid the cycle
+
+    h, w, (x0, y0) = run_tiled.box_shape(region, 5)
+    r0, c0 = run_tiled.origin5(x0, y0)
+    z = np.empty((h // 5, w // 5), np.float32)
+    with rasterio.open(run_tiled.dem_resolution.DEM5) as src:
+        for a in range(0, h, 2500):
+            b = min(a + 2500, h)
+            z[a // 5:b // 5] = run_tiled.read_dem5(src, r0 + a, r0 + b, c0, c0 + w)[::5, ::5]
+    return z, (x0, y0)
+
+
 def mosaic(region):
     """Elevations (float32, NaN = no data) over the bounding box, and (x0, y0) of cell (0, 0)."""
+    if FROM5:
+        return mosaic_from5(region)
     x0k, x1k, y0k, y1k = region_box(region)
     n_x, n_y = (x1k - x0k) // 25, (y1k - y0k) // 25
     z = np.full((n_y * TILE, n_x * TILE), np.nan, np.float32)

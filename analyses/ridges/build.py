@@ -38,7 +38,7 @@ def folder(cell=None):
     """Cache folder of the run; `cell` is the DEM cell size in m (default geo.DEM_M, from RIDGES_DEM). Grid constants
     appear in cells, as at 25 m: the 5 m folder reads xsec30 gap200 prune20 for the same lengths in metres."""
     cell = geo.DEM_M if cell is None else float(cell)
-    name = (f"{SOURCE[cell][0]}{cell:g}_valley{ridges.VALLEY_KM2:g}_xsec{ridges.cells(ridges.XSEC_M, cell)}-{ridges.XSEC_DROP:g}"
+    name = (f"{'rgealti5to25' if geo.FROM5 else SOURCE[cell][0] + format(cell, 'g')}_valley{ridges.VALLEY_KM2:g}_xsec{ridges.cells(ridges.XSEC_M, cell)}-{ridges.XSEC_DROP:g}"
             f"_hand{ridges.HAND_MIN:g}_gap{ridges.cells(curves.BRIDGE_M, cell)}_prune{ridges.cells(curves.PRUNE_M, cell)}"
             f"_defl{curves.MAX_DEFLECTION:g}-{curves.DIRECTION_M:g}_min{curves.MIN_LENGTH:g}_step{curves.STEP:g}"
             f"_smooth{curves.SMOOTH_M:g}_join{joined.JOIN_M:g}-{joined.CONE_DEG:g}-{joined.SNAP_M:g}")
@@ -70,12 +70,19 @@ and Mulla 2014), driven by `run_massif.py`; the mountain area comes from the 5 m
 `driver_<region>.json` and `peak_ram.json` hold the timings and peak memory of every stage."""
 
 
+FROM_5TO25 = """
+Source `/Volumes/SSD_DATA/dem/rge_alti_5m/rge_alti_5m.vrt`, every fifth cell, rows and columns 0, 5, 10... of the 5 m box
+(`geo.mosaic_from5`, `RIDGES_DEM=5to25`): the grid and the elevations of BD ALTI 25 m (centres on multiples of 25 m) on the
+footprint of the 5 m mosaic; what lies outside it, or has no tile, is no data. Routing in memory as at 25 m, the mountain
+area from the 25 m block means of this DEM."""
+
+
 def write_parameters(d, cell=None):
     cell = geo.DEM_M if cell is None else float(cell)
     (d / "PARAMETERS.md").write_text(f"""# Crest pipeline, {d.name}
 
 Code: `xc-lab/analyses/ridges/` (`build.py`, `joined.py`, `hgeo.py`, and for 5 m `run_massif.py`, `run_tiled.py`).
-DEM: {SOURCE[cell][1]}, Lambert-93, cell {cell:g} m (grid constants are lengths in metres, converted by the cell).{FROM_5M if cell == 5.0 else ""}
+DEM: {"IGN RGE ALTI 5 m, every fifth cell (the 5 m VRT decimated to the BD ALTI 25 m grid)" if geo.FROM5 else SOURCE[cell][1]}, Lambert-93, cell {cell:g} m (grid constants are lengths in metres, converted by the cell).{FROM_5M if cell == 5.0 else FROM_5TO25 if geo.FROM5 else ""}
 Departments: {geo.REGIONS}.
 
 | Parameter | Value |
