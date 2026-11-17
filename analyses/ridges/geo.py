@@ -12,7 +12,7 @@ import numpy as np
 import rasterio
 
 DEM = Path("/Volumes/SSD_DISANTE/IGN_France_Elevation_25m/mainland_france/geotiff")
-CACHE = Path(os.environ.get("RIDGES_CACHE", "/Volumes/SSD_DISANTE/xc-lab/ridges"))
+CACHE = Path(os.environ.get("RIDGES_CACHE", "/Volumes/SSD_DATA/xc-lab/ridges"))
 _DEM = os.environ.get("RIDGES_DEM", "25")  # 25 (BD ALTI), 5 (RGE ALTI) or 5to25 (RGE ALTI 5 m taken every fifth cell)
 FROM5 = _DEM == "5to25"
 DEM_M = 25.0 if FROM5 else float(_DEM)  # cell size (m) of the run

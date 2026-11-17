@@ -20,7 +20,7 @@ import ridges
 import run_tiled
 
 
-B_CACHE = Path("/Volumes/SSD_DISANTE/xc-lab/ridges/dem_resolution")  # where dem_resolution.py --stage run wrote run B
+B_CACHE = Path("/Volumes/SSD_DATA/xc-lab/ridges/dem_resolution")  # where dem_resolution.py --stage run wrote run B
 
 
 def sides(e, box):

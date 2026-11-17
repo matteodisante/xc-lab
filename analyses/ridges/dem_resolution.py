@@ -460,11 +460,11 @@ def write_report(res):
             mac[f"{R}ExactPointsCell"] = f"{100 * (1 - max(e['b_points_off_25m'] for e in ex)):.1f}"
             mac[f"{R}ExactMax"] = f"{max(e['max_dist_m'] for e in ex):.1f}"
         am = [res["windows"][w]["A_vs_massif_run"] for w in MASSIF[region]]
-        mac[f"{R}Over25"] = f"{100 * np.mean([res['windows'][w]['dist_AB']['over_25m'] for w in MASSIF[region]]):.1f}"
+        mac[f"{R}OverTwentyFive"] = f"{100 * np.mean([res['windows'][w]['dist_AB']['over_25m'] for w in MASSIF[region]]):.1f}"
         mac[f"{R}MassifMean"] = f"{np.mean([a['mean'] for a in am]):.1f}"
         mac[f"{R}MassifWithin"] = f"{100 * np.mean([a['within_25m'] for a in am]):.1f}"
         # table: three runs and the difference B - A
-        rows.append(f"\\multicolumn{{6}}{{l}}{{\\textit{{{ {'alps': 'Alps', 'pyrenees': 'Pyrenees'}[region] }}}}}\\\\")
+        rows.append(f"\\textit{{{ {"alps": "Alps", "pyrenees": "Pyrenees"}[region] }}} & & & & & \\\\")
         for k in "ABC":
             dist = f"{m['dist_AB']['mean']:.0f} ({m['dist_AB']['p95']:.0f}) / {m['dist_BA']['mean']:.0f} ({m['dist_BA']['p95']:.0f})" if k == "B" else ""
             rows.append(f"{k}, {RUN_LABEL[k]} & {m['n'][k]} & {tk(m['length_km'][k])} & {dist} & "

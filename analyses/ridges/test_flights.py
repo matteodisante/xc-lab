@@ -19,7 +19,7 @@ import raw_igc as ri  # noqa: E402
 
 V = 35 / 3.6
 R, TURN_S = 40.0, 25
-DATA = Path("/Volumes/SSD_DISANTE/xc-lab/ridges/data")
+DATA = Path("/Volumes/SSD_DATA/xc-lab/ridges/data")
 
 
 def lomax(rng, mu, tau0):

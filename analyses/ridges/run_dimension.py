@@ -23,7 +23,7 @@ import tamsd
 
 HERE = Path(__file__).parent
 OUT = HERE / "out/dimension"
-LAB = Path("/Volumes/SSD_DISANTE/xc-lab/ridges")
+LAB = Path("/Volumes/SSD_DATA/xc-lab/ridges")
 REGIONS = ("alps", "pyrenees")
 EPS_NETWORK = (100.0, 50_000.0)  # m, box sizes of the network
 MIN_LMIN_KM = min(bd.CLASS_MIN_KM)  # pieces and paths shorter than this are not counted

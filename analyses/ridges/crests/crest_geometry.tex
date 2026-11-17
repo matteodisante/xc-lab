@@ -35,11 +35,15 @@
 \newcommand{\Hgeo}{H_{\mathrm{geo}}}
 \newcommand{\code}[1]{\texttt{#1}}
 
-% Numbers of the crest pipeline (report_figures.py), of the flights (report.py) and of the box dimension.
+% Rows of a generated table inside a tabular: the TeX primitive input, which LaTeX's \input breaks there.
+\makeatletter\newcommand{\tablerows}[1]{\@@input #1 }\makeatother
+
+% Numbers of the crest pipeline (report_figures.py), of the flights (report.py), of the box dimension, of the DEM test (dem_resolution.py) and of the four runs (compare_dem.py).
 \input{generated/macros}
 \IfFileExists{generated/flights_macros.tex}{\input{generated/flights_macros}}{}
 \IfFileExists{generated/dimension_macros.tex}{\input{generated/dimension_macros}}{}
 \IfFileExists{generated/dem_resolution_macros.tex}{\input{generated/dem_resolution_macros}}{}
+\IfFileExists{generated/compare_dem_macros.tex}{\input{generated/compare_dem_macros}}{}
 
 \title{\vspace{-1.8cm}\textbf{Crest geometry and the route of mountain flights}\\[3pt]
   \large The crests of the French Alps and Pyrenees against paraglider flights}
@@ -62,6 +66,9 @@
 \begin{thebibliography}{9}
 \bibitem{kapos} V.\ Kapos, J.\ Rhind, M.\ Edwards, M.\,F.\ Price and C.\ Ravilious, Developing a map of the world's mountain forests, in M.\,F.\ Price and N.\ Butt (eds), \emph{Forests in Sustainable Mountain Development: A State of Knowledge Report for 2000}, CABI, 2000, pp.\ 4--19.
 \bibitem{barnes} R.\ Barnes, C.\ Lehman and D.\ Mulla, Priority-flood: an optimal depression-filling and watershed-labeling algorithm for digital elevation models, \emph{Computers \& Geosciences} 62 (2014) 117--127.
+\bibitem{barnesflats} R.\ Barnes, C.\ Lehman and D.\ Mulla, An efficient assignment of drainage direction over flat surfaces in raster digital elevation models, \emph{Computers \& Geosciences} 62 (2014) 128--135.
+\bibitem{barnesfill} R.\ Barnes, Parallel priority-flood depression filling for trillion cell digital elevation models on desktops or clusters, \emph{Computers \& Geosciences} 96 (2016) 56--68.
+\bibitem{barnesacc} R.\ Barnes, Parallel non-divergent flow accumulation for trillion cell digital elevation models on desktops or clusters, \emph{Environmental Modelling \& Software} 92 (2017) 202--212.
 \bibitem{falconer} K.\ Falconer, \emph{Fractal Geometry: Mathematical Foundations and Applications}, 3rd ed., Wiley, 2014 (chapters on Hausdorff dimension, box dimensions and random fractals).
 \bibitem{kahane} J.-P.\ Kahane, \emph{Some Random Series of Functions}, 2nd ed., Cambridge University Press, 1985, chapter 18.
 \bibitem{degennes} P.-G.\ de Gennes, \emph{Scaling Concepts in Polymer Physics}, Cornell University Press, 1979.

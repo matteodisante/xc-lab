@@ -10,6 +10,7 @@ their route. The intermittent model of the flights is a separate, frozen report.
 | H_geo of the crests: DEM to mountain area, divides, curves, joins, trees, paths, TAMSD | `geo.py` `mountains.py` `ridges.py` `curves.py` `joined.py` `tamsd.py` `hgeo.py` `build.py`; figures and macros `report_figures.py` `fig_joins.py` | active: `crests/crest_geometry.pdf`; results in Section 2 (`crests/sections/geometry.tex`), the construction in Section 5 (`method.tex`) and Appendix A (`appendix.tex`) |
 | H of the paraglider flights in time (H_dyn) and along the route (H_route) against H_geo | `flights.py` `run_flights.py` `pauses.py` `glide_speed.py` `decompose.py` `report.py --part route` (figures `route_*`, tables, macros) | active: `crests/crest_geometry.pdf`, Section 3 (`crests/sections/flights_route.tex`), flight selection and rule in Sections 5.3-5.4, checks in Appendix C |
 | Does the 25 m DEM change the crests or H_geo? 4 windows of 25 x 25 km at 25 m and 5 m (RGE ALTI) | `dem_resolution.py` | active: `crests/crest_geometry.pdf`, appendix "Where the numbers hold", subsection DEM resolution (`appendix.tex`) |
+| Which DEM, 25 m or 5 m, on the whole massifs? Four runs (flat rule, footprint of the 5 m DEM, resolution): counts, H_geo, box dimension | `compare_dem.py` (reads the four crest folders, made by `build.py`/`hgeo.py` and `run_massif.py`) | active: `crests/crest_geometry.pdf`, appendix "The 25 m and the 5 m model on the whole massifs" (`crests/sections/dem_compare.tex`) |
 | Box dimension of the crests and the test D = 1/H_route | `boxdim.py` `run_dimension.py` | active: `crests/crest_geometry.pdf`, Section 4 (`crests/sections/dimension.tex`), details in Appendix D (`dimension_appendix.tex`) |
 | Phases, glide and pause laws, intermittent ball, split of 1 - H, null models (H_dyn vs H_route, subordinated process X(t) = R(S(t))) | `pauses.py` `model.py` `glide_speed.py` `decompose.py` `report.py --part model` | on hold: `intermittency/crest_intermittency.pdf`, a frozen snapshot with its own copies of figures and generated files; it refers to the active report for the crests and the flight selection |
 | Recipe and definitions of the flight comparison | | `paper/FLIGHTS.md` |
@@ -57,6 +58,7 @@ uv run --with numba python build.py <alps|pyrenees>   # DEM -> mask, crest sides
 uv run --with numba python hgeo.py <alps|pyrenees>    # joins, trees, paths, TAMSD, H_geo, exports (about 1 min)
 uv run --with numba --with pyproj python report_figures.py   # figures, macros and tables of the crest part
 uv run --with numba python report.py                          # route figures, tables and macros of the flight part (--part model: the frozen report)
+uv run --with numba python compare_dem.py data && uv run --with numba python compare_dem.py report   # the four runs side by side: tables, macros, figures of the DEM appendix
 cd crests && latexmk -pdf crest_geometry.tex                  # the active report
 cd intermittency && latexmk -pdf crest_intermittency.tex      # the on-hold report (needs crests/crest_geometry.aux for its references)
 uv run --with numba python -m pytest -q               # synthetic DEMs, curves, joins, TAMSD; DEM tests skip without the disk
@@ -107,12 +109,14 @@ differ in 118 and 27 cells of 1 km (`compare_masks.py`); the four windows of `de
 `run_dimension.py` then run in memory as at 25 m. Where both exist, this DEM equals BD ALTI 25 m exactly (max difference 0 m
 over 58.5 M cells in the Pyrenees box and 87.5 M in the Alps box).
 
+The caches of this analysis are all in `/Volumes/SSD_DATA/xc-lab/ridges/`, with `INDEX.md` (one row per folder: DEM, flat rule, footprint, code, commit, size, readers). `compare_dem.py` needs the four crest folders, including the box-dimension files of the flats-blm 25 m run (`export_paths.py`, then `run_dimension.py crests` and `network` with `RIDGES_FLATS=blm`). `run_flights.newest_data()` takes the flood-rule folder (no `_flats-` suffix) as the crests of the flight comparison.
+
 One heavy process at a time. Peak resident memory (`getrusage`, recorded in `peak_ram.json`): `build.py` 1.8 GB for
 the Alps and 1.4 GB for the Pyrenees (`/usr/bin/time -l` read 2.4 and 2.1 GB), `hgeo.py` 0.4 and 0.3 GB.
 
 ## Files in the cache folder
 
-`/Volumes/SSD_DISANTE/xc-lab/ridges/bdalti25_valley0.5_xsec6-10_hand20_gap40_prune4_defl135-200_min1000_step5_smooth100_join1000-45-200/`
+`/Volumes/SSD_DATA/xc-lab/ridges/bdalti25_valley0.5_xsec6-10_hand20_gap40_prune4_defl135-200_min1000_step5_smooth100_join1000-45-200/`
 
 | File | Content |
 |---|---|
@@ -153,7 +157,7 @@ one fix per second (median interval 1 s), opening at least 0.1, at least 80% of 
 from Vilpellet's segmenter. The route replaces each thermal pause, the climb runs of the segmenter (consecutive runs
 joined; search runs stay in the route), by its chord. Selected paragliders: 15,190 in the Alps and 1,406 in the
 Pyrenees (hang gliders: 266 and 2, not analysed). Cache:
-`/Volumes/SSD_DISANTE/xc-lab/ridges/flights_cleaned_v35_open0.1_dt1_reg0.8_pause-vilpellet/` (`run_flights.cache_dir()`);
+`/Volumes/SSD_DATA/xc-lab/ridges/flights_cleaned_v35_open0.1_dt1_reg0.8_pause-vilpellet/` (`run_flights.cache_dir()`);
 the first run, with a turn detector and median interval up to 5 s, is in `flights_cleaned_v35_open0.1_dt5_reg0.8/`
 and `check_raw.py` still uses that detector.
 

@@ -10,7 +10,7 @@ The full run goes by chunks of CHUNK row groups of fixes.parquet; each chunk is 
 as it is done and skipped when the run is started again.
 
     uv run python run_flights.py --sample 200 [--plot 10]    # trial, writes out/sample/
-    uv run python run_flights.py --full --jobs 4             # every candidate, writes the SSD_DISANTE cache
+    uv run python run_flights.py --full --jobs 4             # every candidate, writes the SSD_DATA cache
 """
 
 import os
@@ -32,16 +32,17 @@ import flights as fl
 import pauses as pa
 
 DISK = Path("/Volumes/SSD_DATA")
-LAB = Path("/Volumes/SSD_DISANTE/xc-lab/ridges")
+LAB = Path("/Volumes/SSD_DATA/xc-lab/ridges")
 DECLARED_OPEN = {"Dist libre", "Dist 1 pt", "Dist 2 pts", "Dist 3 pts"}
 CHUNK = 10  # row groups of fixes.parquet per saved chunk (about 1 400 flights)
 SEED = 0
 
 
 def newest_data():
-    """The newest crest folder of LAB that holds a complete hgeo_windows.csv (and masks, paths, TAMSD rows)."""
+    """The newest BD ALTI crest folder of LAB with the flood rule for the flats (no `_flats-` suffix) that holds a complete
+    hgeo_windows.csv (and masks, paths, TAMSD rows)."""
     need = ["hgeo_windows.csv", "mask_alps.npz", "mask_pyrenees.npz", "tamsd_rows_alps_paths.npz", "tamsd_rows_pyrenees_paths.npz"]
-    done = [d for d in LAB.glob("bdalti*") if all((d / f).exists() for f in need)]
+    done = [d for d in LAB.glob("bdalti*") if "_flats-" not in d.name and all((d / f).exists() for f in need)]
     return max(done, key=lambda d: (d / "hgeo_windows.csv").stat().st_mtime)
 
 

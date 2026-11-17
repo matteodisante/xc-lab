@@ -40,7 +40,7 @@ NULLS = ("straight", "random")  # null models: the same durations and speed, ano
 
 
 def newest_cache():
-    return max(Path("/Volumes/SSD_DISANTE/xc-lab/ridges").glob("flights_cleaned_*"), key=lambda d: (d / "flights.csv").stat().st_mtime)
+    return max(Path("/Volumes/SSD_DATA/xc-lab/ridges").glob("flights_cleaned_*"), key=lambda d: (d / "flights.csv").stat().st_mtime)
 
 
 def load_paths(data, region):
