@@ -1,0 +1,215 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[framemethod=default]{mdframed}
+\usepackage{hyperref}
+
+\setlist{itemsep=2pt,topsep=3pt}
+\newcommand{\done}{\textcolor{green!45!black}{\textsf{[done]}}}
+\newcommand{\todo}{\textcolor{orange!85!black}{\textsf{[to do]}}}
+\newcommand{\idea}{\textcolor{blue!70!black}{\textsf{[idea]}}}
+\newcommand{\open}{\textcolor{red!70!black}{\textsf{[open]}}}
+\newcommand{\warn}{\textcolor{red!70!black}{\textsf{[warning]}}}
+\newcommand{\Q}[1]{\noindent\textbf{Question.} \emph{#1}\par\smallskip}
+\newmdenv[linecolor=gray!60,backgroundcolor=gray!6,innerleftmargin=8pt,innerrightmargin=8pt]{aside}
+
+\title{The story: from FFVL tracks to flying together\\[2pt]\large an outline for the thesis}
+\author{Working outline}
+\date{\today}
+
+\begin{document}
+\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+\bigskip
+
+\noindent Tags: \done{} built and run; \todo{} decided, not built; \idea{} to discuss;
+\open{} a question the data have not settled; \warn{} a fact to keep in mind.
+
+\section{Introduction}
+
+\begin{itemize}
+  \item Paragliders and hang gliders fly cross-country on thermals; their tracks spread
+        superdiffusively. What drives the motion: the route and the relief, the wing, the weather,
+        the pilot, flying together?
+  \item The thread: clean tracks (2--3), phases (4), groups (5), the factors (6), the route as the
+        main driver (7), the group against solo flight (8), a model that reproduces it all (9), the
+        tool that lets one see it (10).
+  \item Paragliding is the main subject; hang gliders serve for a few comparisons.
+\end{itemize}
+
+\section{Dataset}
+
+\begin{itemize}
+  \item The FFVL cross-country archive, paragliders (\texttt{para}) and hang gliders
+        (\texttt{hang}), IGC files. \done
+  \item Since November 2026 the tracks from January 2026 on are 404 on the server: the June copies are
+        the only ones. \warn
+\end{itemize}
+
+\section{Pre-processing}
+
+\subsection*{The cleaning used today: soaring-anomalous-transport}
+\begin{itemize}
+  \item Every result today reads the cleaned fixes that soaring-anomalous-transport (tag
+        \texttt{legacy-final}) wrote: per segment a uniform grid at the logger interval, smoothed
+        $E$, $N$, GNSS altitude, velocities. \done
+  \item The procedure is long: duplicates, backward steps, spikes, frozen fixes, altitude bands,
+        vertical spikes and level shifts, ground phases trimmed, interior stretches excised, flights
+        split into segments, smoothing, and eleven reasons to drop a whole flight.
+  \item It drops 15.9\% of the paraglider flights (29\,646 of 186\,052; 20\,798 because no segment
+        survived) and 9.3\% of the hang-glider flights (622 of 6\,716).
+  \item In the viewer the smoothed track and the raw one differ very little.
+\end{itemize}
+
+\subsection*{The cleaning we want: xc-dynamics}
+\begin{itemize}
+  \item Remove the faulty fixes and flights, and no more; few rules, each easy to explain; fewer
+        flights dropped.
+  \item Built: altitude channel and barometric witness; top horizontal speed (100 / 175 km/h);
+        excursions ($W=20$~s); top vertical speed (30 / 20 m/s); take-off and landing (15 km/h for
+        30 s, pauses up to 300 s). \done
+  \item Sampling interval: keep the flights logged every 5 s or less, the range where the labelling
+        is checked. On the flights kept by soaring this drops 4.3\% of the paragliders (6\,842 of
+        156\,406) and 17.8\% of the hang gliders (1\,080 of 6\,094). In the code the limit is still
+        10 s. \todo
+  \item The procedure is not complete: the remaining steps (gaps and segments next) are still to be
+        built. \todo
+  \item Then phases, groups and analyses move onto it, and we check that the results hold. \todo
+\end{itemize}
+
+\section{Phase labelling}
+
+\Q{At each instant, is the pilot gliding, searching for a thermal or climbing?}
+\begin{itemize}
+  \item Vilpellet's method: three yes/no features over 30 fixes (straight? rising? turning one
+        way?), a three-state hidden Markov model with 8 discrete symbols, Viterbi, a majority vote
+        over 90 fixes. Rewritten in xc-lab, same labels bit for bit. \done
+  \item Every parameter counts fixes, so the method needs a 1-s grid.
+\end{itemize}
+
+\begin{aside}
+\textbf{What we do.} Train on the flights logged at 1 Hz, paragliders and hang gliders
+separately; apply each model to every flight of its discipline logged every 5 s or less, after
+interpolating it onto a 1-s grid with a cubic spline; keep the labels of the recorded fixes.
+Today no training of ours exists: every result uses Vilpellet's parameters, fitted on paraglider
+tracks at 1 Hz, for both disciplines, and the phases soaring decoded on the 1-Hz flights only.
+
+\smallskip\textbf{Check of the 5-s cadence.} 300 flights logged at 1 Hz, thinned to one fix every
+5 s, splined back to 1 s and labelled again: 97.5\% of the fixes keep their 1-Hz label, 96.9\% of
+the climbs stay climbs, the climb share is 33.0\% against 33.3\%. \done
+\end{aside}
+
+\begin{itemize}
+  \item Our own models, trained by Baum--Welch on the 1-Hz flights (109\,364 para, 1\,709 hang), with
+        the transition matrix free; compare their labels with Vilpellet's. \todo
+  \item Check against the soaring phases used today; port to xc-dynamics. \todo
+  \item Quality check against flights segmented by hand (in the viewer, Chapter~10). \todo
+  \item Discrete symbols or continuous emissions (turn rate, climb rate)? The latter would be the
+        new part of the method. \idea
+\end{itemize}
+
+\section{Grouping}
+
+\Q{At every instant of every flight, is the pilot in a group, with whom, and since when?}
+
+\noindent The grouping comes before the factors because the solo population exists only once the
+groups are known: Chapters 6 and 7 study solo flights, net of the group.
+
+\begin{itemize}
+  \item \textbf{Contact of two pilots.} One is on the path of the other within $\delta=2$~min,
+        $\varepsilon_{xy}=500$~m, $\varepsilon_z=300$~m, headings within $\theta_{\max}=45^\circ$ when
+        both glide; gaps shorter than $g=120$~s joined; contacts shorter than $\tau^*=38.1$~min
+        dropped, the duration above which a time-shift null model explains at most $q=10\%$ of the
+        contacts. \done
+  \item \textbf{Configuration}: a connected component of the contact graph. \textbf{Group}: the same
+        members over a maximal interval. \textbf{Episode}: groups that follow one another and share a
+        member. $\tau^*$ applies to each contact, not to membership: two pilots can share a group
+        through a third without ever meeting. \done
+  \item 21.7\% of the paraglider and 6.9\% of the hang-glider flights fly in a group at some point,
+        in 17\,169 episodes. \done
+  \item \textbf{Statistics of the groups}: sizes, durations, cohesion, leaders and followers
+        (note \texttt{analyses/groups/structure}, to be read and pruned). \done
+  \item \textbf{Robustness}: groups and their statistics as $\delta$, $\varepsilon_{xy}$,
+        $\varepsilon_z$, $g$, $q$ vary. \todo
+  \item Drop the heading condition: the old run already switches it off on flights not at 1 Hz. \idea
+  \item The run reads the soaring cleaning; port it to xc-dynamics. \todo
+\end{itemize}
+
+\section{Influencing factors}
+
+\Q{How do route and relief, wing, weather and pilot shape the flight statistics, alone and
+together?}
+\begin{itemize}
+  \item On solo flights. Factors: relief (plains, hills, low and high mountains), route, wing class,
+        season and hour, weather, pilot.
+  \item The factors cannot be assigned, so this is an observational factorial analysis: main effects
+        and interactions, with the confounding handled by the design.
+  \item Main tool: a mixed model per flight, interactions as product terms, pilot and site-day as
+        random effects (they absorb who flies and the weather of the day). Checks: the exact
+        decomposition over the $2^k$ cells, which gives main effects and interactions with no model
+        (the 8 cells of route, season and hour, wing exist); matched designs. \todo
+  \item Overlap: factors that never vary apart (wing and pilot, relief and route) cannot be
+        separated. Route as a continuous covariate ($H_{\rm route}$) rather than matched. \open
+  \item Weather beyond season and hour needs the soaring-data clouds. \todo
+\end{itemize}
+
+\section{Route topology as the main driver of superdiffusion}
+
+\Q{Does the geometry of the route, set by the relief, explain the superdiffusive spreading, and
+what does the intermittent component add?}
+\begin{itemize}
+  \item Geometry first: diffusion against $1/H_{\rm route}$; intermittency on hold. \todo
+  \item Plains as the control without ridges. \todo
+  \item On solo flights, or solo and group compared? \open
+\end{itemize}
+
+\section{Group against solo flight}
+
+\Q{Does flying in a group change how a pilot moves?}
+
+\noindent $S$ solo flights, $G$ group time, $A$ the time alone of the group flights.
+\begin{itemize}
+  \item \textbf{Raw}: group time is straighter at long lags, climbs more, glides faster. \done
+  \item \textbf{Same route} (season, hour, wing): $(G-S|G)-(A-S|A)\approx+0.004$ at
+        $H_{\rm loc}(1000~{\rm s})$, because $G-A=+0.037$ is matched by $S|G-S|A=+0.034$: groups fly on
+        lines that are straighter for anyone. On a given line the group adds time in climb, not
+        straightness. Matching the path nearly fixes the geometry that $H_{\rm loc}$ measures. \done
+  \item \textbf{Same flight}: $G-A=+0.037$; entering $+0.027$, leaving $+0.031$. Fixes pilot and day,
+        not the line. \done
+  \item The two differ by the route: does the group find the line, or the line make the group?
+        Test: route-matched controls for the windows before and during the group. \open
+  \item Use Chapter 7 to explain the lag beyond which the group effect falls: at long lags the
+        ridges bind group and solo pilots alike. Check first which comparison shows the fall. \idea
+\end{itemize}
+
+\section{Beyond the PISA model}
+
+\Q{Can one model reproduce the conditional and total MSD, the survivals and the other statistics,
+and stay realistic, compatible with what Chapters 4--8 find?}
+\begin{itemize}
+  \item The PISA model is effective: it reproduces, it does not explain. The aim is a model built
+        from the phases, the route and the groups. \todo
+  \item On solo flights, or with the group as an ingredient? \open
+\end{itemize}
+
+\section{The viewer}
+
+\begin{itemize}
+  \item A contribution of its own: tracks, phases and groups on the map, flight by flight. \done
+  \item What it shows, how the data reach it, and its uses: checking the cleaning (Chapter 3),
+        segmenting flights by hand (Chapter 4), seeing the groups (Chapter 5). \todo
+\end{itemize}
+
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+\begin{itemize}
+  \item How the uncertainties are assigned: the two-way bootstrap of pilots and blocks. \done
+  \item The details of each method that the chapters only cite. \todo
+\end{itemize}
+
+\end{document}
