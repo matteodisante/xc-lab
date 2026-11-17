@@ -51,7 +51,7 @@ def raw_rows(sample, cfg):
 def compare(sample_dir, v_kmh=fl.V_KMH, n_boot=dc.N_BOOT, seed=1):
     sample_dir = Path(sample_dir)
     data = rf.newest_data()
-    cfg = fl.configure(data)
+    cfg = fl.configure(data, max_dt=5.0, pauses="turn")  # raw tracks carry no phases: the sample must use the same
     fl._init(cfg)
     flights = pd.read_csv(sample_dir / "flights.csv", dtype={"flight": str})
     flights = flights[flights["discipline"] == DISC]

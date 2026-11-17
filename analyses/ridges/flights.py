@@ -1,10 +1,11 @@
 """Hurst exponents of paragliding flights against the crest geometry (definitions of paper/FLIGHTS.md, section 3).
 
 Input per flight: the cleaned fixes (time, Lambert-93 position, segment). Pieces of continuous track (a segment,
-split at gaps) are interpolated to 1 s. Four kinds of motion: dyn (positions every 1 s, circles included),
-dyn_route (each circle replaced by uniform motion along its chord), track (smoothing spline, resampled every
-STEP_M of arc length) and route (the track with each circle replaced by its chord: the one to compare with
-H_geo). The TAMSD of a flight is the mean over its pieces of the squared displacement at 80 log-spaced lags up to
+split at gaps) are interpolated to 1 s. The pauses are the runs the item carries (`pauses`: rows segment,
+t_start, t_end; the climb runs of Vilpellet's segmenter, see run_flights.py) or, with cfg pauses = "turn", the
+runs of the heading-rate detector. Four kinds of motion: dyn (positions every 1 s, pauses included), dyn_route
+(each pause replaced by uniform motion along its chord), track (smoothing spline, resampled every STEP_M of arc
+length) and route (the track with each pause replaced by its chord: the one to compare with H_geo). The TAMSD of a flight is the mean over its pieces of the squared displacement at 80 log-spaced lags up to
 a quarter of the piece; across flights, equal weight per flight, lags with MIN_PIECES flights. H is the slope of
 ln mean TAMSD against ln lag over a window, divided by 2, with 1000 bootstrap resamples of whole flights.
 
@@ -36,8 +37,9 @@ ARC_KINDS = ("track", "route")
 REGIONS = ("alps", "pyrenees")
 REGION_MIN = 0.8  # fraction of fixes over a massif's mask
 SMOOTH_RMS_M = 3 * np.sqrt(2)  # rms tolerance of the smoothing spline (3 m per axis)
+PAUSES = "vilpellet"  # what the chord replaces: "vilpellet" (pause runs of the item) or "turn" (the detector below)
 TURN_DEG_S, TURN_AVG_S, MERGE_GAP_S, MIN_CIRCLE_S = 8.0, 20, 10, 20  # circle detection
-MAX_DT_S, MIN_OPENING = 5.0, 0.1  # selection: median sampling interval; takeoff-landing over path
+MAX_DT_S, MIN_OPENING = 1.0, 0.1  # selection: median sampling interval; takeoff-landing over path
 GAP_S, MIN_PIECE_S = 30.0, 300  # a piece ends at a longer gap or at the end of its segment
 ARRAYS = ("t", "xy", "seg", "E", "N", "z", "frame")  # the keys of a flight item that are not columns of flights.csv
 
@@ -93,7 +95,7 @@ def split_pieces(t, xy, seg):
     """Pieces of continuous track: split at a new segment and at gaps above GAP_S; short ones dropped."""
     cut = np.flatnonzero((np.diff(t) > GAP_S) | (np.diff(seg) != 0)) + 1
     out = [(a, b) for a, b in zip(np.r_[0, cut], np.r_[cut, len(t)]) if t[b - 1] - t[a] >= MIN_PIECE_S]
-    return [(t[a:b], xy[a:b]) for a, b in out]
+    return [(t[a:b], xy[a:b], seg[a]) for a, b in out]
 
 
 def regrid(t, xy):
@@ -120,6 +122,22 @@ def circling(xy):
     return fast
 
 
+def pause_mask(g, seg, runs):
+    """Boolean mask of the times g of segment seg that fall in a run (runs: rows segment, t_start, t_end, ends
+    included)."""
+    r = runs[runs[:, 0] == seg]
+    r = r[np.argsort(r[:, 1])]
+    if not len(r):
+        return np.zeros(len(g), bool)
+    i = np.searchsorted(r[:, 1], g, side="right") - 1
+    return (i >= 0) & (g <= r[np.maximum(i, 0), 2])
+
+
+def pauses_of(g, p, seg, runs):
+    """Pause mask of a piece on its 1-s grid g: the given runs, or the turn detector when runs is None."""
+    return circling(p) if runs is None else pause_mask(g, seg, runs)
+
+
 def chord(xy, circ):
     """xy with each circling run replaced by uniform motion along its chord, and the mask of kept points."""
     xy, keep = xy.copy(), np.ones(len(xy), bool)
@@ -143,11 +161,11 @@ def smooth(t, xy, g):
     return np.column_stack(splev(g, tck))
 
 
-def sample_kinds(t, xy):
+def sample_kinds(t, xy, seg=0, runs=None):
     """The four kinds of one piece as arrays of equally spaced samples (1 s, or STEP_M of arc), and the
-    circling mask of the 1-s grid."""
+    pause mask of the 1-s grid (see pauses_of)."""
     g, p = regrid(t, xy)
-    circ = circling(p)
+    circ = pauses_of(g, p, seg, runs)
     s = smooth(t, xy, g)
     ps = chord(p, circ)[0]
     ss, keep = chord(s, circ)
@@ -216,8 +234,10 @@ def read_flight(item, cfg):
     frac, st["region"] = region_of(cfg["masks"], xy, cfg["region_min"])
     st.update({f"frac_{r}": frac[r] for r in REGIONS})
     pieces = split_pieces(t, xy, seg)
+    no_phases = cfg.get("pauses") == "vilpellet" and item.get("pauses") is None
     for bad, name in ((st["dt_median_s"] > cfg["max_dt"], "dt"), (not pieces, "short"),
-                      (not st["opening"] >= cfg["min_opening"], "opening"), (not st["region"], "region")):
+                      (not st["opening"] >= cfg["min_opening"], "opening"), (not st["region"], "region"),
+                      (no_phases, "phases")):
         if bad:
             return {**st, "status": name}, None
     return st, pieces
@@ -232,9 +252,10 @@ def process(item):
         res = {"info": {**columns, **st}, "rows": None}
         if pieces is None:
             return res
+        runs = item.get("pauses") if _CFG.get("pauses") == "vilpellet" else None
         kinds, circ_all, dur = [], 0, 0
-        for t, xy in pieces:
-            samples, circ = sample_kinds(t, xy)
+        for t, xy, seg in pieces:
+            samples, circ = sample_kinds(t, xy, seg, runs)
             kinds.append(samples)
             circ_all += circ.sum()
             dur += len(circ)
@@ -245,7 +266,7 @@ def process(item):
         return {"info": {**columns, "status": f"error: {e!r}"[:80]}, "rows": None}
 
 
-_CFG = {"masks": {}, "region_min": REGION_MIN, "max_dt": MAX_DT_S, "min_opening": MIN_OPENING}
+_CFG = {"masks": {}, "region_min": REGION_MIN, "max_dt": MAX_DT_S, "min_opening": MIN_OPENING, "pauses": PAUSES}
 
 
 def _init(cfg):
@@ -401,9 +422,9 @@ def _local_rows(region, kind, lag, lnm, v_kmh, rows):
              "mean_m2": np.exp(lnm[0, i]), "H": h[0, i], "H_lo": lo[i], "H_hi": hi[i]} for i in range(len(lag)) if np.isfinite(lnm[0, i])]
 
 
-def configure(data, region_min=REGION_MIN, max_dt=MAX_DT_S, min_opening=MIN_OPENING):
-    """The settings of `process`: the masks of DATA and the selection thresholds."""
-    return {"masks": load_masks(data), "region_min": region_min, "max_dt": max_dt, "min_opening": min_opening}
+def configure(data, region_min=REGION_MIN, max_dt=MAX_DT_S, min_opening=MIN_OPENING, pauses=PAUSES):
+    """The settings of `process`: the masks of DATA, the selection thresholds and the source of the pauses."""
+    return {"masks": load_masks(data), "region_min": region_min, "max_dt": max_dt, "min_opening": min_opening, "pauses": pauses}
 
 
 def run(items, cfg, jobs=1):

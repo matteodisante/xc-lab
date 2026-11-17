@@ -341,7 +341,7 @@ def macros(res, cache):
     for disc, D in (("paragliders", "Para"), ("hang_gliders", "Hang")):
         s = t[t["discipline"] == disc]
         m.add("flCand" + D, f"{len(s):,}".replace(",", r"\,"))
-        for status, S in (("ok", "Ok"), ("dt", "Dt"), ("opening", "Opening"), ("region", "Region")):
+        for status, S in (("ok", "Ok"), ("dt", "Dt"), ("short", "Short"), ("opening", "Opening"), ("region", "Region"), ("phases", "Phases")):
             m.add(f"flStat{S}{D}", f"{(s['status'] == status).sum():,}".replace(",", r"\,"))
         for r, N in (("alps", "Alps"), ("pyrenees", "Pyr")):
             m.add(f"flSel{N}{D}", f"{((s['status'] == 'ok') & (s['region'] == r)).sum():,}".replace(",", r"\,"))
@@ -487,5 +487,6 @@ if __name__ == "__main__":
         fig_models()
         tables(res)
     macros(res, cache)
-    if (cache / "rawcheck.json").exists():
-        rawcheck_table(json.loads((cache / "rawcheck.json").read_text()))
+    raw = [d / "rawcheck.json" for d in (cache, *sorted(cache.parent.glob("flights_cleaned_*"), key=lambda d: d.stat().st_mtime, reverse=True)) if (d / "rawcheck.json").exists()]
+    if raw:  # the raw-vs-cleaned check of the newest cache that has one
+        rawcheck_table(json.loads(raw[0].read_text()))

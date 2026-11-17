@@ -3,7 +3,8 @@
 Candidates: paragliders and hang gliders whose declared type is a distance flight (as in ../groups/openflights.py)
 and that the old cleaning kept (cleaned.py reads their fixes). flights.py keeps those with a median sampling
 interval of at most MAX_DT_S on the cleaned fixes, an opening (first to last fix over the path flown) of at least
-MIN_OPENING and at least REGION_MIN of the fixes over the mask of one massif.
+MIN_OPENING, at least REGION_MIN of the fixes over the mask of one massif and, with PAUSES = "vilpellet", phases
+of Vilpellet's segmenter (pauses.RUNS), whose pause runs each flight carries.
 
 The full run goes by chunks of CHUNK row groups of fixes.parquet; each chunk is saved in the cache folder as soon
 as it is done and skipped when the run is started again.
@@ -28,6 +29,7 @@ import pandas as pd
 
 import cleaned as cl
 import flights as fl
+import pauses as pa
 
 DISK = Path("/Volumes/SSD_DATA")
 LAB = Path("/Volumes/SSD_DISANTE/xc-lab/ridges")
@@ -49,6 +51,27 @@ def declared_open(discipline):
     return set(c.loc[c["flight_type"].isin(DECLARED_OPEN), "flight_id"])
 
 
+def cache_dir():
+    """The folder of a full run in LAB, named by its parameters."""
+    return LAB / f"flights_cleaned_v{fl.V_KMH:g}_open{fl.MIN_OPENING:g}_dt{fl.MAX_DT_S:g}_reg{fl.REGION_MIN:g}_pause-{fl.PAUSES}"
+
+
+def pause_runs(discipline):
+    """{flight_id: rows segment, t_start, t_end} of the pause runs (pauses.PAUSE_PHASES) of Vilpellet's segmenter,
+    for every flight the segmenter labelled (an empty array when it has no pause)."""
+    r = pd.read_parquet(cl.DISK / cl.FOLDERS[discipline] / pa.RUNS, columns=["flight_id", "segment_id", "phase", "t_start", "t_end"])
+    r["flight_id"] = r["flight_id"].astype(str)
+    out = {f: np.empty((0, 3)) for f in r["flight_id"].unique()}
+    p = r[r["phase"].isin(pa.PAUSE_PHASES)]
+    out.update({f: g[["segment_id", "t_start", "t_end"]].to_numpy(float) for f, g in p.groupby("flight_id", sort=False)})
+    return out
+
+
+def with_pauses(items, runs):
+    for it in items:
+        yield {**it, "pauses": runs.get(it["flight"])}
+
+
 def save_atomic(obj, path):
     tmp = path.with_suffix(".tmp")
     with open(tmp, "wb") as f:
@@ -62,11 +85,11 @@ def full_run(cfg, jobs, out):
     results = []
     with Pool(jobs, fl._init, (cfg,)) as pool:
         for disc in cl.FOLDERS:
-            ids, n = declared_open(disc), cl.n_row_groups(disc)
+            ids, n, runs = declared_open(disc), cl.n_row_groups(disc), pause_runs(disc)
             for a in range(0, n, CHUNK):
                 f = out / "chunks" / f"{disc}_{a:05d}.pkl"
                 if not f.exists():
-                    res = list(pool.imap(fl.process, cl.stream(disc, ids, a, a + CHUNK), chunksize=4))
+                    res = list(pool.imap(fl.process, with_pauses(cl.stream(disc, ids, a, a + CHUNK), runs), chunksize=4))
                     save_atomic(res, f)
                     print(f"{disc} row groups {a}-{min(a + CHUNK, n)} of {n}: {len(res)} flights", flush=True)
                 results += pickle.loads(f.read_bytes())
@@ -74,15 +97,16 @@ def full_run(cfg, jobs, out):
 
 
 def plot_tracks(items, results, cfg, out, n=10):
-    """Tracks of the first n flights that passed, circling runs in red."""
+    """Tracks of the first n flights that passed, pause runs in red."""
     ok = {r["info"]["flight"] for r in results if r["rows"] is not None}
     items = [it for it in items if it["flight"] in ok][:n]
     fig, axs = plt.subplots(2, (n + 1) // 2, figsize=(3.2 * ((n + 1) // 2), 6.4))
     for ax, it in zip(axs.flat, items):
         info, pieces = fl.read_flight(it, cfg)
-        for t, xy in pieces:
-            p = fl.regrid(t, xy)[1]
-            c = fl.circling(p)
+        runs = it.get("pauses") if cfg["pauses"] == "vilpellet" else None
+        for t, xy, seg in pieces:
+            g, p = fl.regrid(t, xy)
+            c = fl.pauses_of(g, p, seg, runs)
             ax.plot(p[:, 0] / 1000, p[:, 1] / 1000, color="0.5", lw=0.6)
             q = np.where(c[:, None], p, np.nan)
             ax.plot(q[:, 0] / 1000, q[:, 1] / 1000, color="C3", lw=1.2)
@@ -106,14 +130,16 @@ if __name__ == "__main__":
     data = a.data or str(newest_data())
     cfg = fl.configure(data)
     if a.full:
-        name = f"flights_cleaned_v{fl.V_KMH:g}_open{fl.MIN_OPENING:g}_dt{fl.MAX_DT_S:g}_reg{fl.REGION_MIN:g}"
-        out = LAB / name
+        out = cache_dir()
+        name = out.name
         out.mkdir(parents=True, exist_ok=True)
         (out / "PARAMETERS.md").write_text(
             f"# {name}\n\nrun_flights.py --full: declared distance flights of {sorted(cl.FOLDERS)} kept by the cleaning of the old "
             f"repository (derived/fixes.parquet, positions from the local frame of flights_meta to Lambert-93); v = {fl.V_KMH:g} "
             f"km/h, opening >= {fl.MIN_OPENING:g}, median dt <= {fl.MAX_DT_S:g} s, region >= {fl.REGION_MIN:g}, {fl.N_BOOT} "
-            f"bootstrap resamples; crest data {data}. Chunks of {CHUNK} row groups in chunks/. Written by flights.py.\n")
+            f"bootstrap resamples; pauses replaced by their chord: {fl.PAUSES} (Vilpellet: runs of {list(pa.PAUSE_PHASES)} in "
+            f"{pa.RUNS}; flights without phases dropped); crest data {data}. Chunks of {CHUNK} row groups in chunks/. "
+            f"Written by flights.py.\n")
         results = full_run(cfg, a.jobs, out)
         items = []
     else:
@@ -122,9 +148,10 @@ if __name__ == "__main__":
         rng = np.random.default_rng(SEED)
         items = []
         for disc in cl.FOLDERS:
-            ids = sorted(declared_open(disc) & set(cl.frames(disc)))
-            pick = set(rng.choice(ids, a.sample // 2, replace=False))
-            items += list(cl.stream(disc, pick, 0, cl.n_row_groups(disc)))
+            runs = pause_runs(disc)
+            ids = sorted(declared_open(disc) & set(cl.frames(disc)) & set(runs))
+            pick = set(rng.choice(ids, min(a.sample // 2, len(ids)), replace=False))
+            items += list(with_pauses(cl.stream(disc, pick, 0, cl.n_row_groups(disc)), runs))
         results = fl.run(items, cfg, a.jobs)
     fl.finish(results, out, data)
     t = pd.DataFrame([r["info"] for r in results])

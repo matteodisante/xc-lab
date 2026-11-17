@@ -13,7 +13,7 @@ $\varepsilon_1=\max(\DmEpsMin~\mathrm m,\sqrt{\mathrm{MSD}(s_1)})$ to $\varepsil
 between the $s$ that the chord assigns to the first and the last box size. The routes use the class and the box sizes of the crests of the same massif. The window from 0.1~km uses the class of at least \DmCrAlpsFromClassKm~km.
 
 \paragraph{Data and intervals.} The crests are the \CgAlpsPaths{} and \CgPyrPaths{} paths of $\Hgeo$, in the same order as their TAMSD rows. The routes are those of the paragliding flights of Section~\ref{sec:flights}
-(declared distance flights, opening at least \DmOpening): a smoothing spline resampled every \DmStep~m of arc length with the thermalling circles replaced by their chords, \DmFlightsAlps{} flights in the Alps and \DmFlightsPyr{} in the Pyrenees
+(declared distance flights, opening at least \DmOpening): a smoothing spline resampled every \DmStep~m of arc length with the climb phases replaced by their chords, \DmFlightsAlps{} flights in the Alps and \DmFlightsPyr{} in the Pyrenees
 with a piece of at least \DmMinPieceKm~km. The intervals are 95\% bootstrap intervals from \DmBoot{} resamples of whole trees for the crests and whole flights for the routes. The difference of two quantities of the same curves uses the same resample;
 the difference between crests and routes uses independent resamples.
 

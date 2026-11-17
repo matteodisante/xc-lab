@@ -99,9 +99,10 @@ replacement; for single curves it draws curves. The same resamples give the band
 We take the paragliders of the FFVL archive that declared a distance flight (free distance, or distance with one, two or three points)
 and whose track the cleaning of the earlier analysis kept: \flCandPara{} flights. The positions are the cleaned fixes, on a uniform time grid at the
 native cadence and smoothed by a cubic Savitzky--Golay filter of timescale 5~s, converted to Lambert-93. A flight stays if its \emph{opening}, the distance from
-the first to the last fix over the path flown, is at least 0.1, if the median interval between its fixes is at most 5~s, and if at least 80\% of its fixes lie over the
-mountain area of one massif. Each flight is counted once, at the first condition in this order that it fails (a few are too short to give a
-piece of track): \flStatDtPara{} fail on the sampling interval, \flStatOpeningPara{} on the opening and \flStatRegionPara{} on the region, which leaves
+the first to the last fix over the path flown, is at least 0.1, if the median interval between its fixes is 1~s (one fix per second), if at least 80\% of its fixes lie over the
+mountain area of one massif, and if the segmenter of Vilpellet et al.~\cite{vilpellet} gives it phases. Each flight is counted once, at the first condition in this order that it fails:
+\flStatDtPara{} fail on the sampling interval, \flStatShortPara{} are too short to give a piece of track, \flStatOpeningPara{} fail on the opening,
+\flStatRegionPara{} on the region and \flStatPhasesPara{} on the phases, which leaves
 \flStatOkPara{} flights (Table~\ref{tab:flh} gives them per massif). Each continuous piece of track, without a gap longer than 30~s, is interpolated to one fix per
 second by a cubic spline.
 
@@ -112,8 +113,8 @@ Three curves are drawn for each massif, all as functions of the lag $\tau$:
   \item \emph{crests}: $\overline{\delta^2}(s)$ of the crest paths, Eq.~\eqref{eq:mean}, at $\tau = s/v$;
   \item \emph{flights in time}: the TAMSD of the positions every second, circles included;
   \item \emph{route of the flights}: the TAMSD of the track resampled every 5~m of arc length after a smoothing spline, with every
-        thermalling circle replaced by its chord, at $\tau = s/v$. Circles are runs where the heading turns faster than
-        8$^\circ$/s averaged over 20~s, merged across gaps shorter than 10~s and kept if longer than 20~s.
+        thermal pause replaced by its chord, at $\tau = s/v$. The pauses are the climb runs of the segmenter of Vilpellet et al.~\cite{vilpellet},
+        consecutive climb runs making one pause; the search runs stay in the route, as glides. They are the pauses of the companion document.
 \end{itemize}
 The speed $v$ that turns an arc length into a lag is the mean ground speed of the group in glides, $\flVGlideAlpsPara$~m/s for the Alps and
 $\flVGlidePyrPara$~m/s for the Pyrenees, so that the flights and the crests are compared at the same lag for the same arc length. The local slope $\alpha(\tau)$ is

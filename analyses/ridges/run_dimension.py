@@ -97,8 +97,9 @@ def flight_pieces(item):
     if pieces is None:
         return None
     out = []
-    for t, xy in pieces:
-        samples, _ = fl.sample_kinds(t, xy)
+    runs = item.get("pauses") if _CFG["pauses"] == "vilpellet" else None
+    for t, xy, seg in pieces:
+        samples, _ = fl.sample_kinds(t, xy, seg, runs)
         for kind in ("route", "track"):
             x = samples[kind]
             ell = (len(x) - 1) * tamsd.STEP
@@ -133,8 +134,8 @@ def flights(data, sample=0, jobs=4):
     cfg = fl.configure(data)
     grid = dict(eps=bd.eps_grid(), offs=bd.offsets(), ks=fl.LAGS_K.astype(np.int64))
     disc = "paragliders"
-    ids = rf.declared_open(disc)
-    base = LAB / "flights_cleaned_v35_open0.1_dt5_reg0.8"
+    ids, runs = rf.declared_open(disc), rf.pause_runs(disc)
+    base = rf.cache_dir()
     out = (OUT / "sample") if sample else base
     out.mkdir(parents=True, exist_ok=True)
     (out / "dimension_chunks").mkdir(exist_ok=True)
@@ -142,8 +143,8 @@ def flights(data, sample=0, jobs=4):
     res = []
     with Pool(jobs, _init, (cfg, grid)) as pool:
         if sample:
-            pick = set(np.random.default_rng(SAMPLE_SEED).choice(sorted(ids & set(cl.frames(disc))), sample, replace=False))
-            chunks = [("sample", cl.stream(disc, pick, 0, cl.n_row_groups(disc)))]
+            pick = set(np.random.default_rng(SAMPLE_SEED).choice(sorted(ids & set(cl.frames(disc)) & set(runs)), sample, replace=False))
+            chunks = [("sample", rf.with_pauses(cl.stream(disc, pick, 0, cl.n_row_groups(disc)), runs))]
         else:
             n = cl.n_row_groups(disc)
             chunks = [(f"{disc}_{a:05d}", None) for a in range(0, n, rf.CHUNK)]
@@ -154,7 +155,7 @@ def flights(data, sample=0, jobs=4):
                 continue
             if items is None:
                 a = int(name.split("_")[-1])
-                items = cl.stream(disc, ids, a, a + rf.CHUNK)
+                items = rf.with_pauses(cl.stream(disc, ids, a, a + rf.CHUNK), runs)
             part = [p for r in pool.imap(flight_pieces, items, chunksize=4) if r for p in r]
             if not sample:
                 rf.save_atomic(part, f)
@@ -182,7 +183,7 @@ JOIN_CLASSES_KM = (4, 8)  # classes on which the curves alone (no joins) are com
 NUM_WORD = {4: "Four", 8: "Eight"}
 RAK = {"alps": (1.20, 1.84), "pyrenees": (1.25, 1.89)}
 N_LONGEST = 10  # longest paths of a region for the single-path divider dimension
-FLIGHT_DIR = LAB / "flights_cleaned_v35_open0.1_dt5_reg0.8"
+FLIGHT_DIR = LAB / "flights_cleaned_v35_open0.1_dt1_reg0.8_pause-vilpellet"  # run_flights.cache_dir(), not imported: see the docstring
 
 
 def classes_of(eps, n_box, n_div, length, rows, s, group, end_box=bd.END_BOX):

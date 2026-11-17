@@ -4,6 +4,7 @@ Tile files are named elevation_25m_FXX_<x>_<y>_...tif with the west edge x and t
 cell centres sit on multiples of 25 m. A mosaic has its first cell centre at (x0, y0), rows go south.
 """
 
+import os
 import re
 from pathlib import Path
 
@@ -11,7 +12,7 @@ import numpy as np
 import rasterio
 
 DEM = Path("/Volumes/SSD_DISANTE/IGN_France_Elevation_25m/mainland_france/geotiff")
-CACHE = Path("/Volumes/SSD_DISANTE/xc-lab/ridges")
+CACHE = Path(os.environ.get("RIDGES_CACHE", "/Volumes/SSD_DISANTE/xc-lab/ridges"))
 CELL = 25.0
 TILE = 1000  # cells per tile side
 REGIONS = {

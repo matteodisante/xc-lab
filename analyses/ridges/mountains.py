@@ -20,16 +20,17 @@ BASIN_KM2 = 25
 CONNECTIVITY = 2  # 1 = sides, 2 = sides and corners
 
 
-def block_mean(z):
-    """1 km mean elevation (NaN where less than MIN_VALID of the cells have data); z is cropped to whole blocks."""
-    nby, nbx = z.shape[0] // BLOCK, z.shape[1] // BLOCK
+def block_mean(z, block=BLOCK):
+    """1 km mean elevation (NaN where less than MIN_VALID of the cells have data); z is cropped to whole blocks
+    of `block` cells."""
+    nby, nbx = z.shape[0] // block, z.shape[1] // block
     out = np.full((nby, nbx), np.nan, np.float32)
     for i in range(nby):
-        a = z[i * BLOCK:(i + 1) * BLOCK, :nbx * BLOCK].reshape(BLOCK, nbx, BLOCK)
+        a = z[i * block:(i + 1) * block, :nbx * block].reshape(block, nbx, block)
         ok = np.isfinite(a)
         n = ok.sum(axis=(0, 2))
         s = np.where(ok, a, 0).sum(axis=(0, 2), dtype=np.float64)
-        out[i] = np.where(n >= MIN_VALID * BLOCK * BLOCK, s / np.maximum(n, 1), np.nan)
+        out[i] = np.where(n >= MIN_VALID * block * block, s / np.maximum(n, 1), np.nan)
     return out
 
 
@@ -55,10 +56,14 @@ def classes(h):
                 | ((h >= Z_LOW) & ((s >= SLOPE_LOW) | (r > LER))) | ((h >= Z_FOOT) & (r > LER)))
 
 
-def mountain_area(z, own=None):
+def mountain_area(z, own=None, block=BLOCK):
     """Boolean mask on 1 km cells (rows south from the first row of z); cells outside `own` (1 km cells,
     the tiles of the region's departments) count as no data."""
-    h = block_mean(z)
+    return mountain_area_h(block_mean(z, block), own)
+
+
+def mountain_area_h(h, own=None):
+    """mountain_area from the 1 km mean elevations h."""
     if own is not None:
         h[~own] = np.nan
     nodata = np.isnan(h)

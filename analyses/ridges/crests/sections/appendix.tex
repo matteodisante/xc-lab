@@ -126,7 +126,7 @@ reach the edge. \textbf{b}~Local slope of the MSD, $\alpha(s)$, near the grid sc
 \CgPyrEdgeCurves{} Pyrenees curves are flagged, and so are \CgAlpsEdgePaths{} and \CgPyrEdgePaths{} paths. Table~\ref{tab:noedge} repeats the exponents without them; the point values of the paths are those of Table~\ref{tab:hgeo} to the third decimal, and only the ends of some intervals move in the last digit.
 
 \paragraph{The grid scale.} Below four cells the divide runs on cell sides and the spline that smooths the steps makes the curve straighter than the terrain: $\alpha(s)$ is at least \CgGridAlphaMin{} there (panel b). The fit starts at
-$\CgPFitFrom$~m and no window includes shorter lags.
+$\CgPFitFrom$~m and no window includes shorter lags. Section~\ref{sec:demres} compares the 25~m model with the 5~m one.
 
 \paragraph{Few trees at long lags.} A lag of 10~km needs a path of at least 40~km, since lags stop at a quarter of the path. Panel c shows how many trees carry each lag; the last window rests on \CgAlpsTreesTenKm{} trees in the Alps and
 \CgPyrTreesTenKm{} in the Pyrenees, and a bootstrap that draws whole trees sees whether one of them is in or out. For the curves the population changes with the lag: only the longest curves reach large lags, so the mean at large $s$
@@ -148,6 +148,38 @@ window of $s$ & paths & curves & paths & curves \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{DEM resolution}\label{sec:demres}
+
+Does the 25~m DEM change the crests or $\Hgeo$, so that the 5~m model of the IGN would be needed? The 5~m model of a whole massif does not fit in memory, so we run the pipeline on windows and change only the cell size.
+
+\paragraph{Setup.} We use \DrWindows{} windows of \DrBox{}~km $\times$ \DrBox{}~km, two in each massif, where the crest curves and the flight fixes are dense and the interior lies in the mountain area. Each window is computed with a margin of \DrMargin{}~km for the water routing, and the crests are kept in the interior. Run A uses the 25~m DEM. Run B uses the 5~m DEM with the same parameters in metres: the cross-section (\DrXsec~m), the bridged flat stretches (\DrBridge~m) and the pruned dead ends (\DrPrune~m) are counted in cells at 25~m and converted to cells of 5~m, and the valley area, the heights, the strokes and the spline cut-off of \DrSmooth~m do not change. Run C is run B with a cut-off of \DrSmoothC~m, to see the structure below 100~m. Run D is run B with a margin of \DrMarginD~km and tests the windowing. The 25~m elevations equal those of the 5~m DEM at every fifth cell, and a cell has no data in A where it has none in B. The TAMSD follows Section~\ref{sec:tamsd} (step 5~m, lags to a quarter of a curve, equal weight per curve). The intervals are 95\% over \DrBoot{} resamples of the curves; the intervals of a difference between two runs draw blocks of \DrBlock~km with the same draws in both runs. We keep the 25~m DEM if $|H_B - H_A|$ on 0.1--1~km is below \DrKeep{} or if the interval of the difference holds zero.
+
+\paragraph{Results.} Table~\ref{tab:demres} gives the crests and the exponents. The 5~m run finds slightly more crest than the 25~m run. The median distance between the two sets is a few metres. The mean and the 95th percentile come from the points of one set that lie more than one coarse cell from the other: \DrAlpsOver25{}\% of the points in the Alps and \DrPyrOver25{}\% in the Pyrenees, stretches of crest, from a few tens of metres to whole curves, that the other DEM does not reproduce. On the 0.1--1~km window the exponent of B differs from that of A by \DrAlpsDHLowBA{} in the Alps and \DrPyrDHLowBA{} in the Pyrenees, and the intervals of the differences hold zero. The 1--5~km window rests on the few curves that are long enough to reach these lags, and its intervals are too wide to separate the runs. Run D agrees with run B on at least \DrAlpsExactSides{}\% of the crest sides in the Alps and \DrPyrExactSides{}\% in the Pyrenees, and at least \DrAlpsExactPointsCell{}\% and \DrPyrExactPointsCell{}\% of the curve points of B lie within 25~m of D. The windowing changes the crests much less than the resolution does.
+
+\begin{table}[H]
+\centering
+\caption{Crests and exponents of the four windows of each massif at 25~m (A), at 5~m (B) and at 5~m with a spline cut-off of 25~m (C). Distance: from the curves of A to those of B and back, mean and 95th percentile in metres. $H$: 95\% interval over curves; the last row of a massif gives $H_B - H_A$ with the interval of the paired bootstrap over blocks of \DrBlock~km.}
+\label{tab:demres}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrlll}
+\toprule
+run & curves & length (km) & distance A to B / B to A (m) & $H$, 0.1--1~km & $H$, 1--5~km \\
+\midrule
+\input{generated/dem_resolution_table}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{figures/dem_resolution.pdf}
+\caption{The local slope $\alpha(s)$ does not depend on the DEM above 100~m. \textbf{a, b}~$\alpha(s)$ of the curves of the four windows of each massif, at 25~m (black), at 5~m (blue) and at 5~m with a cut-off of \DrSmoothC~m (orange), with the 95\% interval over curves. Grey line: 100~m. Only the orange curve is not smoothed below 100~m. \textbf{c}~Crest curves of A and B on the 5~m hillshade, in a square of 2~km in the Alps.}
+\label{fig:demres}
+\end{figure}
+
+\paragraph{What we keep.} We keep the 25~m DEM. The exponent of the crests on 0.1--1~km is \DrAlpsHLowA{} at 25~m and \DrAlpsHLowB{} at 5~m in the Alps, and \DrPyrHLowA{} and \DrPyrHLowB{} in the Pyrenees, below the limit of \DrKeep{} that we set. With a cut-off of \DrSmoothC~m the slope between 25 and 100~m is \DrAlpsHGridC{} in the Alps and \DrPyrHGridC{} in the Pyrenees, against \DrAlpsHGridA{} and \DrPyrHGridA{} at 25~m, so the fit from 100~m stays as it is. A few branches of the crest network depend on the resolution, and the 1--5~km window cannot tell whether the exponent does.
 
 \section{Checks on the flights}\label{app:checks}
 
@@ -185,7 +217,7 @@ Does the cleaning of the earlier analysis change $H$? The cleaning puts the fixe
 Savitzky--Golay filter whose timescale is 5~s and whose window has at least five samples; the filtered values replace the stored positions. On the sample run of \flRawNInSample{} paragliders, \flRawNBoth{} flights pass the selection from both
 the raw IGC file (cut to the time in the air, spikes removed) and the cleaned fixes. The same resamples of flights give the difference of $H$ between the two, at $v = 35$~km/h (Table~\ref{tab:flrawcheck}). On the rule the difference raw
 minus cleaned is \flRawDynRule{} for the flights in time (interval \flRawDynRuleLo{} to \flRawDynRuleHi) and \flRawRouteRule{} for the route (\flRawRouteRuleLo{} to \flRawRouteRuleHi). Both intervals contain zero: the cleaning does not change the
-exponent within the interval of this sample, which is small.
+exponent within the interval of this sample, which is small. Raw tracks carry no phases of Vilpellet's segmenter, so this check keeps the first version of the selection: a median interval of at most 5~s, and the circles found by the heading-rate detector (heading turning faster than 8$^\circ$/s averaged over 20~s) in place of the climb phases.
 
 \begin{table}[H]
 \centering

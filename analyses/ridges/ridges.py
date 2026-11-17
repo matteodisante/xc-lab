@@ -1,15 +1,20 @@
 """Flow routing and crest edges of a DEM.
 
-Priority flood fills the depressions, every cell drains to its steepest lower neighbour (cells of a flat or a
-filled depression to the cell that reached them), valleys are the cells draining at least VALLEY_KM2 and are
-cut into links at the confluences. A crest edge is a cell side between two cells that drain into different
+Priority flood fills the depressions, every cell drains to its steepest lower neighbour, valleys are the cells
+draining at least VALLEY_KM2 and are cut into links at the confluences. The cells of a flat or of a filled
+depression drain, with FLATS = "flood", to the cell that reached them in the flood (the result depends on the
+visiting order), with "blm" by the gradients of Garbrecht and Martz towards the lower terrain and away from the
+higher, combined as in Barnes, Lehman and Mulla (2014): a function of the filled surface only. A crest edge is a cell side between two cells that drain into different
 links, neither downstream of the other, with a cross-section and a height above the streams large enough.
 Elevations are float32 with NaN for no data; cell (r, c) has corners (r, c) to (r + 1, c + 1).
 """
 
+import os
+
 import numpy as np
 from numba import njit
 
+FLATS = os.environ.get("RIDGES_FLATS", "flood")  # "flood" or "blm"
 CELL = 25.0
 VALLEY_KM2 = 0.5
 XSEC_CELLS = 6  # cells from the crest to the ground of the cross-section
@@ -20,8 +25,8 @@ DC = np.array([1, 1, 0, -1, -1, -1, 0, 1], np.int64)
 OUTLET, NODATA, UNSEEN, INHEAP = -1, -2, -3, -4  # codes of the direction array besides 0..7
 
 
-def valley_cells(valley_km2=VALLEY_KM2):
-    return int(round(valley_km2 * 1e6 / CELL**2))
+def valley_cells(valley_km2=VALLEY_KM2, cell=CELL):
+    return int(round(valley_km2 * 1e6 / cell**2))
 
 
 @njit(cache=True)
@@ -145,6 +150,226 @@ def flood(z):
 
 
 @njit(cache=True)
+def _is_outlet(z, r, c):
+    h, w = z.shape
+    if r == 0 or c == 0 or r == h - 1 or c == w - 1:
+        return True
+    for k in range(8):
+        if np.isnan(z[r + DR[k], c + DC[k]]):
+            return True
+    return False
+
+
+@njit(cache=True)
+def _exits(z, filled):
+    """Directions on the filled surface where a cell has an exit: the steepest strictly lower neighbour, or an
+    outlet at its own level. Outlets get OUTLET, no data NODATA, the cells of the flats UNSEEN."""
+    h, w = z.shape
+    d = np.full(z.size, UNSEEN, np.int8)
+    for r in range(h):
+        for c in range(w):
+            i = r * w + c
+            if np.isnan(z[r, c]):
+                d[i] = NODATA
+            elif _is_outlet(z, r, c):
+                d[i] = OUTLET
+    for r in range(h):
+        for c in range(w):
+            i = r * w + c
+            if d[i] != UNSEEN:
+                continue
+            best, bs, eq = UNSEEN, 0.0, UNSEEN
+            for k in range(8):
+                rr, cc = r + DR[k], c + DC[k]
+                if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                    continue
+                j = rr * w + cc
+                if filled[j] < filled[i]:
+                    s = (filled[i] - filled[j]) / (1.0 if k % 2 == 0 else 1.41421356)
+                    if s > bs:
+                        best, bs = k, s
+                elif filled[j] == filled[i] and d[j] == OUTLET and eq == UNSEEN:
+                    eq = k
+            d[i] = best if best != UNSEEN else eq
+    return d
+
+
+@njit(cache=True)
+def _increments(filled, d, w):
+    """Increments of the cells of the flats (d == UNSEEN), 0 elsewhere: twice the distance in cells to the cells
+    with an exit, plus the maximum over the flat of the distance from the higher terrain minus that of the cell."""
+    n = filled.size
+    h = n // w
+    nf = 0
+    for i in range(n):
+        if d[i] == UNSEEN:
+            nf += 1
+    inc = np.zeros(n, np.int32)
+    if nf == 0:
+        return inc
+    away = np.zeros(n, np.int32)
+    q = np.empty(nf, np.int32)
+    # towards the exits: a cell of a flat next to a cell of its level that is not in a flat
+    qt = 0
+    for i in range(n):
+        if d[i] != UNSEEN:
+            continue
+        r, c = i // w, i % w
+        for k in range(8):
+            rr, cc = r + DR[k], c + DC[k]
+            if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                continue
+            j = rr * w + cc
+            if filled[j] == filled[i] and d[j] != UNSEEN and d[j] != NODATA:
+                inc[i] = 1
+                q[qt] = i
+                qt += 1
+                break
+    qh = 0
+    while qh < qt:
+        i = q[qh]
+        qh += 1
+        r, c = i // w, i % w
+        for k in range(8):
+            rr, cc = r + DR[k], c + DC[k]
+            if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                continue
+            j = rr * w + cc
+            if d[j] == UNSEEN and inc[j] == 0:
+                inc[j] = inc[i] + 1
+                q[qt] = j
+                qt += 1
+    # away from the higher terrain
+    qt = 0
+    for i in range(n):
+        if d[i] != UNSEEN:
+            continue
+        r, c = i // w, i % w
+        for k in range(8):
+            rr, cc = r + DR[k], c + DC[k]
+            if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                continue
+            if filled[rr * w + cc] > filled[i]:
+                away[i] = 1
+                q[qt] = i
+                qt += 1
+                break
+    qh = 0
+    while qh < qt:
+        i = q[qh]
+        qh += 1
+        r, c = i // w, i % w
+        for k in range(8):
+            rr, cc = r + DR[k], c + DC[k]
+            if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                continue
+            j = rr * w + cc
+            if d[j] == UNSEEN and away[j] == 0:
+                away[j] = away[i] + 1
+                q[qt] = j
+                qt += 1
+    # combine flat by flat: the sign of away marks the cells already done
+    for s in range(n):
+        if d[s] != UNSEEN or away[s] < 0:
+            continue
+        qh, qt = 0, 1
+        q[0] = s
+        away[s] = -away[s] - 1  # -1 - away, so that a cell with away 0 is still marked
+        top = 0
+        while qh < qt:
+            i = q[qh]
+            qh += 1
+            top = max(top, -1 - away[i])
+            r, c = i // w, i % w
+            for k in range(8):
+                rr, cc = r + DR[k], c + DC[k]
+                if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                    continue
+                j = rr * w + cc
+                if d[j] == UNSEEN and away[j] >= 0:
+                    away[j] = -away[j] - 1
+                    q[qt] = j
+                    qt += 1
+        for m in range(qt):
+            i = q[m]
+            inc[i] = 2 * inc[i] + top - (-1 - away[i])
+    return inc
+
+
+@njit(cache=True)
+def _resolve(filled, d, inc, w):
+    """Steepest descent on the increments for the cells of the flats; every one has a neighbour of its own level
+    with a smaller increment (0 for a cell that is not in a flat)."""
+    n = filled.size
+    h = n // w
+    for i in range(n):
+        if d[i] != UNSEEN:
+            continue
+        r, c = i // w, i % w
+        best, bs = UNSEEN, 0.0
+        for k in range(8):
+            rr, cc = r + DR[k], c + DC[k]
+            if rr < 0 or cc < 0 or rr >= h or cc >= w:
+                continue
+            j = rr * w + cc
+            if filled[j] == filled[i]:
+                s = (inc[i] - inc[j]) / (1.0 if k % 2 == 0 else 1.41421356)
+                if s > bs:
+                    best, bs = k, s
+        d[i] = best
+
+
+@njit(cache=True)
+def _downstream_first(d, w, n_valid):
+    """Cells ordered so that every cell comes before the cells draining into it (a topological order)."""
+    n = d.size
+    deg = np.zeros(n, np.int8)
+    for i in range(n):
+        if d[i] >= 0:
+            deg[i + DR[d[i]] * w + DC[d[i]]] += 1
+    order = np.empty(n_valid, np.int32)
+    no = 0
+    for i in range(n):  # sources first
+        if d[i] >= OUTLET and deg[i] == 0:
+            order[no] = i
+            no += 1
+    for m in range(n_valid):
+        if m >= no:
+            break
+        i = order[m]
+        if d[i] >= 0:
+            t = i + DR[d[i]] * w + DC[d[i]]
+            deg[t] -= 1
+            if deg[t] == 0:
+                order[no] = t
+                no += 1
+    return order[::-1].copy(), no
+
+
+def blm_directions(z, filled):
+    """Drain directions (int8, flat) on the filled surface alone: steepest descent, and for the cells of a flat the
+    steepest descent on its increments (`_increments`). Returns them with the cells downstream first."""
+    w = z.shape[1]
+    d = _exits(z, filled)
+    inc = _increments(filled, d, w)
+    _resolve(filled, d, inc, w)
+    del inc
+    order, no = _downstream_first(d, w, int((d != NODATA).sum()))
+    if no != order.size:
+        raise RuntimeError(f"directions have a cycle: {order.size - no} cells unreached")
+    return d, order
+
+
+def route(z, flats=None):
+    """(filled, d, order): the filled surface, the drain directions and the cells downstream first."""
+    filled, d, order = flood(z)
+    if (FLATS if flats is None else flats) == "blm":
+        del d, order
+        d, order = blm_directions(z, filled)
+    return filled, d, order
+
+
+@njit(cache=True)
 def _links(filled, d, order, w, min_cells):
     """Accumulation and link labels. Returns lid (int32, flat: link of the valley each cell drains into,
     0 for none), sz (the cells' valley elevation, written over `filled`) and the downstream link of every link."""
@@ -230,11 +455,12 @@ def _euler(down):
     return tin, tout
 
 
-def drainage(z, valley_km2=VALLEY_KM2):
+def drainage(z, valley_km2=VALLEY_KM2, cell=CELL, flats=None):
     """(lid, sz, tin, tout): link of each cell (0 = none), elevation of the valley cell it drains to,
-    and the tour times of the link forest. All flat arrays of z."""
-    filled, d, order = flood(z)
-    lid, down = _links(filled, d, order, z.shape[1], valley_cells(valley_km2))
+    and the tour times of the link forest. All flat arrays of z; `cell` is the cell size (m);
+    `flats` ("flood" or "blm", default FLATS) is the rule for the cells of the flats."""
+    filled, d, order = route(z, flats)
+    lid, down = _links(filled, d, order, z.shape[1], valley_cells(valley_km2, cell))
     del d, order
     tin, tout = _euler(down)
     return lid, filled, tin, tout

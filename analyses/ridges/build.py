@@ -2,6 +2,10 @@
 
     uv run --with numba python build.py pyrenees [--stage drain|curves]
 
+The rule for the flats (ridges.FLATS) and the cache root (geo.CACHE) come from the environment variables
+RIDGES_FLATS (flood | blm; blm adds `_flats-blm` to the folder name) and RIDGES_CACHE, so that every script
+of the pipeline (build.py, hgeo.py, the figures) reads the same folder.
+
 drain: mosaic, mountain area, flow routing, crest edges -> mask_<region>.npz, edges_<region>.npz, hand_<region>.npy
 curves: edges -> strokes -> splines -> curves_<region>.npz (curves of the mountain area, points every STEP m)
 """
@@ -32,6 +36,8 @@ def folder():
             f"_hand{ridges.HAND_MIN:g}_gap{curves.BRIDGE_EDGES}_prune{curves.PRUNE_EDGES}"
             f"_defl{curves.MAX_DEFLECTION:g}-{curves.DIRECTION_M:g}_min{curves.MIN_LENGTH:g}_step{curves.STEP:g}"
             f"_smooth{curves.SMOOTH_M:g}_join{joined.JOIN_M:g}-{joined.CONE_DEG:g}-{joined.SNAP_M:g}")
+    if ridges.FLATS != "flood":
+        name += f"_flats-{ridges.FLATS}"
     d = geo.CACHE / name
     d.mkdir(parents=True, exist_ok=True)
     return d
@@ -45,6 +51,12 @@ def record_peak(d, key):
     f.write_text(json.dumps(peaks, indent=1))
 
 
+FLATS_TEXT = {
+    "flood": "cells of a flat or a filled depression drain to the cell that reached them in the priority flood",
+    "blm": "cells of a flat drain by the gradients of Barnes, Lehman and Mulla (2014), from the filled surface alone",
+}
+
+
 def write_parameters(d):
     (d / "PARAMETERS.md").write_text(f"""# Crest pipeline, {d.name}
 
@@ -53,6 +65,7 @@ Departments: {geo.REGIONS}.
 
 | Parameter | Value |
 |---|---|
+| flats | {ridges.FLATS}: {FLATS_TEXT[ridges.FLATS]} |
 | valley | cells draining at least {ridges.VALLEY_KM2} km2 |
 | cross-section | ground {ridges.XSEC_CELLS} cells away on each side at least {ridges.XSEC_DROP:g} m lower |
 | height above streams | at least {ridges.HAND_MIN:g} m on both sides |

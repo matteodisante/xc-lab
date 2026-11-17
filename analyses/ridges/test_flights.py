@@ -225,6 +225,23 @@ def test_chord_replaces_circles_by_a_straight_move():
     assert np.allclose(np.diff(r[10:40], axis=0), (xy[39] - xy[10]) / 29)
 
 
+def test_pause_mask_covers_the_runs_of_its_segment_ends_included():
+    runs = np.array([[0, 30, 39], [1, 0, 99], [0, 10, 19], [0, 20, 24]])  # unsorted; 10-24 is two touching runs
+    m = fl.pause_mask(np.arange(5.0, 50.0), 0, runs)
+    assert np.flatnonzero(m).tolist() == [i - 5 for i in [*range(10, 25), *range(30, 40)]]
+    assert not fl.pause_mask(np.arange(5.0), 2, runs).any()
+
+
+def test_flight_without_phases_is_dropped_and_its_runs_are_chorded():
+    rng = np.random.default_rng(10)
+    p = random_path(rng, 30_000)
+    pos = flight_positions(p, rng, circling=False)
+    fl._init({"masks": box_mask([p]), "region_min": 0.8, "max_dt": 1, "min_opening": 0.0, "pauses": "vilpellet"})
+    assert fl.process(item(pos, "a"))["info"]["status"] == "phases"
+    r = fl.process({**item(pos, "b"), "pauses": np.array([[0, 100, 399]])})
+    assert r["info"]["status"] == "ok" and abs(r["info"]["circling_frac"] - 300 / len(pos)) < 1e-9
+
+
 def test_region_assignment_by_fraction_of_fixes():
     m = np.zeros((10, 10), bool)
     m[:, :5] = True  # west half of a 10 x 10 km square at left = 0, top = 10000
@@ -269,7 +286,7 @@ def test_run_and_finish_write_the_tables(tmp_path):
     geo = np.array([fl.pooled([p], fl.LAGS_K) for p in paths])
     np.savez(tmp_path / "tamsd_rows_alps_paths.npz", s_m=fl.LAGS_M["route"], rows=geo, group=np.arange(len(paths)))
     out = tmp_path / "out"
-    fl.finish(fl.run(items, fl.configure(tmp_path, min_opening=0.0), jobs=2), out, tmp_path, n_boot=50)
+    fl.finish(fl.run(items, fl.configure(tmp_path, min_opening=0.0, pauses="turn"), jobs=2), out, tmp_path, n_boot=50)
     import csv
 
     rows = list(csv.DictReader(open(out / "flights.csv")))
