@@ -141,6 +141,10 @@ def how(folder, out):
         x = tau - ell
         ax.fill_between(x, [p["band"][0] for p in curve], [p["band"][1] for p in curve], color=shade, alpha=0.2, lw=0)
         ax.plot(x, [p["value"] for p in curve], color=shade, lw=1.3, label=rf"$\ell \approx {ell:.0f}$ s")
+    for c, shade in zip(h["classes"]["chance"], shades):
+        curve = c["heading"]["curve"]
+        ax.plot(tau - c["l_median"]["value"], [p["value"] for p in curve], color=shade, lw=1.1, ls="--")
+    ax.plot([], [], color="#555555", lw=1.1, ls="--", label="surrogate pairs")
     ax.axvline(0, color="#888888", lw=0.7, ls=":")
     ax.set(xlabel=r"$\tau - \ell$ (s)", ylabel=r"heading correlation $C(\tau)$")
     ax.legend(loc="upper left", fontsize=7, handlelength=1.4)
