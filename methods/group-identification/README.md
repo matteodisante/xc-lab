@@ -93,6 +93,7 @@ groups, by number and by time, for three q.
   longest straight line a member flew in one of its group stretches; the viewer ranks by it),
   `export_viewer.py` (copies one run, with its PARAMETERS.md, to the `groups/` folder of the
   xc-viewer data folder, where the Group flights tab reads it).
+- `labels_check.py`: the grouping of the chosen run with the refit phase labels (`methods/phase-labelling`) in place of Vilpellet's, on 20 busy days (seed 0); writes `out/labels_check.json` (flights and group time barely change, 99.6% of the group seconds are shared).
 - `test_pipeline.py`: Phases 1-3 against every pair of instants on random synthetic days, the
   conditions on synthetic pairs, the sweep against `models.py`, τ*, Phase 0 on one real date.
 - `test_results.py`: the numbers of this README; `test_assessment.py`: those of sections 5–6 of
