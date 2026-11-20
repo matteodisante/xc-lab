@@ -51,12 +51,17 @@ CLASSES of contrasts.py and "all"): on the events that have the four STAGES, the
 H over the lags of the window, MSD ~ tau^(2 alpha); equal-length windows reach the same lags), the differences
 start - pre, end - start and post - end, and on the events that have both windows, the two controls (ctrlA2 - ctrlA1,
 ctrlS2 - ctrlS1). One weight per window, the bands of twoway.py. Writes prepost_ground.json and prepost_ground.pdf.
+The key "mock" is the placebo of the three steps on the exponent over LONG_FIT: the mock events of the --open mode (same
+calipers and MOCKS, "any site" variant, windows of the same width; --caliper NAME is needed where matched.py has not
+run, as for --declared-open) of each real event with the four windows, of the class
+of their real event; per class and "all", the steps of the mock events, of the real events that have one, and
+real - mock (the same draws), with the numbers of events.
 The same quantities are given for the exponent fitted over the lags LONG_FIT only ("alpha_long", "differences_long";
 prepost_ground_long.pdf). As a control of composition, "phases" gives for each window of the four STAGES the share of its
 labelled time in glide, search and climb (%) of our refit labels (phase_terms.py: runs on the flight clock, a run
 covers [t_start, t_start + s)), on the events that have the four windows labelled (prepost_phases.pdf).
 
-    uv run python prepost.py --declared-open --dt5 --ground [--window SECONDS] [--sample N] [--recompute]
+    uv run python prepost.py --declared-open --dt5 --ground [--window SECONDS] [--sample N] [--recompute] [--caliper NAME]
     uv run python prepost.py --declared-open --dt5 --ground --redraw    # the figure again from the JSON
 """
 
@@ -119,6 +124,7 @@ STATS = {**decompose.BUDGET, **{k: v for k, v in decompose.PERFORMANCE.items() i
 XC = decompose.XC  # the cross-country speed, measured on the windows themselves (window_job)
 MOCKS = 5  # mock events drawn per real event
 MOCK_POOL = 2 * MOCKS  # solo flights measured per real event: the first MOCKS that have the four windows are kept
+MOCK_CALIPER = "month2_hour2_class"  # the caliper matched.py chose on the open flights, when no matched_counts.json
 MOCK_VARIANTS = {"any site": False, "same site": True}  # name: whether the solo flight also took off at the site (route.SITE_LINK)
 MOCK_EFFECTS = ("g", "d w", "D_in", "D_out")
 
@@ -608,12 +614,12 @@ def draw_delta(result, lags, path, title):
 
 
 def mock_caliper():
-    """The caliper of the mock events: --caliper NAME, or the one matched.py chose (matched_counts.json); None when
-    neither exists, and the mock events are left out."""
+    """The caliper of the mock events: --caliper NAME, or the one matched.py chose (matched_counts.json), or
+    MOCK_CALIPER."""
     if "--caliper" in sys.argv:
         return sys.argv[sys.argv.index("--caliper") + 1]
     path = OUT / "matched_counts.json"
-    return json.loads(path.read_text())["chosen caliper"]["name"] if path.exists() else None
+    return json.loads(path.read_text())["chosen caliper"]["name"] if path.exists() else MOCK_CALIPER
 
 
 def mock_draws_of(wins, spans, flights, width, caliper):
@@ -627,10 +633,15 @@ def mock_draws_of(wins, spans, flights, width, caliper):
     return out
 
 
+def cache_tag(sample=None):
+    """The ending of the cache and result names: the sample, and --dt5."""
+    return (f"_sample{sample}" if sample else "") + ("_dt5" if longlags.DT5 else "")
+
+
 def window_pieces(flights, membership, summary, width, sample=None, recompute=False):
     """The flights kept, the spans, the windows of `width` s and their cached pieces: (flights, spans, wins, p, lags).
     With --dt5 the flights are those up to longlags.MAX_DT s and the cache has its own name."""
-    tag = (f"_sample{sample}" if sample else "") + ("_dt5" if longlags.DT5 else "")
+    tag = cache_tag(sample)
     lags = window_lags(width)
     if longlags.DT5:
         flights = flights[flights["dt_native"] <= longlags.MAX_DT + 1e-6]
@@ -727,6 +738,31 @@ def timeline(units, counts, lags, mask):
         for name, (P, Q) in GROUND_CONTROLS.items():
             pair, n = curves_on(units, counts, (Q, P), lags, only=mask)
             out["differences" + suffix][name] = {"events": n, **twoway.quote(fit(pair[P]) - fit(pair[Q]))}
+    return out
+
+
+def long_steps(units, counts, lags, only, group=None):
+    """The differences of GROUND_STEPS of the exponent over LONG_FIT, each in rows (the point estimate, then one row per
+    draw of `counts`), on the events of `only` that have the four STAGES, and their number. `group`: as in curves_on."""
+    got, events = curves_on(units, counts, STAGES, lags, group=group, only=only)
+    return {name: long_fit(got[P]["msd"], lags) - long_fit(got[Q]["msd"], lags) for name, (P, Q) in GROUND_STEPS.items()}, events
+
+
+def ground_mock(real, mock, where, counts, lags):
+    """The placebo of the steps of the timeline, per ground class and "all", on the exponent over LONG_FIT: the
+    differences of GROUND_STEPS of the mock events, of the real events that have one, and real - mock (the same draws
+    of `counts`), with the numbers of both. A mock event has the class of its real event. `real`: units and id (the
+    event of each unit); `mock`: units and group (the real event of each unit); `where`: the class of each real unit."""
+    have = np.isin(real.id, with_mock(mock.units.population, mock.units.stratum, mock.group))
+    of_event = pd.Series(where, index=real.id).groupby(level=0).first()
+    mock_where = of_event.reindex(mock.group).to_numpy()
+    out = {}
+    for k in (*CLASSES, "all"):
+        r, n_real = long_steps(real.units, counts, lags, have & ((where == k) if k != "all" else True))
+        m, n_mock = long_steps(mock.units, counts, lags, (mock_where == k) if k != "all" else None, mock.group)
+        out[k] = {"real events with mocks": n_real, "mock events": n_mock,
+                  "real": {n: twoway.quote(r[n]) for n in r}, "mock": {n: twoway.quote(m[n]) for n in m},
+                  "real minus mock": {n: twoway.quote(r[n] - m[n]) for n in r}}
     return out
 
 
@@ -831,8 +867,9 @@ def draw_ground(result, tag=""):
 
 
 def run_ground(flights, membership, summary, width, sample=None, recompute=False):
-    """The timeline per ground class: JSON and figure in longlags.RESULTS."""
-    flights, _, wins, p, lags = window_pieces(flights, membership, summary, width, sample, recompute)
+    """The timeline per ground class, and under "mock" its placebo (ground_mock; left out without a caliper): JSON and
+    figure in longlags.RESULTS."""
+    flights, spans, wins, p, lags = window_pieces(flights, membership, summary, width, sample, recompute)
     block, of_pilot, of_block = twoway.cells(flights, summary)
     counts = twoway.counts(of_pilot, of_block, np.random.default_rng(SEED))
     units = decompose.msd_units(p, "episode", decompose.flight_table(flights, summary)[0], block)
@@ -845,6 +882,20 @@ def run_ground(flights, membership, summary, width, sample=None, recompute=False
     share = phase_shares(*unit_windows(p, units, wins), phase_terms.read_runs(phase_terms.SET, kept))
     for k, m in masks.items():
         result["classes"][k]["phases"] = phases_on(units, counts, share, m)
+    caliper = mock_caliper()
+    if caliper:
+        measured = pd.DataFrame({k: p[k] for k in ("flight", "population", "episode")}).drop_duplicates()
+        draws = mock_draws_of(wins.merge(measured, on=["flight", "population", "episode"]), spans, flights, width, caliper)["any site"]
+        file = CACHE / f"prepost_ground_mocks_{width}_lag{lags.max()}_{caliper}_{MOCKS}x{MOCK_POOL}{cache_tag(sample)}.npz"
+        if recompute or not file.exists():
+            found = tamsd.measure("para", flights, mock_windows(draws, width), lags, width - tamsd.GRID_S)
+            np.savez(file, **{f"para/{k}": v for k, v in found.items()})
+        pm = read_pieces(file)["para"]
+        kept = valid_mocks(draws, pm)
+        m_units, m_group = mock_units(pm, kept, block)
+        real = SimpleNamespace(units=units, id=pd.factorize(p["episode"])[1][units.stratum])
+        result["mock"] = {"caliper": caliper, "mocks per event": MOCKS, "pool per event": MOCK_POOL,
+                          "classes": ground_mock(real, SimpleNamespace(units=m_units, group=m_group), where, counts, lags)}
     tag = f"_sample{sample}" if sample else ""
     (longlags.RESULTS / f"prepost_ground{tag}.json").write_text(json.dumps(result, indent=1))
     draw_ground(result, tag)
@@ -874,6 +925,9 @@ if __name__ == "__main__":
             out = run_ground(flights, membership, summary, width, sample, "--recompute" in sys.argv)
             for k, r in out["classes"].items():
                 print(k, r["events"], {n: [round(d["value"], 4), np.round(d["band"], 4).tolist()] for n, d in r["differences"].items()})
+            for k, r in out.get("mock", {}).get("classes", {}).items():
+                print("mock", k, r["real events with mocks"], r["mock events"], {n: [round(d["value"], 4), np.round(d["band"], 4).tolist()]
+                                                                                    for n, d in r["real minus mock"].items()})
             sys.exit()
         out = run_open(flights, membership, summary, width, sample, "--recompute" in sys.argv)
         for variant, v in out.get("mock", {}).get("variants", {}).items():

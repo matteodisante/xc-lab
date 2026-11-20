@@ -8,11 +8,20 @@ and tables of the story come from out/<run>/open_declared_dt5 (the flights with 
 """
 
 import json
+import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from tables import MAIN, OUTS, macro, macros, num
+sys.path.insert(0, str(Path(__file__).parents[2]))
+import closure  # noqa: E402
+import cohorts  # noqa: E402
+import longlags  # noqa: E402
+import tail_ks  # noqa: E402
+import tamsd  # noqa: E402
+import twoway  # noqa: E402
+from tables import MAIN, OUTS, macro, macros, num  # noqa: E402
 
 GEN = OUTS.parent / "vs-solo" / "generated" / "comparisons"
 DECLARED = OUTS / MAIN / "open_declared"  # the declared open flights, every logger interval
@@ -37,6 +46,23 @@ def write(name, lines):
     (GEN / f"{name}.tex").write_text("\n".join(lines) + "\n")
 
 
+def sig2(x):
+    """x to two significant figures: a lag read on a figure."""
+    return num(float(f"{x:.2g}"), 0)
+
+
+def from_lag(lags, ok):
+    """The first lag from which `ok` holds at every later lag of `lags`; None when it fails at the last lag."""
+    ok = np.asarray(ok, bool)
+    i = int(np.flatnonzero(~ok)[-1]) + 1 if (~ok).any() else 0
+    return lags[i] if i < len(lags) else None
+
+
+def first_lag(lags, ok):
+    """The first lag where `ok` holds; None when it never does."""
+    return next((t for t, k in zip(lags, ok) if k), None)
+
+
 def labels_tex(o):
     """The labels of the catalogue with their class and flights."""
     lines = [r"\begin{tabular}{@{}l l l r@{}}", r"\toprule", r"label & meaning & class & flights \\", r"\midrule"]
@@ -50,6 +76,11 @@ def labels_tex(o):
         macro(f"Flights{tag}", num(total[cls], 0))
 
 
+def pct(b, key):
+    """Share of the flights of b in key, from the counts: the "(%)" of opening.json is rounded already."""
+    return 100 * b[key] / b["flights"]
+
+
 def opening_tex(o):
     """Macros of opening.py and the table of the openings of the datasets of the declared open flights."""
     macro("MinOpening", f"{o['min_opening']:g}")
@@ -57,32 +88,32 @@ def opening_tex(o):
     macro("MountainM", num(o["mountain_m"], 0))
     every = o["datasets"]["every declared open flight"]["all"]
     macro("Kept", num(every["above the threshold"], 0))
-    macro("KeptShare", num(every["above the threshold (%)"], 0))
-    macro("StrictShare", num(every["above the stricter threshold (%)"], 0))
+    macro("KeptShare", num(pct(every, "above the threshold"), 0))
+    macro("StrictShare", num(pct(every, "above the stricter threshold"), 0))
     for name, tag in ((f"below {o['mountain_m']} m", "Low"), (f"{o['mountain_m']} m or more", "High")):
         b = o["by takeoff"][name]
         macro(f"Takeoff{tag}Flights", num(b["flights"], 0))
         macro(f"Takeoff{tag}Median", f"{b['quartiles'][1]:.2f}")
-        macro(f"Takeoff{tag}Keep", num(b["above the threshold (%)"], 0))
+        macro(f"Takeoff{tag}Keep", num(pct(b, "above the threshold"), 0))
         macro(f"Takeoff{tag}KeepN", num(b["above the threshold"], 0))
         macro(f"Takeoff{tag}StrictN", num(b["above the stricter threshold"], 0))
-        macro(f"Takeoff{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+        macro(f"Takeoff{tag}Strict", num(pct(b, "above the stricter threshold"), 0))
     macro("DurationS", num(o["duration_s"], 0))
     for name, tag in ((f"below {o['duration_s']} s", "Short"), (f"{o['duration_s']} s or more", "Long")):
         b = o["by duration"][name]
         macro(f"Duration{tag}Flights", num(b["flights"], 0))
         macro(f"Duration{tag}Median", f"{b['quartiles'][1]:.2f}")
-        macro(f"Duration{tag}Keep", num(b["above the threshold (%)"], 0))
+        macro(f"Duration{tag}Keep", num(pct(b, "above the threshold"), 0))
         macro(f"Duration{tag}KeepN", num(b["above the threshold"], 0))
         macro(f"Duration{tag}StrictN", num(b["above the stricter threshold"], 0))
-        macro(f"Duration{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+        macro(f"Duration{tag}Strict", num(pct(b, "above the stricter threshold"), 0))
     strata = dict(zip(o["by kind"]["solo flights"]["median by stratum"], ("Low", "High", "Short", "Long")))
     for kind, tag in (("solo flights", "Solo"), ("group flights", "Group")):
         b = o["by kind"][kind]
         macro(f"Kind{tag}Flights", num(b["flights"], 0))
         macro(f"Kind{tag}Median", f"{b['quartiles'][1]:.2f}")
-        macro(f"Kind{tag}Keep", num(b["above the threshold (%)"], 0))
-        macro(f"Kind{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+        macro(f"Kind{tag}Keep", num(pct(b, "above the threshold"), 0))
+        macro(f"Kind{tag}Strict", num(pct(b, "above the stricter threshold"), 0))
         macro(f"Kind{tag}Duration", num(b["median duration (s)"], 0))
         macro(f"Kind{tag}Mountain", num(b["mountain (%)"], 0))
         for name, stag in strata.items():
@@ -95,7 +126,7 @@ def opening_tex(o):
         label = name if not name.startswith("lags up to ") else f"lags up to {num(int(name.split()[3]), 0)}~s"
         macro(f"Median{tags[name]}", f"{d['all']['quartiles'][1]:.2f}")
         macro(f"Flights{tags[name]}", num(d["all"]["flights"], 0))
-        macro(f"Below{tags[name]}", num(100 - d["all"]["above the threshold (%)"], 0))
+        macro(f"Below{tags[name]}", num(100 - pct(d["all"], "above the threshold"), 0))
         cells = [num(d[t]["flights"], 0) if t in d else "" for _, t in POPS]
         medians = [f"{d[t]['quartiles'][1]:.2f}" if t in d else "" for _, t in POPS]
         for _, t in POPS:
@@ -112,7 +143,8 @@ GAP_LAGS = {10: "Ten", 100: "Hundred", 320: "ThreeTwenty", 1000: "Thousand", 276
 
 def cohort_gaps_tex(o):
     """GapThr{GS,AS,GA}Lag (and Band): the gaps of alpha of the cohort to COHORT_TAU s at GAP_LAGS, for the
-    declared open flights (Thr = All) and the two thresholds on the opening (Min, Strict)."""
+    declared open flights (Thr = All) and the two thresholds on the opening (Min, Strict); GapThr{GS,AS,GA}From:
+    the lag from which the lower edge of the band of the gap stays above 0 (two significant figures)."""
     macro("GapCohortTau", num(COHORT_TAU, 0))
     files = {"All": "cohorts", "Min": f"cohorts_min{o['min_opening']:g}", "Strict": f"cohorts_min{o['stricter']:g}"}
     for thr, name in files.items():
@@ -120,6 +152,9 @@ def cohort_gaps_tex(o):
             continue
         for gap, entries in read(DT5, name)["gaps"].items():
             c = next(e for e in entries if e["tau_max"] == COHORT_TAU)
+            t = from_lag(c["lags"], np.array(c["band"][0]) > 0)
+            if t is not None:
+                macro(f"Gap{thr}{gap.replace(' - ', '')}From", sig2(t))
             for lag, tag in GAP_LAGS.items():
                 k = c["lags"].index(lag)
                 mac_value(f"Gap{thr}{gap.replace(' - ', '')}{tag}",
@@ -160,6 +195,7 @@ def spread_tex(folder):
             macro(f"GapSpread{side}{gap.replace(' - ', '')}", num(max(d), 3))
 
 
+WINDOW_FULL = 5  # lags: a window of at least this many is the usual one; the ends of the grid hold fewer
 POOL_LAGS = {1000: "Thousand", 2760: "Long", 6220: "VeryLong"}
 
 
@@ -242,7 +278,8 @@ def dt_tex():
 def ground_tex():
     """contrasts.py (design ground) on the declared open flights up to DtMax s: the constants of the ground class, the
     share of flights of unknown class and of class changed by the trim, the flights and the gaps of each class, the
-    peaks of the normalised gaps, the share of the flights in the mountains, and the table of the classes."""
+    peaks of the normalised gaps, the lag from which G - A stays above 0 (Ground<class>GAPositive, two significant
+    figures), the share of the flights in the mountains, and the table of the classes."""
     if not (DT5 / "contrasts_ground.json").exists():
         return
     s = read(DT5, "contrasts_ground")
@@ -279,6 +316,11 @@ def ground_tex():
             i = max((t for t, ok in enumerate(r["solid"]) if ok), key=lambda t: r["value"][t])  # where selection-free
             macro(f"Ground{tag}Peak{short}", num(r["value"][i], 2))
             macro(f"Ground{tag}Peak{short}Lag", num(r["lags"][i], 0))
+        g = s[k]["gaps"]["G - A"]  # the lag from which G - A stays resolved above 0, over the solid lags
+        solid = [t for t, ok in zip(g["lags"], g["solid"]) if ok]
+        t = from_lag(solid, np.array(g["band"][0][:len(solid)]) > 0)
+        if t is not None:
+            macro(f"Ground{tag}GAPositive", sig2(t))
         lines.append(" & ".join(row) + r" \\")
     write("ground_table", lines + [r"\bottomrule", r"\end{tabular}"])
 
@@ -401,6 +443,29 @@ def prepost_long_tex(s):
         lines.append(f"{k} & " + " & ".join(cell_d(d[n], 3) for n in steps) + " & "
                      + " & ".join(num(climb[st]["value"], 1) for st in STAGES_TAG) + r" \\")
     write("prepost_long_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    if "mock" in s:
+        prepost_mock_tex(s)
+
+
+def prepost_mock_tex(s):
+    """The placebo of the three steps on the exponent over the long lags (prepost.py "mock"): macros WhenMock{C}{Step}
+    (mock events), WhenRealMinusMock{C}{Step} (real events with a mock, minus their mocks) with Band, WhenMockEvents and
+    WhenMockRealEvents (class "all"), and the table prepost_mock_table."""
+    steps = {"start - pre": "StartMinusPre", "end - start": "EndMinusStart", "post - end": "PostMinusEnd"}
+    kinds = {"real": "Real", "mock": "Mock", "real minus mock": "RealMinusMock"}
+    macro("WhenMockEvents", num(s["mock"]["classes"]["all"]["mock events"], 0))
+    macro("WhenMockRealEvents", num(s["mock"]["classes"]["all"]["real events with mocks"], 0))
+    lines = [r"\begin{tabular}{@{}l r r r r r r r r r@{}}", r"\toprule",
+             r" & \multicolumn{3}{c}{real} & \multicolumn{3}{c}{mock} & \multicolumn{3}{c}{real $-$ mock} \\",
+             r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(l){8-10}",
+             r"ground" + r" & start $-$ pre & end $-$ start & post $-$ end" * 3 + r" \\", r"\midrule"]
+    for k, tag in WHEN_TAGS.items():
+        r = s["mock"]["classes"][k]
+        for kind, name in (("mock", "Mock"), ("real minus mock", "RealMinusMock")):
+            for step, short in steps.items():
+                mac_value(f"When{name}{tag}{short}", r[kind][step], 3, True)
+        lines.append(f"{k} & " + " & ".join(cell_d(r[kind][step], 3) for kind in kinds for step in steps) + r" \\")
+    write("prepost_mock_table", lines + [r"\bottomrule", r"\end{tabular}"])
 
 
 THRESHOLD_KEYS = {"none": "none", "0.1": "$>0.1$", "0.5": "$>0.5$"}
@@ -496,7 +561,7 @@ def phases_macros(r, prefix, gaps=PH_GAPS):
         for pop in "SAG":
             macro(f"{prefix}Flights{pop}{c}", num(d["flights"][pop], 0))
             macro(f"{prefix}Hours{pop}{c}", num(d["hours"][pop], 0))
-        if "contexts" in d and gaps is PH_GAPS:
+        if "contexts" in d:
             for k, tag in (("unknown", "SearchDropped"), ("found", "CtxFound"), ("failed", "CtxFailed"), ("recentre", "CtxRecentre"), ("exit", "CtxExit")):
                 macro(f"{prefix}{tag}{c}", num(100 * d["contexts"]["all"]["share"][k], 1))
                 if key == "all":
@@ -567,8 +632,29 @@ def phases_tail_table(r):
     write("phases_tail_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
 
 
+def tail_numbers(r):
+    """TailMu{Min,Max}: the smallest and largest tail exponent of S, A, G over the classes and phases; TailAbove{Min,Max}:
+    the fewest and most durations of G above the common threshold; the constants of the threshold scan (tail_ks.py)."""
+    tails = [t for k in WHEN_TAGS for t in r["tails"][k].values() if t]
+    mu = [t["mu"][p]["value"] for t in tails for p in "SAG"]
+    above = [t["runs_above"]["G"] for t in tails]
+    macro("TailMuMin", num(min(mu), 1))
+    macro("TailMuMax", num(max(mu), 1))
+    macro("TailAboveMin", num(min(above), 0))
+    macro("TailAboveMax", num(max(above), 0))
+    macro("TailFineBelow", num(tail_ks.FINE_BELOW, 0))
+    macro("TailBinPercent", f"{100 * tail_ks.BIN:g}")
+    macro("TailCandidates", num(tail_ks.N_CANDIDATES, 0))
+    macro("TailQuantileLo", f"{tail_ks.QUANTILES[0]:g}")
+    macro("TailQuantileHi", f"{tail_ks.QUANTILES[1]:g}")
+    macro("TailMinRuns", num(tail_ks.MIN_TAIL, 0))
+
+
 def phases_cycle_table(r):
-    """The cycle of a glide and a climb of S, A, G per class against the lag of the peak of the normalised gaps."""
+    """The cycle of a glide and a climb of S, A, G per class against the lag of the peak of the normalised gaps;
+    PhCycleRatioMin/Max: the peak lags of G - A and G - S in cycles (lag over the mean cycle of S, A, G of the
+    class), smallest and largest over the classes; PhCycleShortMin/Max: A minus G of the cycle (min), smallest and
+    largest over the classes."""
     cyc = "cycle of a glide and a climb (min)"
     lines = [r"\begin{tabular}{@{}l r r r r r@{}}", r"\toprule",
              r" & \multicolumn{3}{c}{cycle (min)} & \multicolumn{2}{c}{peak lag (s)} \\", r"\cmidrule(lr){2-4}\cmidrule(l){5-6}",
@@ -578,11 +664,20 @@ def phases_cycle_table(r):
         row += [num(r["peaks"][key][g]["lag"], 0) if r["peaks"] else "--" for g in ("G - A", "G - S")]
         lines.append(" & ".join(row) + r" \\")
     write("phases_cycle_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    if r["peaks"]:  # the peak lags in cycles of the class (the mean cycle of S, A, G), and A - G
+        ratio = [r["peaks"][k][g]["lag"] / (60 * np.mean([r["phases"][k]["statistics"][p][cyc]["value"] for p in "SAG"]))
+                 for k in WHEN_TAGS for g in ("G - A", "G - S")]
+        macro("PhCycleRatioMin", num(min(ratio), 1))
+        macro("PhCycleRatioMax", num(max(ratio), 1))
+        shorter = [-r["phases"][k]["gaps"]["G - A"][cyc]["value"] for k in WHEN_TAGS]
+        macro("PhCycleShortMin", num(min(shorter), 1))
+        macro("PhCycleShortMax", num(max(shorter), 1))
 
 
 def phases_tex():
     """The macros and the tables of phase_gaps.py on the declared open flights up to DtMax s: the macros of both label
-    sets (the refit as Ph..., his labels as PhV..., the gaps only), the tables of the refit."""
+    sets (the refit as Ph..., his labels as PhV..., the contexts of the searches and the gaps only), the tables of the refit, PhCtxMaxDiff (the largest
+    difference, in points, between the shares of the four moments of a search of the two label sets)."""
     for label_set, prefix in PH_PREFIX.items():
         if (DT5 / f"phases_{label_set}.json").exists():
             r = read(DT5, f"phases_{label_set}")
@@ -595,6 +690,11 @@ def phases_tex():
                 phases_full_table(r)
                 phases_tail_table(r)
                 phases_cycle_table(r)
+                tail_numbers(r)
+                if (DT5 / "phases_vilpellet.json").exists():  # the four moments of a search: ours against his, in points
+                    share = lambda x: x["phases"]["all"]["contexts"]["all"]["share"]
+                    his = share(read(DT5, "phases_vilpellet"))
+                    macro("PhCtxMaxDiff", num(100 * max(abs(share(r)[k] - his[k]) for k in ("found", "failed", "recentre", "exit")), 1))
 
 
 REFIT = OUTS.parents[2] / "methods" / "phase-labelling" / "out"  # the refit of the phase labels (methods/phase-labelling)
@@ -602,9 +702,10 @@ REFIT_CLASSES = {"plains": "Plains", "hills": "Hills", "low mountains": "LowMtn"
 
 
 def refit_tex():
-    """The macros Refit... of the refit of the phase labels (refit_*.json of methods/phase-labelling/out) and the
-    agreement in sign of the gaps G - A and A - S between our labels and Vilpellet's (phases_*.json); skipped when a
-    file is missing."""
+    """The macros Refit... of the refit of the phase labels (refit_*.json of methods/phase-labelling/out), among them
+    RefitIterMax (the most iterations of a converged start) and RefitHangVsPara (the share of fixes where the hang
+    glider fit and the paraglider fit agree, in %), and the agreement in sign of the gaps G - A and A - S between our
+    labels and Vilpellet's (phases_*.json); skipped when a file is missing."""
     names = ("refit_params_para", "refit_params_hang", "refit_cadence", "refit_agreement")
     files = [REFIT / f"{n}.json" for n in names] + [DT5 / "phases_refit.json", DT5 / "phases_vilpellet.json"]
     if not all(f.exists() for f in files):
@@ -617,6 +718,8 @@ def refit_tex():
         macro(f"RefitFlights{tag}", num(agr[d]["common_flights"], 0))
         macro(f"RefitAgree{tag}", num(100 * agr[d]["overall"]["same_label"], 1))
     macro("RefitPoolPara", num(par["para"]["training"]["pool"], 0))
+    macro("RefitIterMax", num(max(x["iterations"] for d in par.values() for x in d["starts"] if x["converged"]), 0))
+    macro("RefitHangVsPara", num(100 * par["hang"]["own_vs_para_refit_labels"]["same_label"], 3))
     macro("RefitStarts", num(len(par["para"]["starts"]), 0))
     ll, fixes = par["para"]["held_out_log_likelihood"], par["para"]["training"]["held_out_fixes"]
     for key, tag in (("his", "His"), ("refit", "Ours"), ("best_any_meaning", "Best")):
@@ -1177,6 +1280,131 @@ def coverage_tex(cov):
     macro("CovDraws", num(cov["draws per family"], 0))
 
 
+def definitions_tex():
+    """The numbers of the definitions, from the constants of tamsd, longlags, cohorts and twoway: the grid of lags
+    (GridS, LagRatio, LagDecades, LagSteps, LagFactor, LagsPerDecade, LagMin, LagMax, LagCount, LagList), the lags of the
+    window of alpha (WindowLagsMin/Max: its fewest and most lags among the windows of at least 5 lags), the pieces
+    (PieceMinMinutes, SupportOriginsPercent, PlusFactor = 10^HalfDecade / Support, PlusLagHours, PlusPieceHours: the
+    pieces that give alpha at the longest cohort lag) and the factor of the bands (BandZ)."""
+    lags = np.asarray(longlags.LONG_LAGS)
+    decades = np.log10(tamsd.TAU_MAX)
+    steps = round(np.log(tamsd.TAU_MAX) / np.log(longlags.STEP))
+    macro("GridS", num(tamsd.GRID_S, 0))
+    macro("LagRatio", f"{longlags.STEP:.3f}")
+    macro("LagDecades", num(decades, 0))
+    macro("LagSteps", num(steps, 0))
+    macro("LagFactor", num(tamsd.TAU_MAX, 0))
+    macro("LagsPerDecade", num(steps / decades, 0))
+    macro("LagMin", num(lags[0], 0))
+    macro("LagMax", num(lags[-1], 0))
+    macro("LagCount", num(len(lags), 0))
+    short = lags < tamsd.TAU_MAX  # the list breaks where the lags reach TAU_MAX
+    macro("LagList", ", ".join(num(t, 0) for t in lags[short]) + r",\\ " + ", ".join(num(t, 0) for t in lags[~short]))
+    size = [len(cohorts.window(t)) for t in lags]
+    macro("WindowLagsMin", num(min(n for n in size if n >= WINDOW_FULL), 0))
+    macro("WindowLagsMax", num(max(size), 0))
+    macro("PieceMinMinutes", num(tamsd.TAU_MAX / tamsd.SUPPORT / 60, 0))
+    macro("SupportOriginsPercent", num(100 * (1 - tamsd.SUPPORT), 0))
+    plus = 10 ** tamsd.HALF_DECADE / tamsd.SUPPORT
+    hours = cohorts.COHORTS[-1] / 3600
+    macro("PlusFactor", num(plus, 1))
+    macro("PlusLagHours", num(hours, 0))
+    macro("PlusPieceHours", num(plus * hours, 1))
+    macro("BandZ", f"{twoway.Z:.3f}")
+
+
+PER_LAG_EXAMPLE = 2250  # s: the lag of the example of the per-lag cohort
+
+
+def perlag_window_tex():
+    """PerLagExample and PerLagCoincideEnd (the longest lag whose window ends within TAU_MAX: pool and per-lag cohort
+    coincide up to it), and the table perlag_window_table: for the grid lags around PerLagExample, the longest grid lag
+    of their window and the shortest piece that gives the MSD at PerLagExample there; then the pool."""
+    lags = np.asarray(longlags.LONG_LAGS)
+    top = lambda t: int(lags[cohorts.window(t)].max())
+    macro("PerLagExample", num(PER_LAG_EXAMPLE, 0))
+    macro("PerLagCoincideEnd", num(max(t for t in lags if top(t) <= tamsd.TAU_MAX), 0))
+    k = int(np.flatnonzero(lags == PER_LAG_EXAMPLE)[0])
+    lines = [r"\begin{tabular}{rrr}", r"\toprule",
+             rf"window of $\tau$ & longest grid lag $\le\tau^+$ & pieces of $\mathrm{{MSD}}_\tau({num(PER_LAG_EXAMPLE, 0)}~\mathrm{{s}})$ \\",
+             r"\midrule"]
+    for t in lags[k - 1:k + 2]:
+        lines.append(rf"{num(t, 0)}~s & {num(top(t), 0)}~s & $T_p\ge{num(top(t) / tamsd.SUPPORT, 0)}$~s \\")
+    lines += [r"\midrule", rf"pool, any window & & $T_p\ge{num(PER_LAG_EXAMPLE / tamsd.SUPPORT, 0)}$~s \\", r"\bottomrule", r"\end{tabular}"]
+    write("perlag_window_table", lines)
+
+
+SAME_TOL = 1e-3  # a difference of alpha in the third decimal
+RUNS_TOL = 1e-6  # the lower edge of a band above 0 beyond rounding
+
+
+def pool_tex(c, s):
+    """The lags read on the figures of the pool, from the JSON they plot (cohorts.json `c`, perlag.json `s`), in two
+    significant figures. Against the nested cohorts: PoolSame (the first lag where the pool alpha differs from the
+    cohort to TAU_MAX by SAME_TOL, in the first population to do it), PoolLeave (the lag from which the pool stays outside the 90% band
+    of the cohort to SELECTION_FREE, in the first population to do it), PoolBelowEnd (the last lag where the pool of S
+    lies below that band), PoolAbove{A,G} (the lag from which the pool stays above it), PoolSteep (the lag from which the
+    pool lies above every cohort that reaches the lag, in the three populations). Against the chain: PoolMsdCross (the lag
+    beyond TAU_MAX from which the pool MSD of S is at or above the chained one), PoolRunsAway{S,A,G} (the first lag where
+    the lower edge of the band of pool minus alpha* is above 0, RUNS_TOL) and PerLagPoolRunsAway{S,A,G} (the same for
+    pool minus per-lag alpha)."""
+    same, leave, steep = [], [], []
+    for pop, tag in POPS:
+        cs = {e["tau_max"]: e for e in c["alpha"][pop]}
+        pool = dict(zip(c["pool"][pop]["lags"], c["pool"][pop]["value"]))
+        base = dict(zip(cs[tamsd.TAU_MAX]["lags"], cs[tamsd.TAU_MAX]["alpha"]))
+        same.append(first_lag(list(base), [abs(pool[t] - base[t]) >= SAME_TOL for t in base]))
+        ref = cs[cohorts.SELECTION_FREE]
+        lo, hi = ref["band"]
+        ts = [t for t in ref["lags"] if t in pool]
+        i = [ref["lags"].index(t) for t in ts]
+        below, above = [pool[t] < lo[j] for t, j in zip(ts, i)], [pool[t] > hi[j] for t, j in zip(ts, i)]
+        leave.append(from_lag(ts, np.array(below) | np.array(above)))
+        if tag == "S":
+            macro("PoolBelowEnd", sig2(max(t for t, b in zip(ts, below) if b)))
+        else:
+            macro(f"PoolAbove{tag}", sig2(from_lag(ts, above)))
+        reach = {t: [dict(zip(e["lags"], e["alpha"]))[t] for e in cs.values() if t in e["lags"]] for t in pool}
+        ts = [t for t in pool if reach[t]]
+        steep.append(from_lag(ts, [pool[t] > max(reach[t]) for t in ts]))
+    macro("PoolSame", sig2(min(t for t in same if t is not None)))
+    macro("PoolLeave", sig2(min(t for t in leave if t is not None)))
+    macro("PoolSteep", sig2(max(steep)))
+    pm = dict(zip(c["pool"]["solo"]["lags"], c["pool"]["solo"]["msd"]))
+    ch = dict(zip(s["chained"]["solo"]["lags"], s["chained"]["solo"]["msd"]))
+    ts = [t for t in ch if t in pm and t > tamsd.TAU_MAX]
+    macro("PoolMsdCross", sig2(from_lag(ts, [pm[t] >= ch[t] for t in ts])))
+    for pop, tag in POPS:
+        for key, name in (("pool minus chained", "PoolRunsAway"), ("pool minus per-lag", "PerLagPoolRunsAway")):
+            d = s[key][pop]
+            macro(f"{name}{tag}", sig2(first_lag(d["lags"], np.array(d["band"][0]) > RUNS_TOL)))
+
+
+def chain_gaps_tex(s):
+    """The lags read on the figure of the gaps of alpha* (perlag.json `s`), in two significant figures, over the solid
+    lags: ChainGAGrow (the lag from which the lower edge of the band of G - A stays above 0), ChainGSGrow (the lag from
+    which the lower edge of the band of G - S stays above the upper edge at the lag GAP_LAGS[100]), ChainASNegative (the
+    first lag where the upper edge of the band of A - S is below 0)."""
+    end = max(t for t, k in zip(s["lags"], s["solid"]) if k)
+    g = {name: d for name, d in s["chained gaps"].items()}
+    lags = [t for t in g["G - A"]["lags"] if t <= end]
+    lower = lambda name: np.array(g[name]["band"][0][:len(lags)])
+    macro("ChainGAGrow", sig2(from_lag(lags, lower("G - A") > 0)))
+    top = g["G - S"]["band"][1][g["G - S"]["lags"].index(100)]
+    macro("ChainGSGrow", sig2(from_lag(lags, lower("G - S") > top)))
+    macro("ChainASNegative", sig2(first_lag(g["A - S"]["lags"], np.array(g["A - S"]["band"][1]) < 0)))
+
+
+def opening_above_one_tex():
+    """OpeningAboveOne: the solo flights of the story (declared open, logger interval up to longlags.MAX_DT s) with an
+    opening above 1, a path shorter than the chord; skipped when the flights table is missing."""
+    if not (closure.LABELS / "flights.parquet").exists():
+        return
+    f = closure.flight_table()
+    f = f[(f["declared"] == "open") & (f["dt_native"] <= longlags.MAX_DT + 1e-6)]
+    macro("OpeningAboveOne", num(int(((f["ratio"] > 1) & ~f["group"]).sum()), 0))
+
+
 if __name__ == "__main__":
     GEN.mkdir(parents=True, exist_ok=True)
     o = read(DT5, "opening")
@@ -1216,8 +1444,14 @@ if __name__ == "__main__":
         if len(runs) == len(WINDOWS):
             windows_tex(runs)
         summary_tex(j["raw"], j["matched"], j["prepost_2400"])
+    definitions_tex()
+    perlag_window_tex()
+    opening_above_one_tex()
     if (DT5 / "cohorts.json").exists():
         spread_tex(DT5)
+        if (DT5 / "perlag.json").exists():
+            pool_tex(read(DT5, "cohorts"), read(DT5, "perlag"))
+            chain_gaps_tex(read(DT5, "perlag"))
     if (opened / "coverage.json").exists():
         coverage_tex(read(opened, "coverage"))
     (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")

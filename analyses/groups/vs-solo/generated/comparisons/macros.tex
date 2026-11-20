@@ -1,6 +1,7 @@
 \newcommand{\AlphaStepBeforeMax}{0.003}
 \newcommand{\AlphaStepHourMax}{0.009}
 \newcommand{\AlphaStepHourMin}{0.007}
+\newcommand{\BandZ}{1.645}
 \newcommand{\BelowEvery}{17}
 \newcommand{\BelowFixed}{19}
 \newcommand{\BelowLongest}{26}
@@ -50,12 +51,14 @@
 \newcommand{\ChainASHundredBand}{[$+$0.002, $+$0.004]}
 \newcommand{\ChainASLong}{$-$0.005}
 \newcommand{\ChainASLongBand}{[$-$0.010, $+$0.001]}
+\newcommand{\ChainASNegative}{870}
 \newcommand{\ChainASTen}{$+$0.007}
 \newcommand{\ChainASTenBand}{[$+$0.006, $+$0.009]}
 \newcommand{\ChainASThousand}{$-$0.003}
 \newcommand{\ChainASThousandBand}{[$-$0.006, $-$0.000]}
 \newcommand{\ChainASThreeTwenty}{$+$0.003}
 \newcommand{\ChainASThreeTwentyBand}{[$+$0.001, $+$0.005]}
+\newcommand{\ChainGAGrow}{170}
 \newcommand{\ChainGAHundred}{$-$0.001}
 \newcommand{\ChainGAHundredBand}{[$-$0.002, $-$0.000]}
 \newcommand{\ChainGALong}{$+$0.026}
@@ -70,6 +73,7 @@
 \newcommand{\ChainGLastLag}{11\,450}
 \newcommand{\ChainGLastPieces}{153}
 \newcommand{\ChainGMinusCohortMax}{0.006}
+\newcommand{\ChainGSGrow}{210}
 \newcommand{\ChainGSHundred}{$+$0.002}
 \newcommand{\ChainGSHundredBand}{[$+$0.001, $+$0.003]}
 \newcommand{\ChainGSLong}{$+$0.022}
@@ -509,6 +513,7 @@
 \newcommand{\GapAllASThousandBand}{[$+$0.003, $+$0.009]}
 \newcommand{\GapAllASThreeTwenty}{$+$0.010}
 \newcommand{\GapAllASThreeTwentyBand}{[$+$0.009, $+$0.012]}
+\newcommand{\GapAllGAFrom}{210}
 \newcommand{\GapAllGAHundred}{$-$0.002}
 \newcommand{\GapAllGAHundredBand}{[$-$0.003, $-$0.000]}
 \newcommand{\GapAllGALong}{$+$0.026}
@@ -519,6 +524,7 @@
 \newcommand{\GapAllGAThousandBand}{[$+$0.020, $+$0.027]}
 \newcommand{\GapAllGAThreeTwenty}{$+$0.007}
 \newcommand{\GapAllGAThreeTwentyBand}{[$+$0.005, $+$0.009]}
+\newcommand{\GapAllGSFrom}{10}
 \newcommand{\GapAllGSHundred}{$+$0.008}
 \newcommand{\GapAllGSHundredBand}{[$+$0.006, $+$0.009]}
 \newcommand{\GapAllGSLong}{$+$0.026}
@@ -540,6 +546,7 @@
 \newcommand{\GapMinASThousandBand}{[$-$0.003, $+$0.004]}
 \newcommand{\GapMinASThreeTwenty}{$+$0.007}
 \newcommand{\GapMinASThreeTwentyBand}{[$+$0.005, $+$0.009]}
+\newcommand{\GapMinGAFrom}{260}
 \newcommand{\GapMinGAHundred}{$-$0.002}
 \newcommand{\GapMinGAHundredBand}{[$-$0.003, $-$0.001]}
 \newcommand{\GapMinGALong}{$+$0.022}
@@ -550,6 +557,7 @@
 \newcommand{\GapMinGAThousandBand}{[$+$0.018, $+$0.024]}
 \newcommand{\GapMinGAThreeTwenty}{$+$0.005}
 \newcommand{\GapMinGAThreeTwentyBand}{[$+$0.003, $+$0.007]}
+\newcommand{\GapMinGSFrom}{10}
 \newcommand{\GapMinGSHundred}{$+$0.005}
 \newcommand{\GapMinGSHundredBand}{[$+$0.003, $+$0.006]}
 \newcommand{\GapMinGSLong}{$+$0.019}
@@ -578,6 +586,7 @@
 \newcommand{\GapStrictASThousandBand}{[$-$0.003, $+$0.003]}
 \newcommand{\GapStrictASThreeTwenty}{$+$0.001}
 \newcommand{\GapStrictASThreeTwentyBand}{[$-$0.001, $+$0.003]}
+\newcommand{\GapStrictGAFrom}{580}
 \newcommand{\GapStrictGAHundred}{$-$0.005}
 \newcommand{\GapStrictGAHundredBand}{[$-$0.006, $-$0.003]}
 \newcommand{\GapStrictGALong}{$+$0.007}
@@ -588,6 +597,7 @@
 \newcommand{\GapStrictGAThousandBand}{[$+$0.005, $+$0.011]}
 \newcommand{\GapStrictGAThreeTwenty}{$-$0.001}
 \newcommand{\GapStrictGAThreeTwentyBand}{[$-$0.003, $+$0.002]}
+\newcommand{\GapStrictGSFrom}{470}
 \newcommand{\GapStrictGSHundred}{$-$0.003}
 \newcommand{\GapStrictGSHundredBand}{[$-$0.004, $-$0.001]}
 \newcommand{\GapStrictGSLong}{$+$0.007}
@@ -598,6 +608,7 @@
 \newcommand{\GapStrictGSThousandBand}{[$+$0.005, $+$0.011]}
 \newcommand{\GapStrictGSThreeTwenty}{$+$0.000}
 \newcommand{\GapStrictGSThreeTwentyBand}{[$-$0.002, $+$0.003]}
+\newcommand{\GridS}{10}
 \newcommand{\GroundCell}{200}
 \newcommand{\GroundChanged}{7.1}
 \newcommand{\GroundEdgeHigh}{1\,500}
@@ -610,6 +621,7 @@
 \newcommand{\GroundHighMtnFlightsA}{2\,800}
 \newcommand{\GroundHighMtnFlightsG}{3\,112}
 \newcommand{\GroundHighMtnFlightsS}{8\,028}
+\newcommand{\GroundHighMtnGAPositive}{170}
 \newcommand{\GroundHighMtnGAThousand}{$+$0.033}
 \newcommand{\GroundHighMtnGAThousandBand}{[$+$0.028, $+$0.038]}
 \newcommand{\GroundHighMtnGAThreeTwenty}{$+$0.014}
@@ -629,6 +641,7 @@
 \newcommand{\GroundHillsFlightsA}{1\,120}
 \newcommand{\GroundHillsFlightsG}{1\,550}
 \newcommand{\GroundHillsFlightsS}{9\,815}
+\newcommand{\GroundHillsGAPositive}{580}
 \newcommand{\GroundHillsGAThousand}{$+$0.012}
 \newcommand{\GroundHillsGAThousandBand}{[$+$0.007, $+$0.018]}
 \newcommand{\GroundHillsGAThreeTwenty}{$+$0.001}
@@ -648,6 +661,7 @@
 \newcommand{\GroundLowMtnFlightsA}{5\,277}
 \newcommand{\GroundLowMtnFlightsG}{6\,160}
 \newcommand{\GroundLowMtnFlightsS}{18\,902}
+\newcommand{\GroundLowMtnGAPositive}{210}
 \newcommand{\GroundLowMtnGAThousand}{$+$0.031}
 \newcommand{\GroundLowMtnGAThousandBand}{[$+$0.027, $+$0.035]}
 \newcommand{\GroundLowMtnGAThreeTwenty}{$+$0.013}
@@ -674,6 +688,7 @@
 \newcommand{\GroundPlainsFlightsA}{1\,548}
 \newcommand{\GroundPlainsFlightsG}{2\,124}
 \newcommand{\GroundPlainsFlightsS}{9\,763}
+\newcommand{\GroundPlainsGAPositive}{580}
 \newcommand{\GroundPlainsGAThousand}{$+$0.007}
 \newcommand{\GroundPlainsGAThousandBand}{[$+$0.005, $+$0.010]}
 \newcommand{\GroundPlainsGAThreeTwenty}{$-$0.002}
@@ -717,6 +732,15 @@
 \newcommand{\KindSoloMedianShort}{0.37}
 \newcommand{\KindSoloMountain}{53}
 \newcommand{\KindSoloStrict}{27}
+\newcommand{\LagCount}{37}
+\newcommand{\LagDecades}{3}
+\newcommand{\LagFactor}{1\,000}
+\newcommand{\LagList}{10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 140, 170, 210, 260, 320, 390, 470, 580, 710, 870,\\ 1\,000, 1\,230, 1\,500, 1\,840, 2\,250, 2\,760, 3\,380, 4\,150, 5\,080, 6\,220, 7\,630, 9\,350, 11\,450, 14\,030, 17\,190, 21\,060, 25\,810}
+\newcommand{\LagMax}{25\,810}
+\newcommand{\LagMin}{10}
+\newcommand{\LagRatio}{1.225}
+\newcommand{\LagSteps}{34}
+\newcommand{\LagsPerDecade}{11}
 \newcommand{\MatChosenText}{month $\pm2$, hour $\pm2$, same class}
 \newcommand{\MatCover}{0.8}
 \newcommand{\MatDeltaClimbA}{$+$0.5}
@@ -1056,6 +1080,7 @@
 \newcommand{\OpenMinFlights}{100}
 \newcommand{\OpenTauFixed}{2\,760}
 \newcommand{\OpenTauLongest}{11\,450}
+\newcommand{\OpeningAboveOne}{11}
 \newcommand{\PerLagAFirstPieces}{16\,736}
 \newcommand{\PerLagALastLag}{11\,450}
 \newcommand{\PerLagALastPieces}{131}
@@ -1070,6 +1095,8 @@
 \newcommand{\PerLagASThousandBand}{[$-$0.004, $+$0.002]}
 \newcommand{\PerLagASThreeTwenty}{$+$0.003}
 \newcommand{\PerLagASThreeTwentyBand}{[$+$0.001, $+$0.005]}
+\newcommand{\PerLagCoincideEnd}{580}
+\newcommand{\PerLagExample}{2\,250}
 \newcommand{\PerLagGAHundred}{$-$0.001}
 \newcommand{\PerLagGAHundredBand}{[$-$0.002, $-$0.000]}
 \newcommand{\PerLagGALong}{$+$0.026}
@@ -1094,6 +1121,9 @@
 \newcommand{\PerLagGSThousandBand}{[$+$0.022, $+$0.028]}
 \newcommand{\PerLagGSThreeTwenty}{$+$0.014}
 \newcommand{\PerLagGSThreeTwentyBand}{[$+$0.012, $+$0.015]}
+\newcommand{\PerLagPoolRunsAwayA}{1\,200}
+\newcommand{\PerLagPoolRunsAwayG}{1\,500}
+\newcommand{\PerLagPoolRunsAwayS}{3\,400}
 \newcommand{\PerLagSFirstPieces}{52\,812}
 \newcommand{\PerLagSLastLag}{14\,030}
 \newcommand{\PerLagSLastPieces}{394}
@@ -1283,6 +1313,7 @@
 \newcommand{\PhCtxFoundHills}{19.8}
 \newcommand{\PhCtxFoundLowMtn}{22.7}
 \newcommand{\PhCtxFoundPlains}{19.1}
+\newcommand{\PhCtxMaxDiff}{2.0}
 \newcommand{\PhCtxRecentre}{23.1}
 \newcommand{\PhCtxRecentreAll}{23.1}
 \newcommand{\PhCtxRecentreHighMtn}{22.9}
@@ -1339,6 +1370,8 @@
 \newcommand{\PhCycleGSLowMtnBand}{[$-$1.30, $-$1.08]}
 \newcommand{\PhCycleGSPlains}{$-$1.16}
 \newcommand{\PhCycleGSPlainsBand}{[$-$1.33, $-$0.99]}
+\newcommand{\PhCycleRatioMax}{3.5}
+\newcommand{\PhCycleRatioMin}{1.1}
 \newcommand{\PhCycleSAll}{11.3}
 \newcommand{\PhCycleSAllBand}{[11.2, 11.3]}
 \newcommand{\PhCycleSHighMtn}{11.6}
@@ -1349,6 +1382,8 @@
 \newcommand{\PhCycleSLowMtnBand}{[11.3, 11.5]}
 \newcommand{\PhCycleSPlains}{11.3}
 \newcommand{\PhCycleSPlainsBand}{[11.2, 11.4]}
+\newcommand{\PhCycleShortMax}{1.6}
+\newcommand{\PhCycleShortMin}{0.6}
 \newcommand{\PhDriftAAll}{2.87}
 \newcommand{\PhDriftAAllBand}{[2.79, 2.94]}
 \newcommand{\PhDriftAHighMtn}{2.08}
@@ -2457,6 +2492,30 @@
 \newcommand{\PhVCphGALowMtnBand}{[$+$0.709, $+$0.845]}
 \newcommand{\PhVCphGAPlains}{$+$0.671}
 \newcommand{\PhVCphGAPlainsBand}{[$+$0.557, $+$0.786]}
+\newcommand{\PhVCtxExit}{26.7}
+\newcommand{\PhVCtxExitAll}{26.7}
+\newcommand{\PhVCtxExitHighMtn}{23.9}
+\newcommand{\PhVCtxExitHills}{30.6}
+\newcommand{\PhVCtxExitLowMtn}{24.3}
+\newcommand{\PhVCtxExitPlains}{33.1}
+\newcommand{\PhVCtxFailed}{26.0}
+\newcommand{\PhVCtxFailedAll}{26.0}
+\newcommand{\PhVCtxFailedHighMtn}{26.7}
+\newcommand{\PhVCtxFailedHills}{23.4}
+\newcommand{\PhVCtxFailedLowMtn}{28.3}
+\newcommand{\PhVCtxFailedPlains}{21.1}
+\newcommand{\PhVCtxFound}{22.9}
+\newcommand{\PhVCtxFoundAll}{22.9}
+\newcommand{\PhVCtxFoundHighMtn}{24.4}
+\newcommand{\PhVCtxFoundHills}{21.0}
+\newcommand{\PhVCtxFoundLowMtn}{23.8}
+\newcommand{\PhVCtxFoundPlains}{20.3}
+\newcommand{\PhVCtxRecentre}{21.1}
+\newcommand{\PhVCtxRecentreAll}{21.1}
+\newcommand{\PhVCtxRecentreHighMtn}{21.9}
+\newcommand{\PhVCtxRecentreHills}{20.8}
+\newcommand{\PhVCtxRecentreLowMtn}{20.4}
+\newcommand{\PhVCtxRecentrePlains}{22.7}
 \newcommand{\PhVCycleASAll}{$+$0.450}
 \newcommand{\PhVCycleASAllBand}{[$+$0.362, $+$0.539]}
 \newcommand{\PhVCycleASHighMtn}{$+$0.235}
@@ -2707,6 +2766,12 @@
 \newcommand{\PhVRateGALowMtnBand}{[$-$0.0157, $+$0.0115]}
 \newcommand{\PhVRateGAPlains}{$-$0.0263}
 \newcommand{\PhVRateGAPlainsBand}{[$-$0.0447, $-$0.0078]}
+\newcommand{\PhVSearchDropped}{3.3}
+\newcommand{\PhVSearchDroppedAll}{3.3}
+\newcommand{\PhVSearchDroppedHighMtn}{3.0}
+\newcommand{\PhVSearchDroppedHills}{4.2}
+\newcommand{\PhVSearchDroppedLowMtn}{3.2}
+\newcommand{\PhVSearchDroppedPlains}{2.8}
 \newcommand{\PhVSearchPerHourASAll}{$-$0.118}
 \newcommand{\PhVSearchPerHourASAllBand}{[$-$0.179, $-$0.056]}
 \newcommand{\PhVSearchPerHourASHighMtn}{$-$0.233}
@@ -2877,8 +2942,12 @@
 \newcommand{\PhXminSearchHills}{210}
 \newcommand{\PhXminSearchLowMtn}{708}
 \newcommand{\PhXminSearchPlains}{356}
+\newcommand{\PieceMinMinutes}{21}
 \newcommand{\PieceMinS}{1\,250}
 \newcommand{\PilotShareS}{82}
+\newcommand{\PlusFactor}{2.2}
+\newcommand{\PlusLagHours}{3}
+\newcommand{\PlusPieceHours}{6.7}
 \newcommand{\PoolAMax}{1.29}
 \newcommand{\PoolAMinusChainLong}{$+$0.049}
 \newcommand{\PoolAMinusChainThousand}{$+$0.003}
@@ -2886,6 +2955,9 @@
 \newcommand{\PoolAMinusLong}{$+$0.044}
 \newcommand{\PoolAMinusThousand}{$+$0.002}
 \newcommand{\PoolAMinusVeryLong}{$+$0.107}
+\newcommand{\PoolAboveA}{1\,500}
+\newcommand{\PoolAboveG}{1\,800}
+\newcommand{\PoolBelowEnd}{2\,800}
 \newcommand{\PoolGMax}{1.05}
 \newcommand{\PoolGMinusChainLong}{$+$0.052}
 \newcommand{\PoolGMinusChainThousand}{$-$0.000}
@@ -2893,6 +2965,11 @@
 \newcommand{\PoolGMinusLong}{$+$0.047}
 \newcommand{\PoolGMinusThousand}{$-$0.000}
 \newcommand{\PoolGMinusVeryLong}{$+$0.144}
+\newcommand{\PoolLeave}{870}
+\newcommand{\PoolMsdCross}{6\,200}
+\newcommand{\PoolRunsAwayA}{870}
+\newcommand{\PoolRunsAwayG}{1\,500}
+\newcommand{\PoolRunsAwayS}{3\,400}
 \newcommand{\PoolSMax}{1.46}
 \newcommand{\PoolSMinusChainLong}{$-$0.005}
 \newcommand{\PoolSMinusChainThousand}{$-$0.010}
@@ -2900,6 +2977,8 @@
 \newcommand{\PoolSMinusLong}{$-$0.005}
 \newcommand{\PoolSMinusThousand}{$-$0.009}
 \newcommand{\PoolSMinusVeryLong}{$+$0.099}
+\newcommand{\PoolSame}{710}
+\newcommand{\PoolSteep}{4\,200}
 \newcommand{\PreCAClimb}{$-$1.3}
 \newcommand{\PreCAClimbBand}{[$-$1.8, $-$0.8]}
 \newcommand{\PreCACph}{$-$0.36}
@@ -3551,8 +3630,10 @@
 \newcommand{\RefitCadenceParaTwo}{98.9}
 \newcommand{\RefitFlightsHang}{1\,666}
 \newcommand{\RefitFlightsPara}{104\,170}
+\newcommand{\RefitHangVsPara}{99.999}
 \newcommand{\RefitHeldHang}{349}
 \newcommand{\RefitHeldPara}{377}
+\newcommand{\RefitIterMax}{19}
 \newcommand{\RefitLLBestParaFix}{$-$0.702}
 \newcommand{\RefitLLHisParaFix}{$-$0.890}
 \newcommand{\RefitLLOursParaFix}{$-$0.757}
@@ -3695,14 +3776,25 @@
 \newcommand{\StrictShare}{26}
 \newcommand{\Stricter}{0.5}
 \newcommand{\Support}{0.8}
+\newcommand{\SupportOriginsPercent}{20}
+\newcommand{\TailAboveMax}{522}
+\newcommand{\TailAboveMin}{50}
+\newcommand{\TailBinPercent}{1}
+\newcommand{\TailCandidates}{80}
+\newcommand{\TailFineBelow}{200}
+\newcommand{\TailMinRuns}{50}
+\newcommand{\TailMuMax}{7.4}
+\newcommand{\TailMuMin}{2.8}
+\newcommand{\TailQuantileHi}{99.99}
+\newcommand{\TailQuantileLo}{50}
 \newcommand{\TakeoffHighFlights}{34\,333}
 \newcommand{\TakeoffHighKeep}{80}
 \newcommand{\TakeoffHighKeepN}{27\,415}
 \newcommand{\TakeoffHighMedian}{0.24}
-\newcommand{\TakeoffHighStrict}{12}
+\newcommand{\TakeoffHighStrict}{13}
 \newcommand{\TakeoffHighStrictN}{4\,307}
 \newcommand{\TakeoffLowFlights}{29\,958}
-\newcommand{\TakeoffLowKeep}{88}
+\newcommand{\TakeoffLowKeep}{87}
 \newcommand{\TakeoffLowKeepN}{26\,201}
 \newcommand{\TakeoffLowMedian}{0.45}
 \newcommand{\TakeoffLowStrict}{42}
@@ -3929,6 +4021,38 @@
 \newcommand{\WhenLowMtnPostMinusEndBand}{[$-$0.005, $+$0.002]}
 \newcommand{\WhenLowMtnStartMinusPre}{$+$0.000}
 \newcommand{\WhenLowMtnStartMinusPreBand}{[$-$0.004, $+$0.004]}
+\newcommand{\WhenMockAllEndMinusStart}{$+$0.003}
+\newcommand{\WhenMockAllEndMinusStartBand}{[$+$0.001, $+$0.004]}
+\newcommand{\WhenMockAllPostMinusEnd}{$-$0.001}
+\newcommand{\WhenMockAllPostMinusEndBand}{[$-$0.003, $+$0.000]}
+\newcommand{\WhenMockAllStartMinusPre}{$+$0.000}
+\newcommand{\WhenMockAllStartMinusPreBand}{[$-$0.001, $+$0.002]}
+\newcommand{\WhenMockEvents}{22\,199}
+\newcommand{\WhenMockHighMtnEndMinusStart}{$+$0.002}
+\newcommand{\WhenMockHighMtnEndMinusStartBand}{[$-$0.001, $+$0.005]}
+\newcommand{\WhenMockHighMtnPostMinusEnd}{$-$0.001}
+\newcommand{\WhenMockHighMtnPostMinusEndBand}{[$-$0.004, $+$0.002]}
+\newcommand{\WhenMockHighMtnStartMinusPre}{$+$0.000}
+\newcommand{\WhenMockHighMtnStartMinusPreBand}{[$-$0.003, $+$0.003]}
+\newcommand{\WhenMockHillsEndMinusStart}{$+$0.005}
+\newcommand{\WhenMockHillsEndMinusStartBand}{[$-$0.000, $+$0.010]}
+\newcommand{\WhenMockHillsPostMinusEnd}{$+$0.002}
+\newcommand{\WhenMockHillsPostMinusEndBand}{[$-$0.004, $+$0.007]}
+\newcommand{\WhenMockHillsStartMinusPre}{$-$0.001}
+\newcommand{\WhenMockHillsStartMinusPreBand}{[$-$0.006, $+$0.005]}
+\newcommand{\WhenMockLowMtnEndMinusStart}{$+$0.002}
+\newcommand{\WhenMockLowMtnEndMinusStartBand}{[$+$0.000, $+$0.005]}
+\newcommand{\WhenMockLowMtnPostMinusEnd}{$-$0.001}
+\newcommand{\WhenMockLowMtnPostMinusEndBand}{[$-$0.004, $+$0.001]}
+\newcommand{\WhenMockLowMtnStartMinusPre}{$+$0.001}
+\newcommand{\WhenMockLowMtnStartMinusPreBand}{[$-$0.001, $+$0.003]}
+\newcommand{\WhenMockPlainsEndMinusStart}{$+$0.005}
+\newcommand{\WhenMockPlainsEndMinusStartBand}{[$-$0.001, $+$0.010]}
+\newcommand{\WhenMockPlainsPostMinusEnd}{$-$0.004}
+\newcommand{\WhenMockPlainsPostMinusEndBand}{[$-$0.009, $+$0.000]}
+\newcommand{\WhenMockPlainsStartMinusPre}{$-$0.000}
+\newcommand{\WhenMockPlainsStartMinusPreBand}{[$-$0.005, $+$0.005]}
+\newcommand{\WhenMockRealEvents}{4\,441}
 \newcommand{\WhenPlainsClimbEnd}{43.9}
 \newcommand{\WhenPlainsClimbEndBand}{[42.3, 45.5]}
 \newcommand{\WhenPlainsClimbPost}{43.2}
@@ -3954,5 +4078,37 @@
 \newcommand{\WhenPlainsPostMinusEndBand}{[$-$0.004, $+$0.004]}
 \newcommand{\WhenPlainsStartMinusPre}{$+$0.004}
 \newcommand{\WhenPlainsStartMinusPreBand}{[$-$0.001, $+$0.008]}
+\newcommand{\WhenRealMinusMockAllEndMinusStart}{$+$0.004}
+\newcommand{\WhenRealMinusMockAllEndMinusStartBand}{[$+$0.000, $+$0.008]}
+\newcommand{\WhenRealMinusMockAllPostMinusEnd}{$-$0.016}
+\newcommand{\WhenRealMinusMockAllPostMinusEndBand}{[$-$0.020, $-$0.012]}
+\newcommand{\WhenRealMinusMockAllStartMinusPre}{$+$0.007}
+\newcommand{\WhenRealMinusMockAllStartMinusPreBand}{[$+$0.003, $+$0.012]}
+\newcommand{\WhenRealMinusMockHighMtnEndMinusStart}{$-$0.000}
+\newcommand{\WhenRealMinusMockHighMtnEndMinusStartBand}{[$-$0.008, $+$0.008]}
+\newcommand{\WhenRealMinusMockHighMtnPostMinusEnd}{$-$0.016}
+\newcommand{\WhenRealMinusMockHighMtnPostMinusEndBand}{[$-$0.025, $-$0.006]}
+\newcommand{\WhenRealMinusMockHighMtnStartMinusPre}{$+$0.010}
+\newcommand{\WhenRealMinusMockHighMtnStartMinusPreBand}{[$+$0.002, $+$0.018]}
+\newcommand{\WhenRealMinusMockHillsEndMinusStart}{$+$0.009}
+\newcommand{\WhenRealMinusMockHillsEndMinusStartBand}{[$-$0.003, $+$0.020]}
+\newcommand{\WhenRealMinusMockHillsPostMinusEnd}{$-$0.014}
+\newcommand{\WhenRealMinusMockHillsPostMinusEndBand}{[$-$0.025, $-$0.003]}
+\newcommand{\WhenRealMinusMockHillsStartMinusPre}{$+$0.003}
+\newcommand{\WhenRealMinusMockHillsStartMinusPreBand}{[$-$0.010, $+$0.016]}
+\newcommand{\WhenRealMinusMockLowMtnEndMinusStart}{$+$0.009}
+\newcommand{\WhenRealMinusMockLowMtnEndMinusStartBand}{[$+$0.004, $+$0.015]}
+\newcommand{\WhenRealMinusMockLowMtnPostMinusEnd}{$-$0.019}
+\newcommand{\WhenRealMinusMockLowMtnPostMinusEndBand}{[$-$0.026, $-$0.013]}
+\newcommand{\WhenRealMinusMockLowMtnStartMinusPre}{$+$0.006}
+\newcommand{\WhenRealMinusMockLowMtnStartMinusPreBand}{[$-$0.001, $+$0.012]}
+\newcommand{\WhenRealMinusMockPlainsEndMinusStart}{$-$0.005}
+\newcommand{\WhenRealMinusMockPlainsEndMinusStartBand}{[$-$0.013, $+$0.003]}
+\newcommand{\WhenRealMinusMockPlainsPostMinusEnd}{$-$0.002}
+\newcommand{\WhenRealMinusMockPlainsPostMinusEndBand}{[$-$0.008, $+$0.005]}
+\newcommand{\WhenRealMinusMockPlainsStartMinusPre}{$+$0.004}
+\newcommand{\WhenRealMinusMockPlainsStartMinusPreBand}{[$-$0.004, $+$0.012]}
 \newcommand{\WhenWindow}{1\,260}
+\newcommand{\WindowLagsMax}{7}
+\newcommand{\WindowLagsMin}{5}
 \newcommand{\tauStar}{38.1}
