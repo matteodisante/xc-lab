@@ -24,6 +24,13 @@ climbs from 4 s on, and at 10 s neither works.
 - `phases.py`: the method, rewritten from his inference script; same labels, bit for bit.
 - `cadence.py`: thins 1-Hz flights and compares the labels (writes `out/cadence.csv`).
 - `mechanism.py`: why linear interpolation loses climbs at 5 s (`out/mechanism.yaml`).
+- `refit.py`: the Baum-Welch refit of the model per discipline on 1-Hz flights (`train`, writes
+  `out/refit_params_<para|hang>.json`) and its cadence check (`cadence`, writes `out/refit_cadence.csv` and `.json`).
+- `label.py`: labels every flight logged at up to 5 s with the refit and writes
+  `xc-viewer-data/<discipline>/derived/segmentation/refit/` (same layout as `vilpellet/`); resumable by chunks.
+  Resume with `uv run python methods/phase-labelling/label.py para` (or `hang`).
+- `agreement.py`: agreement of the refit with his labels (`out/refit_agreement.json`).
+- `test_refit.py`: tests of the three modules above.
 - `plots.py`: writes `figures/`. Without the disk it redraws only the figures that do not read
   flights (emissions, interpolation, window, cadence curves from `out/cadence.csv`).
 - `test_note.py`: checks every number the note quotes.
