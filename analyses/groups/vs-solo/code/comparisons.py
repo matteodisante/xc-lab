@@ -1,7 +1,8 @@
 """The tables and the numbers of comparisons/, from the JSON of the analyses: vs-solo/generated/comparisons/*.tex.
 
 Every number quoted in the text of the report is a macro of generated/comparisons/macros.tex. The analyses run
-on the declared open flights (out/<run>/open_declared) and on the open ones (out/<run>/open_min<m>).
+on the declared open flights (out/<run>/open_declared) and on the open ones (out/<run>/open_min<m>); the macros
+and tables of the story come from out/<run>/open_declared_dt5 (the flights with a logger interval up to 5 s).
 
     uv run python vs-solo/code/comparisons.py    # from analyses/groups, after opening.py and longlags.py
 """
@@ -9,11 +10,13 @@ on the declared open flights (out/<run>/open_declared) and on the open ones (out
 import json
 
 import numpy as np
+import pandas as pd
 
 from tables import MAIN, OUTS, macro, macros, num
 
 GEN = OUTS.parent / "vs-solo" / "generated" / "comparisons"
-DECLARED = OUTS / MAIN / "open_declared"
+DECLARED = OUTS / MAIN / "open_declared"  # the declared open flights, every logger interval
+DT5 = OUTS / MAIN / "open_declared_dt5"  # the same up to longlags.MAX_DT s: the flights of the story
 POPS = (("solo", "S"), ("group", "G"), ("group_solo", "A"))
 GLOSS = {"Dist libre": "free distance", "Dist 1 pt": "distance, 1 turn point", "Dist 2 pts": "distance, 2 turn points",
          "Dist 3 pts": "distance, 3 turn points", "triangle FAI": "FAI triangle", "Quadrilatère": "quadrilateral",
@@ -61,7 +64,29 @@ def opening_tex(o):
         macro(f"Takeoff{tag}Flights", num(b["flights"], 0))
         macro(f"Takeoff{tag}Median", f"{b['quartiles'][1]:.2f}")
         macro(f"Takeoff{tag}Keep", num(b["above the threshold (%)"], 0))
+        macro(f"Takeoff{tag}KeepN", num(b["above the threshold"], 0))
+        macro(f"Takeoff{tag}StrictN", num(b["above the stricter threshold"], 0))
         macro(f"Takeoff{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+    macro("DurationS", num(o["duration_s"], 0))
+    for name, tag in ((f"below {o['duration_s']} s", "Short"), (f"{o['duration_s']} s or more", "Long")):
+        b = o["by duration"][name]
+        macro(f"Duration{tag}Flights", num(b["flights"], 0))
+        macro(f"Duration{tag}Median", f"{b['quartiles'][1]:.2f}")
+        macro(f"Duration{tag}Keep", num(b["above the threshold (%)"], 0))
+        macro(f"Duration{tag}KeepN", num(b["above the threshold"], 0))
+        macro(f"Duration{tag}StrictN", num(b["above the stricter threshold"], 0))
+        macro(f"Duration{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+    strata = dict(zip(o["by kind"]["solo flights"]["median by stratum"], ("Low", "High", "Short", "Long")))
+    for kind, tag in (("solo flights", "Solo"), ("group flights", "Group")):
+        b = o["by kind"][kind]
+        macro(f"Kind{tag}Flights", num(b["flights"], 0))
+        macro(f"Kind{tag}Median", f"{b['quartiles'][1]:.2f}")
+        macro(f"Kind{tag}Keep", num(b["above the threshold (%)"], 0))
+        macro(f"Kind{tag}Strict", num(b["above the stricter threshold (%)"], 0))
+        macro(f"Kind{tag}Duration", num(b["median duration (s)"], 0))
+        macro(f"Kind{tag}Mountain", num(b["mountain (%)"], 0))
+        for name, stag in strata.items():
+            macro(f"Kind{tag}Median{stag}", f"{b['median by stratum'][name]:.2f}")
     tags = dict(zip(o["datasets"], ("Every", "Fixed", "Longest")))
     lines = [r"\begin{tabular}{@{}l r r r r r r r r@{}}", r"\toprule",
              r" & \multicolumn{4}{c}{flights} & \multicolumn{4}{c}{median opening} \\",
@@ -79,6 +104,551 @@ def opening_tex(o):
         lines.append(f"{label} & {num(d['all']['flights'], 0)} & " + " & ".join(cells) + f" & {d['all']['quartiles'][1]:.2f} & "
                      + " & ".join(medians) + r" \\")
     write("opening_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+COHORT_TAU = 3600  # s: the cohort whose gaps the story quotes
+GAP_LAGS = {10: "Ten", 100: "Hundred", 320: "ThreeTwenty", 1000: "Thousand", 2760: "Long"}
+
+
+def cohort_gaps_tex(o):
+    """GapThr{GS,AS,GA}Lag (and Band): the gaps of alpha of the cohort to COHORT_TAU s at GAP_LAGS, for the
+    declared open flights (Thr = All) and the two thresholds on the opening (Min, Strict)."""
+    macro("GapCohortTau", num(COHORT_TAU, 0))
+    files = {"All": "cohorts", "Min": f"cohorts_min{o['min_opening']:g}", "Strict": f"cohorts_min{o['stricter']:g}"}
+    for thr, name in files.items():
+        if not (DT5 / f"{name}.json").exists():
+            continue
+        for gap, entries in read(DT5, name)["gaps"].items():
+            c = next(e for e in entries if e["tau_max"] == COHORT_TAU)
+            for lag, tag in GAP_LAGS.items():
+                k = c["lags"].index(lag)
+                mac_value(f"Gap{thr}{gap.replace(' - ', '')}{tag}",
+                          {"value": c["value"][k], "band": [c["band"][0][k], c["band"][1][k]]}, 3, True)
+
+
+SPREAD_LAG = 1000  # s: up to this lag the cohorts are compared with the cohort to COHORT_TAU
+
+
+def spread_tex(folder):
+    """GapSpreadGA: the largest difference of G - A between a cohort and the cohort to COHORT_TAU s, at the lags
+    up to SPREAD_LAG they share."""
+    cs = {c["tau_max"]: c for c in read(folder, "cohorts")["gaps"]["G - A"]}
+    ref = cs[COHORT_TAU]
+    d = [abs(c["value"][c["lags"].index(t)] - ref["value"][ref["lags"].index(t)])
+         for tau, c in cs.items() if tau != COHORT_TAU for t in c["lags"] if t in ref["lags"] and t <= SPREAD_LAG]
+    macro("GapSpreadGA", num(max(d), 3))
+    macro("GapSpreadLag", num(SPREAD_LAG, 0))
+    pieces = [c["pieces"] for c in read(folder, "cohorts")["alpha"]["group"]]
+    macro("CohortPiecesFirst", num(pieces[0], 0))
+    macro("CohortPiecesLast", num(pieces[-1], 0))
+    # alpha at SPREAD_LAG against the tau_max of the cohort: the step between consecutive cohorts
+    steps = {}
+    for pop, entries in read(folder, "cohorts")["alpha"].items():
+        v = [c["alpha"][c["lags"].index(SPREAD_LAG)] for c in entries]
+        steps[pop] = {c["tau_max"]: b - a for c, a, b in zip(entries[1:], v, v[1:])}
+    after = [s[7200] for s in steps.values()]  # the cohort to 1 h to the one to 2 h
+    before = [x for s in steps.values() for t, x in s.items() if t <= COHORT_TAU]
+    macro("AlphaStepHourMin", num(min(after), 3))
+    macro("AlphaStepHourMax", num(max(after), 3))
+    macro("AlphaStepBeforeMax", num(max(before), 3))
+    # the cohorts that reach beyond SPREAD_LAG, against each other: below and above SPREAD_LAG
+    for gap, entries in read(folder, "cohorts")["gaps"].items():
+        long = [c for c in entries if c["tau_max"] > SPREAD_LAG]
+        for side, keep in (("Low", lambda t: t <= SPREAD_LAG), ("High", lambda t: t > SPREAD_LAG)):
+            d = [abs(a["value"][a["lags"].index(t)] - b["value"][b["lags"].index(t)])
+                 for i, a in enumerate(long) for b in long[i + 1:] for t in a["lags"] if t in b["lags"] and keep(t)]
+            macro(f"GapSpread{side}{gap.replace(' - ', '')}", num(max(d), 3))
+
+
+POOL_LAGS = {1000: "Thousand", 2760: "Long", 6220: "VeryLong"}
+
+
+def per_lag_tex():
+    """The per-lag curve of cohorts.py on the declared open flights: where it is solid, its last lag, its gap
+    from the cohort to SELECTION_FREE, the pooled alpha minus it (the composition term), and its gaps."""
+    if not (DT5 / "perlag.json").exists():
+        return
+    s = read(DT5, "perlag")
+    tags = dict(POPS)
+    macro("PerLagSelFree", num(s["selection_free"], 0))
+    macro("PieceMinS", num(s["min_piece_s"], 0))
+    macro("HalfDecade", f"{s['half_decade']:g}")
+    macro("Support", f"{s['support']:g}")
+    macro("PerLagSolidEnd", num(max(t for t, k in zip(s["lags"], s["solid"]) if k), 0))
+    for pop, t in tags.items():
+        a = s["alpha"][pop]
+        macro(f"PerLag{t}LastLag", num(a["lags"][-1], 0))
+        macro(f"PerLag{t}LastPieces", num(a["pieces"][-1], 0))
+        macro(f"PerLag{t}FirstPieces", num(a["pieces"][0], 0))
+        macro(f"PerLag{t}MinusCohortMax", num(max(abs(v) for v in s["minus cohort"][pop]["value"]), 3))
+        d = s["pool minus per-lag"][pop]
+        for lag, tag in POOL_LAGS.items():
+            if lag in d["lags"]:
+                macro(f"Pool{t}Minus{tag}", signed(d["value"][d["lags"].index(lag)], 3))
+        macro(f"Pool{t}Max", num(max(s["pool"][pop]["value"]), 2))
+    for gap, g in s["gaps"].items():
+        for lag, tag in GAP_LAGS.items():
+            if lag in s["lags"]:
+                mac_value(f"PerLag{gap.replace(' - ', '')}{tag}",
+                          {"value": g["value"][s["lags"].index(lag)],
+                           "band": [g["band"][0][s["lags"].index(lag)], g["band"][1][s["lags"].index(lag)]]}, 3, True)
+
+
+def chained_tex():
+    """The chained curve of cohorts.py on the declared open flights: where it is solid (the rule of the per-lag
+    curve), its last lag and pieces, its gap from the cohort to SELECTION_FREE, the pool minus it, and its gaps."""
+    if not (DT5 / "perlag.json").exists():
+        return
+    s = read(DT5, "perlag")
+    macro("ChainSelFree", num(s["selection_free"], 0))
+    macro("ChainSolidEnd", num(max(t for t, k in zip(s["lags"], s["solid"]) if k), 0))
+    for pop, t in POPS:
+        a = s["chained"][pop]
+        macro(f"Chain{t}LastLag", num(a["lags"][-1], 0))
+        macro(f"Chain{t}LastPieces", num(a["pieces"][-1], 0))
+        macro(f"Chain{t}FirstPieces", num(a["pieces"][0], 0))
+        macro(f"Chain{t}MinusCohortMax", num(max(abs(v) for v in s["chained minus cohort"][pop]["value"]), 3))
+        d = s["pool minus chained"][pop]
+        for lag, tag in POOL_LAGS.items():
+            if lag in d["lags"]:
+                macro(f"Pool{t}MinusChain{tag}", signed(d["value"][d["lags"].index(lag)], 3))
+    for gap, g in s["chained gaps"].items():
+        for lag, tag in GAP_LAGS.items():
+            if lag in g["lags"]:
+                i = g["lags"].index(lag)
+                mac_value(f"Chain{gap.replace(' - ', '')}{tag}",
+                          {"value": g["value"][i], "band": [g["band"][0][i], g["band"][1][i]]}, 3, True)
+
+
+GROUND_TAGS = {"plains": "Plains", "hills": "Hills", "low mountains": "LowMtn", "high mountains": "HighMtn"}
+GROUND_GAPS = {"G - S": "GS", "G - A": "GA", "A - S": "AS"}
+GROUND_LAGS = {1000: "Thousand", 320: "ThreeTwenty"}
+
+
+def gap_at(g, lag):
+    """The {value, band} of a gap curve `g` at `lag`."""
+    i = g["lags"].index(lag)
+    return {"value": g["value"][i], "band": [g["band"][0][i], g["band"][1][i]]}
+
+
+def dt_tex():
+    """The filter of the story: the logger interval it keeps, and the flights of the cache it keeps and drops."""
+    d = read(DT5, "longlags")["dt"]
+    macro("DtMax", num(d["max_dt"], 0))
+    macro("DtFlights", num(d["flights"], 0))
+    macro("DtDroppedPercent", num(100 * (1 - d["flights"] / d["of"]), 1))
+
+
+def ground_tex():
+    """contrasts.py (design ground) on the declared open flights up to DtMax s: the constants of the ground class, the
+    share of flights of unknown class and of class changed by the trim, the flights and the gaps of each class, the
+    peaks of the normalised gaps, the share of the flights in the mountains, and the table of the classes."""
+    if not (DT5 / "contrasts_ground.json").exists():
+        return
+    s = read(DT5, "contrasts_ground")
+    c = s["constants"]
+    macro("GroundTrim", num(100 * c["trim"], 0))
+    for k, e in zip(("Low", "Mid", "High"), c["edges_m"]):
+        macro(f"GroundEdge{k}", num(e, 0))
+    macro("GroundCell", num(c["cell_m"], 0))
+    macro("GroundMinOnDem", num(100 * c["min_on_dem"], 0))
+    macro("GroundUnknown", num(100 * s["share"]["unknown"], 1))
+    macro("GroundChanged", num(100 * s["share"]["changed"], 1))
+    for pop, t in POPS:
+        total = sum(s[k]["flights"][pop] for k in GROUND_TAGS)
+        macro(f"GroundLowland{t}", num(100 * sum(s[k]["flights"][pop] for k in ("plains", "hills")) / total, 0))
+        macro(f"GroundMountain{t}", num(100 * sum(s[k]["flights"][pop] for k in ("low mountains", "high mountains")) / total, 0))
+    lines = [r"\begin{tabular}{@{}l r r r r r r@{}}", r"\toprule",
+             r" & \multicolumn{3}{c}{flights} & \multicolumn{3}{c}{gap at 1\,000~s} \\",
+             r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}",
+             r"ground & $\Sl$ & $\A$ & $\G$ & $\G-\Sl$ & $\G-\A$ & $\A-\Sl$ \\", r"\midrule"]
+    for k, tag in GROUND_TAGS.items():
+        flights = {t: s[k]["flights"][pop] for pop, t in POPS}
+        for t in "SAG":
+            macro(f"Ground{tag}Flights{t}", num(flights[t], 0))
+        row = [k, *(num(flights[t], 0) for t in "SAG")]
+        for gap, short in GROUND_GAPS.items():
+            g = s[k]["gaps"][gap]
+            for lag, lt in GROUND_LAGS.items():
+                v = gap_at(g, lag)
+                mac_value(f"Ground{tag}{short}{lt}", v, 3, True)
+                if lag == 1000:
+                    row.append(cell(v, 3, True))
+        for gap, short in (("G - S", "GS"), ("G - A", "GA")):  # the peak of the normalised gap
+            r = s[k]["relative gaps"][gap]
+            i = max((t for t, ok in enumerate(r["solid"]) if ok), key=lambda t: r["value"][t])  # where selection-free
+            macro(f"Ground{tag}Peak{short}", num(r["value"][i], 2))
+            macro(f"Ground{tag}Peak{short}Lag", num(r["lags"][i], 0))
+        lines.append(" & ".join(row) + r" \\")
+    write("ground_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+WEIGHT_PIECES = {"solo": "S", "group_solo": "A", "group": "G"}
+
+
+def weights_tex():
+    """contrasts.py --perflight (design ground) on the declared open flights up to DtMax s: the gaps at 1000 s with one
+    weight per flight (Weight<gap><class>Thousand) and their difference from the gaps per piece
+    (WeightMinus<gap><class>Thousand, with Band), the largest difference over the solid lags of every gap and class
+    (WeightMaxShift) and the mean pieces per flight of S, A, G at the first lag (WeightPiecesPerFlight<S|A|G>)."""
+    if not (DT5 / "contrasts_ground_perflight.json").exists():
+        return
+    s = read(DT5, "contrasts_ground_perflight")
+    shift = 0.0
+    for k, cls in WHEN_TAGS.items():
+        for gap, short in GROUND_GAPS.items():
+            mac_value(f"Weight{short}{cls}Thousand", gap_at(s[k]["gaps"][gap], 1000), 3, True)
+            mac_value(f"WeightMinus{short}{cls}Thousand", gap_at(s[k]["gaps minus per piece"][gap], 1000), 3, True)
+            d = s[k]["gaps minus per piece"][gap]
+            shift = max(shift, max(abs(v) for v, ok in zip(d["value"], d["solid"]) if ok))
+    macro("WeightMaxShift", num(shift, 3))
+    for pop, t in WEIGHT_PIECES.items():
+        macro(f"WeightPiecesPerFlight{t}", num(s["all"]["pieces"][pop] / s["all"]["flights"][pop], 2))
+
+
+def carry_tex():
+    """carry.py on the declared open flights up to DtMax s: A(d) - S in the nearest and the farthest bin of the distance
+    from the group time (Carry<class><Near|Far>, with Band), the bins (CarryNearLabel, CarryFarLabel, CarryBins) and the
+    table carry_table: A(d) - S per class and bin, then the windows."""
+    if not (DT5 / "carry.json").exists():
+        return
+    s = read(DT5, "carry")
+    n = len(s["labels"])
+    macro("CarryBins", num(n, 0))
+    macro("CarryNearLabel", s["labels"][0])
+    macro("CarryFarLabel", s["labels"][-1])
+    lines = [r"\begin{tabular}{@{}l r " + "r" * n + "@{}}", r"\toprule", r"ground & $\Sl$ & " + " & ".join(s["labels"]) + r" \\", r"\midrule",
+             rf"\multicolumn{{{n + 2}}}{{@{{}}l}}{{$\A(d)-\Sl$, exponent over {s['long_fit'][0]}--{s['long_fit'][1]}~s}} \\"]
+    counts = [rf"\multicolumn{{{n + 2}}}{{@{{}}l}}{{windows}} \\"]
+    for k, tag in WHEN_TAGS.items():
+        r = s["classes"][k]
+        for name, b in (("Near", r["bins"][0]), ("Far", r["bins"][-1])):
+            mac_value(f"Carry{tag}{name}", b["diff"], 3, True)
+            macro(f"CarryWindows{tag}{name}", num(b["windows"], 0))
+        macro(f"CarryWindowsS{tag}", num(r["S"]["windows"], 0))
+        lines.append(f"{k} & " + cell(r["S"], 3) + " & " + " & ".join(cell(b["diff"], 3, True) for b in r["bins"]) + r" \\")
+        counts.append(f"{k} & {num(r['S']['windows'], 0)} & " + " & ".join(num(b["windows"], 0) for b in r["bins"]) + r" \\")
+    write("carry_table", lines + [r"\midrule", *counts, r"\bottomrule", r"\end{tabular}"])
+
+
+STAGES_TAG = ("pre", "start", "end", "post")
+WHEN_TAGS = {**GROUND_TAGS, "all": "All"}
+
+
+def route_tex():
+    """route_alpha.py on the declared open flights up to DtMax s: the step and the speed of the route, the gaps on the
+    route at the arc lengths that match 320 and 1000 s (Route<gap><class><scale>, with Band), the same gaps in time
+    minus on the route (RouteMinus...), and the largest difference between alpha* of the path and in time."""
+    if not (DT5 / "route_alpha.json").exists():
+        return
+    r = read(DT5, "route_alpha")
+    macro("RouteDs", num(r["ds_m"], 0))
+    macro("RouteSpeed", num(r["speed_route_S"], 1))
+    macro("RoutePathSpeed", num(r["speed_path_S"], 1))
+    macro("RouteCheckMax", num(r["check"]["max_abs"], 3))
+    for tag in ("ThreeTwenty", "Thousand"):
+        macro(f"RouteLag{tag}", num(r["route"]["all"]["at"][tag]["lag"], 0))
+        macro(f"RouteTimeLag{tag}", num(r["route"]["all"]["at"][tag]["time_lag"], 0))
+    for k, cls in WHEN_TAGS.items():
+        for gap, short in GROUND_GAPS.items():
+            for tag in ("ThreeTwenty", "Thousand"):
+                at = r["route"][k]["at"][tag][gap]
+                mac_value(f"Route{short}{cls}{tag}", at["route"], 3, True)
+                mac_value(f"RouteMinus{short}{cls}{tag}", at["minus"], 3, True)
+
+
+def prepost_ground_tex():
+    """prepost.py --ground on the declared open flights up to DtMax s: the window, and per ground class and "all" the
+    events, start - pre, end - start, post - end (the control of the group flights alone: ctrlA2 - ctrlA1) and the table."""
+    if not (DT5 / "prepost_ground.json").exists():
+        return
+    s = read(DT5, "prepost_ground")
+    macro("WhenWindow", num(s["window_s"], 0))
+    lines = [r"\begin{tabular}{@{}l r r r r r@{}}", r"\toprule",
+             r"ground & events & start $-$ pre & end $-$ start & post $-$ end & control \\", r"\midrule"]
+    for k, tag in WHEN_TAGS.items():
+        r = s["classes"][k]
+        d = r["differences"]
+        macro(f"When{tag}Events", num(r["events"], 0))
+        mac_value(f"When{tag}StartMinusPre", d["start - pre"], 3, True)
+        mac_value(f"When{tag}EndMinusStart", d["end - start"], 3, True)
+        mac_value(f"When{tag}PostMinusEnd", d["post - end"], 3, True)
+        mac_value(f"When{tag}Control", d["ctrlA2 - ctrlA1"], 3, True)
+        lines.append(f"{k} & {num(r['events'], 0)} & " + " & ".join(cell(d[n], 3, True) for n in ("start - pre", "end - start", "post - end", "ctrlA2 - ctrlA1")) + r" \\")
+    write("prepost_ground_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    prepost_long_tex(s)
+
+
+def prepost_long_tex(s):
+    """The exponent fitted over the long lags (prepost.py LONG_FIT) and the share of time in climb of each window, per
+    class and "all": macros When{C}Long... and When{C}Climb{Pre,Start,End,Post}, and the table prepost_long_table."""
+    lo, hi = s["long_fit"]
+    macro("WhenLongLo", num(lo, 0))
+    macro("WhenLongHi", num(hi, 0))
+    steps = ("start - pre", "end - start", "post - end", "ctrlA2 - ctrlA1")
+    lines = [r"\begin{tabular}{@{}l r r r r r r r r@{}}", r"\toprule",
+             r" & \multicolumn{4}{c}{exponent over " + f"{lo}--{hi}" + r"~s} & \multicolumn{4}{c}{time in climb (\%)} \\",
+             r"\cmidrule(lr){2-5}\cmidrule(l){6-9}",
+             r"ground & start $-$ pre & end $-$ start & post $-$ end & control & pre & start & end & post \\", r"\midrule"]
+    for k, tag in WHEN_TAGS.items():
+        r = s["classes"][k]
+        d = r["differences_long"]
+        for name, short in zip(steps, ("StartMinusPre", "EndMinusStart", "PostMinusEnd", "Control")):
+            mac_value(f"When{tag}Long{short}", d[name], 3, True)
+        climb = {st: r["phases"]["share"][st]["climb"] for st in STAGES_TAG}
+        for st, v in climb.items():
+            mac_value(f"When{tag}Climb{st.capitalize()}", v, 1)
+        lines.append(f"{k} & " + " & ".join(cell_d(d[n], 3) for n in steps) + " & "
+                     + " & ".join(num(climb[st]["value"], 1) for st in STAGES_TAG) + r" \\")
+    write("prepost_long_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+THRESHOLD_KEYS = {"none": "none", "0.1": "$>0.1$", "0.5": "$>0.5$"}
+
+
+def ground_opening_tex():
+    """contrasts.py (design ground_opening): the lowland share among the flights with a known class, the table of the
+    openings of S, A, G by class, and the table of G - A and A - S at 1000 s by class and opening threshold."""
+    if not (DT5 / "contrasts_ground_opening.json").exists():
+        return
+    s = read(DT5, "contrasts_ground_opening")
+    cl = s["classes"]
+    for tag, key in (("All", "flights"), ("Strict", "flights_strict")):
+        macro(f"OpenLowland{tag}", num(100 * sum(cl[k][key] for k in ("plains", "hills")) / cl["known"][key], 0))
+    lines = [r"\begin{tabular}{@{}l r r r r r@{}}", r"\toprule",
+             r" & \multicolumn{3}{c}{median $\mathcal O$} & \multicolumn{2}{c}{share of the flights (\%)} \\",
+             r"\cmidrule(lr){2-4}\cmidrule(l){5-6}", r"ground & $\Sl$ & $\A$ & $\G$ & all & $\mathcal O>\Stricter$ \\", r"\midrule"]
+    for k in GROUND_TAGS:
+        row = [k, *(f"{cl[k]['median'][pop]:.2f}" for pop in ("solo", "group_solo", "group")),
+               num(100 * cl[k]["flights"] / cl["known"]["flights"], 0), num(100 * cl[k]["flights_strict"] / cl["known"]["flights_strict"], 0)]
+        lines.append(" & ".join(row) + r" \\")
+    write("opening_class_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    lines = [r"\begin{tabular}{@{}l l l l l@{}}", r"\toprule", r" & & \multicolumn{3}{c}{opening threshold} \\",
+             r"\cmidrule(l){3-5}", " ground & gap & " + " & ".join(THRESHOLD_KEYS.values()) + r" \\", r"\midrule"]
+    for k, tag in GROUND_TAGS.items():
+        for gap, text in (("G - A", r"$\G-\A$"), ("A - S", r"$\A-\Sl$")):
+            cells = [cell(gap_at(s[f"{k}|{x}"]["gaps"][gap], 1000), 3, True) for x in THRESHOLD_KEYS]
+            lines.append(f"{k if gap == 'G - A' else ''} & {text} & " + " & ".join(cells) + r" \\")
+        if k != "high mountains":
+            lines.append(r"\addlinespace")
+    write("ground_opening_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+def pilot_tex():
+    """contrasts.py (design pilot): the share of the flights of S flown by pilots who also have group time, and the
+    table of the flights of S and S' and of A - S and A - S' at 1000 s by class."""
+    if not (DT5 / "contrasts_pilot.json").exists():
+        return
+    s = read(DT5, "contrasts_pilot")
+    macro("PilotShareS", num(100 * s["all"]["S' share"], 0))
+    lines = [r"\begin{tabular}{@{}l r r l l@{}}", r"\toprule", r"ground & $\Sl$ & $\Sl'$ & $\A-\Sl$ & $\A-\Sl'$ \\", r"\midrule"]
+    for k, name in (*((k, k) for k in GROUND_TAGS), ("all", "all")):
+        r = s[k]
+        row = [name, num(r["flights"]["solo"], 0), num(r["flights"]["solo'"], 0)]
+        row += [cell(gap_at(r["gaps"][g], 1000), 3, True) for g in ("A - S", "A - S'")]
+        lines.append(" & ".join(row) + r" \\")
+        if k == "high mountains":
+            lines.append(r"\midrule")
+    write("pilot_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+PH_STATS = {"time in glide (%)": "ShareGlide", "time in search (%)": "ShareSearch", "time in climb (%)": "ShareClimb",
+            "climbs per hour": "Cph", "glide speed (km/h)": "Speed", "height lost per km of glide (m/km)": "Sink",
+            "searches that end in a climb (%)": "Found", "climb rate (m/s)": "Rate", "distance gained per climb (m)": "Chord",
+            "height gained per climb (m)": "Gain", "drift speed of a climb (m/s)": "Drift", "time in exit (%)": "ShareExit",
+            "searches per hour": "SearchPerHour", "exits per hour": "ExitPerHour", "mean exit duration (s)": "ExitMean",
+            "median exit duration (s)": "ExitDur",
+            "cycle of a glide and a climb (min)": "Cycle"}
+PH_LABELS = {"time in glide (%)": r"time in glide (\%)", "time in search (%)": r"time in search (\%)", "time in climb (%)": r"time in climb (\%)",
+             "climbs per hour": "climbs per hour", "glide speed (km/h)": "glide speed (km/h)",
+             "height lost per km of glide (m/km)": "height lost per km of glide (m/km)",
+             "searches that end in a climb (%)": r"searches ending in a climb (\%)", "climb rate (m/s)": "climb rate (m/s)",
+             "distance gained per climb (m)": "distance gained per climb (m)",
+             "height gained per climb (m)": "height gained per climb (m)", "drift speed of a climb (m/s)": "drift speed of a climb (m/s)",
+             "time in exit (%)": r"time in exit (\%)", "searches per hour": "searches per hour", "exits per hour": "exits per hour",
+             "mean exit duration (s)": "mean exit duration (s)", "median exit duration (s)": "median exit duration (s)", "cycle of a glide and a climb (min)": "glide and climb cycle (min)"}
+PH_GAPS = {"G - A": "GA", "A - S": "AS", "G - S": "GS"}
+PH_PHASES = {"climb": "Climb", "search": "Search", "transition": "Glide"}
+PH_DIGITS = 3  # significant digits of the macros of the phases
+PH_PREFIX = {"refit": "Ph", "vilpellet": "PhV"}  # the labels of the refit are the ones of the story
+
+
+def sig(x, n=PH_DIGITS):
+    """The decimals that give `x` n significant digits, from 0 to 4."""
+    return 0 if x == 0 or not np.isfinite(x) else int(min(4, max(0, n - 1 - np.floor(np.log10(abs(x))))))
+
+
+def sig_value(name, v, sign=False):
+    """mac_value with the decimals of sig() of the value."""
+    mac_value(name, v, sig(v["value"]), sign)
+
+
+def sig_cell(v, sign=False):
+    """cell() with the decimals of sig() of the value."""
+    return cell(v, sig(v["value"]), sign)
+
+
+def phases_macros(r, prefix, gaps=PH_GAPS):
+    """The macros of one label set of phase_gaps.py: per class, `prefix`+statistic+population or gap+class (value and
+    Band), the flights and hours, the thresholds and the exponents of the durations, the cycle and the peak lags."""
+    for key, c in WHEN_TAGS.items():
+        d = r["phases"][key]
+        for pop in "SAG":
+            macro(f"{prefix}Flights{pop}{c}", num(d["flights"][pop], 0))
+            macro(f"{prefix}Hours{pop}{c}", num(d["hours"][pop], 0))
+        if "contexts" in d and gaps is PH_GAPS:
+            for k, tag in (("unknown", "SearchDropped"), ("found", "CtxFound"), ("failed", "CtxFailed"), ("recentre", "CtxRecentre"), ("exit", "CtxExit")):
+                macro(f"{prefix}{tag}{c}", num(100 * d["contexts"]["all"]["share"][k], 1))
+                if key == "all":
+                    macro(f"{prefix}{tag}", num(100 * d["contexts"]["all"]["share"][k], 1))
+        for stat, tag in PH_STATS.items():
+            if stat not in d["gaps"]["G - A"]:
+                continue
+            for pop in ("S", "A", "G") if gaps is PH_GAPS else ():
+                sig_value(f"{prefix}{tag}{pop}{c}", d["statistics"][pop][stat])
+            for gap, g in gaps.items():
+                sig_value(f"{prefix}{tag}{g}{c}", d["gaps"][gap][stat], True)
+        for phase, ptag in PH_PHASES.items():
+            t = r["tails"][key][phase]
+            if t is None:
+                continue
+            macro(f"{prefix}Xmin{ptag}{c}", num(t["xmin"]["common"], 0))
+            for pop in ("S", "A", "G") if gaps is PH_GAPS else ():
+                sig_value(f"{prefix}Mu{ptag}{pop}{c}", t["mu"][pop])
+                macro(f"{prefix}Above{ptag}{pop}{c}", num(t["runs_above"][pop], 0))
+            for gap, g in gaps.items():
+                sig_value(f"{prefix}Mu{ptag}{g}{c}", t["gaps"][gap], True)
+        for gap, g in (("G - A", "GA"), ("G - S", "GS")):
+            if r["peaks"] and gaps is PH_GAPS:
+                macro(f"{prefix}Peak{g}Lag{c}", num(r["peaks"][key][gap]["lag"], 0))
+
+
+def phases_main_table(r, kept):
+    """The kept statistics, G - A and A - S (with their bands) per ground class."""
+    lines = [r"\begin{tabular}{@{}l l " + "l " * len(WHEN_TAGS) + r"@{}}", r"\toprule",
+             " statistic & gap & " + " & ".join(WHEN_TAGS) + r" \\", r"\midrule"]
+    for stat in kept:
+        for gap, text in (("G - A", r"$\G-\A$"), ("A - S", r"$\A-\Sl$")):
+            cells = [sig_cell(r["phases"][k]["gaps"][gap][stat], True) for k in WHEN_TAGS]
+            lines.append(f"{PH_LABELS[stat] if gap == 'G - A' else ''} & {text} & " + " & ".join(cells) + r" \\")
+        lines.append(r"\addlinespace")
+    write("phases_main_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
+
+
+def phases_full_table(r):
+    """Every statistic, per ground class: S, A, G, and the three gaps with their bands."""
+    lines = [r"\begin{tabular}{@{}l r r r l l l@{}}", r"\toprule",
+             r"statistic & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\A-\Sl$ & $\G-\Sl$ \\", r"\midrule"]
+    for key in WHEN_TAGS:
+        d = r["phases"][key]
+        n = d["flights"]
+        lines.append(rf"\multicolumn{{7}}{{@{{}}l}}{{\textit{{{key}}}: {num(n['S'], 0)}, {num(n['A'], 0)}, {num(n['G'], 0)} flights}} \\")
+        for stat in (k for k in PH_STATS if k in d["gaps"]["G - A"]):
+            v = [num(d["statistics"][pop][stat]["value"], sig(d["statistics"][pop][stat]["value"])) for pop in "SAG"]
+            g = [sig_cell(d["gaps"][gap][stat], True) for gap in PH_GAPS]
+            lines.append(f"{PH_LABELS[stat]} & " + " & ".join(v + g) + r" \\")
+        lines.append(r"\midrule")
+    write("phases_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
+
+
+def phases_tail_table(r):
+    """The durations: per class and phase, the common threshold, mu of S, A, G above it and the gaps."""
+    lines = [r"\begin{tabular}{@{}l l r l l l l l@{}}", r"\toprule",
+             r"ground & phase & $x_\mathrm{min}$ (s) & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\A-\Sl$ \\", r"\midrule"]
+    for key in WHEN_TAGS:
+        for phase, text in (("transition", "glide"), ("search", "search"), ("climb", "climb")):
+            t = r["tails"][key][phase]
+            if t is None:
+                continue
+            row = [key if phase == "transition" else "", text, num(t["xmin"]["common"], 0)]
+            row += [sig_cell(t["mu"][pop]) for pop in "SAG"] + [sig_cell(t["gaps"][g], True) for g in ("G - A", "A - S")]
+            lines.append(" & ".join(row) + r" \\")
+        lines.append(r"\addlinespace")
+    write("phases_tail_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
+
+
+def phases_cycle_table(r):
+    """The cycle of a glide and a climb of S, A, G per class against the lag of the peak of the normalised gaps."""
+    cyc = "cycle of a glide and a climb (min)"
+    lines = [r"\begin{tabular}{@{}l r r r r r@{}}", r"\toprule",
+             r" & \multicolumn{3}{c}{cycle (min)} & \multicolumn{2}{c}{peak lag (s)} \\", r"\cmidrule(lr){2-4}\cmidrule(l){5-6}",
+             r"ground & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\G-\Sl$ \\", r"\midrule"]
+    for key in WHEN_TAGS:
+        row = [key] + [num(r["phases"][key]["statistics"][pop][cyc]["value"], 1) for pop in "SAG"]
+        row += [num(r["peaks"][key][g]["lag"], 0) if r["peaks"] else "--" for g in ("G - A", "G - S")]
+        lines.append(" & ".join(row) + r" \\")
+    write("phases_cycle_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+def phases_tex():
+    """The macros and the tables of phase_gaps.py on the declared open flights up to DtMax s: the macros of both label
+    sets (the refit as Ph..., his labels as PhV..., the gaps only), the tables of the refit."""
+    for label_set, prefix in PH_PREFIX.items():
+        if (DT5 / f"phases_{label_set}.json").exists():
+            r = read(DT5, f"phases_{label_set}")
+            phases_macros(r, prefix, PH_GAPS if label_set == "refit" else {k: v for k, v in PH_GAPS.items() if k != "G - S"})
+            if label_set == "refit":
+                red = DT5 / "phases_redundancy_refit.json"
+                kept = [s for s in PH_STATS if s != "cycle of a glide and a climb (min)"]
+                kept = [s for s in kept if not red.exists() or s in read(DT5, "phases_redundancy_refit")["kept"]]
+                phases_main_table(r, kept)
+                phases_full_table(r)
+                phases_tail_table(r)
+                phases_cycle_table(r)
+
+
+REFIT = OUTS.parents[2] / "methods" / "phase-labelling" / "out"  # the refit of the phase labels (methods/phase-labelling)
+REFIT_CLASSES = {"plains": "Plains", "hills": "Hills", "low mountains": "LowMtn", "high mountains": "HighMtn"}
+
+
+def refit_tex():
+    """The macros Refit... of the refit of the phase labels (refit_*.json of methods/phase-labelling/out) and the
+    agreement in sign of the gaps G - A and A - S between our labels and Vilpellet's (phases_*.json); skipped when a
+    file is missing."""
+    names = ("refit_params_para", "refit_params_hang", "refit_cadence", "refit_agreement")
+    files = [REFIT / f"{n}.json" for n in names] + [DT5 / "phases_refit.json", DT5 / "phases_vilpellet.json"]
+    if not all(f.exists() for f in files):
+        return
+    par, cad, agr = {"para": read(REFIT, names[0]), "hang": read(REFIT, names[1])}, read(REFIT, names[2]), read(REFIT, names[3])
+    for d, tag in (("para", "Para"), ("hang", "Hang")):
+        t = par[d]["training"]
+        macro(f"RefitTrain{tag}", num(t["train_flights"], 0))
+        macro(f"RefitHeld{tag}", num(t["held_out_flights"], 0))
+        macro(f"RefitFlights{tag}", num(agr[d]["common_flights"], 0))
+        macro(f"RefitAgree{tag}", num(100 * agr[d]["overall"]["same_label"], 1))
+    macro("RefitPoolPara", num(par["para"]["training"]["pool"], 0))
+    macro("RefitStarts", num(len(par["para"]["starts"]), 0))
+    ll, fixes = par["para"]["held_out_log_likelihood"], par["para"]["training"]["held_out_fixes"]
+    for key, tag in (("his", "His"), ("refit", "Ours"), ("best_any_meaning", "Best")):
+        macro(f"RefitLL{tag}ParaFix", signed(ll[key] / fixes, 3))
+    for d, tag, gaps in (("para", "Para", ("2", "5")), ("hang", "Hang", ("5",))):
+        for g, w in zip(gaps, ("Two", "Five")[-len(gaps):]):
+            macro(f"RefitCadence{tag}{w}", num(100 * cad[d]["results"]["refit"][g]["same_label"], 1))
+    for cls, tag in REFIT_CLASSES.items():
+        macro(f"RefitAgree{tag}", num(100 * agr["para"]["per_class"][cls]["same_label"], 1))
+    st = agr["para"]["statistics"]
+    for key, tag in (("his", "His"), ("refit", "Ours")):
+        macro(f"RefitSearchShare{tag}", num(100 * st[key]["time_share_pooled"]["search"], 1))
+        macro(f"RefitSearchPerHour{tag}", num(st[key]["runs_per_hour_pooled"]["search"], 2))
+    ours, his = read(DT5, "phases_refit"), read(DT5, "phases_vilpellet")
+    pairs = [(ours["phases"][c]["gaps"][g][s]["value"], his["phases"][c]["gaps"][g][s]["value"])
+             for c in WHEN_TAGS for g in ("G - A", "A - S") for s in ours["phases"][c]["gaps"][g]
+             if s in his["phases"][c]["gaps"][g] and not s.startswith("cycle")]
+    macro("PhSignAgree", num(sum((a > 0) == (b > 0) for a, b in pairs), 0))
+    macro("PhSignTotal", num(len(pairs), 0))
+
+
+def labels_check_tex():
+    """The macros GroupCheck... of methods/group-identification/labels_check.py: the grouping of the chosen run with
+    the refit phase labels against Vilpellet's on a sample of days; skipped when the JSON is missing."""
+    f = REFIT.parent.parent / "group-identification" / "out" / "labels_check.json"
+    if not f.exists():
+        return
+    c = json.loads(f.read_text())
+    macro("GroupCheckDays", num(c["days"], 0))
+    macro("GroupCheckFlightsChange", signed(c["flights_change_pct"], 1))
+    macro("GroupCheckTimeChange", signed(c["time_change_pct"], 2))
+    macro("GroupCheckShared", num(c["shared_of_union_pct"], 1))
 
 
 def curves_tex(folder, prefix):
@@ -512,6 +1082,23 @@ def summary_tex(r, m, p):
     write("summary_table", lines + [r"\bottomrule", r"\end{tabular}"])
 
 
+def perlag_toy_tex(t):
+    """The toy of the pool and the per-lag cohort (perlag_scheme.py): its parameters and its two fits."""
+    macro("ToyPlAlpha", num(t["alpha"], 1))
+    macro("ToyPlBeta", num(t["beta"], 1))
+    macro("ToyPlTzero", num(t["t0"], 0))
+    macro("ToyPlTmax", num(t["t_max"], 0))
+    macro("ToyPlTau", num(t["tau"], 0))
+    macro("ToyPlPool", num(t["pool"], 3))
+    macro("ToyPlPerlag", num(t["perlag"], 3))
+    macro("ToyPlChained", num(t["chained"], 3))
+    macro("ToyPlJump", num(t["jump"], 3))
+    macro("ToyPlMean", num(t["mean"], 3))
+    macro("ToyPlMeanMax", num(t["mean_max"], 3))
+    macro("ToyPlCohorts", ", ".join(num(x, 0) for x in t["cohorts"]))
+    macro("ToyPlTop", num(t["alpha"] + t["beta"] / 4, 3))
+
+
 def toy_tex():
     """The numbers of the worked examples of the appendices, computed here (not results)."""
     n, d, t = np.array([1.0, 5.0, 2.0]), np.array([10.0, 20.0, 30.0]), np.array([100.0, 400.0, 500.0])  # n, d, T of three units
@@ -592,15 +1179,31 @@ def coverage_tex(cov):
 
 if __name__ == "__main__":
     GEN.mkdir(parents=True, exist_ok=True)
-    o = read(DECLARED, "opening")
+    o = read(DT5, "opening")
     macro("tauStar", num(read(OUTS / MAIN, "facts")["tau_star_s"] / 60, 1))  # the grouping, whichever the flights
     labels_tex(o)
     opening_tex(o)
-    curves_tex(DECLARED, "Decl")
+    cohort_gaps_tex(o)
+    per_lag_tex()
+    chained_tex()
+    dt_tex()
+    ground_tex()
+    route_tex()
+    prepost_ground_tex()
+    weights_tex()
+    carry_tex()
+    ground_opening_tex()
+    pilot_tex()
+    phases_tex()
+    refit_tex()
+    labels_check_tex()
+    curves_tex(DT5, "Decl")
     opened = OUTS / MAIN / f"open_min{o['min_opening']:g}"
     if (opened / "longlags.json").exists():
         curves_tex(opened, "Open")
     toy_tex()
+    if (OUTS / MAIN / "perlag_scheme.json").exists():
+        perlag_toy_tex(read(OUTS / MAIN, "perlag_scheme"))
     files = {n: opened / f"{n}.json" for n in ("raw", "matched_counts", "matched", "decomposition", "prepost_2400")}
     if all(f.exists() for f in files.values()):
         j = {n: json.loads(f.read_text()) for n, f in files.items()}
@@ -613,6 +1216,8 @@ if __name__ == "__main__":
         if len(runs) == len(WINDOWS):
             windows_tex(runs)
         summary_tex(j["raw"], j["matched"], j["prepost_2400"])
+    if (DT5 / "cohorts.json").exists():
+        spread_tex(DT5)
     if (opened / "coverage.json").exists():
         coverage_tex(read(opened, "coverage"))
     (GEN / "macros.tex").write_text("\n".join(rf"\newcommand{{\{k}}}{{{v}}}" for k, v in sorted(macros.items())) + "\n")

@@ -1,6 +1,93 @@
-\newcommand{\BelowEvery}{16}
+\newcommand{\AlphaStepBeforeMax}{0.003}
+\newcommand{\AlphaStepHourMax}{0.009}
+\newcommand{\AlphaStepHourMin}{0.007}
+\newcommand{\BelowEvery}{17}
 \newcommand{\BelowFixed}{19}
 \newcommand{\BelowLongest}{26}
+\newcommand{\CarryAllFar}{$+$0.010}
+\newcommand{\CarryAllFarBand}{[$+$0.006, $+$0.015]}
+\newcommand{\CarryAllNear}{$+$0.001}
+\newcommand{\CarryAllNearBand}{[$-$0.003, $+$0.004]}
+\newcommand{\CarryBins}{4}
+\newcommand{\CarryFarLabel}{$\ge80$~min}
+\newcommand{\CarryHighMtnFar}{$+$0.026}
+\newcommand{\CarryHighMtnFarBand}{[$+$0.019, $+$0.032]}
+\newcommand{\CarryHighMtnNear}{$+$0.020}
+\newcommand{\CarryHighMtnNearBand}{[$+$0.014, $+$0.026]}
+\newcommand{\CarryHillsFar}{$+$0.024}
+\newcommand{\CarryHillsFarBand}{[$+$0.011, $+$0.037]}
+\newcommand{\CarryHillsNear}{$+$0.010}
+\newcommand{\CarryHillsNearBand}{[$+$0.005, $+$0.016]}
+\newcommand{\CarryLowMtnFar}{$+$0.027}
+\newcommand{\CarryLowMtnFarBand}{[$+$0.021, $+$0.033]}
+\newcommand{\CarryLowMtnNear}{$+$0.013}
+\newcommand{\CarryLowMtnNearBand}{[$+$0.008, $+$0.018]}
+\newcommand{\CarryNearLabel}{0--20~min}
+\newcommand{\CarryPlainsFar}{$+$0.012}
+\newcommand{\CarryPlainsFarBand}{[$+$0.008, $+$0.017]}
+\newcommand{\CarryPlainsNear}{$-$0.000}
+\newcommand{\CarryPlainsNearBand}{[$-$0.004, $+$0.004]}
+\newcommand{\CarryWindowsAllFar}{3\,894}
+\newcommand{\CarryWindowsAllNear}{6\,965}
+\newcommand{\CarryWindowsHighMtnFar}{1\,199}
+\newcommand{\CarryWindowsHighMtnNear}{1\,802}
+\newcommand{\CarryWindowsHillsFar}{174}
+\newcommand{\CarryWindowsHillsNear}{637}
+\newcommand{\CarryWindowsLowMtnFar}{2\,002}
+\newcommand{\CarryWindowsLowMtnNear}{3\,467}
+\newcommand{\CarryWindowsPlainsFar}{418}
+\newcommand{\CarryWindowsPlainsNear}{889}
+\newcommand{\CarryWindowsSAll}{88\,654}
+\newcommand{\CarryWindowsSHighMtn}{15\,286}
+\newcommand{\CarryWindowsSHills}{16\,554}
+\newcommand{\CarryWindowsSLowMtn}{34\,372}
+\newcommand{\CarryWindowsSPlains}{15\,779}
+\newcommand{\ChainAFirstPieces}{16\,736}
+\newcommand{\ChainALastLag}{17\,190}
+\newcommand{\ChainALastPieces}{131}
+\newcommand{\ChainAMinusCohortMax}{0.007}
+\newcommand{\ChainASHundred}{$+$0.003}
+\newcommand{\ChainASHundredBand}{[$+$0.002, $+$0.004]}
+\newcommand{\ChainASLong}{$-$0.005}
+\newcommand{\ChainASLongBand}{[$-$0.010, $+$0.001]}
+\newcommand{\ChainASTen}{$+$0.007}
+\newcommand{\ChainASTenBand}{[$+$0.006, $+$0.009]}
+\newcommand{\ChainASThousand}{$-$0.003}
+\newcommand{\ChainASThousandBand}{[$-$0.006, $-$0.000]}
+\newcommand{\ChainASThreeTwenty}{$+$0.003}
+\newcommand{\ChainASThreeTwentyBand}{[$+$0.001, $+$0.005]}
+\newcommand{\ChainGAHundred}{$-$0.001}
+\newcommand{\ChainGAHundredBand}{[$-$0.002, $-$0.000]}
+\newcommand{\ChainGALong}{$+$0.026}
+\newcommand{\ChainGALongBand}{[$+$0.021, $+$0.032]}
+\newcommand{\ChainGATen}{$-$0.009}
+\newcommand{\ChainGATenBand}{[$-$0.010, $-$0.008]}
+\newcommand{\ChainGAThousand}{$+$0.027}
+\newcommand{\ChainGAThousandBand}{[$+$0.025, $+$0.030]}
+\newcommand{\ChainGAThreeTwenty}{$+$0.011}
+\newcommand{\ChainGAThreeTwentyBand}{[$+$0.009, $+$0.012]}
+\newcommand{\ChainGFirstPieces}{17\,240}
+\newcommand{\ChainGLastLag}{11\,450}
+\newcommand{\ChainGLastPieces}{153}
+\newcommand{\ChainGMinusCohortMax}{0.006}
+\newcommand{\ChainGSHundred}{$+$0.002}
+\newcommand{\ChainGSHundredBand}{[$+$0.001, $+$0.003]}
+\newcommand{\ChainGSLong}{$+$0.022}
+\newcommand{\ChainGSLongBand}{[$+$0.015, $+$0.028]}
+\newcommand{\ChainGSTen}{$-$0.002}
+\newcommand{\ChainGSTenBand}{[$-$0.004, $-$0.000]}
+\newcommand{\ChainGSThousand}{$+$0.024}
+\newcommand{\ChainGSThousandBand}{[$+$0.021, $+$0.027]}
+\newcommand{\ChainGSThreeTwenty}{$+$0.014}
+\newcommand{\ChainGSThreeTwentyBand}{[$+$0.012, $+$0.015]}
+\newcommand{\ChainSFirstPieces}{52\,812}
+\newcommand{\ChainSLastLag}{21\,060}
+\newcommand{\ChainSLastPieces}{394}
+\newcommand{\ChainSMinusCohortMax}{0.004}
+\newcommand{\ChainSelFree}{3\,600}
+\newcommand{\ChainSolidEnd}{2\,250}
+\newcommand{\CohortPiecesFirst}{17\,240}
+\newcommand{\CohortPiecesLast}{195}
 \newcommand{\CovDraws}{400}
 \newcommand{\CovNewMax}{99}
 \newcommand{\CovNewMin}{88}
@@ -356,50 +443,280 @@
 \newcommand{\DecShareSinkR}{127}
 \newcommand{\DecShareSinkT}{$-$0}
 \newcommand{\DecShareSinkW}{$-$6}
-\newcommand{\DeclFixedFitA}{0.915}
-\newcommand{\DeclFixedFitG}{0.921}
+\newcommand{\DeclFixedFitA}{0.914}
+\newcommand{\DeclFixedFitG}{0.920}
 \newcommand{\DeclFixedFitS}{0.907}
-\newcommand{\DeclFixedFlightsA}{8\,134}
-\newcommand{\DeclFixedFlightsG}{7\,707}
-\newcommand{\DeclFixedFlightsS}{41\,292}
+\newcommand{\DeclFixedFlightsA}{7\,827}
+\newcommand{\DeclFixedFlightsG}{7\,448}
+\newcommand{\DeclFixedFlightsS}{39\,610}
 \newcommand{\DeclFixedHA}{0.886}
-\newcommand{\DeclFixedHABand}{[0.880, 0.891]}
+\newcommand{\DeclFixedHABand}{[0.880, 0.892]}
 \newcommand{\DeclFixedHG}{0.908}
-\newcommand{\DeclFixedHGBand}{[0.903, 0.914]}
-\newcommand{\DeclFixedHS}{0.887}
-\newcommand{\DeclFixedHSBand}{[0.883, 0.891]}
+\newcommand{\DeclFixedHGBand}{[0.902, 0.914]}
+\newcommand{\DeclFixedHS}{0.886}
+\newcommand{\DeclFixedHSBand}{[0.882, 0.890]}
 \newcommand{\DeclFixedHThousandA}{0.887}
 \newcommand{\DeclFixedHThousandG}{0.911}
 \newcommand{\DeclFixedHThousandS}{0.883}
 \newcommand{\DeclLongestFitA}{0.920}
-\newcommand{\DeclLongestFitG}{0.932}
+\newcommand{\DeclLongestFitG}{0.931}
 \newcommand{\DeclLongestFitS}{0.912}
-\newcommand{\DeclLongestFlightsA}{853}
-\newcommand{\DeclLongestFlightsG}{158}
-\newcommand{\DeclLongestFlightsS}{5\,775}
+\newcommand{\DeclLongestFlightsA}{820}
+\newcommand{\DeclLongestFlightsG}{153}
+\newcommand{\DeclLongestFlightsS}{5\,492}
 \newcommand{\DeclLongestHA}{0.808}
-\newcommand{\DeclLongestHABand}{[0.776, 0.840]}
-\newcommand{\DeclLongestHG}{0.895}
-\newcommand{\DeclLongestHGBand}{[0.848, 0.942]}
+\newcommand{\DeclLongestHABand}{[0.776, 0.839]}
+\newcommand{\DeclLongestHG}{0.890}
+\newcommand{\DeclLongestHGBand}{[0.839, 0.941]}
 \newcommand{\DeclLongestHS}{0.827}
-\newcommand{\DeclLongestHSBand}{[0.810, 0.843]}
+\newcommand{\DeclLongestHSBand}{[0.811, 0.843]}
 \newcommand{\DeclLongestHThousandA}{0.907}
-\newcommand{\DeclLongestHThousandG}{0.925}
+\newcommand{\DeclLongestHThousandG}{0.923}
 \newcommand{\DeclLongestHThousandS}{0.901}
 \newcommand{\DeclMinFlights}{100}
 \newcommand{\DeclTauFixed}{2\,760}
 \newcommand{\DeclTauLongest}{11\,450}
+\newcommand{\DtDroppedPercent}{3.7}
+\newcommand{\DtFlights}{63\,433}
+\newcommand{\DtMax}{5}
+\newcommand{\DurationLongFlights}{32\,106}
+\newcommand{\DurationLongKeep}{77}
+\newcommand{\DurationLongKeepN}{24\,794}
+\newcommand{\DurationLongMedian}{0.25}
+\newcommand{\DurationLongStrict}{24}
+\newcommand{\DurationLongStrictN}{7\,548}
+\newcommand{\DurationS}{9\,000}
+\newcommand{\DurationShortFlights}{32\,185}
+\newcommand{\DurationShortKeep}{90}
+\newcommand{\DurationShortKeepN}{28\,822}
+\newcommand{\DurationShortMedian}{0.37}
+\newcommand{\DurationShortStrict}{29}
+\newcommand{\DurationShortStrictN}{9\,270}
 \newcommand{\FlightsAll}{154\,598}
 \newcommand{\FlightsClosed}{87\,484}
-\newcommand{\FlightsEvery}{66\,845}
-\newcommand{\FlightsFixed}{53\,109}
-\newcommand{\FlightsLongest}{6\,785}
+\newcommand{\FlightsEvery}{64\,291}
+\newcommand{\FlightsFixed}{51\,017}
+\newcommand{\FlightsLongest}{6\,464}
 \newcommand{\FlightsNeither}{269}
 \newcommand{\FlightsOpen}{66\,845}
+\newcommand{\GapAllASHundred}{$+$0.009}
+\newcommand{\GapAllASHundredBand}{[$+$0.008, $+$0.010]}
+\newcommand{\GapAllASLong}{$+$0.000}
+\newcommand{\GapAllASLongBand}{[$-$0.005, $+$0.006]}
+\newcommand{\GapAllASTen}{$+$0.015}
+\newcommand{\GapAllASTenBand}{[$+$0.013, $+$0.016]}
+\newcommand{\GapAllASThousand}{$+$0.006}
+\newcommand{\GapAllASThousandBand}{[$+$0.003, $+$0.009]}
+\newcommand{\GapAllASThreeTwenty}{$+$0.010}
+\newcommand{\GapAllASThreeTwentyBand}{[$+$0.009, $+$0.012]}
+\newcommand{\GapAllGAHundred}{$-$0.002}
+\newcommand{\GapAllGAHundredBand}{[$-$0.003, $-$0.000]}
+\newcommand{\GapAllGALong}{$+$0.026}
+\newcommand{\GapAllGALongBand}{[$+$0.019, $+$0.032]}
+\newcommand{\GapAllGATen}{$-$0.010}
+\newcommand{\GapAllGATenBand}{[$-$0.012, $-$0.008]}
+\newcommand{\GapAllGAThousand}{$+$0.024}
+\newcommand{\GapAllGAThousandBand}{[$+$0.020, $+$0.027]}
+\newcommand{\GapAllGAThreeTwenty}{$+$0.007}
+\newcommand{\GapAllGAThreeTwentyBand}{[$+$0.005, $+$0.009]}
+\newcommand{\GapAllGSHundred}{$+$0.008}
+\newcommand{\GapAllGSHundredBand}{[$+$0.006, $+$0.009]}
+\newcommand{\GapAllGSLong}{$+$0.026}
+\newcommand{\GapAllGSLongBand}{[$+$0.019, $+$0.032]}
+\newcommand{\GapAllGSTen}{$+$0.005}
+\newcommand{\GapAllGSTenBand}{[$+$0.002, $+$0.007]}
+\newcommand{\GapAllGSThousand}{$+$0.030}
+\newcommand{\GapAllGSThousandBand}{[$+$0.026, $+$0.034]}
+\newcommand{\GapAllGSThreeTwenty}{$+$0.017}
+\newcommand{\GapAllGSThreeTwentyBand}{[$+$0.014, $+$0.019]}
+\newcommand{\GapCohortTau}{3\,600}
+\newcommand{\GapMinASHundred}{$+$0.007}
+\newcommand{\GapMinASHundredBand}{[$+$0.006, $+$0.008]}
+\newcommand{\GapMinASLong}{$-$0.004}
+\newcommand{\GapMinASLongBand}{[$-$0.009, $+$0.001]}
+\newcommand{\GapMinASTen}{$+$0.014}
+\newcommand{\GapMinASTenBand}{[$+$0.012, $+$0.015]}
+\newcommand{\GapMinASThousand}{$+$0.001}
+\newcommand{\GapMinASThousandBand}{[$-$0.003, $+$0.004]}
+\newcommand{\GapMinASThreeTwenty}{$+$0.007}
+\newcommand{\GapMinASThreeTwentyBand}{[$+$0.005, $+$0.009]}
+\newcommand{\GapMinGAHundred}{$-$0.002}
+\newcommand{\GapMinGAHundredBand}{[$-$0.003, $-$0.001]}
+\newcommand{\GapMinGALong}{$+$0.022}
+\newcommand{\GapMinGALongBand}{[$+$0.017, $+$0.028]}
+\newcommand{\GapMinGATen}{$-$0.011}
+\newcommand{\GapMinGATenBand}{[$-$0.013, $-$0.008]}
+\newcommand{\GapMinGAThousand}{$+$0.021}
+\newcommand{\GapMinGAThousandBand}{[$+$0.018, $+$0.024]}
+\newcommand{\GapMinGAThreeTwenty}{$+$0.005}
+\newcommand{\GapMinGAThreeTwentyBand}{[$+$0.003, $+$0.007]}
+\newcommand{\GapMinGSHundred}{$+$0.005}
+\newcommand{\GapMinGSHundredBand}{[$+$0.003, $+$0.006]}
+\newcommand{\GapMinGSLong}{$+$0.019}
+\newcommand{\GapMinGSLongBand}{[$+$0.013, $+$0.024]}
+\newcommand{\GapMinGSTen}{$+$0.003}
+\newcommand{\GapMinGSTenBand}{[$+$0.001, $+$0.006]}
+\newcommand{\GapMinGSThousand}{$+$0.022}
+\newcommand{\GapMinGSThousandBand}{[$+$0.018, $+$0.025]}
+\newcommand{\GapMinGSThreeTwenty}{$+$0.012}
+\newcommand{\GapMinGSThreeTwentyBand}{[$+$0.009, $+$0.014]}
+\newcommand{\GapSpreadGA}{0.007}
+\newcommand{\GapSpreadHighAS}{0.012}
+\newcommand{\GapSpreadHighGA}{0.016}
+\newcommand{\GapSpreadHighGS}{0.016}
+\newcommand{\GapSpreadLag}{1\,000}
+\newcommand{\GapSpreadLowAS}{0.003}
+\newcommand{\GapSpreadLowGA}{0.008}
+\newcommand{\GapSpreadLowGS}{0.006}
+\newcommand{\GapStrictASHundred}{$+$0.002}
+\newcommand{\GapStrictASHundredBand}{[$+$0.001, $+$0.003]}
+\newcommand{\GapStrictASLong}{$-$0.000}
+\newcommand{\GapStrictASLongBand}{[$-$0.003, $+$0.002]}
+\newcommand{\GapStrictASTen}{$+$0.008}
+\newcommand{\GapStrictASTenBand}{[$+$0.005, $+$0.010]}
+\newcommand{\GapStrictASThousand}{$-$0.000}
+\newcommand{\GapStrictASThousandBand}{[$-$0.003, $+$0.003]}
+\newcommand{\GapStrictASThreeTwenty}{$+$0.001}
+\newcommand{\GapStrictASThreeTwentyBand}{[$-$0.001, $+$0.003]}
+\newcommand{\GapStrictGAHundred}{$-$0.005}
+\newcommand{\GapStrictGAHundredBand}{[$-$0.006, $-$0.003]}
+\newcommand{\GapStrictGALong}{$+$0.007}
+\newcommand{\GapStrictGALongBand}{[$+$0.004, $+$0.011]}
+\newcommand{\GapStrictGATen}{$-$0.012}
+\newcommand{\GapStrictGATenBand}{[$-$0.015, $-$0.008]}
+\newcommand{\GapStrictGAThousand}{$+$0.008}
+\newcommand{\GapStrictGAThousandBand}{[$+$0.005, $+$0.011]}
+\newcommand{\GapStrictGAThreeTwenty}{$-$0.001}
+\newcommand{\GapStrictGAThreeTwentyBand}{[$-$0.003, $+$0.002]}
+\newcommand{\GapStrictGSHundred}{$-$0.003}
+\newcommand{\GapStrictGSHundredBand}{[$-$0.004, $-$0.001]}
+\newcommand{\GapStrictGSLong}{$+$0.007}
+\newcommand{\GapStrictGSLongBand}{[$+$0.004, $+$0.010]}
+\newcommand{\GapStrictGSTen}{$-$0.004}
+\newcommand{\GapStrictGSTenBand}{[$-$0.008, $+$0.000]}
+\newcommand{\GapStrictGSThousand}{$+$0.008}
+\newcommand{\GapStrictGSThousandBand}{[$+$0.005, $+$0.011]}
+\newcommand{\GapStrictGSThreeTwenty}{$+$0.000}
+\newcommand{\GapStrictGSThreeTwentyBand}{[$-$0.002, $+$0.003]}
+\newcommand{\GroundCell}{200}
+\newcommand{\GroundChanged}{7.1}
+\newcommand{\GroundEdgeHigh}{1\,500}
+\newcommand{\GroundEdgeLow}{300}
+\newcommand{\GroundEdgeMid}{800}
+\newcommand{\GroundHighMtnASThousand}{$+$0.022}
+\newcommand{\GroundHighMtnASThousandBand}{[$+$0.017, $+$0.027]}
+\newcommand{\GroundHighMtnASThreeTwenty}{$+$0.012}
+\newcommand{\GroundHighMtnASThreeTwentyBand}{[$+$0.010, $+$0.015]}
+\newcommand{\GroundHighMtnFlightsA}{2\,800}
+\newcommand{\GroundHighMtnFlightsG}{3\,112}
+\newcommand{\GroundHighMtnFlightsS}{8\,028}
+\newcommand{\GroundHighMtnGAThousand}{$+$0.033}
+\newcommand{\GroundHighMtnGAThousandBand}{[$+$0.028, $+$0.038]}
+\newcommand{\GroundHighMtnGAThreeTwenty}{$+$0.014}
+\newcommand{\GroundHighMtnGAThreeTwentyBand}{[$+$0.012, $+$0.017]}
+\newcommand{\GroundHighMtnGSThousand}{$+$0.055}
+\newcommand{\GroundHighMtnGSThousandBand}{[$+$0.050, $+$0.059]}
+\newcommand{\GroundHighMtnGSThreeTwenty}{$+$0.027}
+\newcommand{\GroundHighMtnGSThreeTwentyBand}{[$+$0.024, $+$0.029]}
+\newcommand{\GroundHighMtnPeakGA}{0.23}
+\newcommand{\GroundHighMtnPeakGALag}{870}
+\newcommand{\GroundHighMtnPeakGS}{0.33}
+\newcommand{\GroundHighMtnPeakGSLag}{1\,230}
+\newcommand{\GroundHillsASThousand}{$+$0.012}
+\newcommand{\GroundHillsASThousandBand}{[$+$0.007, $+$0.018]}
+\newcommand{\GroundHillsASThreeTwenty}{$+$0.010}
+\newcommand{\GroundHillsASThreeTwentyBand}{[$+$0.006, $+$0.014]}
+\newcommand{\GroundHillsFlightsA}{1\,120}
+\newcommand{\GroundHillsFlightsG}{1\,550}
+\newcommand{\GroundHillsFlightsS}{9\,815}
+\newcommand{\GroundHillsGAThousand}{$+$0.012}
+\newcommand{\GroundHillsGAThousandBand}{[$+$0.007, $+$0.018]}
+\newcommand{\GroundHillsGAThreeTwenty}{$+$0.001}
+\newcommand{\GroundHillsGAThreeTwentyBand}{[$-$0.003, $+$0.005]}
+\newcommand{\GroundHillsGSThousand}{$+$0.025}
+\newcommand{\GroundHillsGSThousandBand}{[$+$0.020, $+$0.030]}
+\newcommand{\GroundHillsGSThreeTwenty}{$+$0.011}
+\newcommand{\GroundHillsGSThreeTwentyBand}{[$+$0.008, $+$0.015]}
+\newcommand{\GroundHillsPeakGA}{0.22}
+\newcommand{\GroundHillsPeakGALag}{2\,250}
+\newcommand{\GroundHillsPeakGS}{0.39}
+\newcommand{\GroundHillsPeakGSLag}{2\,250}
+\newcommand{\GroundLowMtnASThousand}{$+$0.011}
+\newcommand{\GroundLowMtnASThousandBand}{[$+$0.007, $+$0.015]}
+\newcommand{\GroundLowMtnASThreeTwenty}{$+$0.012}
+\newcommand{\GroundLowMtnASThreeTwentyBand}{[$+$0.010, $+$0.014]}
+\newcommand{\GroundLowMtnFlightsA}{5\,277}
+\newcommand{\GroundLowMtnFlightsG}{6\,160}
+\newcommand{\GroundLowMtnFlightsS}{18\,902}
+\newcommand{\GroundLowMtnGAThousand}{$+$0.031}
+\newcommand{\GroundLowMtnGAThousandBand}{[$+$0.027, $+$0.035]}
+\newcommand{\GroundLowMtnGAThreeTwenty}{$+$0.013}
+\newcommand{\GroundLowMtnGAThreeTwentyBand}{[$+$0.011, $+$0.015]}
+\newcommand{\GroundLowMtnGSThousand}{$+$0.042}
+\newcommand{\GroundLowMtnGSThousandBand}{[$+$0.038, $+$0.046]}
+\newcommand{\GroundLowMtnGSThreeTwenty}{$+$0.025}
+\newcommand{\GroundLowMtnGSThreeTwentyBand}{[$+$0.022, $+$0.027]}
+\newcommand{\GroundLowMtnPeakGA}{0.22}
+\newcommand{\GroundLowMtnPeakGALag}{710}
+\newcommand{\GroundLowMtnPeakGS}{0.28}
+\newcommand{\GroundLowMtnPeakGSLag}{710}
+\newcommand{\GroundLowlandA}{25}
+\newcommand{\GroundLowlandG}{28}
+\newcommand{\GroundLowlandS}{42}
+\newcommand{\GroundMinOnDem}{50}
+\newcommand{\GroundMountainA}{75}
+\newcommand{\GroundMountainG}{72}
+\newcommand{\GroundMountainS}{58}
+\newcommand{\GroundPlainsASThousand}{$+$0.005}
+\newcommand{\GroundPlainsASThousandBand}{[$+$0.002, $+$0.008]}
+\newcommand{\GroundPlainsASThreeTwenty}{$+$0.004}
+\newcommand{\GroundPlainsASThreeTwentyBand}{[$+$0.002, $+$0.007]}
+\newcommand{\GroundPlainsFlightsA}{1\,548}
+\newcommand{\GroundPlainsFlightsG}{2\,124}
+\newcommand{\GroundPlainsFlightsS}{9\,763}
+\newcommand{\GroundPlainsGAThousand}{$+$0.007}
+\newcommand{\GroundPlainsGAThousandBand}{[$+$0.005, $+$0.010]}
+\newcommand{\GroundPlainsGAThreeTwenty}{$-$0.002}
+\newcommand{\GroundPlainsGAThreeTwentyBand}{[$-$0.004, $+$0.001]}
+\newcommand{\GroundPlainsGSThousand}{$+$0.013}
+\newcommand{\GroundPlainsGSThousandBand}{[$+$0.010, $+$0.016]}
+\newcommand{\GroundPlainsGSThreeTwenty}{$+$0.003}
+\newcommand{\GroundPlainsGSThreeTwentyBand}{[$-$0.000, $+$0.006]}
+\newcommand{\GroundPlainsPeakGA}{0.21}
+\newcommand{\GroundPlainsPeakGALag}{1\,500}
+\newcommand{\GroundPlainsPeakGS}{0.28}
+\newcommand{\GroundPlainsPeakGSLag}{2\,250}
+\newcommand{\GroundTrim}{10}
+\newcommand{\GroundUnknown}{6.2}
+\newcommand{\GroupCheckDays}{20}
+\newcommand{\GroupCheckFlightsChange}{0.0}
+\newcommand{\GroupCheckShared}{99.6}
+\newcommand{\GroupCheckTimeChange}{$-$0.07}
+\newcommand{\HalfDecade}{0.25}
 \newcommand{\HqHighest}{3\,272}
 \newcommand{\HqLowest}{1\,035}
-\newcommand{\Kept}{55\,879}
-\newcommand{\KeptShare}{84}
+\newcommand{\Kept}{53\,616}
+\newcommand{\KeptShare}{83}
+\newcommand{\KindGroupDuration}{13\,042}
+\newcommand{\KindGroupFlights}{13\,252}
+\newcommand{\KindGroupKeep}{81}
+\newcommand{\KindGroupMedian}{0.28}
+\newcommand{\KindGroupMedianHigh}{0.22}
+\newcommand{\KindGroupMedianLong}{0.25}
+\newcommand{\KindGroupMedianLow}{0.43}
+\newcommand{\KindGroupMedianShort}{0.35}
+\newcommand{\KindGroupMountain}{55}
+\newcommand{\KindGroupStrict}{24}
+\newcommand{\KindSoloDuration}{8\,106}
+\newcommand{\KindSoloFlights}{51\,039}
+\newcommand{\KindSoloKeep}{84}
+\newcommand{\KindSoloMedian}{0.33}
+\newcommand{\KindSoloMedianHigh}{0.24}
+\newcommand{\KindSoloMedianLong}{0.25}
+\newcommand{\KindSoloMedianLow}{0.45}
+\newcommand{\KindSoloMedianShort}{0.37}
+\newcommand{\KindSoloMountain}{53}
+\newcommand{\KindSoloStrict}{27}
 \newcommand{\MatChosenText}{month $\pm2$, hour $\pm2$, same class}
 \newcommand{\MatCover}{0.8}
 \newcommand{\MatDeltaClimbA}{$+$0.5}
@@ -696,10 +1013,10 @@
 \newcommand{\MedianFixed}{0.29}
 \newcommand{\MedianFixedA}{0.23}
 \newcommand{\MedianFixedG}{0.29}
-\newcommand{\MedianFixedS}{0.30}
-\newcommand{\MedianLongest}{0.23}
+\newcommand{\MedianFixedS}{0.29}
+\newcommand{\MedianLongest}{0.22}
 \newcommand{\MedianLongestA}{0.19}
-\newcommand{\MedianLongestG}{0.29}
+\newcommand{\MedianLongestG}{0.28}
 \newcommand{\MedianLongestS}{0.23}
 \newcommand{\MinOpening}{0.1}
 \newcommand{\MountainM}{1\,000}
@@ -734,9 +1051,1855 @@
 \newcommand{\OpenLongestHThousandA}{0.917}
 \newcommand{\OpenLongestHThousandG}{0.936}
 \newcommand{\OpenLongestHThousandS}{0.912}
+\newcommand{\OpenLowlandAll}{39}
+\newcommand{\OpenLowlandStrict}{78}
 \newcommand{\OpenMinFlights}{100}
 \newcommand{\OpenTauFixed}{2\,760}
 \newcommand{\OpenTauLongest}{11\,450}
+\newcommand{\PerLagAFirstPieces}{16\,736}
+\newcommand{\PerLagALastLag}{11\,450}
+\newcommand{\PerLagALastPieces}{131}
+\newcommand{\PerLagAMinusCohortMax}{0.006}
+\newcommand{\PerLagASHundred}{$+$0.003}
+\newcommand{\PerLagASHundredBand}{[$+$0.002, $+$0.004]}
+\newcommand{\PerLagASLong}{$+$0.001}
+\newcommand{\PerLagASLongBand}{[$-$0.005, $+$0.007]}
+\newcommand{\PerLagASTen}{$+$0.007}
+\newcommand{\PerLagASTenBand}{[$+$0.006, $+$0.009]}
+\newcommand{\PerLagASThousand}{$-$0.001}
+\newcommand{\PerLagASThousandBand}{[$-$0.004, $+$0.002]}
+\newcommand{\PerLagASThreeTwenty}{$+$0.003}
+\newcommand{\PerLagASThreeTwentyBand}{[$+$0.001, $+$0.005]}
+\newcommand{\PerLagGAHundred}{$-$0.001}
+\newcommand{\PerLagGAHundredBand}{[$-$0.002, $-$0.000]}
+\newcommand{\PerLagGALong}{$+$0.026}
+\newcommand{\PerLagGALongBand}{[$+$0.019, $+$0.033]}
+\newcommand{\PerLagGATen}{$-$0.009}
+\newcommand{\PerLagGATenBand}{[$-$0.010, $-$0.008]}
+\newcommand{\PerLagGAThousand}{$+$0.026}
+\newcommand{\PerLagGAThousandBand}{[$+$0.024, $+$0.028]}
+\newcommand{\PerLagGAThreeTwenty}{$+$0.011}
+\newcommand{\PerLagGAThreeTwentyBand}{[$+$0.009, $+$0.012]}
+\newcommand{\PerLagGFirstPieces}{17\,240}
+\newcommand{\PerLagGLastLag}{7\,630}
+\newcommand{\PerLagGLastPieces}{153}
+\newcommand{\PerLagGMinusCohortMax}{0.004}
+\newcommand{\PerLagGSHundred}{$+$0.002}
+\newcommand{\PerLagGSHundredBand}{[$+$0.001, $+$0.003]}
+\newcommand{\PerLagGSLong}{$+$0.027}
+\newcommand{\PerLagGSLongBand}{[$+$0.019, $+$0.034]}
+\newcommand{\PerLagGSTen}{$-$0.002}
+\newcommand{\PerLagGSTenBand}{[$-$0.004, $-$0.000]}
+\newcommand{\PerLagGSThousand}{$+$0.025}
+\newcommand{\PerLagGSThousandBand}{[$+$0.022, $+$0.028]}
+\newcommand{\PerLagGSThreeTwenty}{$+$0.014}
+\newcommand{\PerLagGSThreeTwentyBand}{[$+$0.012, $+$0.015]}
+\newcommand{\PerLagSFirstPieces}{52\,812}
+\newcommand{\PerLagSLastLag}{14\,030}
+\newcommand{\PerLagSLastPieces}{394}
+\newcommand{\PerLagSMinusCohortMax}{0.004}
+\newcommand{\PerLagSelFree}{3\,600}
+\newcommand{\PerLagSolidEnd}{2\,250}
+\newcommand{\PhAboveClimbAAll}{238}
+\newcommand{\PhAboveClimbAHighMtn}{88}
+\newcommand{\PhAboveClimbAHills}{71}
+\newcommand{\PhAboveClimbALowMtn}{373}
+\newcommand{\PhAboveClimbAPlains}{75}
+\newcommand{\PhAboveClimbGAll}{216}
+\newcommand{\PhAboveClimbGHighMtn}{63}
+\newcommand{\PhAboveClimbGHills}{71}
+\newcommand{\PhAboveClimbGLowMtn}{291}
+\newcommand{\PhAboveClimbGPlains}{88}
+\newcommand{\PhAboveClimbSAll}{1\,169}
+\newcommand{\PhAboveClimbSHighMtn}{375}
+\newcommand{\PhAboveClimbSHills}{596}
+\newcommand{\PhAboveClimbSLowMtn}{1\,366}
+\newcommand{\PhAboveClimbSPlains}{492}
+\newcommand{\PhAboveGlideAAll}{888}
+\newcommand{\PhAboveGlideAHighMtn}{444}
+\newcommand{\PhAboveGlideAHills}{168}
+\newcommand{\PhAboveGlideALowMtn}{566}
+\newcommand{\PhAboveGlideAPlains}{127}
+\newcommand{\PhAboveGlideGAll}{522}
+\newcommand{\PhAboveGlideGHighMtn}{237}
+\newcommand{\PhAboveGlideGHills}{114}
+\newcommand{\PhAboveGlideGLowMtn}{325}
+\newcommand{\PhAboveGlideGPlains}{76}
+\newcommand{\PhAboveGlideSAll}{2\,573}
+\newcommand{\PhAboveGlideSHighMtn}{1\,253}
+\newcommand{\PhAboveGlideSHills}{1\,396}
+\newcommand{\PhAboveGlideSLowMtn}{1\,314}
+\newcommand{\PhAboveGlideSPlains}{645}
+\newcommand{\PhAboveSearchAAll}{409}
+\newcommand{\PhAboveSearchAHighMtn}{372}
+\newcommand{\PhAboveSearchAHills}{176}
+\newcommand{\PhAboveSearchALowMtn}{86}
+\newcommand{\PhAboveSearchAPlains}{67}
+\newcommand{\PhAboveSearchGAll}{241}
+\newcommand{\PhAboveSearchGHighMtn}{192}
+\newcommand{\PhAboveSearchGHills}{192}
+\newcommand{\PhAboveSearchGLowMtn}{59}
+\newcommand{\PhAboveSearchGPlains}{50}
+\newcommand{\PhAboveSearchSAll}{1\,505}
+\newcommand{\PhAboveSearchSHighMtn}{1\,238}
+\newcommand{\PhAboveSearchSHills}{2\,268}
+\newcommand{\PhAboveSearchSLowMtn}{313}
+\newcommand{\PhAboveSearchSPlains}{409}
+\newcommand{\PhChordAAll}{655}
+\newcommand{\PhChordAAllBand}{[632, 678]}
+\newcommand{\PhChordAHighMtn}{441}
+\newcommand{\PhChordAHighMtnBand}{[432, 449]}
+\newcommand{\PhChordAHills}{962}
+\newcommand{\PhChordAHillsBand}{[921, 1\,004]}
+\newcommand{\PhChordALowMtn}{479}
+\newcommand{\PhChordALowMtnBand}{[465, 494]}
+\newcommand{\PhChordAPlains}{1\,365}
+\newcommand{\PhChordAPlainsBand}{[1\,322, 1\,408]}
+\newcommand{\PhChordASAll}{$-$64.0}
+\newcommand{\PhChordASAllBand}{[$-$82.7, $-$45.3]}
+\newcommand{\PhChordASHighMtn}{$+$1.80}
+\newcommand{\PhChordASHighMtnBand}{[$-$7.25, $+$10.85]}
+\newcommand{\PhChordASHills}{$+$98.8}
+\newcommand{\PhChordASHillsBand}{[$+$60.3, $+$137.4]}
+\newcommand{\PhChordASLowMtn}{$-$30.3}
+\newcommand{\PhChordASLowMtnBand}{[$-$43.6, $-$17.0]}
+\newcommand{\PhChordASPlains}{$+$103}
+\newcommand{\PhChordASPlainsBand}{[$+$61, $+$146]}
+\newcommand{\PhChordGAAll}{$+$10.1}
+\newcommand{\PhChordGAAllBand}{[$+$0.8, $+$19.4]}
+\newcommand{\PhChordGAHighMtn}{$-$13.9}
+\newcommand{\PhChordGAHighMtnBand}{[$-$21.6, $-$6.1]}
+\newcommand{\PhChordGAHills}{$+$46.4}
+\newcommand{\PhChordGAHillsBand}{[$+$15.4, $+$77.5]}
+\newcommand{\PhChordGALowMtn}{$-$12.9}
+\newcommand{\PhChordGALowMtnBand}{[$-$20.5, $-$5.3]}
+\newcommand{\PhChordGAPlains}{$-$27.0}
+\newcommand{\PhChordGAPlainsBand}{[$-$62.9, $+$8.9]}
+\newcommand{\PhChordGAll}{665}
+\newcommand{\PhChordGAllBand}{[641, 689]}
+\newcommand{\PhChordGHighMtn}{427}
+\newcommand{\PhChordGHighMtnBand}{[418, 436]}
+\newcommand{\PhChordGHills}{1\,009}
+\newcommand{\PhChordGHillsBand}{[970, 1\,047]}
+\newcommand{\PhChordGLowMtn}{466}
+\newcommand{\PhChordGLowMtnBand}{[452, 481]}
+\newcommand{\PhChordGPlains}{1\,338}
+\newcommand{\PhChordGPlainsBand}{[1\,302, 1\,374]}
+\newcommand{\PhChordGSAll}{$-$53.9}
+\newcommand{\PhChordGSAllBand}{[$-$74.0, $-$33.7]}
+\newcommand{\PhChordGSHighMtn}{$-$12.1}
+\newcommand{\PhChordGSHighMtnBand}{[$-$21.3, $-$2.9]}
+\newcommand{\PhChordGSHills}{$+$145}
+\newcommand{\PhChordGSHillsBand}{[$+$109, $+$182]}
+\newcommand{\PhChordGSLowMtn}{$-$43.2}
+\newcommand{\PhChordGSLowMtnBand}{[$-$56.4, $-$30.1]}
+\newcommand{\PhChordGSPlains}{$+$76.5}
+\newcommand{\PhChordGSPlainsBand}{[$+$38.0, $+$115.0]}
+\newcommand{\PhChordSAll}{719}
+\newcommand{\PhChordSAllBand}{[702, 736]}
+\newcommand{\PhChordSHighMtn}{439}
+\newcommand{\PhChordSHighMtnBand}{[433, 444]}
+\newcommand{\PhChordSHills}{864}
+\newcommand{\PhChordSHillsBand}{[844, 883]}
+\newcommand{\PhChordSLowMtn}{510}
+\newcommand{\PhChordSLowMtnBand}{[499, 521]}
+\newcommand{\PhChordSPlains}{1\,262}
+\newcommand{\PhChordSPlainsBand}{[1\,235, 1\,288]}
+\newcommand{\PhCphAAll}{5.20}
+\newcommand{\PhCphAAllBand}{[5.16, 5.24]}
+\newcommand{\PhCphAHighMtn}{5.09}
+\newcommand{\PhCphAHighMtnBand}{[5.02, 5.16]}
+\newcommand{\PhCphAHills}{5.58}
+\newcommand{\PhCphAHillsBand}{[5.49, 5.67]}
+\newcommand{\PhCphALowMtn}{5.11}
+\newcommand{\PhCphALowMtnBand}{[5.06, 5.16]}
+\newcommand{\PhCphAPlains}{5.31}
+\newcommand{\PhCphAPlainsBand}{[5.23, 5.39]}
+\newcommand{\PhCphASAll}{$-$0.118}
+\newcommand{\PhCphASAllBand}{[$-$0.155, $-$0.081]}
+\newcommand{\PhCphASHighMtn}{$-$0.0986}
+\newcommand{\PhCphASHighMtnBand}{[$-$0.1718, $-$0.0255]}
+\newcommand{\PhCphASHills}{$+$0.211}
+\newcommand{\PhCphASHillsBand}{[$+$0.115, $+$0.306]}
+\newcommand{\PhCphASLowMtn}{$-$0.150}
+\newcommand{\PhCphASLowMtnBand}{[$-$0.203, $-$0.096]}
+\newcommand{\PhCphASPlains}{$+$0.0112}
+\newcommand{\PhCphASPlainsBand}{[$-$0.0717, $+$0.0940]}
+\newcommand{\PhCphGAAll}{$+$0.708}
+\newcommand{\PhCphGAAllBand}{[$+$0.667, $+$0.748]}
+\newcommand{\PhCphGAHighMtn}{$+$0.826}
+\newcommand{\PhCphGAHighMtnBand}{[$+$0.747, $+$0.906]}
+\newcommand{\PhCphGAHills}{$+$0.338}
+\newcommand{\PhCphGAHillsBand}{[$+$0.225, $+$0.451]}
+\newcommand{\PhCphGALowMtn}{$+$0.761}
+\newcommand{\PhCphGALowMtnBand}{[$+$0.702, $+$0.820]}
+\newcommand{\PhCphGAPlains}{$+$0.593}
+\newcommand{\PhCphGAPlainsBand}{[$+$0.487, $+$0.698]}
+\newcommand{\PhCphGAll}{5.91}
+\newcommand{\PhCphGAllBand}{[5.87, 5.95]}
+\newcommand{\PhCphGHighMtn}{5.92}
+\newcommand{\PhCphGHighMtnBand}{[5.84, 5.99]}
+\newcommand{\PhCphGHills}{5.92}
+\newcommand{\PhCphGHillsBand}{[5.83, 6.01]}
+\newcommand{\PhCphGLowMtn}{5.87}
+\newcommand{\PhCphGLowMtnBand}{[5.81, 5.92]}
+\newcommand{\PhCphGPlains}{5.90}
+\newcommand{\PhCphGPlainsBand}{[5.81, 5.99]}
+\newcommand{\PhCphGSAll}{$+$0.590}
+\newcommand{\PhCphGSAllBand}{[$+$0.550, $+$0.630]}
+\newcommand{\PhCphGSHighMtn}{$+$0.728}
+\newcommand{\PhCphGSHighMtnBand}{[$+$0.652, $+$0.804]}
+\newcommand{\PhCphGSHills}{$+$0.549}
+\newcommand{\PhCphGSHillsBand}{[$+$0.456, $+$0.642]}
+\newcommand{\PhCphGSLowMtn}{$+$0.611}
+\newcommand{\PhCphGSLowMtnBand}{[$+$0.552, $+$0.670]}
+\newcommand{\PhCphGSPlains}{$+$0.604}
+\newcommand{\PhCphGSPlainsBand}{[$+$0.509, $+$0.699]}
+\newcommand{\PhCphSAll}{5.32}
+\newcommand{\PhCphSAllBand}{[5.29, 5.34]}
+\newcommand{\PhCphSHighMtn}{5.19}
+\newcommand{\PhCphSHighMtnBand}{[5.15, 5.23]}
+\newcommand{\PhCphSHills}{5.37}
+\newcommand{\PhCphSHillsBand}{[5.32, 5.42]}
+\newcommand{\PhCphSLowMtn}{5.26}
+\newcommand{\PhCphSLowMtnBand}{[5.22, 5.29]}
+\newcommand{\PhCphSPlains}{5.30}
+\newcommand{\PhCphSPlainsBand}{[5.25, 5.34]}
+\newcommand{\PhCtxExit}{26.2}
+\newcommand{\PhCtxExitAll}{26.2}
+\newcommand{\PhCtxExitHighMtn}{23.7}
+\newcommand{\PhCtxExitHills}{29.8}
+\newcommand{\PhCtxExitLowMtn}{24.0}
+\newcommand{\PhCtxExitPlains}{31.5}
+\newcommand{\PhCtxFailed}{24.3}
+\newcommand{\PhCtxFailedAll}{24.3}
+\newcommand{\PhCtxFailedHighMtn}{25.4}
+\newcommand{\PhCtxFailedHills}{21.4}
+\newcommand{\PhCtxFailedLowMtn}{26.9}
+\newcommand{\PhCtxFailedPlains}{18.7}
+\newcommand{\PhCtxFound}{21.8}
+\newcommand{\PhCtxFoundAll}{21.8}
+\newcommand{\PhCtxFoundHighMtn}{23.5}
+\newcommand{\PhCtxFoundHills}{19.8}
+\newcommand{\PhCtxFoundLowMtn}{22.7}
+\newcommand{\PhCtxFoundPlains}{19.1}
+\newcommand{\PhCtxRecentre}{23.1}
+\newcommand{\PhCtxRecentreAll}{23.1}
+\newcommand{\PhCtxRecentreHighMtn}{22.9}
+\newcommand{\PhCtxRecentreHills}{23.8}
+\newcommand{\PhCtxRecentreLowMtn}{21.7}
+\newcommand{\PhCtxRecentrePlains}{26.7}
+\newcommand{\PhCycleAAll}{11.5}
+\newcommand{\PhCycleAAllBand}{[11.5, 11.6]}
+\newcommand{\PhCycleAHighMtn}{11.8}
+\newcommand{\PhCycleAHighMtnBand}{[11.6, 11.9]}
+\newcommand{\PhCycleAHills}{10.7}
+\newcommand{\PhCycleAHillsBand}{[10.6, 10.9]}
+\newcommand{\PhCycleALowMtn}{11.7}
+\newcommand{\PhCycleALowMtnBand}{[11.6, 11.9]}
+\newcommand{\PhCycleAPlains}{11.3}
+\newcommand{\PhCycleAPlainsBand}{[11.1, 11.5]}
+\newcommand{\PhCycleASAll}{$+$0.256}
+\newcommand{\PhCycleASAllBand}{[$+$0.176, $+$0.336]}
+\newcommand{\PhCycleASHighMtn}{$+$0.224}
+\newcommand{\PhCycleASHighMtnBand}{[$+$0.056, $+$0.392]}
+\newcommand{\PhCycleASHills}{$-$0.421}
+\newcommand{\PhCycleASHillsBand}{[$-$0.608, $-$0.235]}
+\newcommand{\PhCycleASLowMtn}{$+$0.335}
+\newcommand{\PhCycleASLowMtnBand}{[$+$0.213, $+$0.456]}
+\newcommand{\PhCycleASPlains}{$-$0.0239}
+\newcommand{\PhCycleASPlainsBand}{[$-$0.2007, $+$0.1529]}
+\newcommand{\PhCycleGAAll}{$-$1.38}
+\newcommand{\PhCycleGAAllBand}{[$-$1.46, $-$1.30]}
+\newcommand{\PhCycleGAHighMtn}{$-$1.65}
+\newcommand{\PhCycleGAHighMtnBand}{[$-$1.81, $-$1.49]}
+\newcommand{\PhCycleGAHills}{$-$0.614}
+\newcommand{\PhCycleGAHillsBand}{[$-$0.821, $-$0.407]}
+\newcommand{\PhCycleGALowMtn}{$-$1.52}
+\newcommand{\PhCycleGALowMtnBand}{[$-$1.64, $-$1.41]}
+\newcommand{\PhCycleGAPlains}{$-$1.14}
+\newcommand{\PhCycleGAPlainsBand}{[$-$1.34, $-$0.94]}
+\newcommand{\PhCycleGAll}{10.2}
+\newcommand{\PhCycleGAllBand}{[10.1, 10.2]}
+\newcommand{\PhCycleGHighMtn}{10.1}
+\newcommand{\PhCycleGHighMtnBand}{[10.0, 10.3]}
+\newcommand{\PhCycleGHills}{10.1}
+\newcommand{\PhCycleGHillsBand}{[10.0, 10.3]}
+\newcommand{\PhCycleGLowMtn}{10.2}
+\newcommand{\PhCycleGLowMtnBand}{[10.1, 10.3]}
+\newcommand{\PhCycleGPlains}{10.2}
+\newcommand{\PhCycleGPlainsBand}{[10.0, 10.3]}
+\newcommand{\PhCycleGSAll}{$-$1.13}
+\newcommand{\PhCycleGSAllBand}{[$-$1.20, $-$1.05]}
+\newcommand{\PhCycleGSHighMtn}{$-$1.42}
+\newcommand{\PhCycleGSHighMtnBand}{[$-$1.56, $-$1.28]}
+\newcommand{\PhCycleGSHills}{$-$1.04}
+\newcommand{\PhCycleGSHillsBand}{[$-$1.20, $-$0.87]}
+\newcommand{\PhCycleGSLowMtn}{$-$1.19}
+\newcommand{\PhCycleGSLowMtnBand}{[$-$1.30, $-$1.08]}
+\newcommand{\PhCycleGSPlains}{$-$1.16}
+\newcommand{\PhCycleGSPlainsBand}{[$-$1.33, $-$0.99]}
+\newcommand{\PhCycleSAll}{11.3}
+\newcommand{\PhCycleSAllBand}{[11.2, 11.3]}
+\newcommand{\PhCycleSHighMtn}{11.6}
+\newcommand{\PhCycleSHighMtnBand}{[11.5, 11.7]}
+\newcommand{\PhCycleSHills}{11.2}
+\newcommand{\PhCycleSHillsBand}{[11.1, 11.3]}
+\newcommand{\PhCycleSLowMtn}{11.4}
+\newcommand{\PhCycleSLowMtnBand}{[11.3, 11.5]}
+\newcommand{\PhCycleSPlains}{11.3}
+\newcommand{\PhCycleSPlainsBand}{[11.2, 11.4]}
+\newcommand{\PhDriftAAll}{2.87}
+\newcommand{\PhDriftAAllBand}{[2.79, 2.94]}
+\newcommand{\PhDriftAHighMtn}{2.08}
+\newcommand{\PhDriftAHighMtnBand}{[2.04, 2.12]}
+\newcommand{\PhDriftAHills}{3.64}
+\newcommand{\PhDriftAHillsBand}{[3.52, 3.76]}
+\newcommand{\PhDriftALowMtn}{2.28}
+\newcommand{\PhDriftALowMtnBand}{[2.23, 2.33]}
+\newcommand{\PhDriftAPlains}{4.69}
+\newcommand{\PhDriftAPlainsBand}{[4.55, 4.84]}
+\newcommand{\PhDriftASAll}{$-$0.249}
+\newcommand{\PhDriftASAllBand}{[$-$0.313, $-$0.185]}
+\newcommand{\PhDriftASHighMtn}{$-$0.0022}
+\newcommand{\PhDriftASHighMtnBand}{[$-$0.0415, $+$0.0370]}
+\newcommand{\PhDriftASHills}{$+$0.186}
+\newcommand{\PhDriftASHillsBand}{[$+$0.071, $+$0.302]}
+\newcommand{\PhDriftASLowMtn}{$-$0.159}
+\newcommand{\PhDriftASLowMtnBand}{[$-$0.207, $-$0.111]}
+\newcommand{\PhDriftASPlains}{$+$0.145}
+\newcommand{\PhDriftASPlainsBand}{[$+$0.014, $+$0.276]}
+\newcommand{\PhDriftGAAll}{$+$0.0103}
+\newcommand{\PhDriftGAAllBand}{[$-$0.0181, $+$0.0388]}
+\newcommand{\PhDriftGAHighMtn}{$-$0.0980}
+\newcommand{\PhDriftGAHighMtnBand}{[$-$0.1289, $-$0.0671]}
+\newcommand{\PhDriftGAHills}{$+$0.0451}
+\newcommand{\PhDriftGAHillsBand}{[$-$0.0263, $+$0.1165]}
+\newcommand{\PhDriftGALowMtn}{$-$0.0646}
+\newcommand{\PhDriftGALowMtnBand}{[$-$0.0922, $-$0.0369]}
+\newcommand{\PhDriftGAPlains}{$-$0.0010}
+\newcommand{\PhDriftGAPlainsBand}{[$-$0.0593, $+$0.0574]}
+\newcommand{\PhDriftGAll}{2.88}
+\newcommand{\PhDriftGAllBand}{[2.79, 2.96]}
+\newcommand{\PhDriftGHighMtn}{1.98}
+\newcommand{\PhDriftGHighMtnBand}{[1.94, 2.02]}
+\newcommand{\PhDriftGHills}{3.68}
+\newcommand{\PhDriftGHillsBand}{[3.57, 3.79]}
+\newcommand{\PhDriftGLowMtn}{2.21}
+\newcommand{\PhDriftGLowMtnBand}{[2.16, 2.26]}
+\newcommand{\PhDriftGPlains}{4.69}
+\newcommand{\PhDriftGPlainsBand}{[4.57, 4.82]}
+\newcommand{\PhDriftGSAll}{$-$0.239}
+\newcommand{\PhDriftGSAllBand}{[$-$0.307, $-$0.171]}
+\newcommand{\PhDriftGSHighMtn}{$-$0.100}
+\newcommand{\PhDriftGSHighMtnBand}{[$-$0.137, $-$0.063]}
+\newcommand{\PhDriftGSHills}{$+$0.231}
+\newcommand{\PhDriftGSHillsBand}{[$+$0.126, $+$0.336]}
+\newcommand{\PhDriftGSLowMtn}{$-$0.224}
+\newcommand{\PhDriftGSLowMtnBand}{[$-$0.272, $-$0.175]}
+\newcommand{\PhDriftGSPlains}{$+$0.144}
+\newcommand{\PhDriftGSPlainsBand}{[$+$0.029, $+$0.258]}
+\newcommand{\PhDriftSAll}{3.11}
+\newcommand{\PhDriftSAllBand}{[3.06, 3.17]}
+\newcommand{\PhDriftSHighMtn}{2.08}
+\newcommand{\PhDriftSHighMtnBand}{[2.06, 2.10]}
+\newcommand{\PhDriftSHills}{3.45}
+\newcommand{\PhDriftSHillsBand}{[3.40, 3.51]}
+\newcommand{\PhDriftSLowMtn}{2.44}
+\newcommand{\PhDriftSLowMtnBand}{[2.40, 2.47]}
+\newcommand{\PhDriftSPlains}{4.55}
+\newcommand{\PhDriftSPlainsBand}{[4.48, 4.62]}
+\newcommand{\PhExitDurAAll}{50.0}
+\newcommand{\PhExitDurAAllBand}{[49.4, 50.6]}
+\newcommand{\PhExitDurAHighMtn}{49.0}
+\newcommand{\PhExitDurAHighMtnBand}{[47.8, 50.2]}
+\newcommand{\PhExitDurAHills}{50.0}
+\newcommand{\PhExitDurAHillsBand}{[48.4, 51.6]}
+\newcommand{\PhExitDurALowMtn}{50.0}
+\newcommand{\PhExitDurALowMtnBand}{[49.1, 50.9]}
+\newcommand{\PhExitDurAPlains}{54.0}
+\newcommand{\PhExitDurAPlainsBand}{[52.5, 55.5]}
+\newcommand{\PhExitDurASAll}{0}
+\newcommand{\PhExitDurASAllBand}{[$-$1, $+$1]}
+\newcommand{\PhExitDurASHighMtn}{$-$1.00}
+\newcommand{\PhExitDurASHighMtnBand}{[$-$2.38, $+$0.38]}
+\newcommand{\PhExitDurASHills}{0}
+\newcommand{\PhExitDurASHillsBand}{[$-$2, $+$2]}
+\newcommand{\PhExitDurASLowMtn}{0}
+\newcommand{\PhExitDurASLowMtnBand}{[$-$1, $+$1]}
+\newcommand{\PhExitDurASPlains}{$-$1.00}
+\newcommand{\PhExitDurASPlainsBand}{[$-$2.57, $+$0.57]}
+\newcommand{\PhExitDurGAAll}{$+$2.00}
+\newcommand{\PhExitDurGAAllBand}{[$+$1.16, $+$2.84]}
+\newcommand{\PhExitDurGAHighMtn}{$+$1.00}
+\newcommand{\PhExitDurGAHighMtnBand}{[$-$0.60, $+$2.60]}
+\newcommand{\PhExitDurGAHills}{$+$2.00}
+\newcommand{\PhExitDurGAHillsBand}{[$-$0.04, $+$4.04]}
+\newcommand{\PhExitDurGALowMtn}{$+$1.00}
+\newcommand{\PhExitDurGALowMtnBand}{[$-$0.35, $+$2.35]}
+\newcommand{\PhExitDurGAPlains}{$+$3.00}
+\newcommand{\PhExitDurGAPlainsBand}{[$+$0.98, $+$5.02]}
+\newcommand{\PhExitDurGAll}{52.0}
+\newcommand{\PhExitDurGAllBand}{[51.3, 52.7]}
+\newcommand{\PhExitDurGHighMtn}{50.0}
+\newcommand{\PhExitDurGHighMtnBand}{[48.8, 51.2]}
+\newcommand{\PhExitDurGHills}{52.0}
+\newcommand{\PhExitDurGHillsBand}{[50.2, 53.8]}
+\newcommand{\PhExitDurGLowMtn}{51.0}
+\newcommand{\PhExitDurGLowMtnBand}{[49.8, 52.2]}
+\newcommand{\PhExitDurGPlains}{57.0}
+\newcommand{\PhExitDurGPlainsBand}{[55.5, 58.5]}
+\newcommand{\PhExitDurGSAll}{$+$2.00}
+\newcommand{\PhExitDurGSAllBand}{[$+$1.26, $+$2.74]}
+\newcommand{\PhExitDurGSHighMtn}{0}
+\newcommand{\PhExitDurGSHighMtnBand}{[$-$1, $+$1]}
+\newcommand{\PhExitDurGSHills}{$+$2.00}
+\newcommand{\PhExitDurGSHillsBand}{[$+$0.15, $+$3.85]}
+\newcommand{\PhExitDurGSLowMtn}{$+$1.00}
+\newcommand{\PhExitDurGSLowMtnBand}{[$-$0.32, $+$2.32]}
+\newcommand{\PhExitDurGSPlains}{$+$2.00}
+\newcommand{\PhExitDurGSPlainsBand}{[$+$0.44, $+$3.56]}
+\newcommand{\PhExitDurSAll}{50.0}
+\newcommand{\PhExitDurSAllBand}{[49.7, 50.3]}
+\newcommand{\PhExitDurSHighMtn}{50.0}
+\newcommand{\PhExitDurSHighMtnBand}{[49.2, 50.8]}
+\newcommand{\PhExitDurSHills}{50.0}
+\newcommand{\PhExitDurSHillsBand}{[49.5, 50.5]}
+\newcommand{\PhExitDurSLowMtn}{50.0}
+\newcommand{\PhExitDurSLowMtnBand}{[49.3, 50.7]}
+\newcommand{\PhExitDurSPlains}{55.0}
+\newcommand{\PhExitDurSPlainsBand}{[54.2, 55.8]}
+\newcommand{\PhExitMeanAAll}{68.5}
+\newcommand{\PhExitMeanAAllBand}{[67.4, 69.6]}
+\newcommand{\PhExitMeanAHighMtn}{68.9}
+\newcommand{\PhExitMeanAHighMtnBand}{[67.0, 70.8]}
+\newcommand{\PhExitMeanAHills}{61.9}
+\newcommand{\PhExitMeanAHillsBand}{[59.5, 64.3]}
+\newcommand{\PhExitMeanALowMtn}{70.5}
+\newcommand{\PhExitMeanALowMtnBand}{[68.9, 72.1]}
+\newcommand{\PhExitMeanAPlains}{68.8}
+\newcommand{\PhExitMeanAPlainsBand}{[66.7, 70.9]}
+\newcommand{\PhExitMeanASAll}{$+$0.756}
+\newcommand{\PhExitMeanASAllBand}{[$-$0.325, $+$1.836]}
+\newcommand{\PhExitMeanASHighMtn}{$-$0.180}
+\newcommand{\PhExitMeanASHighMtnBand}{[$-$2.300, $+$1.940]}
+\newcommand{\PhExitMeanASHills}{$-$2.94}
+\newcommand{\PhExitMeanASHillsBand}{[$-$5.48, $-$0.40]}
+\newcommand{\PhExitMeanASLowMtn}{$+$1.91}
+\newcommand{\PhExitMeanASLowMtnBand}{[$+$0.20, $+$3.61]}
+\newcommand{\PhExitMeanASPlains}{$-$1.96}
+\newcommand{\PhExitMeanASPlainsBand}{[$-$4.21, $+$0.29]}
+\newcommand{\PhExitMeanGAAll}{$-$0.547}
+\newcommand{\PhExitMeanGAAllBand}{[$-$1.721, $+$0.626]}
+\newcommand{\PhExitMeanGAHighMtn}{$-$1.76}
+\newcommand{\PhExitMeanGAHighMtnBand}{[$-$4.26, $+$0.74]}
+\newcommand{\PhExitMeanGAHills}{$+$2.58}
+\newcommand{\PhExitMeanGAHillsBand}{[$-$0.18, $+$5.35]}
+\newcommand{\PhExitMeanGALowMtn}{$-$1.79}
+\newcommand{\PhExitMeanGALowMtnBand}{[$-$3.82, $+$0.25]}
+\newcommand{\PhExitMeanGAPlains}{$+$2.06}
+\newcommand{\PhExitMeanGAPlainsBand}{[$-$0.51, $+$4.63]}
+\newcommand{\PhExitMeanGAll}{68.0}
+\newcommand{\PhExitMeanGAllBand}{[67.0, 68.9]}
+\newcommand{\PhExitMeanGHighMtn}{67.1}
+\newcommand{\PhExitMeanGHighMtnBand}{[65.2, 69.1]}
+\newcommand{\PhExitMeanGHills}{64.5}
+\newcommand{\PhExitMeanGHillsBand}{[62.0, 67.0]}
+\newcommand{\PhExitMeanGLowMtn}{68.7}
+\newcommand{\PhExitMeanGLowMtnBand}{[67.2, 70.3]}
+\newcommand{\PhExitMeanGPlains}{70.8}
+\newcommand{\PhExitMeanGPlainsBand}{[69.0, 72.6]}
+\newcommand{\PhExitMeanGSAll}{$+$0.208}
+\newcommand{\PhExitMeanGSAllBand}{[$-$0.780, $+$1.197]}
+\newcommand{\PhExitMeanGSHighMtn}{$-$1.94}
+\newcommand{\PhExitMeanGSHighMtnBand}{[$-$4.11, $+$0.23]}
+\newcommand{\PhExitMeanGSHills}{$-$0.356}
+\newcommand{\PhExitMeanGSHillsBand}{[$-$2.965, $+$2.253]}
+\newcommand{\PhExitMeanGSLowMtn}{$+$0.120}
+\newcommand{\PhExitMeanGSLowMtnBand}{[$-$1.524, $+$1.764]}
+\newcommand{\PhExitMeanGSPlains}{$+$0.105}
+\newcommand{\PhExitMeanGSPlainsBand}{[$-$1.795, $+$2.005]}
+\newcommand{\PhExitMeanSAll}{67.7}
+\newcommand{\PhExitMeanSAllBand}{[67.2, 68.3]}
+\newcommand{\PhExitMeanSHighMtn}{69.1}
+\newcommand{\PhExitMeanSHighMtnBand}{[68.1, 70.0]}
+\newcommand{\PhExitMeanSHills}{64.8}
+\newcommand{\PhExitMeanSHillsBand}{[63.8, 65.9]}
+\newcommand{\PhExitMeanSLowMtn}{68.6}
+\newcommand{\PhExitMeanSLowMtnBand}{[67.8, 69.4]}
+\newcommand{\PhExitMeanSPlains}{70.7}
+\newcommand{\PhExitMeanSPlainsBand}{[69.6, 71.9]}
+\newcommand{\PhExitPerHourAAll}{1.55}
+\newcommand{\PhExitPerHourAAllBand}{[1.52, 1.57]}
+\newcommand{\PhExitPerHourAHighMtn}{1.38}
+\newcommand{\PhExitPerHourAHighMtnBand}{[1.34, 1.42]}
+\newcommand{\PhExitPerHourAHills}{1.83}
+\newcommand{\PhExitPerHourAHillsBand}{[1.74, 1.92]}
+\newcommand{\PhExitPerHourALowMtn}{1.43}
+\newcommand{\PhExitPerHourALowMtnBand}{[1.39, 1.46]}
+\newcommand{\PhExitPerHourAPlains}{2.05}
+\newcommand{\PhExitPerHourAPlainsBand}{[1.97, 2.13]}
+\newcommand{\PhExitPerHourASAll}{$-$0.206}
+\newcommand{\PhExitPerHourASAllBand}{[$-$0.233, $-$0.178]}
+\newcommand{\PhExitPerHourASHighMtn}{$-$0.0864}
+\newcommand{\PhExitPerHourASHighMtnBand}{[$-$0.1300, $-$0.0429]}
+\newcommand{\PhExitPerHourASHills}{$-$0.0851}
+\newcommand{\PhExitPerHourASHillsBand}{[$-$0.1735, $+$0.0033]}
+\newcommand{\PhExitPerHourASLowMtn}{$-$0.149}
+\newcommand{\PhExitPerHourASLowMtnBand}{[$-$0.184, $-$0.114]}
+\newcommand{\PhExitPerHourASPlains}{$-$0.164}
+\newcommand{\PhExitPerHourASPlainsBand}{[$-$0.242, $-$0.085]}
+\newcommand{\PhExitPerHourGAAll}{$+$0.164}
+\newcommand{\PhExitPerHourGAAllBand}{[$+$0.135, $+$0.192]}
+\newcommand{\PhExitPerHourGAHighMtn}{$+$0.117}
+\newcommand{\PhExitPerHourGAHighMtnBand}{[$+$0.067, $+$0.166]}
+\newcommand{\PhExitPerHourGAHills}{$+$0.210}
+\newcommand{\PhExitPerHourGAHillsBand}{[$+$0.112, $+$0.308]}
+\newcommand{\PhExitPerHourGALowMtn}{$+$0.125}
+\newcommand{\PhExitPerHourGALowMtnBand}{[$+$0.088, $+$0.163]}
+\newcommand{\PhExitPerHourGAPlains}{$+$0.183}
+\newcommand{\PhExitPerHourGAPlainsBand}{[$+$0.101, $+$0.264]}
+\newcommand{\PhExitPerHourGAll}{1.71}
+\newcommand{\PhExitPerHourGAllBand}{[1.67, 1.74]}
+\newcommand{\PhExitPerHourGHighMtn}{1.50}
+\newcommand{\PhExitPerHourGHighMtnBand}{[1.45, 1.55]}
+\newcommand{\PhExitPerHourGHills}{2.04}
+\newcommand{\PhExitPerHourGHillsBand}{[1.95, 2.14]}
+\newcommand{\PhExitPerHourGLowMtn}{1.55}
+\newcommand{\PhExitPerHourGLowMtnBand}{[1.51, 1.59]}
+\newcommand{\PhExitPerHourGPlains}{2.24}
+\newcommand{\PhExitPerHourGPlainsBand}{[2.15, 2.32]}
+\newcommand{\PhExitPerHourGSAll}{$-$0.0419}
+\newcommand{\PhExitPerHourGSAllBand}{[$-$0.0756, $-$0.0082]}
+\newcommand{\PhExitPerHourGSHighMtn}{$+$0.0303}
+\newcommand{\PhExitPerHourGSHighMtnBand}{[$-$0.0199, $+$0.0805]}
+\newcommand{\PhExitPerHourGSHills}{$+$0.125}
+\newcommand{\PhExitPerHourGSHillsBand}{[$+$0.034, $+$0.217]}
+\newcommand{\PhExitPerHourGSLowMtn}{$-$0.0236}
+\newcommand{\PhExitPerHourGSLowMtnBand}{[$-$0.0646, $+$0.0175]}
+\newcommand{\PhExitPerHourGSPlains}{$+$0.0188}
+\newcommand{\PhExitPerHourGSPlainsBand}{[$-$0.0642, $+$0.1019]}
+\newcommand{\PhExitPerHourSAll}{1.75}
+\newcommand{\PhExitPerHourSAllBand}{[1.73, 1.77]}
+\newcommand{\PhExitPerHourSHighMtn}{1.47}
+\newcommand{\PhExitPerHourSHighMtnBand}{[1.44, 1.50]}
+\newcommand{\PhExitPerHourSHills}{1.92}
+\newcommand{\PhExitPerHourSHillsBand}{[1.88, 1.96]}
+\newcommand{\PhExitPerHourSLowMtn}{1.57}
+\newcommand{\PhExitPerHourSLowMtnBand}{[1.55, 1.60]}
+\newcommand{\PhExitPerHourSPlains}{2.22}
+\newcommand{\PhExitPerHourSPlainsBand}{[2.17, 2.26]}
+\newcommand{\PhFlightsAAll}{10\,916}
+\newcommand{\PhFlightsAHighMtn}{2\,786}
+\newcommand{\PhFlightsAHills}{1\,113}
+\newcommand{\PhFlightsALowMtn}{5\,241}
+\newcommand{\PhFlightsAPlains}{1\,525}
+\newcommand{\PhFlightsGAll}{13\,133}
+\newcommand{\PhFlightsGHighMtn}{3\,097}
+\newcommand{\PhFlightsGHills}{1\,543}
+\newcommand{\PhFlightsGLowMtn}{6\,120}
+\newcommand{\PhFlightsGPlains}{2\,097}
+\newcommand{\PhFlightsSAll}{49\,781}
+\newcommand{\PhFlightsSHighMtn}{7\,952}
+\newcommand{\PhFlightsSHills}{9\,731}
+\newcommand{\PhFlightsSLowMtn}{18\,796}
+\newcommand{\PhFlightsSPlains}{9\,634}
+\newcommand{\PhFoundAAll}{44.9}
+\newcommand{\PhFoundAAllBand}{[44.4, 45.5]}
+\newcommand{\PhFoundAHighMtn}{44.7}
+\newcommand{\PhFoundAHighMtnBand}{[43.8, 45.7]}
+\newcommand{\PhFoundAHills}{48.3}
+\newcommand{\PhFoundAHillsBand}{[46.5, 50.0]}
+\newcommand{\PhFoundALowMtn}{43.5}
+\newcommand{\PhFoundALowMtnBand}{[42.8, 44.3]}
+\newcommand{\PhFoundAPlains}{48.9}
+\newcommand{\PhFoundAPlainsBand}{[47.3, 50.5]}
+\newcommand{\PhFoundASAll}{$+$1.43}
+\newcommand{\PhFoundASAllBand}{[$+$0.88, $+$1.98]}
+\newcommand{\PhFoundASHighMtn}{$+$0.367}
+\newcommand{\PhFoundASHighMtnBand}{[$-$0.688, $+$1.423]}
+\newcommand{\PhFoundASHills}{$+$3.94}
+\newcommand{\PhFoundASHillsBand}{[$+$2.16, $+$5.73]}
+\newcommand{\PhFoundASLowMtn}{$+$1.97}
+\newcommand{\PhFoundASLowMtnBand}{[$+$1.14, $+$2.79]}
+\newcommand{\PhFoundASPlains}{$+$2.17}
+\newcommand{\PhFoundASPlainsBand}{[$+$0.52, $+$3.83]}
+\newcommand{\PhFoundGAAll}{$+$5.66}
+\newcommand{\PhFoundGAAllBand}{[$+$5.01, $+$6.32]}
+\newcommand{\PhFoundGAHighMtn}{$+$7.16}
+\newcommand{\PhFoundGAHighMtnBand}{[$+$5.97, $+$8.35]}
+\newcommand{\PhFoundGAHills}{$+$5.05}
+\newcommand{\PhFoundGAHillsBand}{[$+$3.01, $+$7.10]}
+\newcommand{\PhFoundGALowMtn}{$+$5.62}
+\newcommand{\PhFoundGALowMtnBand}{[$+$4.68, $+$6.57]}
+\newcommand{\PhFoundGAPlains}{$+$3.50}
+\newcommand{\PhFoundGAPlainsBand}{[$+$1.53, $+$5.47]}
+\newcommand{\PhFoundGAll}{50.6}
+\newcommand{\PhFoundGAllBand}{[50.0, 51.2]}
+\newcommand{\PhFoundGHighMtn}{51.9}
+\newcommand{\PhFoundGHighMtnBand}{[50.8, 52.9]}
+\newcommand{\PhFoundGHills}{53.3}
+\newcommand{\PhFoundGHillsBand}{[51.8, 54.8]}
+\newcommand{\PhFoundGLowMtn}{49.2}
+\newcommand{\PhFoundGLowMtnBand}{[48.4, 49.9]}
+\newcommand{\PhFoundGPlains}{52.4}
+\newcommand{\PhFoundGPlainsBand}{[51.0, 53.8]}
+\newcommand{\PhFoundGSAll}{$+$7.09}
+\newcommand{\PhFoundGSAllBand}{[$+$6.50, $+$7.69]}
+\newcommand{\PhFoundGSHighMtn}{$+$7.53}
+\newcommand{\PhFoundGSHighMtnBand}{[$+$6.46, $+$8.59]}
+\newcommand{\PhFoundGSHills}{$+$9.00}
+\newcommand{\PhFoundGSHillsBand}{[$+$7.38, $+$10.61]}
+\newcommand{\PhFoundGSLowMtn}{$+$7.59}
+\newcommand{\PhFoundGSLowMtnBand}{[$+$6.77, $+$8.41]}
+\newcommand{\PhFoundGSPlains}{$+$5.68}
+\newcommand{\PhFoundGSPlainsBand}{[$+$4.23, $+$7.12]}
+\newcommand{\PhFoundSAll}{43.5}
+\newcommand{\PhFoundSAllBand}{[43.1, 43.9]}
+\newcommand{\PhFoundSHighMtn}{44.3}
+\newcommand{\PhFoundSHighMtnBand}{[43.8, 44.9]}
+\newcommand{\PhFoundSHills}{44.3}
+\newcommand{\PhFoundSHillsBand}{[43.5, 45.1]}
+\newcommand{\PhFoundSLowMtn}{41.6}
+\newcommand{\PhFoundSLowMtnBand}{[41.1, 42.0]}
+\newcommand{\PhFoundSPlains}{46.7}
+\newcommand{\PhFoundSPlainsBand}{[45.9, 47.5]}
+\newcommand{\PhGainAAll}{251}
+\newcommand{\PhGainAAllBand}{[248, 254]}
+\newcommand{\PhGainAHighMtn}{255}
+\newcommand{\PhGainAHighMtnBand}{[250, 259]}
+\newcommand{\PhGainAHills}{272}
+\newcommand{\PhGainAHillsBand}{[265, 280]}
+\newcommand{\PhGainALowMtn}{240}
+\newcommand{\PhGainALowMtnBand}{[235, 244]}
+\newcommand{\PhGainAPlains}{265}
+\newcommand{\PhGainAPlainsBand}{[259, 271]}
+\newcommand{\PhGainASAll}{$+$12.1}
+\newcommand{\PhGainASAllBand}{[$+$8.8, $+$15.3]}
+\newcommand{\PhGainASHighMtn}{$+$4.62}
+\newcommand{\PhGainASHighMtnBand}{[$-$0.12, $+$9.36]}
+\newcommand{\PhGainASHills}{$+$22.6}
+\newcommand{\PhGainASHillsBand}{[$+$15.1, $+$30.1]}
+\newcommand{\PhGainASLowMtn}{$+$11.0}
+\newcommand{\PhGainASLowMtnBand}{[$+$6.4, $+$15.5]}
+\newcommand{\PhGainASPlains}{$+$15.3}
+\newcommand{\PhGainASPlainsBand}{[$+$9.6, $+$21.0]}
+\newcommand{\PhGainGAAll}{$+$0.578}
+\newcommand{\PhGainGAAllBand}{[$-$1.981, $+$3.136]}
+\newcommand{\PhGainGAHighMtn}{$+$8.53}
+\newcommand{\PhGainGAHighMtnBand}{[$+$3.78, $+$13.29]}
+\newcommand{\PhGainGAHills}{$+$6.83}
+\newcommand{\PhGainGAHillsBand}{[$-$1.09, $+$14.75]}
+\newcommand{\PhGainGALowMtn}{$-$0.308}
+\newcommand{\PhGainGALowMtnBand}{[$-$3.784, $+$3.168]}
+\newcommand{\PhGainGAPlains}{$-$14.6}
+\newcommand{\PhGainGAPlainsBand}{[$-$21.4, $-$7.9]}
+\newcommand{\PhGainGAll}{251}
+\newcommand{\PhGainGAllBand}{[248, 255]}
+\newcommand{\PhGainGHighMtn}{263}
+\newcommand{\PhGainGHighMtnBand}{[258, 269]}
+\newcommand{\PhGainGHills}{279}
+\newcommand{\PhGainGHillsBand}{[271, 287]}
+\newcommand{\PhGainGLowMtn}{239}
+\newcommand{\PhGainGLowMtnBand}{[235, 244]}
+\newcommand{\PhGainGPlains}{251}
+\newcommand{\PhGainGPlainsBand}{[244, 257]}
+\newcommand{\PhGainGSAll}{$+$12.6}
+\newcommand{\PhGainGSAllBand}{[$+$9.2, $+$16.0]}
+\newcommand{\PhGainGSHighMtn}{$+$13.2}
+\newcommand{\PhGainGSHighMtnBand}{[$+$7.7, $+$18.6]}
+\newcommand{\PhGainGSHills}{$+$29.4}
+\newcommand{\PhGainGSHillsBand}{[$+$21.6, $+$37.2]}
+\newcommand{\PhGainGSLowMtn}{$+$10.7}
+\newcommand{\PhGainGSLowMtnBand}{[$+$6.2, $+$15.1]}
+\newcommand{\PhGainGSPlains}{$+$0.649}
+\newcommand{\PhGainGSPlainsBand}{[$-$5.406, $+$6.705]}
+\newcommand{\PhGainSAll}{239}
+\newcommand{\PhGainSAllBand}{[237, 241]}
+\newcommand{\PhGainSHighMtn}{250}
+\newcommand{\PhGainSHighMtnBand}{[247, 253]}
+\newcommand{\PhGainSHills}{249}
+\newcommand{\PhGainSHillsBand}{[246, 253]}
+\newcommand{\PhGainSLowMtn}{229}
+\newcommand{\PhGainSLowMtnBand}{[226, 231]}
+\newcommand{\PhGainSPlains}{250}
+\newcommand{\PhGainSPlainsBand}{[247, 253]}
+\newcommand{\PhHoursAAll}{24\,733}
+\newcommand{\PhHoursAHighMtn}{6\,968}
+\newcommand{\PhHoursAHills}{1\,786}
+\newcommand{\PhHoursALowMtn}{12\,520}
+\newcommand{\PhHoursAPlains}{2\,822}
+\newcommand{\PhHoursGAll}{20\,214}
+\newcommand{\PhHoursGHighMtn}{4\,737}
+\newcommand{\PhHoursGHills}{2\,307}
+\newcommand{\PhHoursGLowMtn}{9\,389}
+\newcommand{\PhHoursGPlains}{3\,406}
+\newcommand{\PhHoursSAll}{107\,380}
+\newcommand{\PhHoursSHighMtn}{22\,031}
+\newcommand{\PhHoursSHills}{16\,842}
+\newcommand{\PhHoursSLowMtn}{43\,003}
+\newcommand{\PhHoursSPlains}{17\,146}
+\newcommand{\PhMuClimbAAll}{6.39}
+\newcommand{\PhMuClimbAAllBand}{[5.79, 6.99]}
+\newcommand{\PhMuClimbAHighMtn}{5.76}
+\newcommand{\PhMuClimbAHighMtnBand}{[4.87, 6.64]}
+\newcommand{\PhMuClimbAHills}{5.88}
+\newcommand{\PhMuClimbAHillsBand}{[3.11, 8.65]}
+\newcommand{\PhMuClimbALowMtn}{5.43}
+\newcommand{\PhMuClimbALowMtnBand}{[4.88, 5.97]}
+\newcommand{\PhMuClimbAPlains}{5.70}
+\newcommand{\PhMuClimbAPlainsBand}{[4.63, 6.78]}
+\newcommand{\PhMuClimbASAll}{$+$0.446}
+\newcommand{\PhMuClimbASAllBand}{[$-$0.046, $+$0.938]}
+\newcommand{\PhMuClimbASHighMtn}{$+$0.0844}
+\newcommand{\PhMuClimbASHighMtnBand}{[$-$0.7583, $+$0.9272]}
+\newcommand{\PhMuClimbASHills}{$-$0.756}
+\newcommand{\PhMuClimbASHillsBand}{[$-$2.592, $+$1.080]}
+\newcommand{\PhMuClimbASLowMtn}{$+$0.154}
+\newcommand{\PhMuClimbASLowMtnBand}{[$-$0.404, $+$0.713]}
+\newcommand{\PhMuClimbASPlains}{$-$0.355}
+\newcommand{\PhMuClimbASPlainsBand}{[$-$1.223, $+$0.513]}
+\newcommand{\PhMuClimbGAAll}{$-$0.135}
+\newcommand{\PhMuClimbGAAllBand}{[$-$0.815, $+$0.545]}
+\newcommand{\PhMuClimbGAHighMtn}{$-$0.508}
+\newcommand{\PhMuClimbGAHighMtnBand}{[$-$1.570, $+$0.555]}
+\newcommand{\PhMuClimbGAHills}{$+$0.663}
+\newcommand{\PhMuClimbGAHillsBand}{[$-$2.166, $+$3.492]}
+\newcommand{\PhMuClimbGALowMtn}{$-$0.480}
+\newcommand{\PhMuClimbGALowMtnBand}{[$-$1.254, $+$0.295]}
+\newcommand{\PhMuClimbGAPlains}{$+$1.70}
+\newcommand{\PhMuClimbGAPlainsBand}{[$-$0.04, $+$3.43]}
+\newcommand{\PhMuClimbGAll}{6.26}
+\newcommand{\PhMuClimbGAllBand}{[5.61, 6.90]}
+\newcommand{\PhMuClimbGHighMtn}{5.25}
+\newcommand{\PhMuClimbGHighMtnBand}{[4.32, 6.18]}
+\newcommand{\PhMuClimbGHills}{6.54}
+\newcommand{\PhMuClimbGHillsBand}{[4.88, 8.21]}
+\newcommand{\PhMuClimbGLowMtn}{4.95}
+\newcommand{\PhMuClimbGLowMtnBand}{[4.30, 5.59]}
+\newcommand{\PhMuClimbGPlains}{7.40}
+\newcommand{\PhMuClimbGPlainsBand}{[5.28, 9.52]}
+\newcommand{\PhMuClimbGSAll}{$+$0.311}
+\newcommand{\PhMuClimbGSAllBand}{[$-$0.270, $+$0.892]}
+\newcommand{\PhMuClimbGSHighMtn}{$-$0.423}
+\newcommand{\PhMuClimbGSHighMtnBand}{[$-$1.506, $+$0.659]}
+\newcommand{\PhMuClimbGSHills}{$-$0.0934}
+\newcommand{\PhMuClimbGSHillsBand}{[$-$1.9161, $+$1.7293]}
+\newcommand{\PhMuClimbGSLowMtn}{$-$0.326}
+\newcommand{\PhMuClimbGSLowMtnBand}{[$-$0.937, $+$0.286]}
+\newcommand{\PhMuClimbGSPlains}{$+$1.34}
+\newcommand{\PhMuClimbGSPlainsBand}{[$+$0.09, $+$2.59]}
+\newcommand{\PhMuClimbSAll}{5.94}
+\newcommand{\PhMuClimbSAllBand}{[5.53, 6.35]}
+\newcommand{\PhMuClimbSHighMtn}{5.67}
+\newcommand{\PhMuClimbSHighMtnBand}{[4.91, 6.44]}
+\newcommand{\PhMuClimbSHills}{6.64}
+\newcommand{\PhMuClimbSHillsBand}{[4.94, 8.34]}
+\newcommand{\PhMuClimbSLowMtn}{5.27}
+\newcommand{\PhMuClimbSLowMtnBand}{[4.92, 5.62]}
+\newcommand{\PhMuClimbSPlains}{6.06}
+\newcommand{\PhMuClimbSPlainsBand}{[4.94, 7.18]}
+\newcommand{\PhMuGlideAAll}{4.34}
+\newcommand{\PhMuGlideAAllBand}{[4.02, 4.66]}
+\newcommand{\PhMuGlideAHighMtn}{4.38}
+\newcommand{\PhMuGlideAHighMtnBand}{[3.97, 4.80]}
+\newcommand{\PhMuGlideAHills}{5.12}
+\newcommand{\PhMuGlideAHillsBand}{[4.19, 6.05]}
+\newcommand{\PhMuGlideALowMtn}{4.34}
+\newcommand{\PhMuGlideALowMtnBand}{[4.02, 4.67]}
+\newcommand{\PhMuGlideAPlains}{5.26}
+\newcommand{\PhMuGlideAPlainsBand}{[4.33, 6.20]}
+\newcommand{\PhMuGlideASAll}{$-$0.388}
+\newcommand{\PhMuGlideASAllBand}{[$-$0.792, $+$0.016]}
+\newcommand{\PhMuGlideASHighMtn}{$-$0.208}
+\newcommand{\PhMuGlideASHighMtnBand}{[$-$0.746, $+$0.330]}
+\newcommand{\PhMuGlideASHills}{$+$0.749}
+\newcommand{\PhMuGlideASHillsBand}{[$-$0.041, $+$1.538]}
+\newcommand{\PhMuGlideASLowMtn}{$-$0.286}
+\newcommand{\PhMuGlideASLowMtnBand}{[$-$0.683, $+$0.111]}
+\newcommand{\PhMuGlideASPlains}{$-$0.632}
+\newcommand{\PhMuGlideASPlainsBand}{[$-$1.479, $+$0.215]}
+\newcommand{\PhMuGlideGAAll}{$-$0.883}
+\newcommand{\PhMuGlideGAAllBand}{[$-$1.311, $-$0.455]}
+\newcommand{\PhMuGlideGAHighMtn}{$-$1.20}
+\newcommand{\PhMuGlideGAHighMtnBand}{[$-$1.82, $-$0.58]}
+\newcommand{\PhMuGlideGAHills}{$+$0.240}
+\newcommand{\PhMuGlideGAHillsBand}{[$-$0.773, $+$1.253]}
+\newcommand{\PhMuGlideGALowMtn}{$-$0.861}
+\newcommand{\PhMuGlideGALowMtnBand}{[$-$1.304, $-$0.419]}
+\newcommand{\PhMuGlideGAPlains}{$+$0.127}
+\newcommand{\PhMuGlideGAPlainsBand}{[$-$1.232, $+$1.485]}
+\newcommand{\PhMuGlideGAll}{3.46}
+\newcommand{\PhMuGlideGAllBand}{[3.14, 3.77]}
+\newcommand{\PhMuGlideGHighMtn}{3.19}
+\newcommand{\PhMuGlideGHighMtnBand}{[2.77, 3.60]}
+\newcommand{\PhMuGlideGHills}{5.36}
+\newcommand{\PhMuGlideGHillsBand}{[4.28, 6.44]}
+\newcommand{\PhMuGlideGLowMtn}{3.48}
+\newcommand{\PhMuGlideGLowMtnBand}{[3.14, 3.83]}
+\newcommand{\PhMuGlideGPlains}{5.39}
+\newcommand{\PhMuGlideGPlainsBand}{[4.09, 6.69]}
+\newcommand{\PhMuGlideGSAll}{$-$1.27}
+\newcommand{\PhMuGlideGSAllBand}{[$-$1.72, $-$0.82]}
+\newcommand{\PhMuGlideGSHighMtn}{$-$1.41}
+\newcommand{\PhMuGlideGSHighMtnBand}{[$-$2.04, $-$0.77]}
+\newcommand{\PhMuGlideGSHills}{$+$0.989}
+\newcommand{\PhMuGlideGSHillsBand}{[$+$0.042, $+$1.936]}
+\newcommand{\PhMuGlideGSLowMtn}{$-$1.15}
+\newcommand{\PhMuGlideGSLowMtnBand}{[$-$1.65, $-$0.64]}
+\newcommand{\PhMuGlideGSPlains}{$-$0.505}
+\newcommand{\PhMuGlideGSPlainsBand}{[$-$1.781, $+$0.771]}
+\newcommand{\PhMuGlideSAll}{4.73}
+\newcommand{\PhMuGlideSAllBand}{[4.46, 4.99]}
+\newcommand{\PhMuGlideSHighMtn}{4.59}
+\newcommand{\PhMuGlideSHighMtnBand}{[4.21, 4.98]}
+\newcommand{\PhMuGlideSHills}{4.37}
+\newcommand{\PhMuGlideSHillsBand}{[4.06, 4.68]}
+\newcommand{\PhMuGlideSLowMtn}{4.63}
+\newcommand{\PhMuGlideSLowMtnBand}{[4.31, 4.95]}
+\newcommand{\PhMuGlideSPlains}{5.89}
+\newcommand{\PhMuGlideSPlainsBand}{[5.05, 6.73]}
+\newcommand{\PhMuSearchAAll}{3.91}
+\newcommand{\PhMuSearchAAllBand}{[3.45, 4.36]}
+\newcommand{\PhMuSearchAHighMtn}{3.40}
+\newcommand{\PhMuSearchAHighMtnBand}{[2.79, 4.02]}
+\newcommand{\PhMuSearchAHills}{3.16}
+\newcommand{\PhMuSearchAHillsBand}{[1.87, 4.45]}
+\newcommand{\PhMuSearchALowMtn}{4.13}
+\newcommand{\PhMuSearchALowMtnBand}{[3.52, 4.74]}
+\newcommand{\PhMuSearchAPlains}{4.56}
+\newcommand{\PhMuSearchAPlainsBand}{[2.82, 6.30]}
+\newcommand{\PhMuSearchASAll}{$+$0.161}
+\newcommand{\PhMuSearchASAllBand}{[$-$0.280, $+$0.603]}
+\newcommand{\PhMuSearchASHighMtn}{$+$0.0975}
+\newcommand{\PhMuSearchASHighMtnBand}{[$-$0.3827, $+$0.5777]}
+\newcommand{\PhMuSearchASHills}{$+$0.325}
+\newcommand{\PhMuSearchASHillsBand}{[$-$0.569, $+$1.219]}
+\newcommand{\PhMuSearchASLowMtn}{$-$0.0194}
+\newcommand{\PhMuSearchASLowMtnBand}{[$-$0.5972, $+$0.5584]}
+\newcommand{\PhMuSearchASPlains}{$+$0.271}
+\newcommand{\PhMuSearchASPlainsBand}{[$-$0.719, $+$1.261]}
+\newcommand{\PhMuSearchGAAll}{$+$0.103}
+\newcommand{\PhMuSearchGAAllBand}{[$-$0.628, $+$0.834]}
+\newcommand{\PhMuSearchGAHighMtn}{$+$0.189}
+\newcommand{\PhMuSearchGAHighMtnBand}{[$-$0.586, $+$0.963]}
+\newcommand{\PhMuSearchGAHills}{$+$0.271}
+\newcommand{\PhMuSearchGAHillsBand}{[$-$1.085, $+$1.627]}
+\newcommand{\PhMuSearchGALowMtn}{$+$0.723}
+\newcommand{\PhMuSearchGALowMtnBand}{[$-$0.095, $+$1.541]}
+\newcommand{\PhMuSearchGAPlains}{$-$0.157}
+\newcommand{\PhMuSearchGAPlainsBand}{[$-$1.974, $+$1.659]}
+\newcommand{\PhMuSearchGAll}{4.01}
+\newcommand{\PhMuSearchGAllBand}{[3.20, 4.82]}
+\newcommand{\PhMuSearchGHighMtn}{3.59}
+\newcommand{\PhMuSearchGHighMtnBand}{[2.57, 4.62]}
+\newcommand{\PhMuSearchGHills}{3.43}
+\newcommand{\PhMuSearchGHillsBand}{[2.25, 4.61]}
+\newcommand{\PhMuSearchGLowMtn}{4.85}
+\newcommand{\PhMuSearchGLowMtnBand}{[4.03, 5.68]}
+\newcommand{\PhMuSearchGPlains}{4.40}
+\newcommand{\PhMuSearchGPlainsBand}{[2.45, 6.36]}
+\newcommand{\PhMuSearchGSAll}{$+$0.265}
+\newcommand{\PhMuSearchGSAllBand}{[$-$0.355, $+$0.884]}
+\newcommand{\PhMuSearchGSHighMtn}{$+$0.286}
+\newcommand{\PhMuSearchGSHighMtnBand}{[$-$0.468, $+$1.040]}
+\newcommand{\PhMuSearchGSHills}{$+$0.597}
+\newcommand{\PhMuSearchGSHillsBand}{[$-$0.533, $+$1.726]}
+\newcommand{\PhMuSearchGSLowMtn}{$+$0.704}
+\newcommand{\PhMuSearchGSLowMtnBand}{[$+$0.070, $+$1.338]}
+\newcommand{\PhMuSearchGSPlains}{$+$0.114}
+\newcommand{\PhMuSearchGSPlainsBand}{[$-$1.404, $+$1.631]}
+\newcommand{\PhMuSearchSAll}{3.75}
+\newcommand{\PhMuSearchSAllBand}{[3.38, 4.11]}
+\newcommand{\PhMuSearchSHighMtn}{3.31}
+\newcommand{\PhMuSearchSHighMtnBand}{[2.81, 3.81]}
+\newcommand{\PhMuSearchSHills}{2.83}
+\newcommand{\PhMuSearchSHillsBand}{[2.21, 3.46]}
+\newcommand{\PhMuSearchSLowMtn}{4.15}
+\newcommand{\PhMuSearchSLowMtnBand}{[3.64, 4.66]}
+\newcommand{\PhMuSearchSPlains}{4.29}
+\newcommand{\PhMuSearchSPlainsBand}{[3.13, 5.45]}
+\newcommand{\PhPeakGALagAll}{1\,230}
+\newcommand{\PhPeakGALagHighMtn}{870}
+\newcommand{\PhPeakGALagHills}{2\,250}
+\newcommand{\PhPeakGALagLowMtn}{710}
+\newcommand{\PhPeakGALagPlains}{1\,500}
+\newcommand{\PhPeakGSLagAll}{870}
+\newcommand{\PhPeakGSLagHighMtn}{1\,230}
+\newcommand{\PhPeakGSLagHills}{2\,250}
+\newcommand{\PhPeakGSLagLowMtn}{710}
+\newcommand{\PhPeakGSLagPlains}{2\,250}
+\newcommand{\PhRateAAll}{1.10}
+\newcommand{\PhRateAAllBand}{[1.08, 1.11]}
+\newcommand{\PhRateAHighMtn}{1.20}
+\newcommand{\PhRateAHighMtnBand}{[1.18, 1.22]}
+\newcommand{\PhRateAHills}{1.03}
+\newcommand{\PhRateAHillsBand}{[1.00, 1.06]}
+\newcommand{\PhRateALowMtn}{1.14}
+\newcommand{\PhRateALowMtnBand}{[1.12, 1.16]}
+\newcommand{\PhRateAPlains}{0.912}
+\newcommand{\PhRateAPlainsBand}{[0.890, 0.933]}
+\newcommand{\PhRateASAll}{$+$0.0630}
+\newcommand{\PhRateASAllBand}{[$+$0.0513, $+$0.0747]}
+\newcommand{\PhRateASHighMtn}{$+$0.0157}
+\newcommand{\PhRateASHighMtnBand}{[$-$0.0022, $+$0.0335]}
+\newcommand{\PhRateASHills}{$+$0.0313}
+\newcommand{\PhRateASHillsBand}{[$+$0.0047, $+$0.0579]}
+\newcommand{\PhRateASLowMtn}{$+$0.0453}
+\newcommand{\PhRateASLowMtnBand}{[$+$0.0288, $+$0.0618]}
+\newcommand{\PhRateASPlains}{$+$0.0107}
+\newcommand{\PhRateASPlainsBand}{[$-$0.0079, $+$0.0294]}
+\newcommand{\PhRateGAAll}{$-$0.0103}
+\newcommand{\PhRateGAAllBand}{[$-$0.0188, $-$0.0018]}
+\newcommand{\PhRateGAHighMtn}{$+$0.0201}
+\newcommand{\PhRateGAHighMtnBand}{[$+$0.0042, $+$0.0359]}
+\newcommand{\PhRateGAHills}{$-$0.0102}
+\newcommand{\PhRateGAHillsBand}{[$-$0.0301, $+$0.0096]}
+\newcommand{\PhRateGALowMtn}{$-$0.0030}
+\newcommand{\PhRateGALowMtnBand}{[$-$0.0153, $+$0.0093]}
+\newcommand{\PhRateGAPlains}{$-$0.0331}
+\newcommand{\PhRateGAPlainsBand}{[$-$0.0507, $-$0.0155]}
+\newcommand{\PhRateGAll}{1.09}
+\newcommand{\PhRateGAllBand}{[1.07, 1.10]}
+\newcommand{\PhRateGHighMtn}{1.22}
+\newcommand{\PhRateGHighMtnBand}{[1.20, 1.24]}
+\newcommand{\PhRateGHills}{1.02}
+\newcommand{\PhRateGHillsBand}{[0.99, 1.05]}
+\newcommand{\PhRateGLowMtn}{1.14}
+\newcommand{\PhRateGLowMtnBand}{[1.12, 1.15]}
+\newcommand{\PhRateGPlains}{0.879}
+\newcommand{\PhRateGPlainsBand}{[0.859, 0.899]}
+\newcommand{\PhRateGSAll}{$+$0.0527}
+\newcommand{\PhRateGSAllBand}{[$+$0.0402, $+$0.0653]}
+\newcommand{\PhRateGSHighMtn}{$+$0.0357}
+\newcommand{\PhRateGSHighMtnBand}{[$+$0.0170, $+$0.0545]}
+\newcommand{\PhRateGSHills}{$+$0.0211}
+\newcommand{\PhRateGSHillsBand}{[$-$0.0052, $+$0.0473]}
+\newcommand{\PhRateGSLowMtn}{$+$0.0423}
+\newcommand{\PhRateGSLowMtnBand}{[$+$0.0257, $+$0.0588]}
+\newcommand{\PhRateGSPlains}{$-$0.0224}
+\newcommand{\PhRateGSPlainsBand}{[$-$0.0405, $-$0.0043]}
+\newcommand{\PhRateSAll}{1.03}
+\newcommand{\PhRateSAllBand}{[1.03, 1.04]}
+\newcommand{\PhRateSHighMtn}{1.19}
+\newcommand{\PhRateSHighMtnBand}{[1.17, 1.20]}
+\newcommand{\PhRateSHills}{0.997}
+\newcommand{\PhRateSHillsBand}{[0.984, 1.009]}
+\newcommand{\PhRateSLowMtn}{1.09}
+\newcommand{\PhRateSLowMtnBand}{[1.08, 1.10]}
+\newcommand{\PhRateSPlains}{0.901}
+\newcommand{\PhRateSPlainsBand}{[0.890, 0.913]}
+\newcommand{\PhSearchDropped}{4.6}
+\newcommand{\PhSearchDroppedAll}{4.6}
+\newcommand{\PhSearchDroppedHighMtn}{4.6}
+\newcommand{\PhSearchDroppedHills}{5.2}
+\newcommand{\PhSearchDroppedLowMtn}{4.6}
+\newcommand{\PhSearchDroppedPlains}{4.0}
+\newcommand{\PhSearchPerHourAAll}{2.88}
+\newcommand{\PhSearchPerHourAAllBand}{[2.83, 2.93]}
+\newcommand{\PhSearchPerHourAHighMtn}{2.89}
+\newcommand{\PhSearchPerHourAHighMtnBand}{[2.81, 2.97]}
+\newcommand{\PhSearchPerHourAHills}{2.33}
+\newcommand{\PhSearchPerHourAHillsBand}{[2.20, 2.46]}
+\newcommand{\PhSearchPerHourALowMtn}{3.15}
+\newcommand{\PhSearchPerHourALowMtnBand}{[3.08, 3.23]}
+\newcommand{\PhSearchPerHourAPlains}{2.40}
+\newcommand{\PhSearchPerHourAPlainsBand}{[2.31, 2.49]}
+\newcommand{\PhSearchPerHourASAll}{$-$0.172}
+\newcommand{\PhSearchPerHourASAllBand}{[$-$0.225, $-$0.119]}
+\newcommand{\PhSearchPerHourASHighMtn}{$-$0.315}
+\newcommand{\PhSearchPerHourASHighMtnBand}{[$-$0.401, $-$0.229]}
+\newcommand{\PhSearchPerHourASHills}{$-$0.483}
+\newcommand{\PhSearchPerHourASHillsBand}{[$-$0.613, $-$0.353]}
+\newcommand{\PhSearchPerHourASLowMtn}{$-$0.163}
+\newcommand{\PhSearchPerHourASLowMtnBand}{[$-$0.238, $-$0.089]}
+\newcommand{\PhSearchPerHourASPlains}{$-$0.361}
+\newcommand{\PhSearchPerHourASPlainsBand}{[$-$0.448, $-$0.274]}
+\newcommand{\PhSearchPerHourGAAll}{$-$0.0988}
+\newcommand{\PhSearchPerHourGAAllBand}{[$-$0.1416, $-$0.0561]}
+\newcommand{\PhSearchPerHourGAHighMtn}{$-$0.101}
+\newcommand{\PhSearchPerHourGAHighMtnBand}{[$-$0.176, $-$0.025]}
+\newcommand{\PhSearchPerHourGAHills}{$+$0.0198}
+\newcommand{\PhSearchPerHourGAHillsBand}{[$-$0.0991, $+$0.1386]}
+\newcommand{\PhSearchPerHourGALowMtn}{$-$0.106}
+\newcommand{\PhSearchPerHourGALowMtnBand}{[$-$0.173, $-$0.039]}
+\newcommand{\PhSearchPerHourGAPlains}{$-$0.0748}
+\newcommand{\PhSearchPerHourGAPlainsBand}{[$-$0.1672, $+$0.0175]}
+\newcommand{\PhSearchPerHourGAll}{2.78}
+\newcommand{\PhSearchPerHourGAllBand}{[2.72, 2.84]}
+\newcommand{\PhSearchPerHourGHighMtn}{2.79}
+\newcommand{\PhSearchPerHourGHighMtnBand}{[2.70, 2.88]}
+\newcommand{\PhSearchPerHourGHills}{2.35}
+\newcommand{\PhSearchPerHourGHillsBand}{[2.24, 2.47]}
+\newcommand{\PhSearchPerHourGLowMtn}{3.05}
+\newcommand{\PhSearchPerHourGLowMtnBand}{[2.97, 3.13]}
+\newcommand{\PhSearchPerHourGPlains}{2.33}
+\newcommand{\PhSearchPerHourGPlainsBand}{[2.23, 2.42]}
+\newcommand{\PhSearchPerHourGSAll}{$-$0.271}
+\newcommand{\PhSearchPerHourGSAllBand}{[$-$0.329, $-$0.212]}
+\newcommand{\PhSearchPerHourGSHighMtn}{$-$0.416}
+\newcommand{\PhSearchPerHourGSHighMtnBand}{[$-$0.507, $-$0.325]}
+\newcommand{\PhSearchPerHourGSHills}{$-$0.464}
+\newcommand{\PhSearchPerHourGSHillsBand}{[$-$0.585, $-$0.342]}
+\newcommand{\PhSearchPerHourGSLowMtn}{$-$0.270}
+\newcommand{\PhSearchPerHourGSLowMtnBand}{[$-$0.350, $-$0.189]}
+\newcommand{\PhSearchPerHourGSPlains}{$-$0.436}
+\newcommand{\PhSearchPerHourGSPlainsBand}{[$-$0.536, $-$0.335]}
+\newcommand{\PhSearchPerHourSAll}{3.05}
+\newcommand{\PhSearchPerHourSAllBand}{[3.01, 3.09]}
+\newcommand{\PhSearchPerHourSHighMtn}{3.21}
+\newcommand{\PhSearchPerHourSHighMtnBand}{[3.15, 3.26]}
+\newcommand{\PhSearchPerHourSHills}{2.82}
+\newcommand{\PhSearchPerHourSHillsBand}{[2.75, 2.89]}
+\newcommand{\PhSearchPerHourSLowMtn}{3.32}
+\newcommand{\PhSearchPerHourSLowMtnBand}{[3.27, 3.37]}
+\newcommand{\PhSearchPerHourSPlains}{2.76}
+\newcommand{\PhSearchPerHourSPlainsBand}{[2.68, 2.84]}
+\newcommand{\PhShareClimbAAll}{33.1}
+\newcommand{\PhShareClimbAAllBand}{[32.6, 33.5]}
+\newcommand{\PhShareClimbAHighMtn}{30.0}
+\newcommand{\PhShareClimbAHighMtnBand}{[29.5, 30.5]}
+\newcommand{\PhShareClimbAHills}{41.2}
+\newcommand{\PhShareClimbAHillsBand}{[40.4, 42.1]}
+\newcommand{\PhShareClimbALowMtn}{29.9}
+\newcommand{\PhShareClimbALowMtnBand}{[29.5, 30.4]}
+\newcommand{\PhShareClimbAPlains}{43.1}
+\newcommand{\PhShareClimbAPlainsBand}{[42.3, 43.9]}
+\newcommand{\PhShareClimbASAll}{$-$1.12}
+\newcommand{\PhShareClimbASAllBand}{[$-$1.50, $-$0.74]}
+\newcommand{\PhShareClimbASHighMtn}{$-$0.530}
+\newcommand{\PhShareClimbASHighMtnBand}{[$-$1.032, $-$0.028]}
+\newcommand{\PhShareClimbASHills}{$+$3.81}
+\newcommand{\PhShareClimbASHillsBand}{[$+$2.94, $+$4.68]}
+\newcommand{\PhShareClimbASLowMtn}{$-$0.671}
+\newcommand{\PhShareClimbASLowMtnBand}{[$-$1.116, $-$0.225]}
+\newcommand{\PhShareClimbASPlains}{$+$2.19}
+\newcommand{\PhShareClimbASPlainsBand}{[$+$1.45, $+$2.92]}
+\newcommand{\PhShareClimbGAAll}{$+$4.84}
+\newcommand{\PhShareClimbGAAllBand}{[$+$4.54, $+$5.14]}
+\newcommand{\PhShareClimbGAHighMtn}{$+$5.45}
+\newcommand{\PhShareClimbGAHighMtnBand}{[$+$4.88, $+$6.02]}
+\newcommand{\PhShareClimbGAHills}{$+$3.80}
+\newcommand{\PhShareClimbGAHillsBand}{[$+$2.98, $+$4.62]}
+\newcommand{\PhShareClimbGALowMtn}{$+$4.44}
+\newcommand{\PhShareClimbGALowMtnBand}{[$+$4.04, $+$4.84]}
+\newcommand{\PhShareClimbGAPlains}{$+$3.59}
+\newcommand{\PhShareClimbGAPlainsBand}{[$+$2.83, $+$4.35]}
+\newcommand{\PhShareClimbGAll}{37.9}
+\newcommand{\PhShareClimbGAllBand}{[37.4, 38.4]}
+\newcommand{\PhShareClimbGHighMtn}{35.4}
+\newcommand{\PhShareClimbGHighMtnBand}{[34.9, 36.0]}
+\newcommand{\PhShareClimbGHills}{45.0}
+\newcommand{\PhShareClimbGHillsBand}{[44.2, 45.8]}
+\newcommand{\PhShareClimbGLowMtn}{34.4}
+\newcommand{\PhShareClimbGLowMtnBand}{[33.8, 34.9]}
+\newcommand{\PhShareClimbGPlains}{46.7}
+\newcommand{\PhShareClimbGPlainsBand}{[46.0, 47.4]}
+\newcommand{\PhShareClimbGSAll}{$+$3.72}
+\newcommand{\PhShareClimbGSAllBand}{[$+$3.30, $+$4.14]}
+\newcommand{\PhShareClimbGSHighMtn}{$+$4.92}
+\newcommand{\PhShareClimbGSHighMtnBand}{[$+$4.35, $+$5.49]}
+\newcommand{\PhShareClimbGSHills}{$+$7.61}
+\newcommand{\PhShareClimbGSHillsBand}{[$+$6.79, $+$8.44]}
+\newcommand{\PhShareClimbGSLowMtn}{$+$3.77}
+\newcommand{\PhShareClimbGSLowMtnBand}{[$+$3.27, $+$4.27]}
+\newcommand{\PhShareClimbGSPlains}{$+$5.78}
+\newcommand{\PhShareClimbGSPlainsBand}{[$+$5.07, $+$6.48]}
+\newcommand{\PhShareClimbSAll}{34.2}
+\newcommand{\PhShareClimbSAllBand}{[33.8, 34.5]}
+\newcommand{\PhShareClimbSHighMtn}{30.5}
+\newcommand{\PhShareClimbSHighMtnBand}{[30.2, 30.9]}
+\newcommand{\PhShareClimbSHills}{37.4}
+\newcommand{\PhShareClimbSHillsBand}{[36.9, 37.9]}
+\newcommand{\PhShareClimbSLowMtn}{30.6}
+\newcommand{\PhShareClimbSLowMtnBand}{[30.2, 31.0]}
+\newcommand{\PhShareClimbSPlains}{40.9}
+\newcommand{\PhShareClimbSPlainsBand}{[40.5, 41.4]}
+\newcommand{\PhShareExitAAll}{2.94}
+\newcommand{\PhShareExitAAllBand}{[2.87, 3.01]}
+\newcommand{\PhShareExitAHighMtn}{2.65}
+\newcommand{\PhShareExitAHighMtnBand}{[2.54, 2.76]}
+\newcommand{\PhShareExitAHills}{3.15}
+\newcommand{\PhShareExitAHillsBand}{[2.96, 3.35]}
+\newcommand{\PhShareExitALowMtn}{2.79}
+\newcommand{\PhShareExitALowMtnBand}{[2.70, 2.89]}
+\newcommand{\PhShareExitAPlains}{3.92}
+\newcommand{\PhShareExitAPlainsBand}{[3.72, 4.12]}
+\newcommand{\PhShareExitASAll}{$-$0.354}
+\newcommand{\PhShareExitASAllBand}{[$-$0.430, $-$0.279]}
+\newcommand{\PhShareExitASHighMtn}{$-$0.173}
+\newcommand{\PhShareExitASHighMtnBand}{[$-$0.293, $-$0.053]}
+\newcommand{\PhShareExitASHills}{$-$0.303}
+\newcommand{\PhShareExitASHillsBand}{[$-$0.505, $-$0.101]}
+\newcommand{\PhShareExitASLowMtn}{$-$0.208}
+\newcommand{\PhShareExitASLowMtnBand}{[$-$0.311, $-$0.106]}
+\newcommand{\PhShareExitASPlains}{$-$0.433}
+\newcommand{\PhShareExitASPlainsBand}{[$-$0.640, $-$0.226]}
+\newcommand{\PhShareExitGAAll}{$+$0.285}
+\newcommand{\PhShareExitGAAllBand}{[$+$0.206, $+$0.365]}
+\newcommand{\PhShareExitGAHighMtn}{$+$0.150}
+\newcommand{\PhShareExitGAHighMtnBand}{[$+$0.008, $+$0.292]}
+\newcommand{\PhShareExitGAHills}{$+$0.508}
+\newcommand{\PhShareExitGAHillsBand}{[$+$0.273, $+$0.743]}
+\newcommand{\PhShareExitGALowMtn}{$+$0.169}
+\newcommand{\PhShareExitGALowMtnBand}{[$+$0.055, $+$0.282]}
+\newcommand{\PhShareExitGAPlains}{$+$0.477}
+\newcommand{\PhShareExitGAPlainsBand}{[$+$0.239, $+$0.714]}
+\newcommand{\PhShareExitGAll}{3.23}
+\newcommand{\PhShareExitGAllBand}{[3.14, 3.31]}
+\newcommand{\PhShareExitGHighMtn}{2.80}
+\newcommand{\PhShareExitGHighMtnBand}{[2.67, 2.93]}
+\newcommand{\PhShareExitGHills}{3.66}
+\newcommand{\PhShareExitGHillsBand}{[3.40, 3.92]}
+\newcommand{\PhShareExitGLowMtn}{2.96}
+\newcommand{\PhShareExitGLowMtnBand}{[2.85, 3.07]}
+\newcommand{\PhShareExitGPlains}{4.40}
+\newcommand{\PhShareExitGPlainsBand}{[4.17, 4.62]}
+\newcommand{\PhShareExitGSAll}{$-$0.0690}
+\newcommand{\PhShareExitGSAllBand}{[$-$0.1549, $+$0.0170]}
+\newcommand{\PhShareExitGSHighMtn}{$-$0.0228}
+\newcommand{\PhShareExitGSHighMtnBand}{[$-$0.1637, $+$0.1181]}
+\newcommand{\PhShareExitGSHills}{$+$0.205}
+\newcommand{\PhShareExitGSHillsBand}{[$-$0.046, $+$0.456]}
+\newcommand{\PhShareExitGSLowMtn}{$-$0.0397}
+\newcommand{\PhShareExitGSLowMtnBand}{[$-$0.1513, $+$0.0719]}
+\newcommand{\PhShareExitGSPlains}{$+$0.0436}
+\newcommand{\PhShareExitGSPlainsBand}{[$-$0.1834, $+$0.2705]}
+\newcommand{\PhShareExitSAll}{3.29}
+\newcommand{\PhShareExitSAllBand}{[3.24, 3.35]}
+\newcommand{\PhShareExitSHighMtn}{2.82}
+\newcommand{\PhShareExitSHighMtnBand}{[2.75, 2.89]}
+\newcommand{\PhShareExitSHills}{3.46}
+\newcommand{\PhShareExitSHillsBand}{[3.36, 3.56]}
+\newcommand{\PhShareExitSLowMtn}{3.00}
+\newcommand{\PhShareExitSLowMtnBand}{[2.94, 3.06]}
+\newcommand{\PhShareExitSPlains}{4.36}
+\newcommand{\PhShareExitSPlainsBand}{[4.23, 4.48]}
+\newcommand{\PhShareGlideAAll}{56.9}
+\newcommand{\PhShareGlideAAllBand}{[56.5, 57.3]}
+\newcommand{\PhShareGlideAHighMtn}{60.1}
+\newcommand{\PhShareGlideAHighMtnBand}{[59.6, 60.6]}
+\newcommand{\PhShareGlideAHills}{50.9}
+\newcommand{\PhShareGlideAHillsBand}{[50.0, 51.7]}
+\newcommand{\PhShareGlideALowMtn}{59.1}
+\newcommand{\PhShareGlideALowMtnBand}{[58.7, 59.5]}
+\newcommand{\PhShareGlideAPlains}{48.0}
+\newcommand{\PhShareGlideAPlainsBand}{[47.2, 48.8]}
+\newcommand{\PhShareGlideASAll}{$+$1.49}
+\newcommand{\PhShareGlideASAllBand}{[$+$1.12, $+$1.85]}
+\newcommand{\PhShareGlideASHighMtn}{$+$1.43}
+\newcommand{\PhShareGlideASHighMtnBand}{[$+$0.90, $+$1.95]}
+\newcommand{\PhShareGlideASHills}{$-$2.14}
+\newcommand{\PhShareGlideASHillsBand}{[$-$3.00, $-$1.29]}
+\newcommand{\PhShareGlideASLowMtn}{$+$0.891}
+\newcommand{\PhShareGlideASLowMtnBand}{[$+$0.424, $+$1.357]}
+\newcommand{\PhShareGlideASPlains}{$-$0.974}
+\newcommand{\PhShareGlideASPlainsBand}{[$-$1.752, $-$0.196]}
+\newcommand{\PhShareGlideGAAll}{$-$4.36}
+\newcommand{\PhShareGlideGAAllBand}{[$-$4.68, $-$4.05]}
+\newcommand{\PhShareGlideGAHighMtn}{$-$4.79}
+\newcommand{\PhShareGlideGAHighMtnBand}{[$-$5.43, $-$4.15]}
+\newcommand{\PhShareGlideGAHills}{$-$4.05}
+\newcommand{\PhShareGlideGAHillsBand}{[$-$4.92, $-$3.19]}
+\newcommand{\PhShareGlideGALowMtn}{$-$3.82}
+\newcommand{\PhShareGlideGALowMtnBand}{[$-$4.29, $-$3.36]}
+\newcommand{\PhShareGlideGAPlains}{$-$3.51}
+\newcommand{\PhShareGlideGAPlainsBand}{[$-$4.30, $-$2.72]}
+\newcommand{\PhShareGlideGAll}{52.6}
+\newcommand{\PhShareGlideGAllBand}{[52.1, 53.0]}
+\newcommand{\PhShareGlideGHighMtn}{55.3}
+\newcommand{\PhShareGlideGHighMtnBand}{[54.6, 55.9]}
+\newcommand{\PhShareGlideGHills}{46.8}
+\newcommand{\PhShareGlideGHillsBand}{[46.0, 47.7]}
+\newcommand{\PhShareGlideGLowMtn}{55.3}
+\newcommand{\PhShareGlideGLowMtnBand}{[54.7, 55.8]}
+\newcommand{\PhShareGlideGPlains}{44.5}
+\newcommand{\PhShareGlideGPlainsBand}{[43.7, 45.3]}
+\newcommand{\PhShareGlideGSAll}{$-$2.87}
+\newcommand{\PhShareGlideGSAllBand}{[$-$3.30, $-$2.45]}
+\newcommand{\PhShareGlideGSHighMtn}{$-$3.37}
+\newcommand{\PhShareGlideGSHighMtnBand}{[$-$4.00, $-$2.74]}
+\newcommand{\PhShareGlideGSHills}{$-$6.20}
+\newcommand{\PhShareGlideGSHillsBand}{[$-$7.08, $-$5.31]}
+\newcommand{\PhShareGlideGSLowMtn}{$-$2.93}
+\newcommand{\PhShareGlideGSLowMtnBand}{[$-$3.48, $-$2.39]}
+\newcommand{\PhShareGlideGSPlains}{$-$4.48}
+\newcommand{\PhShareGlideGSPlainsBand}{[$-$5.30, $-$3.67]}
+\newcommand{\PhShareGlideSAll}{55.4}
+\newcommand{\PhShareGlideSAllBand}{[55.1, 55.8]}
+\newcommand{\PhShareGlideSHighMtn}{58.7}
+\newcommand{\PhShareGlideSHighMtnBand}{[58.3, 59.0]}
+\newcommand{\PhShareGlideSHills}{53.0}
+\newcommand{\PhShareGlideSHillsBand}{[52.6, 53.5]}
+\newcommand{\PhShareGlideSLowMtn}{58.2}
+\newcommand{\PhShareGlideSLowMtnBand}{[57.8, 58.6]}
+\newcommand{\PhShareGlideSPlains}{49.0}
+\newcommand{\PhShareGlideSPlainsBand}{[48.5, 49.5]}
+\newcommand{\PhShareSearchAAll}{7.07}
+\newcommand{\PhShareSearchAAllBand}{[6.89, 7.26]}
+\newcommand{\PhShareSearchAHighMtn}{7.28}
+\newcommand{\PhShareSearchAHighMtnBand}{[7.00, 7.56]}
+\newcommand{\PhShareSearchAHills}{4.73}
+\newcommand{\PhShareSearchAHillsBand}{[4.38, 5.09]}
+\newcommand{\PhShareSearchALowMtn}{8.19}
+\newcommand{\PhShareSearchALowMtnBand}{[7.94, 8.44]}
+\newcommand{\PhShareSearchAPlains}{4.96}
+\newcommand{\PhShareSearchAPlainsBand}{[4.66, 5.26]}
+\newcommand{\PhShareSearchASAll}{$-$0.0151}
+\newcommand{\PhShareSearchASAllBand}{[$-$0.1962, $+$0.1661]}
+\newcommand{\PhShareSearchASHighMtn}{$-$0.723}
+\newcommand{\PhShareSearchASHighMtnBand}{[$-$1.018, $-$0.428]}
+\newcommand{\PhShareSearchASHills}{$-$1.36}
+\newcommand{\PhShareSearchASHillsBand}{[$-$1.74, $-$0.99]}
+\newcommand{\PhShareSearchASLowMtn}{$-$0.0117}
+\newcommand{\PhShareSearchASLowMtnBand}{[$-$0.2692, $+$0.2458]}
+\newcommand{\PhShareSearchASPlains}{$-$0.779}
+\newcommand{\PhShareSearchASPlainsBand}{[$-$1.082, $-$0.477]}
+\newcommand{\PhShareSearchGAAll}{$-$0.764}
+\newcommand{\PhShareSearchGAAllBand}{[$-$0.911, $-$0.617]}
+\newcommand{\PhShareSearchGAHighMtn}{$-$0.808}
+\newcommand{\PhShareSearchGAHighMtnBand}{[$-$1.080, $-$0.536]}
+\newcommand{\PhShareSearchGAHills}{$-$0.260}
+\newcommand{\PhShareSearchGAHillsBand}{[$-$0.573, $+$0.054]}
+\newcommand{\PhShareSearchGALowMtn}{$-$0.786}
+\newcommand{\PhShareSearchGALowMtnBand}{[$-$1.032, $-$0.540]}
+\newcommand{\PhShareSearchGAPlains}{$-$0.557}
+\newcommand{\PhShareSearchGAPlainsBand}{[$-$0.823, $-$0.291]}
+\newcommand{\PhShareSearchGAll}{6.31}
+\newcommand{\PhShareSearchGAllBand}{[6.12, 6.50]}
+\newcommand{\PhShareSearchGHighMtn}{6.47}
+\newcommand{\PhShareSearchGHighMtnBand}{[6.18, 6.77]}
+\newcommand{\PhShareSearchGHills}{4.47}
+\newcommand{\PhShareSearchGHillsBand}{[4.15, 4.80]}
+\newcommand{\PhShareSearchGLowMtn}{7.40}
+\newcommand{\PhShareSearchGLowMtnBand}{[7.12, 7.69]}
+\newcommand{\PhShareSearchGPlains}{4.41}
+\newcommand{\PhShareSearchGPlainsBand}{[4.16, 4.65]}
+\newcommand{\PhShareSearchGSAll}{$-$0.779}
+\newcommand{\PhShareSearchGSAllBand}{[$-$0.973, $-$0.585]}
+\newcommand{\PhShareSearchGSHighMtn}{$-$1.53}
+\newcommand{\PhShareSearchGSHighMtnBand}{[$-$1.83, $-$1.23]}
+\newcommand{\PhShareSearchGSHills}{$-$1.62}
+\newcommand{\PhShareSearchGSHillsBand}{[$-$1.98, $-$1.27]}
+\newcommand{\PhShareSearchGSLowMtn}{$-$0.798}
+\newcommand{\PhShareSearchGSLowMtnBand}{[$-$1.085, $-$0.511]}
+\newcommand{\PhShareSearchGSPlains}{$-$1.34}
+\newcommand{\PhShareSearchGSPlainsBand}{[$-$1.60, $-$1.08]}
+\newcommand{\PhShareSearchSAll}{7.09}
+\newcommand{\PhShareSearchSAllBand}{[6.96, 7.22]}
+\newcommand{\PhShareSearchSHighMtn}{8.00}
+\newcommand{\PhShareSearchSHighMtnBand}{[7.83, 8.18]}
+\newcommand{\PhShareSearchSHills}{6.10}
+\newcommand{\PhShareSearchSHillsBand}{[5.87, 6.33]}
+\newcommand{\PhShareSearchSLowMtn}{8.20}
+\newcommand{\PhShareSearchSLowMtnBand}{[8.02, 8.38]}
+\newcommand{\PhShareSearchSPlains}{5.74}
+\newcommand{\PhShareSearchSPlainsBand}{[5.54, 5.95]}
+\newcommand{\PhSignAgree}{149}
+\newcommand{\PhSignTotal}{160}
+\newcommand{\PhSinkAAll}{96.0}
+\newcommand{\PhSinkAAllBand}{[95.0, 97.0]}
+\newcommand{\PhSinkAHighMtn}{99.6}
+\newcommand{\PhSinkAHighMtnBand}{[98.1, 101.0]}
+\newcommand{\PhSinkAHills}{102}
+\newcommand{\PhSinkAHillsBand}{[100, 105]}
+\newcommand{\PhSinkALowMtn}{94.3}
+\newcommand{\PhSinkALowMtnBand}{[93.1, 95.5]}
+\newcommand{\PhSinkAPlains}{90.0}
+\newcommand{\PhSinkAPlainsBand}{[87.2, 92.8]}
+\newcommand{\PhSinkASAll}{$-$7.07}
+\newcommand{\PhSinkASAllBand}{[$-$8.01, $-$6.14]}
+\newcommand{\PhSinkASHighMtn}{$-$4.31}
+\newcommand{\PhSinkASHighMtnBand}{[$-$5.79, $-$2.83]}
+\newcommand{\PhSinkASHills}{$-$6.05}
+\newcommand{\PhSinkASHillsBand}{[$-$8.46, $-$3.65]}
+\newcommand{\PhSinkASLowMtn}{$-$7.40}
+\newcommand{\PhSinkASLowMtnBand}{[$-$8.63, $-$6.18]}
+\newcommand{\PhSinkASPlains}{$-$8.55}
+\newcommand{\PhSinkASPlainsBand}{[$-$10.89, $-$6.21]}
+\newcommand{\PhSinkGAAll}{$-$11.6}
+\newcommand{\PhSinkGAAllBand}{[$-$12.3, $-$10.9]}
+\newcommand{\PhSinkGAHighMtn}{$-$12.7}
+\newcommand{\PhSinkGAHighMtnBand}{[$-$14.1, $-$11.4]}
+\newcommand{\PhSinkGAHills}{$-$5.86}
+\newcommand{\PhSinkGAHillsBand}{[$-$7.74, $-$3.98]}
+\newcommand{\PhSinkGALowMtn}{$-$14.1}
+\newcommand{\PhSinkGALowMtnBand}{[$-$15.2, $-$12.9]}
+\newcommand{\PhSinkGAPlains}{$-$6.56}
+\newcommand{\PhSinkGAPlainsBand}{[$-$7.97, $-$5.16]}
+\newcommand{\PhSinkGAll}{84.4}
+\newcommand{\PhSinkGAllBand}{[83.3, 85.6]}
+\newcommand{\PhSinkGHighMtn}{86.8}
+\newcommand{\PhSinkGHighMtnBand}{[85.3, 88.3]}
+\newcommand{\PhSinkGHills}{96.3}
+\newcommand{\PhSinkGHillsBand}{[94.2, 98.4]}
+\newcommand{\PhSinkGLowMtn}{80.2}
+\newcommand{\PhSinkGLowMtnBand}{[78.7, 81.7]}
+\newcommand{\PhSinkGPlains}{83.4}
+\newcommand{\PhSinkGPlainsBand}{[80.9, 86.0]}
+\newcommand{\PhSinkGSAll}{$-$18.7}
+\newcommand{\PhSinkGSAllBand}{[$-$19.8, $-$17.5]}
+\newcommand{\PhSinkGSHighMtn}{$-$17.0}
+\newcommand{\PhSinkGSHighMtnBand}{[$-$18.6, $-$15.5]}
+\newcommand{\PhSinkGSHills}{$-$11.9}
+\newcommand{\PhSinkGSHillsBand}{[$-$14.0, $-$9.9]}
+\newcommand{\PhSinkGSLowMtn}{$-$21.5}
+\newcommand{\PhSinkGSLowMtnBand}{[$-$22.9, $-$20.0]}
+\newcommand{\PhSinkGSPlains}{$-$15.1}
+\newcommand{\PhSinkGSPlainsBand}{[$-$17.4, $-$12.8]}
+\newcommand{\PhSinkSAll}{103}
+\newcommand{\PhSinkSAllBand}{[102, 104]}
+\newcommand{\PhSinkSHighMtn}{104}
+\newcommand{\PhSinkSHighMtnBand}{[103, 105]}
+\newcommand{\PhSinkSHills}{108}
+\newcommand{\PhSinkSHillsBand}{[107, 109]}
+\newcommand{\PhSinkSLowMtn}{102}
+\newcommand{\PhSinkSLowMtnBand}{[101, 103]}
+\newcommand{\PhSinkSPlains}{98.6}
+\newcommand{\PhSinkSPlainsBand}{[97.1, 100.0]}
+\newcommand{\PhSpeedAAll}{33.4}
+\newcommand{\PhSpeedAAllBand}{[33.1, 33.8]}
+\newcommand{\PhSpeedAHighMtn}{31.6}
+\newcommand{\PhSpeedAHighMtnBand}{[31.3, 32.0]}
+\newcommand{\PhSpeedAHills}{37.7}
+\newcommand{\PhSpeedAHillsBand}{[36.8, 38.6]}
+\newcommand{\PhSpeedALowMtn}{31.3}
+\newcommand{\PhSpeedALowMtnBand}{[31.0, 31.6]}
+\newcommand{\PhSpeedAPlains}{43.2}
+\newcommand{\PhSpeedAPlainsBand}{[42.3, 44.1]}
+\newcommand{\PhSpeedASAll}{$+$0.509}
+\newcommand{\PhSpeedASAllBand}{[$+$0.203, $+$0.815]}
+\newcommand{\PhSpeedASHighMtn}{$+$1.14}
+\newcommand{\PhSpeedASHighMtnBand}{[$+$0.82, $+$1.46]}
+\newcommand{\PhSpeedASHills}{$+$3.03}
+\newcommand{\PhSpeedASHillsBand}{[$+$2.20, $+$3.86]}
+\newcommand{\PhSpeedASLowMtn}{$+$1.09}
+\newcommand{\PhSpeedASLowMtnBand}{[$+$0.80, $+$1.39]}
+\newcommand{\PhSpeedASPlains}{$+$2.19}
+\newcommand{\PhSpeedASPlainsBand}{[$+$1.39, $+$2.99]}
+\newcommand{\PhSpeedGAAll}{$+$1.45}
+\newcommand{\PhSpeedGAAllBand}{[$+$1.29, $+$1.62]}
+\newcommand{\PhSpeedGAHighMtn}{$+$1.44}
+\newcommand{\PhSpeedGAHighMtnBand}{[$+$1.16, $+$1.71]}
+\newcommand{\PhSpeedGAHills}{$+$1.64}
+\newcommand{\PhSpeedGAHillsBand}{[$+$1.08, $+$2.20]}
+\newcommand{\PhSpeedGALowMtn}{$+$0.986}
+\newcommand{\PhSpeedGALowMtnBand}{[$+$0.780, $+$1.192]}
+\newcommand{\PhSpeedGAPlains}{$+$0.890}
+\newcommand{\PhSpeedGAPlainsBand}{[$+$0.472, $+$1.307]}
+\newcommand{\PhSpeedGAll}{34.9}
+\newcommand{\PhSpeedGAllBand}{[34.5, 35.3]}
+\newcommand{\PhSpeedGHighMtn}{33.1}
+\newcommand{\PhSpeedGHighMtnBand}{[32.7, 33.4]}
+\newcommand{\PhSpeedGHills}{39.3}
+\newcommand{\PhSpeedGHillsBand}{[38.5, 40.1]}
+\newcommand{\PhSpeedGLowMtn}{32.3}
+\newcommand{\PhSpeedGLowMtnBand}{[32.0, 32.6]}
+\newcommand{\PhSpeedGPlains}{44.1}
+\newcommand{\PhSpeedGPlainsBand}{[43.3, 45.0]}
+\newcommand{\PhSpeedGSAll}{$+$1.96}
+\newcommand{\PhSpeedGSAllBand}{[$+$1.62, $+$2.30]}
+\newcommand{\PhSpeedGSHighMtn}{$+$2.57}
+\newcommand{\PhSpeedGSHighMtnBand}{[$+$2.24, $+$2.91]}
+\newcommand{\PhSpeedGSHills}{$+$4.67}
+\newcommand{\PhSpeedGSHillsBand}{[$+$3.92, $+$5.41]}
+\newcommand{\PhSpeedGSLowMtn}{$+$2.08}
+\newcommand{\PhSpeedGSLowMtnBand}{[$+$1.77, $+$2.39]}
+\newcommand{\PhSpeedGSPlains}{$+$3.08}
+\newcommand{\PhSpeedGSPlainsBand}{[$+$2.32, $+$3.83]}
+\newcommand{\PhSpeedSAll}{32.9}
+\newcommand{\PhSpeedSAllBand}{[32.7, 33.2]}
+\newcommand{\PhSpeedSHighMtn}{30.5}
+\newcommand{\PhSpeedSHighMtnBand}{[30.3, 30.7]}
+\newcommand{\PhSpeedSHills}{34.6}
+\newcommand{\PhSpeedSHillsBand}{[34.2, 35.1]}
+\newcommand{\PhSpeedSLowMtn}{30.2}
+\newcommand{\PhSpeedSLowMtnBand}{[30.0, 30.5]}
+\newcommand{\PhSpeedSPlains}{41.1}
+\newcommand{\PhSpeedSPlainsBand}{[40.6, 41.5]}
+\newcommand{\PhVChordASAll}{$-$33.6}
+\newcommand{\PhVChordASAllBand}{[$-$53.3, $-$13.9]}
+\newcommand{\PhVChordASHighMtn}{$+$1.74}
+\newcommand{\PhVChordASHighMtnBand}{[$-$7.72, $+$11.20]}
+\newcommand{\PhVChordASHills}{$+$124}
+\newcommand{\PhVChordASHillsBand}{[$+$81, $+$166]}
+\newcommand{\PhVChordASLowMtn}{$-$20.3}
+\newcommand{\PhVChordASLowMtnBand}{[$-$35.2, $-$5.5]}
+\newcommand{\PhVChordASPlains}{$+$122}
+\newcommand{\PhVChordASPlainsBand}{[$+$75, $+$168]}
+\newcommand{\PhVChordGAAll}{$+$2.57}
+\newcommand{\PhVChordGAAllBand}{[$-$7.37, $+$12.52]}
+\newcommand{\PhVChordGAHighMtn}{$-$16.8}
+\newcommand{\PhVChordGAHighMtnBand}{[$-$24.6, $-$9.0]}
+\newcommand{\PhVChordGAHills}{$+$18.3}
+\newcommand{\PhVChordGAHillsBand}{[$-$13.0, $+$49.6]}
+\newcommand{\PhVChordGALowMtn}{$-$13.3}
+\newcommand{\PhVChordGALowMtnBand}{[$-$21.9, $-$4.7]}
+\newcommand{\PhVChordGAPlains}{$-$54.0}
+\newcommand{\PhVChordGAPlainsBand}{[$-$88.9, $-$19.2]}
+\newcommand{\PhVCphASAll}{$-$0.218}
+\newcommand{\PhVCphASAllBand}{[$-$0.260, $-$0.176]}
+\newcommand{\PhVCphASHighMtn}{$-$0.105}
+\newcommand{\PhVCphASHighMtnBand}{[$-$0.183, $-$0.027]}
+\newcommand{\PhVCphASHills}{$+$0.0997}
+\newcommand{\PhVCphASHillsBand}{[$-$0.0107, $+$0.2100]}
+\newcommand{\PhVCphASLowMtn}{$-$0.230}
+\newcommand{\PhVCphASLowMtnBand}{[$-$0.289, $-$0.170]}
+\newcommand{\PhVCphASPlains}{$-$0.0926}
+\newcommand{\PhVCphASPlainsBand}{[$-$0.1880, $+$0.0027]}
+\newcommand{\PhVCphGAAll}{$+$0.748}
+\newcommand{\PhVCphGAAllBand}{[$+$0.704, $+$0.793]}
+\newcommand{\PhVCphGAHighMtn}{$+$0.847}
+\newcommand{\PhVCphGAHighMtnBand}{[$+$0.749, $+$0.944]}
+\newcommand{\PhVCphGAHills}{$+$0.433}
+\newcommand{\PhVCphGAHillsBand}{[$+$0.314, $+$0.551]}
+\newcommand{\PhVCphGALowMtn}{$+$0.777}
+\newcommand{\PhVCphGALowMtnBand}{[$+$0.709, $+$0.845]}
+\newcommand{\PhVCphGAPlains}{$+$0.671}
+\newcommand{\PhVCphGAPlainsBand}{[$+$0.557, $+$0.786]}
+\newcommand{\PhVCycleASAll}{$+$0.450}
+\newcommand{\PhVCycleASAllBand}{[$+$0.362, $+$0.539]}
+\newcommand{\PhVCycleASHighMtn}{$+$0.235}
+\newcommand{\PhVCycleASHighMtnBand}{[$+$0.059, $+$0.411]}
+\newcommand{\PhVCycleASHills}{$-$0.189}
+\newcommand{\PhVCycleASHillsBand}{[$-$0.396, $+$0.018]}
+\newcommand{\PhVCycleASLowMtn}{$+$0.499}
+\newcommand{\PhVCycleASLowMtnBand}{[$+$0.366, $+$0.631]}
+\newcommand{\PhVCycleASPlains}{$+$0.176}
+\newcommand{\PhVCycleASPlainsBand}{[$-$0.007, $+$0.359]}
+\newcommand{\PhVCycleGAAll}{$-$1.41}
+\newcommand{\PhVCycleGAAllBand}{[$-$1.50, $-$1.33]}
+\newcommand{\PhVCycleGAHighMtn}{$-$1.66}
+\newcommand{\PhVCycleGAHighMtnBand}{[$-$1.85, $-$1.47]}
+\newcommand{\PhVCycleGAHills}{$-$0.749}
+\newcommand{\PhVCycleGAHillsBand}{[$-$0.959, $-$0.539]}
+\newcommand{\PhVCycleGALowMtn}{$-$1.53}
+\newcommand{\PhVCycleGALowMtnBand}{[$-$1.67, $-$1.39]}
+\newcommand{\PhVCycleGAPlains}{$-$1.16}
+\newcommand{\PhVCycleGAPlainsBand}{[$-$1.36, $-$0.96]}
+\newcommand{\PhVDriftASAll}{$-$0.156}
+\newcommand{\PhVDriftASAllBand}{[$-$0.225, $-$0.086]}
+\newcommand{\PhVDriftASHighMtn}{$+$0.0038}
+\newcommand{\PhVDriftASHighMtnBand}{[$-$0.0391, $+$0.0468]}
+\newcommand{\PhVDriftASHills}{$+$0.253}
+\newcommand{\PhVDriftASHillsBand}{[$+$0.128, $+$0.377]}
+\newcommand{\PhVDriftASLowMtn}{$-$0.113}
+\newcommand{\PhVDriftASLowMtnBand}{[$-$0.166, $-$0.060]}
+\newcommand{\PhVDriftASPlains}{$+$0.184}
+\newcommand{\PhVDriftASPlainsBand}{[$+$0.048, $+$0.320]}
+\newcommand{\PhVDriftGAAll}{$+$0.0071}
+\newcommand{\PhVDriftGAAllBand}{[$-$0.0243, $+$0.0384]}
+\newcommand{\PhVDriftGAHighMtn}{$-$0.0870}
+\newcommand{\PhVDriftGAHighMtnBand}{[$-$0.1203, $-$0.0538]}
+\newcommand{\PhVDriftGAHills}{$+$0.0370}
+\newcommand{\PhVDriftGAHillsBand}{[$-$0.0389, $+$0.1130]}
+\newcommand{\PhVDriftGALowMtn}{$-$0.0688}
+\newcommand{\PhVDriftGALowMtnBand}{[$-$0.1003, $-$0.0374]}
+\newcommand{\PhVDriftGAPlains}{$-$0.0171}
+\newcommand{\PhVDriftGAPlainsBand}{[$-$0.0807, $+$0.0465]}
+\newcommand{\PhVExitDurASAll}{0}
+\newcommand{\PhVExitDurASAllBand}{[$-$1, $+$1]}
+\newcommand{\PhVExitDurASHighMtn}{$-$1.00}
+\newcommand{\PhVExitDurASHighMtnBand}{[$-$2.46, $+$0.46]}
+\newcommand{\PhVExitDurASHills}{0}
+\newcommand{\PhVExitDurASHillsBand}{[$-$2, $+$2]}
+\newcommand{\PhVExitDurASLowMtn}{0}
+\newcommand{\PhVExitDurASLowMtnBand}{[$-$1, $+$1]}
+\newcommand{\PhVExitDurASPlains}{0}
+\newcommand{\PhVExitDurASPlainsBand}{[$-$2, $+$2]}
+\newcommand{\PhVExitDurGAAll}{$+$2.00}
+\newcommand{\PhVExitDurGAAllBand}{[$+$1.00, $+$3.00]}
+\newcommand{\PhVExitDurGAHighMtn}{$+$1.00}
+\newcommand{\PhVExitDurGAHighMtnBand}{[$-$0.59, $+$2.59]}
+\newcommand{\PhVExitDurGAHills}{$+$4.00}
+\newcommand{\PhVExitDurGAHillsBand}{[$+$1.20, $+$6.80]}
+\newcommand{\PhVExitDurGALowMtn}{$+$1.00}
+\newcommand{\PhVExitDurGALowMtnBand}{[$-$0.29, $+$2.29]}
+\newcommand{\PhVExitDurGAPlains}{$+$3.00}
+\newcommand{\PhVExitDurGAPlainsBand}{[$+$1.09, $+$4.91]}
+\newcommand{\PhVExitMeanASAll}{$+$2.00}
+\newcommand{\PhVExitMeanASAllBand}{[$+$0.67, $+$3.33]}
+\newcommand{\PhVExitMeanASHighMtn}{$+$0.0892}
+\newcommand{\PhVExitMeanASHighMtnBand}{[$-$2.5265, $+$2.7048]}
+\newcommand{\PhVExitMeanASHills}{$-$2.65}
+\newcommand{\PhVExitMeanASHillsBand}{[$-$5.39, $+$0.10]}
+\newcommand{\PhVExitMeanASLowMtn}{$+$2.13}
+\newcommand{\PhVExitMeanASLowMtnBand}{[$-$0.04, $+$4.30]}
+\newcommand{\PhVExitMeanASPlains}{$+$0.0437}
+\newcommand{\PhVExitMeanASPlainsBand}{[$-$2.7585, $+$2.8459]}
+\newcommand{\PhVExitMeanGAAll}{$-$1.53}
+\newcommand{\PhVExitMeanGAAllBand}{[$-$2.98, $-$0.08]}
+\newcommand{\PhVExitMeanGAHighMtn}{$-$3.79}
+\newcommand{\PhVExitMeanGAHighMtnBand}{[$-$6.93, $-$0.66]}
+\newcommand{\PhVExitMeanGAHills}{$+$3.40}
+\newcommand{\PhVExitMeanGAHillsBand}{[$+$0.22, $+$6.57]}
+\newcommand{\PhVExitMeanGALowMtn}{$-$3.38}
+\newcommand{\PhVExitMeanGALowMtnBand}{[$-$5.66, $-$1.10]}
+\newcommand{\PhVExitMeanGAPlains}{$+$2.37}
+\newcommand{\PhVExitMeanGAPlainsBand}{[$-$0.78, $+$5.52]}
+\newcommand{\PhVExitPerHourASAll}{$-$0.116}
+\newcommand{\PhVExitPerHourASAllBand}{[$-$0.147, $-$0.085]}
+\newcommand{\PhVExitPerHourASHighMtn}{$-$0.0338}
+\newcommand{\PhVExitPerHourASHighMtnBand}{[$-$0.0805, $+$0.0130]}
+\newcommand{\PhVExitPerHourASHills}{$-$0.0175}
+\newcommand{\PhVExitPerHourASHillsBand}{[$-$0.1191, $+$0.0840]}
+\newcommand{\PhVExitPerHourASLowMtn}{$-$0.107}
+\newcommand{\PhVExitPerHourASLowMtnBand}{[$-$0.147, $-$0.067]}
+\newcommand{\PhVExitPerHourASPlains}{$-$0.0779}
+\newcommand{\PhVExitPerHourASPlainsBand}{[$-$0.1660, $+$0.0102]}
+\newcommand{\PhVExitPerHourGAAll}{$+$0.115}
+\newcommand{\PhVExitPerHourGAAllBand}{[$+$0.083, $+$0.147]}
+\newcommand{\PhVExitPerHourGAHighMtn}{$+$0.0143}
+\newcommand{\PhVExitPerHourGAHighMtnBand}{[$-$0.0384, $+$0.0669]}
+\newcommand{\PhVExitPerHourGAHills}{$+$0.160}
+\newcommand{\PhVExitPerHourGAHillsBand}{[$+$0.049, $+$0.272]}
+\newcommand{\PhVExitPerHourGALowMtn}{$+$0.0837}
+\newcommand{\PhVExitPerHourGALowMtnBand}{[$+$0.0414, $+$0.1260]}
+\newcommand{\PhVExitPerHourGAPlains}{$+$0.228}
+\newcommand{\PhVExitPerHourGAPlainsBand}{[$+$0.143, $+$0.313]}
+\newcommand{\PhVFlightsAAll}{8\,161}
+\newcommand{\PhVFlightsAHighMtn}{2\,038}
+\newcommand{\PhVFlightsAHills}{837}
+\newcommand{\PhVFlightsALowMtn}{3\,868}
+\newcommand{\PhVFlightsAPlains}{1\,217}
+\newcommand{\PhVFlightsGAll}{9\,818}
+\newcommand{\PhVFlightsGHighMtn}{2\,273}
+\newcommand{\PhVFlightsGHills}{1\,159}
+\newcommand{\PhVFlightsGLowMtn}{4\,492}
+\newcommand{\PhVFlightsGPlains}{1\,674}
+\newcommand{\PhVFlightsSAll}{33\,933}
+\newcommand{\PhVFlightsSHighMtn}{5\,590}
+\newcommand{\PhVFlightsSHills}{6\,309}
+\newcommand{\PhVFlightsSLowMtn}{12\,844}
+\newcommand{\PhVFlightsSPlains}{6\,338}
+\newcommand{\PhVFoundASAll}{$+$1.17}
+\newcommand{\PhVFoundASAllBand}{[$+$0.49, $+$1.85]}
+\newcommand{\PhVFoundASHighMtn}{$+$0.195}
+\newcommand{\PhVFoundASHighMtnBand}{[$-$0.983, $+$1.374]}
+\newcommand{\PhVFoundASHills}{$+$2.50}
+\newcommand{\PhVFoundASHillsBand}{[$+$0.22, $+$4.77]}
+\newcommand{\PhVFoundASLowMtn}{$+$1.45}
+\newcommand{\PhVFoundASLowMtnBand}{[$+$0.46, $+$2.45]}
+\newcommand{\PhVFoundASPlains}{$+$2.34}
+\newcommand{\PhVFoundASPlainsBand}{[$+$0.31, $+$4.38]}
+\newcommand{\PhVFoundGAAll}{$+$5.72}
+\newcommand{\PhVFoundGAAllBand}{[$+$4.91, $+$6.53]}
+\newcommand{\PhVFoundGAHighMtn}{$+$7.49}
+\newcommand{\PhVFoundGAHighMtnBand}{[$+$6.05, $+$8.94]}
+\newcommand{\PhVFoundGAHills}{$+$6.27}
+\newcommand{\PhVFoundGAHillsBand}{[$+$3.73, $+$8.82]}
+\newcommand{\PhVFoundGALowMtn}{$+$5.79}
+\newcommand{\PhVFoundGALowMtnBand}{[$+$4.59, $+$6.99]}
+\newcommand{\PhVFoundGAPlains}{$+$2.41}
+\newcommand{\PhVFoundGAPlainsBand}{[$-$0.31, $+$5.14]}
+\newcommand{\PhVGainASAll}{$+$13.0}
+\newcommand{\PhVGainASAllBand}{[$+$9.5, $+$16.5]}
+\newcommand{\PhVGainASHighMtn}{$+$4.61}
+\newcommand{\PhVGainASHighMtnBand}{[$-$0.60, $+$9.81]}
+\newcommand{\PhVGainASHills}{$+$23.0}
+\newcommand{\PhVGainASHillsBand}{[$+$14.4, $+$31.7]}
+\newcommand{\PhVGainASLowMtn}{$+$11.3}
+\newcommand{\PhVGainASLowMtnBand}{[$+$6.4, $+$16.2]}
+\newcommand{\PhVGainASPlains}{$+$13.4}
+\newcommand{\PhVGainASPlainsBand}{[$+$6.7, $+$20.1]}
+\newcommand{\PhVGainGAAll}{$-$0.997}
+\newcommand{\PhVGainGAAllBand}{[$-$3.649, $+$1.654]}
+\newcommand{\PhVGainGAHighMtn}{$+$6.18}
+\newcommand{\PhVGainGAHighMtnBand}{[$+$1.34, $+$11.02]}
+\newcommand{\PhVGainGAHills}{$+$1.95}
+\newcommand{\PhVGainGAHillsBand}{[$-$6.30, $+$10.19]}
+\newcommand{\PhVGainGALowMtn}{$+$0.0327}
+\newcommand{\PhVGainGALowMtnBand}{[$-$3.7620, $+$3.8274]}
+\newcommand{\PhVGainGAPlains}{$-$16.5}
+\newcommand{\PhVGainGAPlainsBand}{[$-$22.8, $-$10.1]}
+\newcommand{\PhVHoursAAll}{18\,616}
+\newcommand{\PhVHoursAHighMtn}{5\,189}
+\newcommand{\PhVHoursAHills}{1\,358}
+\newcommand{\PhVHoursALowMtn}{9\,298}
+\newcommand{\PhVHoursAPlains}{2\,308}
+\newcommand{\PhVHoursGAll}{15\,292}
+\newcommand{\PhVHoursGHighMtn}{3\,514}
+\newcommand{\PhVHoursGHills}{1\,792}
+\newcommand{\PhVHoursGLowMtn}{6\,960}
+\newcommand{\PhVHoursGPlains}{2\,730}
+\newcommand{\PhVHoursSAll}{77\,589}
+\newcommand{\PhVHoursSHighMtn}{15\,846}
+\newcommand{\PhVHoursSHills}{11\,729}
+\newcommand{\PhVHoursSLowMtn}{30\,771}
+\newcommand{\PhVHoursSPlains}{12\,517}
+\newcommand{\PhVMuClimbASAll}{$-$0.0310}
+\newcommand{\PhVMuClimbASAllBand}{[$-$0.5608, $+$0.4988]}
+\newcommand{\PhVMuClimbASHighMtn}{$+$0.937}
+\newcommand{\PhVMuClimbASHighMtnBand}{[$+$0.175, $+$1.698]}
+\newcommand{\PhVMuClimbASHills}{$-$0.328}
+\newcommand{\PhVMuClimbASHillsBand}{[$-$1.418, $+$0.761]}
+\newcommand{\PhVMuClimbASLowMtn}{$+$0.227}
+\newcommand{\PhVMuClimbASLowMtnBand}{[$-$0.428, $+$0.883]}
+\newcommand{\PhVMuClimbASPlains}{$+$0.178}
+\newcommand{\PhVMuClimbASPlainsBand}{[$-$0.709, $+$1.065]}
+\newcommand{\PhVMuClimbGAAll}{$+$0.158}
+\newcommand{\PhVMuClimbGAAllBand}{[$-$0.593, $+$0.909]}
+\newcommand{\PhVMuClimbGAHighMtn}{$-$0.895}
+\newcommand{\PhVMuClimbGAHighMtnBand}{[$-$2.040, $+$0.250]}
+\newcommand{\PhVMuClimbGAHills}{$+$0.916}
+\newcommand{\PhVMuClimbGAHillsBand}{[$-$1.009, $+$2.841]}
+\newcommand{\PhVMuClimbGALowMtn}{$-$0.187}
+\newcommand{\PhVMuClimbGALowMtnBand}{[$-$1.211, $+$0.837]}
+\newcommand{\PhVMuClimbGAPlains}{$+$0.0558}
+\newcommand{\PhVMuClimbGAPlainsBand}{[$-$1.5105, $+$1.6221]}
+\newcommand{\PhVMuGlideASAll}{$-$0.357}
+\newcommand{\PhVMuGlideASAllBand}{[$-$0.752, $+$0.037]}
+\newcommand{\PhVMuGlideASHighMtn}{$-$0.883}
+\newcommand{\PhVMuGlideASHighMtnBand}{[$-$1.724, $-$0.042]}
+\newcommand{\PhVMuGlideASHills}{$+$0.574}
+\newcommand{\PhVMuGlideASHillsBand}{[$-$0.311, $+$1.458]}
+\newcommand{\PhVMuGlideASLowMtn}{$-$0.355}
+\newcommand{\PhVMuGlideASLowMtnBand}{[$-$0.766, $+$0.056]}
+\newcommand{\PhVMuGlideASPlains}{$+$0.610}
+\newcommand{\PhVMuGlideASPlainsBand}{[$-$0.298, $+$1.518]}
+\newcommand{\PhVMuGlideGAAll}{$-$0.958}
+\newcommand{\PhVMuGlideGAAllBand}{[$-$1.363, $-$0.552]}
+\newcommand{\PhVMuGlideGAHighMtn}{$-$0.767}
+\newcommand{\PhVMuGlideGAHighMtnBand}{[$-$1.522, $-$0.013]}
+\newcommand{\PhVMuGlideGAHills}{$+$0.0527}
+\newcommand{\PhVMuGlideGAHillsBand}{[$-$0.7629, $+$0.8683]}
+\newcommand{\PhVMuGlideGALowMtn}{$-$0.857}
+\newcommand{\PhVMuGlideGALowMtnBand}{[$-$1.291, $-$0.424]}
+\newcommand{\PhVMuGlideGAPlains}{$-$0.606}
+\newcommand{\PhVMuGlideGAPlainsBand}{[$-$1.992, $+$0.780]}
+\newcommand{\PhVMuSearchASAll}{$-$0.0791}
+\newcommand{\PhVMuSearchASAllBand}{[$-$0.4909, $+$0.3326]}
+\newcommand{\PhVMuSearchASHighMtn}{$+$0.170}
+\newcommand{\PhVMuSearchASHighMtnBand}{[$-$0.390, $+$0.731]}
+\newcommand{\PhVMuSearchASHills}{$+$1.93}
+\newcommand{\PhVMuSearchASHillsBand}{[$+$0.11, $+$3.76]}
+\newcommand{\PhVMuSearchASLowMtn}{$-$0.0667}
+\newcommand{\PhVMuSearchASLowMtnBand}{[$-$0.5427, $+$0.4093]}
+\newcommand{\PhVMuSearchASPlains}{$-$0.0925}
+\newcommand{\PhVMuSearchASPlainsBand}{[$-$1.2481, $+$1.0632]}
+\newcommand{\PhVMuSearchGAAll}{$+$0.0968}
+\newcommand{\PhVMuSearchGAAllBand}{[$-$0.4793, $+$0.6728]}
+\newcommand{\PhVMuSearchGAHighMtn}{$+$0.240}
+\newcommand{\PhVMuSearchGAHighMtnBand}{[$-$0.541, $+$1.021]}
+\newcommand{\PhVMuSearchGAHills}{$+$26.1}
+\newcommand{\PhVMuSearchGAHillsBand}{[$+$5.3, $+$47.0]}
+\newcommand{\PhVMuSearchGALowMtn}{$+$0.0994}
+\newcommand{\PhVMuSearchGALowMtnBand}{[$-$0.5209, $+$0.7197]}
+\newcommand{\PhVMuSearchGAPlains}{$+$0.468}
+\newcommand{\PhVMuSearchGAPlainsBand}{[$-$0.920, $+$1.856]}
+\newcommand{\PhVRateASAll}{$+$0.0565}
+\newcommand{\PhVRateASAllBand}{[$+$0.0436, $+$0.0693]}
+\newcommand{\PhVRateASHighMtn}{$+$0.0197}
+\newcommand{\PhVRateASHighMtnBand}{[$-$0.0004, $+$0.0398]}
+\newcommand{\PhVRateASHills}{$+$0.0229}
+\newcommand{\PhVRateASHillsBand}{[$-$0.0052, $+$0.0511]}
+\newcommand{\PhVRateASLowMtn}{$+$0.0482}
+\newcommand{\PhVRateASLowMtnBand}{[$+$0.0308, $+$0.0657]}
+\newcommand{\PhVRateASPlains}{$-$0.0024}
+\newcommand{\PhVRateASPlainsBand}{[$-$0.0225, $+$0.0176]}
+\newcommand{\PhVRateGAAll}{$-$0.0061}
+\newcommand{\PhVRateGAAllBand}{[$-$0.0152, $+$0.0030]}
+\newcommand{\PhVRateGAHighMtn}{$+$0.0266}
+\newcommand{\PhVRateGAHighMtnBand}{[$+$0.0093, $+$0.0438]}
+\newcommand{\PhVRateGAHills}{$-$0.0018}
+\newcommand{\PhVRateGAHillsBand}{[$-$0.0231, $+$0.0196]}
+\newcommand{\PhVRateGALowMtn}{$-$0.0021}
+\newcommand{\PhVRateGALowMtnBand}{[$-$0.0157, $+$0.0115]}
+\newcommand{\PhVRateGAPlains}{$-$0.0263}
+\newcommand{\PhVRateGAPlainsBand}{[$-$0.0447, $-$0.0078]}
+\newcommand{\PhVSearchPerHourASAll}{$-$0.118}
+\newcommand{\PhVSearchPerHourASAllBand}{[$-$0.179, $-$0.056]}
+\newcommand{\PhVSearchPerHourASHighMtn}{$-$0.233}
+\newcommand{\PhVSearchPerHourASHighMtnBand}{[$-$0.327, $-$0.138]}
+\newcommand{\PhVSearchPerHourASHills}{$-$0.482}
+\newcommand{\PhVSearchPerHourASHillsBand}{[$-$0.622, $-$0.342]}
+\newcommand{\PhVSearchPerHourASLowMtn}{$-$0.112}
+\newcommand{\PhVSearchPerHourASLowMtnBand}{[$-$0.194, $-$0.031]}
+\newcommand{\PhVSearchPerHourASPlains}{$-$0.272}
+\newcommand{\PhVSearchPerHourASPlainsBand}{[$-$0.383, $-$0.161]}
+\newcommand{\PhVSearchPerHourGAAll}{$-$0.176}
+\newcommand{\PhVSearchPerHourGAAllBand}{[$-$0.223, $-$0.128]}
+\newcommand{\PhVSearchPerHourGAHighMtn}{$-$0.191}
+\newcommand{\PhVSearchPerHourGAHighMtnBand}{[$-$0.281, $-$0.101]}
+\newcommand{\PhVSearchPerHourGAHills}{$-$0.0663}
+\newcommand{\PhVSearchPerHourGAHillsBand}{[$-$0.1928, $+$0.0602]}
+\newcommand{\PhVSearchPerHourGALowMtn}{$-$0.180}
+\newcommand{\PhVSearchPerHourGALowMtnBand}{[$-$0.256, $-$0.103]}
+\newcommand{\PhVSearchPerHourGAPlains}{$-$0.104}
+\newcommand{\PhVSearchPerHourGAPlainsBand}{[$-$0.206, $-$0.002]}
+\newcommand{\PhVShareClimbASAll}{$-$1.30}
+\newcommand{\PhVShareClimbASAllBand}{[$-$1.73, $-$0.86]}
+\newcommand{\PhVShareClimbASHighMtn}{$-$0.539}
+\newcommand{\PhVShareClimbASHighMtnBand}{[$-$1.083, $+$0.006]}
+\newcommand{\PhVShareClimbASHills}{$+$3.38}
+\newcommand{\PhVShareClimbASHillsBand}{[$+$2.37, $+$4.38]}
+\newcommand{\PhVShareClimbASLowMtn}{$-$1.14}
+\newcommand{\PhVShareClimbASLowMtnBand}{[$-$1.68, $-$0.60]}
+\newcommand{\PhVShareClimbASPlains}{$+$1.73}
+\newcommand{\PhVShareClimbASPlainsBand}{[$+$0.90, $+$2.56]}
+\newcommand{\PhVShareClimbGAAll}{$+$4.72}
+\newcommand{\PhVShareClimbGAAllBand}{[$+$4.38, $+$5.06]}
+\newcommand{\PhVShareClimbGAHighMtn}{$+$4.97}
+\newcommand{\PhVShareClimbGAHighMtnBand}{[$+$4.36, $+$5.59]}
+\newcommand{\PhVShareClimbGAHills}{$+$3.52}
+\newcommand{\PhVShareClimbGAHillsBand}{[$+$2.60, $+$4.44]}
+\newcommand{\PhVShareClimbGALowMtn}{$+$4.54}
+\newcommand{\PhVShareClimbGALowMtnBand}{[$+$4.07, $+$5.01]}
+\newcommand{\PhVShareClimbGAPlains}{$+$3.39}
+\newcommand{\PhVShareClimbGAPlainsBand}{[$+$2.54, $+$4.23]}
+\newcommand{\PhVShareExitASAll}{$-$0.128}
+\newcommand{\PhVShareExitASAllBand}{[$-$0.209, $-$0.047]}
+\newcommand{\PhVShareExitASHighMtn}{$-$0.0590}
+\newcommand{\PhVShareExitASHighMtnBand}{[$-$0.1886, $+$0.0706]}
+\newcommand{\PhVShareExitASHills}{$-$0.145}
+\newcommand{\PhVShareExitASHillsBand}{[$-$0.349, $+$0.059]}
+\newcommand{\PhVShareExitASLowMtn}{$-$0.120}
+\newcommand{\PhVShareExitASLowMtnBand}{[$-$0.236, $-$0.005]}
+\newcommand{\PhVShareExitASPlains}{$-$0.135}
+\newcommand{\PhVShareExitASPlainsBand}{[$-$0.344, $+$0.074]}
+\newcommand{\PhVShareExitGAAll}{$+$0.145}
+\newcommand{\PhVShareExitGAAllBand}{[$+$0.063, $+$0.228]}
+\newcommand{\PhVShareExitGAHighMtn}{$-$0.108}
+\newcommand{\PhVShareExitGAHighMtnBand}{[$-$0.252, $+$0.036]}
+\newcommand{\PhVShareExitGAHills}{$+$0.417}
+\newcommand{\PhVShareExitGAHillsBand}{[$+$0.171, $+$0.664]}
+\newcommand{\PhVShareExitGALowMtn}{$+$0.0309}
+\newcommand{\PhVShareExitGALowMtnBand}{[$-$0.0859, $+$0.1476]}
+\newcommand{\PhVShareExitGAPlains}{$+$0.530}
+\newcommand{\PhVShareExitGAPlainsBand}{[$+$0.303, $+$0.757]}
+\newcommand{\PhVShareGlideASAll}{$+$1.30}
+\newcommand{\PhVShareGlideASAllBand}{[$+$0.87, $+$1.74]}
+\newcommand{\PhVShareGlideASHighMtn}{$+$1.20}
+\newcommand{\PhVShareGlideASHighMtnBand}{[$+$0.62, $+$1.79]}
+\newcommand{\PhVShareGlideASHills}{$-$1.87}
+\newcommand{\PhVShareGlideASHillsBand}{[$-$2.87, $-$0.86]}
+\newcommand{\PhVShareGlideASLowMtn}{$+$1.15}
+\newcommand{\PhVShareGlideASLowMtnBand}{[$+$0.57, $+$1.73]}
+\newcommand{\PhVShareGlideASPlains}{$-$1.20}
+\newcommand{\PhVShareGlideASPlainsBand}{[$-$2.12, $-$0.27]}
+\newcommand{\PhVShareGlideGAAll}{$-$3.99}
+\newcommand{\PhVShareGlideGAAllBand}{[$-$4.35, $-$3.63]}
+\newcommand{\PhVShareGlideGAHighMtn}{$-$4.03}
+\newcommand{\PhVShareGlideGAHighMtnBand}{[$-$4.73, $-$3.33]}
+\newcommand{\PhVShareGlideGAHills}{$-$3.47}
+\newcommand{\PhVShareGlideGAHillsBand}{[$-$4.44, $-$2.49]}
+\newcommand{\PhVShareGlideGALowMtn}{$-$3.65}
+\newcommand{\PhVShareGlideGALowMtnBand}{[$-$4.18, $-$3.13]}
+\newcommand{\PhVShareGlideGAPlains}{$-$3.36}
+\newcommand{\PhVShareGlideGAPlainsBand}{[$-$4.22, $-$2.50]}
+\newcommand{\PhVShareSearchASAll}{$+$0.125}
+\newcommand{\PhVShareSearchASAllBand}{[$-$0.080, $+$0.330]}
+\newcommand{\PhVShareSearchASHighMtn}{$-$0.606}
+\newcommand{\PhVShareSearchASHighMtnBand}{[$-$0.935, $-$0.276]}
+\newcommand{\PhVShareSearchASHills}{$-$1.36}
+\newcommand{\PhVShareSearchASHillsBand}{[$-$1.78, $-$0.95]}
+\newcommand{\PhVShareSearchASLowMtn}{$+$0.114}
+\newcommand{\PhVShareSearchASLowMtnBand}{[$-$0.166, $+$0.394]}
+\newcommand{\PhVShareSearchASPlains}{$-$0.397}
+\newcommand{\PhVShareSearchASPlainsBand}{[$-$0.726, $-$0.067]}
+\newcommand{\PhVShareSearchGAAll}{$-$0.877}
+\newcommand{\PhVShareSearchGAAllBand}{[$-$1.036, $-$0.719]}
+\newcommand{\PhVShareSearchGAHighMtn}{$-$0.836}
+\newcommand{\PhVShareSearchGAHighMtnBand}{[$-$1.148, $-$0.525]}
+\newcommand{\PhVShareSearchGAHills}{$-$0.473}
+\newcommand{\PhVShareSearchGAHillsBand}{[$-$0.792, $-$0.154]}
+\newcommand{\PhVShareSearchGALowMtn}{$-$0.921}
+\newcommand{\PhVShareSearchGALowMtnBand}{[$-$1.194, $-$0.647]}
+\newcommand{\PhVShareSearchGAPlains}{$-$0.556}
+\newcommand{\PhVShareSearchGAPlainsBand}{[$-$0.831, $-$0.281]}
+\newcommand{\PhVSinkASAll}{$-$6.06}
+\newcommand{\PhVSinkASAllBand}{[$-$7.11, $-$5.02]}
+\newcommand{\PhVSinkASHighMtn}{$-$4.39}
+\newcommand{\PhVSinkASHighMtnBand}{[$-$6.03, $-$2.74]}
+\newcommand{\PhVSinkASHills}{$-$5.31}
+\newcommand{\PhVSinkASHillsBand}{[$-$7.89, $-$2.73]}
+\newcommand{\PhVSinkASLowMtn}{$-$6.65}
+\newcommand{\PhVSinkASLowMtnBand}{[$-$7.98, $-$5.31]}
+\newcommand{\PhVSinkASPlains}{$-$6.37}
+\newcommand{\PhVSinkASPlainsBand}{[$-$8.78, $-$3.97]}
+\newcommand{\PhVSinkGAAll}{$-$12.8}
+\newcommand{\PhVSinkGAAllBand}{[$-$13.6, $-$12.0]}
+\newcommand{\PhVSinkGAHighMtn}{$-$14.4}
+\newcommand{\PhVSinkGAHighMtnBand}{[$-$16.0, $-$12.9]}
+\newcommand{\PhVSinkGAHills}{$-$7.03}
+\newcommand{\PhVSinkGAHillsBand}{[$-$9.03, $-$5.04]}
+\newcommand{\PhVSinkGALowMtn}{$-$15.5}
+\newcommand{\PhVSinkGALowMtnBand}{[$-$16.7, $-$14.3]}
+\newcommand{\PhVSinkGAPlains}{$-$7.13}
+\newcommand{\PhVSinkGAPlainsBand}{[$-$8.67, $-$5.58]}
+\newcommand{\PhVSpeedASAll}{$+$1.23}
+\newcommand{\PhVSpeedASAllBand}{[$+$0.88, $+$1.58]}
+\newcommand{\PhVSpeedASHighMtn}{$+$1.31}
+\newcommand{\PhVSpeedASHighMtnBand}{[$+$0.95, $+$1.67]}
+\newcommand{\PhVSpeedASHills}{$+$3.83}
+\newcommand{\PhVSpeedASHillsBand}{[$+$2.93, $+$4.72]}
+\newcommand{\PhVSpeedASLowMtn}{$+$1.54}
+\newcommand{\PhVSpeedASLowMtnBand}{[$+$1.19, $+$1.89]}
+\newcommand{\PhVSpeedASPlains}{$+$3.10}
+\newcommand{\PhVSpeedASPlainsBand}{[$+$2.20, $+$3.99]}
+\newcommand{\PhVSpeedGAAll}{$+$1.31}
+\newcommand{\PhVSpeedGAAllBand}{[$+$1.12, $+$1.49]}
+\newcommand{\PhVSpeedGAHighMtn}{$+$1.20}
+\newcommand{\PhVSpeedGAHighMtnBand}{[$+$0.90, $+$1.50]}
+\newcommand{\PhVSpeedGAHills}{$+$1.42}
+\newcommand{\PhVSpeedGAHillsBand}{[$+$0.84, $+$2.00]}
+\newcommand{\PhVSpeedGALowMtn}{$+$1.00}
+\newcommand{\PhVSpeedGALowMtnBand}{[$+$0.78, $+$1.23]}
+\newcommand{\PhVSpeedGAPlains}{$+$0.470}
+\newcommand{\PhVSpeedGAPlainsBand}{[$-$0.016, $+$0.956]}
+\newcommand{\PhVXminClimbAll}{1\,107}
+\newcommand{\PhVXminClimbHighMtn}{1\,141}
+\newcommand{\PhVXminClimbHills}{847}
+\newcommand{\PhVXminClimbLowMtn}{1\,023}
+\newcommand{\PhVXminClimbPlains}{890}
+\newcommand{\PhVXminGlideAll}{1\,682}
+\newcommand{\PhVXminGlideHighMtn}{1\,972}
+\newcommand{\PhVXminGlideHills}{1\,003}
+\newcommand{\PhVXminGlideLowMtn}{1\,632}
+\newcommand{\PhVXminGlidePlains}{1\,130}
+\newcommand{\PhVXminSearchAll}{525}
+\newcommand{\PhVXminSearchHighMtn}{390}
+\newcommand{\PhVXminSearchHills}{378}
+\newcommand{\PhVXminSearchLowMtn}{461}
+\newcommand{\PhVXminSearchPlains}{342}
+\newcommand{\PhXminClimbAll}{1\,325}
+\newcommand{\PhXminClimbHighMtn}{1\,141}
+\newcommand{\PhXminClimbHills}{1\,130}
+\newcommand{\PhXminClimbLowMtn}{1\,003}
+\newcommand{\PhXminClimbPlains}{1\,299}
+\newcommand{\PhXminGlideAll}{1\,682}
+\newcommand{\PhXminGlideHighMtn}{1\,538}
+\newcommand{\PhXminGlideHills}{1\,075}
+\newcommand{\PhXminGlideLowMtn}{1\,665}
+\newcommand{\PhXminGlidePlains}{1\,130}
+\newcommand{\PhXminSearchAll}{536}
+\newcommand{\PhXminSearchHighMtn}{382}
+\newcommand{\PhXminSearchHills}{210}
+\newcommand{\PhXminSearchLowMtn}{708}
+\newcommand{\PhXminSearchPlains}{356}
+\newcommand{\PieceMinS}{1\,250}
+\newcommand{\PilotShareS}{82}
+\newcommand{\PoolAMax}{1.29}
+\newcommand{\PoolAMinusChainLong}{$+$0.049}
+\newcommand{\PoolAMinusChainThousand}{$+$0.003}
+\newcommand{\PoolAMinusChainVeryLong}{$+$0.122}
+\newcommand{\PoolAMinusLong}{$+$0.044}
+\newcommand{\PoolAMinusThousand}{$+$0.002}
+\newcommand{\PoolAMinusVeryLong}{$+$0.107}
+\newcommand{\PoolGMax}{1.05}
+\newcommand{\PoolGMinusChainLong}{$+$0.052}
+\newcommand{\PoolGMinusChainThousand}{$-$0.000}
+\newcommand{\PoolGMinusChainVeryLong}{$+$0.158}
+\newcommand{\PoolGMinusLong}{$+$0.047}
+\newcommand{\PoolGMinusThousand}{$-$0.000}
+\newcommand{\PoolGMinusVeryLong}{$+$0.144}
+\newcommand{\PoolSMax}{1.46}
+\newcommand{\PoolSMinusChainLong}{$-$0.005}
+\newcommand{\PoolSMinusChainThousand}{$-$0.010}
+\newcommand{\PoolSMinusChainVeryLong}{$+$0.107}
+\newcommand{\PoolSMinusLong}{$-$0.005}
+\newcommand{\PoolSMinusThousand}{$-$0.009}
+\newcommand{\PoolSMinusVeryLong}{$+$0.099}
 \newcommand{\PreCAClimb}{$-$1.3}
 \newcommand{\PreCAClimbBand}{[$-$1.8, $-$0.8]}
 \newcommand{\PreCACph}{$-$0.36}
@@ -1377,16 +3540,173 @@
 \newcommand{\RawXcFlightsA}{5\,463}
 \newcommand{\RawXcFlightsG}{7\,823}
 \newcommand{\RawXcFlightsS}{26\,336}
+\newcommand{\RefitAgreeHang}{98.1}
+\newcommand{\RefitAgreeHighMtn}{97.9}
+\newcommand{\RefitAgreeHills}{97.1}
+\newcommand{\RefitAgreeLowMtn}{97.7}
+\newcommand{\RefitAgreePara}{97.7}
+\newcommand{\RefitAgreePlains}{96.3}
+\newcommand{\RefitCadenceHangFive}{98.2}
+\newcommand{\RefitCadenceParaFive}{97.3}
+\newcommand{\RefitCadenceParaTwo}{98.9}
+\newcommand{\RefitFlightsHang}{1\,666}
+\newcommand{\RefitFlightsPara}{104\,170}
+\newcommand{\RefitHeldHang}{349}
+\newcommand{\RefitHeldPara}{377}
+\newcommand{\RefitLLBestParaFix}{$-$0.702}
+\newcommand{\RefitLLHisParaFix}{$-$0.890}
+\newcommand{\RefitLLOursParaFix}{$-$0.757}
+\newcommand{\RefitPoolPara}{120\,496}
+\newcommand{\RefitSearchPerHourHis}{5.35}
+\newcommand{\RefitSearchPerHourOurs}{6.19}
+\newcommand{\RefitSearchShareHis}{11.7}
+\newcommand{\RefitSearchShareOurs}{13.4}
+\newcommand{\RefitStarts}{21}
+\newcommand{\RefitTrainHang}{1\,396}
+\newcommand{\RefitTrainPara}{1\,510}
+\newcommand{\RouteASAllThousand}{$+$0.001}
+\newcommand{\RouteASAllThousandBand}{[$-$0.002, $+$0.004]}
+\newcommand{\RouteASAllThreeTwenty}{$+$0.006}
+\newcommand{\RouteASAllThreeTwentyBand}{[$+$0.004, $+$0.007]}
+\newcommand{\RouteASHighMtnThousand}{$+$0.029}
+\newcommand{\RouteASHighMtnThousandBand}{[$+$0.024, $+$0.034]}
+\newcommand{\RouteASHighMtnThreeTwenty}{$+$0.016}
+\newcommand{\RouteASHighMtnThreeTwentyBand}{[$+$0.014, $+$0.018]}
+\newcommand{\RouteASHillsThousand}{$+$0.014}
+\newcommand{\RouteASHillsThousandBand}{[$+$0.008, $+$0.019]}
+\newcommand{\RouteASHillsThreeTwenty}{$+$0.010}
+\newcommand{\RouteASHillsThreeTwentyBand}{[$+$0.007, $+$0.014]}
+\newcommand{\RouteASLowMtnThousand}{$+$0.016}
+\newcommand{\RouteASLowMtnThousandBand}{[$+$0.012, $+$0.020]}
+\newcommand{\RouteASLowMtnThreeTwenty}{$+$0.013}
+\newcommand{\RouteASLowMtnThreeTwentyBand}{[$+$0.012, $+$0.015]}
+\newcommand{\RouteASPlainsThousand}{$+$0.005}
+\newcommand{\RouteASPlainsThousandBand}{[$+$0.003, $+$0.007]}
+\newcommand{\RouteASPlainsThreeTwenty}{$+$0.002}
+\newcommand{\RouteASPlainsThreeTwentyBand}{[$+$0.001, $+$0.004]}
+\newcommand{\RouteCheckMax}{0.012}
+\newcommand{\RouteDs}{100}
+\newcommand{\RouteGAAllThousand}{$+$0.023}
+\newcommand{\RouteGAAllThousandBand}{[$+$0.020, $+$0.025]}
+\newcommand{\RouteGAAllThreeTwenty}{$+$0.012}
+\newcommand{\RouteGAAllThreeTwentyBand}{[$+$0.011, $+$0.013]}
+\newcommand{\RouteGAHighMtnThousand}{$+$0.028}
+\newcommand{\RouteGAHighMtnThousandBand}{[$+$0.023, $+$0.032]}
+\newcommand{\RouteGAHighMtnThreeTwenty}{$+$0.015}
+\newcommand{\RouteGAHighMtnThreeTwentyBand}{[$+$0.013, $+$0.017]}
+\newcommand{\RouteGAHillsThousand}{$+$0.012}
+\newcommand{\RouteGAHillsThousandBand}{[$+$0.007, $+$0.017]}
+\newcommand{\RouteGAHillsThreeTwenty}{$+$0.006}
+\newcommand{\RouteGAHillsThreeTwentyBand}{[$+$0.003, $+$0.009]}
+\newcommand{\RouteGALowMtnThousand}{$+$0.022}
+\newcommand{\RouteGALowMtnThousandBand}{[$+$0.019, $+$0.026]}
+\newcommand{\RouteGALowMtnThreeTwenty}{$+$0.013}
+\newcommand{\RouteGALowMtnThreeTwentyBand}{[$+$0.012, $+$0.015]}
+\newcommand{\RouteGAPlainsThousand}{$+$0.004}
+\newcommand{\RouteGAPlainsThousandBand}{[$+$0.003, $+$0.006]}
+\newcommand{\RouteGAPlainsThreeTwenty}{$+$0.002}
+\newcommand{\RouteGAPlainsThreeTwentyBand}{[$+$0.000, $+$0.003]}
+\newcommand{\RouteGSAllThousand}{$+$0.023}
+\newcommand{\RouteGSAllThousandBand}{[$+$0.020, $+$0.026]}
+\newcommand{\RouteGSAllThreeTwenty}{$+$0.018}
+\newcommand{\RouteGSAllThreeTwentyBand}{[$+$0.017, $+$0.020]}
+\newcommand{\RouteGSHighMtnThousand}{$+$0.057}
+\newcommand{\RouteGSHighMtnThousandBand}{[$+$0.052, $+$0.061]}
+\newcommand{\RouteGSHighMtnThreeTwenty}{$+$0.031}
+\newcommand{\RouteGSHighMtnThreeTwentyBand}{[$+$0.029, $+$0.033]}
+\newcommand{\RouteGSHillsThousand}{$+$0.026}
+\newcommand{\RouteGSHillsThousandBand}{[$+$0.021, $+$0.031]}
+\newcommand{\RouteGSHillsThreeTwenty}{$+$0.016}
+\newcommand{\RouteGSHillsThreeTwentyBand}{[$+$0.013, $+$0.019]}
+\newcommand{\RouteGSLowMtnThousand}{$+$0.039}
+\newcommand{\RouteGSLowMtnThousandBand}{[$+$0.034, $+$0.043]}
+\newcommand{\RouteGSLowMtnThreeTwenty}{$+$0.027}
+\newcommand{\RouteGSLowMtnThreeTwentyBand}{[$+$0.025, $+$0.029]}
+\newcommand{\RouteGSPlainsThousand}{$+$0.009}
+\newcommand{\RouteGSPlainsThousandBand}{[$+$0.007, $+$0.011]}
+\newcommand{\RouteGSPlainsThreeTwenty}{$+$0.004}
+\newcommand{\RouteGSPlainsThreeTwentyBand}{[$+$0.002, $+$0.006]}
+\newcommand{\RouteLagThousand}{870}
+\newcommand{\RouteLagThreeTwenty}{260}
+\newcommand{\RouteMinusASAllThousand}{$-$0.005}
+\newcommand{\RouteMinusASAllThousandBand}{[$-$0.006, $-$0.003]}
+\newcommand{\RouteMinusASAllThreeTwenty}{$-$0.003}
+\newcommand{\RouteMinusASAllThreeTwentyBand}{[$-$0.004, $-$0.002]}
+\newcommand{\RouteMinusASHighMtnThousand}{$-$0.006}
+\newcommand{\RouteMinusASHighMtnThousandBand}{[$-$0.008, $-$0.004]}
+\newcommand{\RouteMinusASHighMtnThreeTwenty}{$-$0.004}
+\newcommand{\RouteMinusASHighMtnThreeTwentyBand}{[$-$0.005, $-$0.002]}
+\newcommand{\RouteMinusASHillsThousand}{$-$0.001}
+\newcommand{\RouteMinusASHillsThousandBand}{[$-$0.005, $+$0.002]}
+\newcommand{\RouteMinusASHillsThreeTwenty}{$+$0.000}
+\newcommand{\RouteMinusASHillsThreeTwentyBand}{[$-$0.003, $+$0.003]}
+\newcommand{\RouteMinusASLowMtnThousand}{$-$0.005}
+\newcommand{\RouteMinusASLowMtnThousandBand}{[$-$0.007, $-$0.003]}
+\newcommand{\RouteMinusASLowMtnThreeTwenty}{$-$0.001}
+\newcommand{\RouteMinusASLowMtnThreeTwentyBand}{[$-$0.003, $-$0.000]}
+\newcommand{\RouteMinusASPlainsThousand}{$+$0.000}
+\newcommand{\RouteMinusASPlainsThousandBand}{[$-$0.002, $+$0.002]}
+\newcommand{\RouteMinusASPlainsThreeTwenty}{$+$0.002}
+\newcommand{\RouteMinusASPlainsThreeTwentyBand}{[$+$0.000, $+$0.004]}
+\newcommand{\RouteMinusGAAllThousand}{$+$0.005}
+\newcommand{\RouteMinusGAAllThousandBand}{[$+$0.004, $+$0.006]}
+\newcommand{\RouteMinusGAAllThreeTwenty}{$-$0.001}
+\newcommand{\RouteMinusGAAllThreeTwentyBand}{[$-$0.002, $-$0.000]}
+\newcommand{\RouteMinusGAHighMtnThousand}{$+$0.005}
+\newcommand{\RouteMinusGAHighMtnThousandBand}{[$+$0.003, $+$0.008]}
+\newcommand{\RouteMinusGAHighMtnThreeTwenty}{$-$0.000}
+\newcommand{\RouteMinusGAHighMtnThreeTwentyBand}{[$-$0.002, $+$0.002]}
+\newcommand{\RouteMinusGAHillsThousand}{$+$0.001}
+\newcommand{\RouteMinusGAHillsThousandBand}{[$-$0.003, $+$0.005]}
+\newcommand{\RouteMinusGAHillsThreeTwenty}{$-$0.005}
+\newcommand{\RouteMinusGAHillsThreeTwentyBand}{[$-$0.008, $-$0.002]}
+\newcommand{\RouteMinusGALowMtnThousand}{$+$0.008}
+\newcommand{\RouteMinusGALowMtnThousandBand}{[$+$0.006, $+$0.010]}
+\newcommand{\RouteMinusGALowMtnThreeTwenty}{$+$0.000}
+\newcommand{\RouteMinusGALowMtnThreeTwentyBand}{[$-$0.001, $+$0.001]}
+\newcommand{\RouteMinusGAPlainsThousand}{$+$0.004}
+\newcommand{\RouteMinusGAPlainsThousandBand}{[$+$0.001, $+$0.006]}
+\newcommand{\RouteMinusGAPlainsThreeTwenty}{$-$0.003}
+\newcommand{\RouteMinusGAPlainsThreeTwentyBand}{[$-$0.005, $-$0.001]}
+\newcommand{\RouteMinusGSAllThousand}{$+$0.000}
+\newcommand{\RouteMinusGSAllThousandBand}{[$-$0.001, $+$0.002]}
+\newcommand{\RouteMinusGSAllThreeTwenty}{$-$0.004}
+\newcommand{\RouteMinusGSAllThreeTwentyBand}{[$-$0.005, $-$0.003]}
+\newcommand{\RouteMinusGSHighMtnThousand}{$-$0.001}
+\newcommand{\RouteMinusGSHighMtnThousandBand}{[$-$0.003, $+$0.002]}
+\newcommand{\RouteMinusGSHighMtnThreeTwenty}{$-$0.004}
+\newcommand{\RouteMinusGSHighMtnThreeTwentyBand}{[$-$0.005, $-$0.002]}
+\newcommand{\RouteMinusGSHillsThousand}{$-$0.000}
+\newcommand{\RouteMinusGSHillsThousandBand}{[$-$0.004, $+$0.003]}
+\newcommand{\RouteMinusGSHillsThreeTwenty}{$-$0.005}
+\newcommand{\RouteMinusGSHillsThreeTwentyBand}{[$-$0.007, $-$0.002]}
+\newcommand{\RouteMinusGSLowMtnThousand}{$+$0.003}
+\newcommand{\RouteMinusGSLowMtnThousandBand}{[$+$0.001, $+$0.005]}
+\newcommand{\RouteMinusGSLowMtnThreeTwenty}{$-$0.001}
+\newcommand{\RouteMinusGSLowMtnThreeTwentyBand}{[$-$0.003, $-$0.000]}
+\newcommand{\RouteMinusGSPlainsThousand}{$+$0.004}
+\newcommand{\RouteMinusGSPlainsThousandBand}{[$+$0.001, $+$0.006]}
+\newcommand{\RouteMinusGSPlainsThreeTwenty}{$-$0.001}
+\newcommand{\RouteMinusGSPlainsThreeTwentyBand}{[$-$0.003, $+$0.001]}
+\newcommand{\RoutePathSpeed}{9.9}
+\newcommand{\RouteSpeed}{7.9}
+\newcommand{\RouteTimeLagThousand}{1\,098}
+\newcommand{\RouteTimeLagThreeTwenty}{328}
 \newcommand{\StrictShare}{26}
 \newcommand{\Stricter}{0.5}
-\newcommand{\TakeoffHighFlights}{35\,698}
+\newcommand{\Support}{0.8}
+\newcommand{\TakeoffHighFlights}{34\,333}
 \newcommand{\TakeoffHighKeep}{80}
+\newcommand{\TakeoffHighKeepN}{27\,415}
 \newcommand{\TakeoffHighMedian}{0.24}
-\newcommand{\TakeoffHighStrict}{13}
-\newcommand{\TakeoffLowFlights}{31\,147}
+\newcommand{\TakeoffHighStrict}{12}
+\newcommand{\TakeoffHighStrictN}{4\,307}
+\newcommand{\TakeoffLowFlights}{29\,958}
 \newcommand{\TakeoffLowKeep}{88}
+\newcommand{\TakeoffLowKeepN}{26\,201}
 \newcommand{\TakeoffLowMedian}{0.45}
 \newcommand{\TakeoffLowStrict}{42}
+\newcommand{\TakeoffLowStrictN}{12\,511}
 \newcommand{\ToyAvgFirst}{12.6}
 \newcommand{\ToyCgmB}{2}
 \newcommand{\ToyCgmC}{6}
@@ -1407,6 +3727,19 @@
 \newcommand{\ToyNa}{1}
 \newcommand{\ToyNb}{5}
 \newcommand{\ToyNc}{2}
+\newcommand{\ToyPlAlpha}{0.9}
+\newcommand{\ToyPlBeta}{0.3}
+\newcommand{\ToyPlChained}{0.900}
+\newcommand{\ToyPlCohorts}{2\,000, 5\,000, 10\,000, 20\,000, 50\,000}
+\newcommand{\ToyPlJump}{0.959}
+\newcommand{\ToyPlMean}{0.929}
+\newcommand{\ToyPlMeanMax}{0.954}
+\newcommand{\ToyPlPerlag}{0.900}
+\newcommand{\ToyPlPool}{0.967}
+\newcommand{\ToyPlTau}{10\,000}
+\newcommand{\ToyPlTmax}{100\,000}
+\newcommand{\ToyPlTop}{0.975}
+\newcommand{\ToyPlTzero}{10\,000}
 \newcommand{\ToyPos}{0, 3, 4, 10}
 \newcommand{\ToyRatio}{13.3}
 \newcommand{\ToyRwA}{5}
@@ -1430,4 +3763,196 @@
 \newcommand{\ToyTa}{100}
 \newcommand{\ToyTb}{400}
 \newcommand{\ToyTc}{500}
+\newcommand{\WeightASAllThousand}{$-$0.003}
+\newcommand{\WeightASAllThousandBand}{[$-$0.007, $-$0.000]}
+\newcommand{\WeightASHighMtnThousand}{$+$0.018}
+\newcommand{\WeightASHighMtnThousandBand}{[$+$0.013, $+$0.023]}
+\newcommand{\WeightASHillsThousand}{$+$0.013}
+\newcommand{\WeightASHillsThousandBand}{[$+$0.008, $+$0.019]}
+\newcommand{\WeightASLowMtnThousand}{$+$0.007}
+\newcommand{\WeightASLowMtnThousandBand}{[$+$0.003, $+$0.011]}
+\newcommand{\WeightASPlainsThousand}{$+$0.005}
+\newcommand{\WeightASPlainsThousandBand}{[$+$0.002, $+$0.008]}
+\newcommand{\WeightGAAllThousand}{$+$0.027}
+\newcommand{\WeightGAAllThousandBand}{[$+$0.025, $+$0.029]}
+\newcommand{\WeightGAHighMtnThousand}{$+$0.035}
+\newcommand{\WeightGAHighMtnThousandBand}{[$+$0.030, $+$0.040]}
+\newcommand{\WeightGAHillsThousand}{$+$0.012}
+\newcommand{\WeightGAHillsThousandBand}{[$+$0.006, $+$0.017]}
+\newcommand{\WeightGALowMtnThousand}{$+$0.034}
+\newcommand{\WeightGALowMtnThousandBand}{[$+$0.030, $+$0.038]}
+\newcommand{\WeightGAPlainsThousand}{$+$0.008}
+\newcommand{\WeightGAPlainsThousandBand}{[$+$0.005, $+$0.011]}
+\newcommand{\WeightGSAllThousand}{$+$0.023}
+\newcommand{\WeightGSAllThousandBand}{[$+$0.020, $+$0.027]}
+\newcommand{\WeightGSHighMtnThousand}{$+$0.053}
+\newcommand{\WeightGSHighMtnThousandBand}{[$+$0.048, $+$0.058]}
+\newcommand{\WeightGSHillsThousand}{$+$0.025}
+\newcommand{\WeightGSHillsThousandBand}{[$+$0.020, $+$0.030]}
+\newcommand{\WeightGSLowMtnThousand}{$+$0.041}
+\newcommand{\WeightGSLowMtnThousandBand}{[$+$0.037, $+$0.045]}
+\newcommand{\WeightGSPlainsThousand}{$+$0.013}
+\newcommand{\WeightGSPlainsThousandBand}{[$+$0.009, $+$0.016]}
+\newcommand{\WeightMaxShift}{0.006}
+\newcommand{\WeightMinusASAllThousand}{$-$0.000}
+\newcommand{\WeightMinusASAllThousandBand}{[$-$0.001, $+$0.001]}
+\newcommand{\WeightMinusASHighMtnThousand}{$-$0.004}
+\newcommand{\WeightMinusASHighMtnThousandBand}{[$-$0.006, $-$0.002]}
+\newcommand{\WeightMinusASHillsThousand}{$+$0.001}
+\newcommand{\WeightMinusASHillsThousandBand}{[$-$0.001, $+$0.002]}
+\newcommand{\WeightMinusASLowMtnThousand}{$-$0.004}
+\newcommand{\WeightMinusASLowMtnThousandBand}{[$-$0.005, $-$0.003]}
+\newcommand{\WeightMinusASPlainsThousand}{$-$0.001}
+\newcommand{\WeightMinusASPlainsThousandBand}{[$-$0.001, $+$0.000]}
+\newcommand{\WeightMinusGAAllThousand}{$-$0.001}
+\newcommand{\WeightMinusGAAllThousandBand}{[$-$0.001, $+$0.000]}
+\newcommand{\WeightMinusGAHighMtnThousand}{$+$0.002}
+\newcommand{\WeightMinusGAHighMtnThousandBand}{[$+$0.000, $+$0.004]}
+\newcommand{\WeightMinusGAHillsThousand}{$-$0.001}
+\newcommand{\WeightMinusGAHillsThousandBand}{[$-$0.003, $+$0.001]}
+\newcommand{\WeightMinusGALowMtnThousand}{$+$0.003}
+\newcommand{\WeightMinusGALowMtnThousandBand}{[$+$0.001, $+$0.004]}
+\newcommand{\WeightMinusGAPlainsThousand}{$+$0.000}
+\newcommand{\WeightMinusGAPlainsThousandBand}{[$-$0.001, $+$0.002]}
+\newcommand{\WeightMinusGSAllThousand}{$-$0.001}
+\newcommand{\WeightMinusGSAllThousandBand}{[$-$0.001, $+$0.000]}
+\newcommand{\WeightMinusGSHighMtnThousand}{$-$0.002}
+\newcommand{\WeightMinusGSHighMtnThousandBand}{[$-$0.003, $-$0.000]}
+\newcommand{\WeightMinusGSHillsThousand}{$+$0.000}
+\newcommand{\WeightMinusGSHillsThousandBand}{[$-$0.001, $+$0.002]}
+\newcommand{\WeightMinusGSLowMtnThousand}{$-$0.001}
+\newcommand{\WeightMinusGSLowMtnThousandBand}{[$-$0.002, $-$0.000]}
+\newcommand{\WeightMinusGSPlainsThousand}{$-$0.000}
+\newcommand{\WeightMinusGSPlainsThousandBand}{[$-$0.001, $+$0.001]}
+\newcommand{\WeightPiecesPerFlightA}{1.52}
+\newcommand{\WeightPiecesPerFlightG}{1.30}
+\newcommand{\WeightPiecesPerFlightS}{1.05}
+\newcommand{\WhenAllClimbEnd}{33.6}
+\newcommand{\WhenAllClimbEndBand}{[33.0, 34.1]}
+\newcommand{\WhenAllClimbPost}{30.5}
+\newcommand{\WhenAllClimbPostBand}{[29.9, 31.1]}
+\newcommand{\WhenAllClimbPre}{32.9}
+\newcommand{\WhenAllClimbPreBand}{[32.2, 33.5]}
+\newcommand{\WhenAllClimbStart}{35.7}
+\newcommand{\WhenAllClimbStartBand}{[35.0, 36.3]}
+\newcommand{\WhenAllControl}{$+$0.005}
+\newcommand{\WhenAllControlBand}{[$+$0.004, $+$0.007]}
+\newcommand{\WhenAllEndMinusStart}{$+$0.004}
+\newcommand{\WhenAllEndMinusStartBand}{[$+$0.002, $+$0.007]}
+\newcommand{\WhenAllEvents}{4\,591}
+\newcommand{\WhenAllLongControl}{$+$0.001}
+\newcommand{\WhenAllLongControlBand}{[$-$0.001, $+$0.003]}
+\newcommand{\WhenAllLongEndMinusStart}{$+$0.007}
+\newcommand{\WhenAllLongEndMinusStartBand}{[$+$0.003, $+$0.010]}
+\newcommand{\WhenAllLongPostMinusEnd}{$-$0.017}
+\newcommand{\WhenAllLongPostMinusEndBand}{[$-$0.021, $-$0.013]}
+\newcommand{\WhenAllLongStartMinusPre}{$+$0.008}
+\newcommand{\WhenAllLongStartMinusPreBand}{[$+$0.004, $+$0.011]}
+\newcommand{\WhenAllPostMinusEnd}{$-$0.002}
+\newcommand{\WhenAllPostMinusEndBand}{[$-$0.004, $+$0.000]}
+\newcommand{\WhenAllStartMinusPre}{$+$0.002}
+\newcommand{\WhenAllStartMinusPreBand}{[$-$0.001, $+$0.004]}
+\newcommand{\WhenHighMtnClimbEnd}{31.3}
+\newcommand{\WhenHighMtnClimbEndBand}{[30.4, 32.2]}
+\newcommand{\WhenHighMtnClimbPost}{28.1}
+\newcommand{\WhenHighMtnClimbPostBand}{[27.3, 29.0]}
+\newcommand{\WhenHighMtnClimbPre}{32.3}
+\newcommand{\WhenHighMtnClimbPreBand}{[31.4, 33.2]}
+\newcommand{\WhenHighMtnClimbStart}{34.5}
+\newcommand{\WhenHighMtnClimbStartBand}{[33.5, 35.5]}
+\newcommand{\WhenHighMtnControl}{$+$0.002}
+\newcommand{\WhenHighMtnControlBand}{[$-$0.001, $+$0.005]}
+\newcommand{\WhenHighMtnEndMinusStart}{$+$0.006}
+\newcommand{\WhenHighMtnEndMinusStartBand}{[$+$0.001, $+$0.010]}
+\newcommand{\WhenHighMtnEvents}{1\,299}
+\newcommand{\WhenHighMtnLongControl}{$-$0.003}
+\newcommand{\WhenHighMtnLongControlBand}{[$-$0.008, $+$0.003]}
+\newcommand{\WhenHighMtnLongEndMinusStart}{$+$0.001}
+\newcommand{\WhenHighMtnLongEndMinusStartBand}{[$-$0.006, $+$0.008]}
+\newcommand{\WhenHighMtnLongPostMinusEnd}{$-$0.017}
+\newcommand{\WhenHighMtnLongPostMinusEndBand}{[$-$0.025, $-$0.008]}
+\newcommand{\WhenHighMtnLongStartMinusPre}{$+$0.011}
+\newcommand{\WhenHighMtnLongStartMinusPreBand}{[$+$0.003, $+$0.019]}
+\newcommand{\WhenHighMtnPostMinusEnd}{$-$0.004}
+\newcommand{\WhenHighMtnPostMinusEndBand}{[$-$0.008, $+$0.001]}
+\newcommand{\WhenHighMtnStartMinusPre}{$+$0.001}
+\newcommand{\WhenHighMtnStartMinusPreBand}{[$-$0.004, $+$0.006]}
+\newcommand{\WhenHillsClimbEnd}{41.2}
+\newcommand{\WhenHillsClimbEndBand}{[39.4, 43.0]}
+\newcommand{\WhenHillsClimbPost}{40.9}
+\newcommand{\WhenHillsClimbPostBand}{[39.0, 42.8]}
+\newcommand{\WhenHillsClimbPre}{42.9}
+\newcommand{\WhenHillsClimbPreBand}{[41.2, 44.5]}
+\newcommand{\WhenHillsClimbStart}{46.3}
+\newcommand{\WhenHillsClimbStartBand}{[44.5, 48.1]}
+\newcommand{\WhenHillsControl}{$+$0.013}
+\newcommand{\WhenHillsControlBand}{[$+$0.010, $+$0.017]}
+\newcommand{\WhenHillsEndMinusStart}{$+$0.012}
+\newcommand{\WhenHillsEndMinusStartBand}{[$+$0.005, $+$0.019]}
+\newcommand{\WhenHillsEvents}{327}
+\newcommand{\WhenHillsLongControl}{$+$0.009}
+\newcommand{\WhenHillsLongControlBand}{[$+$0.004, $+$0.014]}
+\newcommand{\WhenHillsLongEndMinusStart}{$+$0.013}
+\newcommand{\WhenHillsLongEndMinusStartBand}{[$+$0.003, $+$0.023]}
+\newcommand{\WhenHillsLongPostMinusEnd}{$-$0.013}
+\newcommand{\WhenHillsLongPostMinusEndBand}{[$-$0.023, $-$0.003]}
+\newcommand{\WhenHillsLongStartMinusPre}{$+$0.005}
+\newcommand{\WhenHillsLongStartMinusPreBand}{[$-$0.006, $+$0.015]}
+\newcommand{\WhenHillsPostMinusEnd}{$-$0.006}
+\newcommand{\WhenHillsPostMinusEndBand}{[$-$0.013, $+$0.001]}
+\newcommand{\WhenHillsStartMinusPre}{$+$0.000}
+\newcommand{\WhenHillsStartMinusPreBand}{[$-$0.007, $+$0.008]}
+\newcommand{\WhenLongHi}{1\,000}
+\newcommand{\WhenLongLo}{320}
+\newcommand{\WhenLowMtnClimbEnd}{31.8}
+\newcommand{\WhenLowMtnClimbEndBand}{[31.1, 32.5]}
+\newcommand{\WhenLowMtnClimbPost}{27.8}
+\newcommand{\WhenLowMtnClimbPostBand}{[27.1, 28.5]}
+\newcommand{\WhenLowMtnClimbPre}{29.5}
+\newcommand{\WhenLowMtnClimbPreBand}{[28.8, 30.3]}
+\newcommand{\WhenLowMtnClimbStart}{33.1}
+\newcommand{\WhenLowMtnClimbStartBand}{[32.3, 33.8]}
+\newcommand{\WhenLowMtnControl}{$+$0.005}
+\newcommand{\WhenLowMtnControlBand}{[$+$0.003, $+$0.007]}
+\newcommand{\WhenLowMtnEndMinusStart}{$+$0.005}
+\newcommand{\WhenLowMtnEndMinusStartBand}{[$+$0.002, $+$0.009]}
+\newcommand{\WhenLowMtnEvents}{2\,426}
+\newcommand{\WhenLowMtnLongControl}{$-$0.001}
+\newcommand{\WhenLowMtnLongControlBand}{[$-$0.005, $+$0.003]}
+\newcommand{\WhenLowMtnLongEndMinusStart}{$+$0.011}
+\newcommand{\WhenLowMtnLongEndMinusStartBand}{[$+$0.006, $+$0.017]}
+\newcommand{\WhenLowMtnLongPostMinusEnd}{$-$0.020}
+\newcommand{\WhenLowMtnLongPostMinusEndBand}{[$-$0.026, $-$0.014]}
+\newcommand{\WhenLowMtnLongStartMinusPre}{$+$0.006}
+\newcommand{\WhenLowMtnLongStartMinusPreBand}{[$-$0.001, $+$0.012]}
+\newcommand{\WhenLowMtnPostMinusEnd}{$-$0.001}
+\newcommand{\WhenLowMtnPostMinusEndBand}{[$-$0.005, $+$0.002]}
+\newcommand{\WhenLowMtnStartMinusPre}{$+$0.000}
+\newcommand{\WhenLowMtnStartMinusPreBand}{[$-$0.004, $+$0.004]}
+\newcommand{\WhenPlainsClimbEnd}{43.9}
+\newcommand{\WhenPlainsClimbEndBand}{[42.3, 45.5]}
+\newcommand{\WhenPlainsClimbPost}{43.2}
+\newcommand{\WhenPlainsClimbPostBand}{[41.9, 44.6]}
+\newcommand{\WhenPlainsClimbPre}{44.9}
+\newcommand{\WhenPlainsClimbPreBand}{[43.5, 46.2]}
+\newcommand{\WhenPlainsClimbStart}{45.8}
+\newcommand{\WhenPlainsClimbStartBand}{[44.1, 47.5]}
+\newcommand{\WhenPlainsControl}{$+$0.005}
+\newcommand{\WhenPlainsControlBand}{[$+$0.003, $+$0.007]}
+\newcommand{\WhenPlainsEndMinusStart}{$-$0.002}
+\newcommand{\WhenPlainsEndMinusStartBand}{[$-$0.007, $+$0.003]}
+\newcommand{\WhenPlainsEvents}{433}
+\newcommand{\WhenPlainsLongControl}{$+$0.001}
+\newcommand{\WhenPlainsLongControlBand}{[$-$0.002, $+$0.004]}
+\newcommand{\WhenPlainsLongEndMinusStart}{$+$0.001}
+\newcommand{\WhenPlainsLongEndMinusStartBand}{[$-$0.004, $+$0.006]}
+\newcommand{\WhenPlainsLongPostMinusEnd}{$-$0.007}
+\newcommand{\WhenPlainsLongPostMinusEndBand}{[$-$0.011, $-$0.002]}
+\newcommand{\WhenPlainsLongStartMinusPre}{$+$0.002}
+\newcommand{\WhenPlainsLongStartMinusPreBand}{[$-$0.003, $+$0.007]}
+\newcommand{\WhenPlainsPostMinusEnd}{$+$0.000}
+\newcommand{\WhenPlainsPostMinusEndBand}{[$-$0.004, $+$0.004]}
+\newcommand{\WhenPlainsStartMinusPre}{$+$0.004}
+\newcommand{\WhenPlainsStartMinusPreBand}{[$-$0.001, $+$0.008]}
+\newcommand{\WhenWindow}{1\,260}
 \newcommand{\tauStar}{38.1}

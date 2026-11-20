@@ -6,6 +6,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
 import tail  # noqa: E402
+import tail_ks  # noqa: E402
 import tail_designs as td  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "phases"))
@@ -202,3 +203,62 @@ def test_route_weights_give_the_sums_of_the_engine():
     wp, wm = td.route_weights(ctx, sel, np.arange(ctx.boot[1]))
     assert np.allclose(group, a.T @ wp) and np.allclose(control, b.T @ wm)
     assert np.allclose(wp[:, 0], 1) and np.allclose(wm[:, 0], 1 / np.array([2, 2, 1, 3, 3, 3, 2, 2]))
+
+
+def spliced(n, xmin, mu, seed):
+    """Whole seconds: a log-normal body below xmin and a power law (mu) from xmin up."""
+    body = np.round(np.random.default_rng(seed).lognormal(4, 0.9, n))
+    return np.r_[body[(body >= 1) & (body < xmin)], np.round(pareto(mu, n // 10, xmin, seed + 1))]
+
+
+def test_ks_scan_gives_the_hill_exponent_at_its_threshold_and_finds_the_tail():
+    x = spliced(60000, 300.0, 1.0, 1)
+    r = tail_ks.thresholds({"a": (x, np.zeros(len(x), int))}, np.ones((1, 1)), 1)
+    assert np.isclose(r["mu"]["a"][0], hill(x, r["xmin"][0])) and r["n"]["a"][0] == (x >= r["xmin"][0]).sum()
+    assert 200 < r["xmin"][0] < 1200 and abs(r["mu"]["a"][0] - 1.0) < 0.1
+
+
+def test_ks_scan_agrees_with_powerlaw_fit_on_the_exponent():
+    import powerlaw
+
+    x = spliced(30000, 150.0, 0.8, 2)
+    f = powerlaw.Fit(x, verbose=0)
+    r = tail_ks.thresholds({"a": (x, np.zeros(len(x), int))}, np.ones((1, 1)), 1)
+    assert abs(r["mu"]["a"][0] - (f.power_law.alpha - 1)) < 0.05
+
+
+def test_cell_weights_are_the_repetitions_of_the_runs():
+    x, cell = spliced(20000, 300.0, 1.0, 3), None
+    cell = np.random.default_rng(4).integers(0, 50, len(x))
+    w = np.random.default_rng(5).integers(0, 4, (1, 50))
+    edges = tail_ks.edges_of(x)
+    cand = tail_ks.candidates(x, edges)
+    again = np.repeat(x, w[0][cell])
+    a = tail_ks.suffixes(w, tail_ks.histograms(x, cell, 50, edges))
+    b = tail_ks.suffixes(np.ones((1, 1)), tail_ks.histograms(again, np.zeros(len(again), int), 1, edges))
+    assert np.allclose(a[0], b[0]) and np.allclose(a[1], b[1])
+    assert (tail_ks.best(*a, edges, cand) == tail_ks.best(*b, edges, cand)).all()
+
+
+def test_common_threshold_is_the_largest_of_the_own_and_the_exponents_are_read_there():
+    a, b = spliced(40000, 200.0, 1.0, 6), spliced(40000, 500.0, 1.0, 7)
+    rng = np.random.default_rng(8)
+    s = {"a": (a, rng.integers(0, 80, len(a))), "b": (b, rng.integers(0, 80, len(b)))}
+    r = tail_ks.thresholds(s, rng.multinomial(80, np.full(80, 1 / 80), size=60), 80)
+    assert (r["xmin"] == np.maximum(r["own"]["a"], r["own"]["b"])).all()
+    assert np.isfinite(r["mu"]["a"]).all() and np.isfinite(r["mu"]["b"]).all()
+
+
+def test_contextual_classifies_the_searches_by_their_neighbours():
+    sys.argv += ["--declared-open", "--dt5"]
+    import phase_terms as pt
+
+    rows = [("transition", 0, 99), ("search", 100, 150), ("climb", 151, 300), ("search", 301, 330), ("climb", 331, 500),
+            ("search", 501, 520), ("transition", 521, 600), ("search", 601, 650), ("transition", 651, 700), ("search", 905, 950)]
+    r = pd.DataFrame(rows, columns=["phase", "t_start", "t_end"]).assign(fid=1, flight=1, seg=0, dt=1.0)
+    r["phase"] = pd.Categorical(r["phase"], categories=["climb", "search", "transition"])
+    r["s"] = r["t_end"] - r["t_start"] + 1
+    out = pt.contextual(r)
+    assert list(out["phase"]) == ["transition", "found", "climb", "exit", "transition", "failed", "transition", "unknown"]
+    assert (out.loc[2, "t_start"], out.loc[2, "t_end"], out.loc[2, "recentres"]) == (151, 500, 1)
+    assert out["s"].sum() == r["s"].sum()

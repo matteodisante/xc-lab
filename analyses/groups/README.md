@@ -105,6 +105,13 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
 - **`longlags.py`**: S, G and A over lags up to hours: a curve to the lag T is measured on the pieces of at
   least T/0.8 s, the curves of a panel share T (2760 s, and the longest with 100 flights in each
   population); the legend gives the fitted H. `curves.py` draws H_loc(tau) for any set of populations, with an inset of MSD if asked.
+- **`phase_terms.py`, `phase_gaps.py`, `tail_ks.py`** (`--declared-open --dt5 --labels refit|vilpellet`): Ch. 7 of the story.
+  The runs of our refit or of Vilpellet (viewer folder, same time base as the cache of `longlags.py`) with their terms
+  (`phase_terms.py`, one pass over the fixes cached in `analyses_open_declared/phase_terms.parquet`); per ground class and
+  population S, A, G the composition (shares of time, climbs per hour, the glide + climb cycle), the performance within the
+  phase, the survival and the tail exponent of the durations above one Kolmogorov-Smirnov threshold chosen again in every
+  draw (`tail_ks.py`), and the gaps G - A, A - S, G - S with the two-way bands: `phases_<labels>.json`, figures
+  `phases_*.pdf`. `redundancy.py --phases` picks the statistics of the main figures. `--rule context` (default): searches classified by their neighbours (found, failed, re-centring merged into the climb, exit, unknown dropped); `--rule plain`: the runs as labelled, outputs suffixed `_plain`.
 - **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
   distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
   the path flown) above 0.1; results in `out/<run>/open_declared` and `out/<run>/open_min0.1`. `closure.py`
@@ -235,6 +242,9 @@ uv run python route.py --sample 2000 [--rho M] [--cover SHARE]   # the variants,
 uv run python isolated.py [--sample N]   # after route.py, performance.py and the archive index; about 25 min and 2 GB
 uv run python longlags.py [--recompute]  # after tamsd.py; the pass over the fixes (about 4 min, 1.5 GB), then about 20 s
 uv run python raw.py --open             # after tamsd.py, longlags.py and performance.py with --open; a few minutes
+uv run python phase_terms.py --declared-open --dt5 [--recompute]   # the pass over the fixes, 4 min, 1.5 GB; --check: the time base
+uv run python phase_gaps.py --declared-open --dt5 --labels refit      # then --labels vilpellet, --labels refit --common; each 2.5 min, 1.8 GB; --draw, --compare
+uv run python redundancy.py --phases --declared-open --dt5            # about 15 s
 uv run python opening.py --declared-open # after closure.py and longlags.py --declared-open; about 1 min
 uv run python regions.py; uv run python maps.py   # after tamsd.py; seconds
 uv run python prepost.py [--run NAME] [--window SECONDS]  # after performance.py; first run per window: one pass over the fixes, about 6 min

@@ -47,7 +47,7 @@ SOURCES = ("b", "p")  # the terms of budget.py and of performance.py (isolated.p
 XC = decompose.XC  # the cross-country speed: on the pieces of at least performance.XC_S / SUPPORT s, from the "x" terms
 XC_DEFS = {"x": {XC: performance.STATS[XC]}}
 SURVIVAL_PHASES = {"climb": "climb", "search": "search that ends in a climb", "transition": "glide"}
-GAPS = {"G - S": ("group", "solo"), "A - S": ("group_solo", "solo"), "G - A": ("group", "group_solo")}
+GAPS = {"G - S": ("group", "solo"), "G - A": ("group", "group_solo"), "A - S": ("group_solo", "solo")}
 GAP_COLORS = {"G - S": COLORS["group"], "A - S": COLORS["group_solo"], "G - A": "#8c2f0f"}
 
 

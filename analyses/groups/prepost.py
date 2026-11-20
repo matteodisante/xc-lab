@@ -42,6 +42,22 @@ mock events, of the real events that have one, and their difference (real - mock
 
     uv run python prepost.py --open [--window SECONDS] [--sample N] [--recompute]    # after tamsd.py and performance.py --open
     uv run python prepost.py --open --redraw [--window SECONDS]    # the forest plot again from the JSON
+
+With --dt5 only the flights with a logger interval up to longlags.MAX_DT s are used, their pieces are cached apart and the
+results go to longlags.RESULTS (open_declared_dt5).
+
+With --ground (windows of WINDOW_S s, or --window) the timeline of the same flight, per ground class (ground.py:
+CLASSES of contrasts.py and "all"): on the events that have the four STAGES, the exponent alpha of each window (the fitted
+H over the lags of the window, MSD ~ tau^(2 alpha); equal-length windows reach the same lags), the differences
+start - pre, end - start and post - end, and on the events that have both windows, the two controls (ctrlA2 - ctrlA1,
+ctrlS2 - ctrlS1). One weight per window, the bands of twoway.py. Writes prepost_ground.json and prepost_ground.pdf.
+The same quantities are given for the exponent fitted over the lags LONG_FIT only ("alpha_long", "differences_long";
+prepost_ground_long.pdf). As a control of composition, "phases" gives for each window of the four STAGES the share of its
+labelled time in glide, search and climb (%) of our refit labels (phase_terms.py: runs on the flight clock, a run
+covers [t_start, t_start + s)), on the events that have the four windows labelled (prepost_phases.pdf).
+
+    uv run python prepost.py --declared-open --dt5 --ground [--window SECONDS] [--sample N] [--recompute]
+    uv run python prepost.py --declared-open --dt5 --ground --redraw    # the figure again from the JSON
 """
 
 import json
@@ -58,12 +74,14 @@ import decompose
 import isolated
 import longlags
 import matched
+import phase_terms
 import performance
 import raw
 import route
 import tamsd
 import twoway
 import zones
+from contrasts import CLASSES
 from blocks import with_takeoffs
 from common.msd import tamsd_sums
 from tamsd import (CACHE, COLORS, FIXES, GRID_S, LABELS, LAGS, N_BOOT, OPEN, OUT, SEED, read_flights, read_pieces, save,
@@ -80,6 +98,13 @@ QUOTED_LAG = 1000  # s, the quoted H_loc
 FOREST_TICKS = 5  # at most, on each axis of the forest plot
 OPEN_COMPARISONS = {"post - pre": ("post", "pre"), "ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"),
                     "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}  # D_in and D_out: on the events of g (effects)
+GROUND_STEPS = {"start - pre": ("start", "pre"), "end - start": ("end", "start"), "post - end": ("post", "end")}
+GROUND_CONTROLS = {"ctrlA2 - ctrlA1": ("ctrlA2", "ctrlA1"), "ctrlS2 - ctrlS1": ("ctrlS2", "ctrlS1")}
+GROUND_COLORS = {"start - pre": "#eb6834", "end - start": "#8c2f0f", "post - end": "#0f6e4c",
+                 "ctrlA2 - ctrlA1": "#1baf7a", "ctrlS2 - ctrlS1": "#2a78d6"}
+LONG_FIT = (320, 1000)  # s: the lags of the second fit of the exponent of a window (--ground)
+PHASES = {"glide": "transition", "search": "search", "climb": "climb"}  # name: label of the refit runs
+PHASE_COLORS = {"glide": "#2a78d6", "search": "#9a9893", "climb": "#eb6834"}
 FOUR = ("g", "d w")  # the drift-free effects, on the events that have the four STAGES
 CONTROLS = {"A": ("ctrlA1", "ctrlA2"), "S": ("ctrlS1", "ctrlS2")}
 LINES = {  # window: (colour, line style)
@@ -602,23 +627,32 @@ def mock_draws_of(wins, spans, flights, width, caliper):
     return out
 
 
-def run_open(flights, membership, summary, width, sample=None, recompute=False):
-    """The open mode: windows, pieces (cached), analysis, JSON and figures in OUT."""
-    tag = f"_sample{sample}" if sample else ""
+def window_pieces(flights, membership, summary, width, sample=None, recompute=False):
+    """The flights kept, the spans, the windows of `width` s and their cached pieces: (flights, spans, wins, p, lags).
+    With --dt5 the flights are those up to longlags.MAX_DT s and the cache has its own name."""
+    tag = (f"_sample{sample}" if sample else "") + ("_dt5" if longlags.DT5 else "")
     lags = window_lags(width)
+    if longlags.DT5:
+        flights = flights[flights["dt_native"] <= longlags.MAX_DT + 1e-6]
     if sample:  # the first `sample` group flights and as many solo ones
         grouped = summary.set_index("flight")["n_entries"].reindex(flights["flight"]).to_numpy() > 0
         keep = np.r_[flights["flight"][grouped].to_numpy()[:sample], flights["flight"][~grouped].to_numpy()[:sample]]
         flights = flights[flights["flight"].isin(keep)]
     spans = stretches(flights, membership, summary)
     wins = windows(spans, np.random.default_rng(SEED), width)
-    made = wins["population"].value_counts().to_dict()
-    print(made, flush=True)
+    print(wins["population"].value_counts().to_dict(), flush=True)
     cache_file = CACHE / f"prepost_pieces_{width}_lag{lags.max()}{tag}.npz"
     if recompute or not cache_file.exists():
         found = tamsd.measure("para", flights, wins, lags, width - tamsd.GRID_S)  # a window holds width / 10 grid points
         np.savez(cache_file, **{f"para/{k}": v for k, v in found.items()})
-    p = read_pieces(cache_file)["para"]
+    return flights, spans, wins, read_pieces(cache_file)["para"], lags
+
+
+def run_open(flights, membership, summary, width, sample=None, recompute=False):
+    """The open mode: windows, pieces (cached), analysis, JSON and figures in longlags.RESULTS."""
+    tag = f"_sample{sample}" if sample else ""
+    flights, spans, wins, p, lags = window_pieces(flights, membership, summary, width, sample, recompute)
+    made = wins["population"].value_counts().to_dict()
     info = decompose.flight_table(flights, summary)[0]
     block, of_pilot, of_block = twoway.cells(flights, summary)  # the cell of each flight, as a block code
     counts = twoway.counts(of_pilot, of_block, np.random.default_rng(SEED))
@@ -659,17 +693,166 @@ def run_open(flights, membership, summary, width, sample=None, recompute=False):
     result |= {"window_s": width, "lags": lags.tolist(), "n_boot": N_BOOT, "windows made": made,
                "windows measured": wins["population"].value_counts().to_dict(),
                "windows with phase time": meta["population"].value_counts().to_dict()}
-    (OUT / f"prepost_{width}{tag}.json").write_text(json.dumps(result, indent=1))
+    (longlags.RESULTS / f"prepost_{width}{tag}.json").write_text(json.dumps(result, indent=1))
     for key, labels in (("stages", STAGES), *((f"controls {k}", v) for k, v in CONTROLS.items())):
-        draw_curves({l: result["curves"][key][l] for l in labels}, OUT / f"prepost_{width}{tag}_{key.replace(' ', '_')}",
+        draw_curves({l: result["curves"][key][l] for l in labels}, longlags.RESULTS / f"prepost_{width}{tag}_{key.replace(' ', '_')}",
                     f"{key}: {result['curves'][key]['events']:,} events, windows of {width} s".replace(",", " "))
-    forest(result, OUT / f"prepost_{width}{tag}_forest.pdf", width)
-    draw_delta(result, lags, OUT / f"prepost_{width}{tag}_delta", f"{result['curves']['stages']['events']:,} events, windows of {width} s")
+    forest(result, longlags.RESULTS / f"prepost_{width}{tag}_forest.pdf", width)
+    draw_delta(result, lags, longlags.RESULTS / f"prepost_{width}{tag}_delta", f"{result['curves']['stages']['events']:,} events, windows of {width} s")
+    return result
+
+
+def ground_class(flights):
+    """The ground class of each flight (ground.py), by flight."""
+    return pd.read_parquet(OUT / "ground.parquet").set_index("flight")["class"].reindex(flights).to_numpy()
+
+
+def long_fit(msd, lags):
+    """The exponent over the lags LONG_FIT of each row of `msd` (draws x lags)."""
+    use = (lags >= LONG_FIT[0]) & (lags <= LONG_FIT[1])
+    return np.array([tamsd.fit_h(lags[use], row[use]) for row in msd])
+
+
+def timeline(units, counts, lags, mask):
+    """The timeline of the events of `mask` (units): events and windows of the four STAGES, alpha of each window (fitted
+    over all the lags, and over LONG_FIT in "alpha_long"), the differences of GROUND_STEPS on the events that have the
+    four, the controls of GROUND_CONTROLS on those that have both."""
+    got, events = curves_on(units, counts, STAGES, lags, only=mask)
+    out = {"events": events, "windows": {k: got[k]["windows"] for k in STAGES}}
+    for suffix, fit in (("", lambda c: c["values"][:, -2]), ("_long", lambda c: long_fit(c["msd"], lags))):
+        out["alpha" + suffix] = {k: twoway.quote(fit(got[k])) for k in STAGES}
+        out["differences" + suffix] = {}
+        for name, (P, Q) in GROUND_STEPS.items():
+            out["differences" + suffix][name] = twoway.quote(fit(got[P]) - fit(got[Q]))
+        for name, (P, Q) in GROUND_CONTROLS.items():
+            pair, n = curves_on(units, counts, (Q, P), lags, only=mask)
+            out["differences" + suffix][name] = {"events": n, **twoway.quote(fit(pair[P]) - fit(pair[Q]))}
+    return out
+
+
+def unit_windows(p, units, wins):
+    """The window (a, b on the flight clock) of each unit of `units` (decompose.msd_units of the pieces `p`: one per
+    flight, episode and population, in the order of their first piece)."""
+    key = pd.MultiIndex.from_frame(pd.DataFrame({"flight": p["flight"], "episode": p["episode"], "population": p["population"]}))
+    code, keys = pd.factorize(key)
+    keys = pd.DataFrame(keys.tolist(), columns=["flight", "episode", "population"])
+    assert (keys["flight"].to_numpy() == units.flight).all() and (keys["population"].to_numpy() == units.population).all()
+    both = keys.merge(wins, on=["flight", "episode", "population"], how="left")
+    assert len(both) == len(keys) and both["a"].notna().all()
+    return both["flight"].to_numpy(), both["a"].to_numpy(float), both["b"].to_numpy(float)
+
+
+def phase_shares(flight, a, b, runs):
+    """Per window [a, b) of `flight` (flight clock): its time in each of PHASES over its labelled time, rows of PHASES
+    columns (NaN where no run overlaps the window); `runs`: phase_terms.read_runs, sorted by flight."""
+    out = np.full((len(a), len(PHASES)), np.nan)
+    rf, rs = runs["flight"].to_numpy(), runs["t_start"].to_numpy(float)
+    re, rp = rs + runs["s"].to_numpy(float), runs["phase"].astype(str).to_numpy()
+    for f in np.unique(flight):
+        lo, hi = np.searchsorted(rf, f, "left"), np.searchsorted(rf, f, "right")
+        w = np.flatnonzero(flight == f)
+        over = np.clip(np.minimum(b[w, None], re[None, lo:hi]) - np.maximum(a[w, None], rs[None, lo:hi]), 0, None)
+        time = np.column_stack([over[:, rp[lo:hi] == label].sum(axis=1) for label in PHASES.values()])
+        with np.errstate(invalid="ignore", divide="ignore"):
+            out[w] = 100 * time / time.sum(axis=1)[:, None]
+    return out
+
+
+def phases_on(units, counts, share, mask):
+    """Per window of STAGES, on the events of `mask` that have the four windows labelled: the mean share of each of
+    PHASES (%, one weight per window), point estimate with band, windows and the events."""
+    ok = mask & np.isfinite(share[:, 0])
+    keep = ok & events_with(np.where(ok, units.population, ""), units.stratum, STAGES)
+    out = {}
+    for label in STAGES:
+        m = keep & (units.population == label)
+        w = np.vstack([np.ones(m.sum()), counts[:, units.block[m]]]).astype(float)
+        rows = (w @ share[m]) / w.sum(axis=1)[:, None]
+        out[label] = {k: twoway.quote(rows[:, i]) for i, k in enumerate(PHASES)} | {"windows": int(m.sum())}
+    return {"events": int(np.unique(units.stratum[keep]).size), "share": out}
+
+
+def figure_ground(result, path, suffix="", what=""):
+    """One column per class: alpha of the four windows (top), and the differences with the controls (bottom), with bands;
+    `suffix`: "" (all the lags) or "_long" (the lags LONG_FIT)."""
+    keys = [*CLASSES, "all"]
+    fig, axes = plt.subplots(2, len(keys), figsize=(11, 4.8), sharey="row", constrained_layout=True)
+    for j, k in enumerate(keys):
+        r = result["classes"][k]
+        top, bottom = axes[:, j]
+        for i, stage in enumerate(STAGES):
+            a = r["alpha" + suffix][stage]
+            top.errorbar(i, a["value"], [[a["value"] - a["band"][0]], [a["band"][1] - a["value"]]], fmt="o", ms=4, capsize=2,
+                         color=LINES[stage][0])
+        top.set(xticks=range(len(STAGES)), xticklabels=STAGES, xlim=(-0.5, len(STAGES) - 0.5),
+                title=f"{k}, {r['events']:,} events".replace(",", " "))
+        top.title.set_fontsize(8)
+        for i, (name, d) in enumerate(r["differences" + suffix].items()):
+            bottom.errorbar(i, d["value"], [[d["value"] - d["band"][0]], [d["band"][1] - d["value"]]], fmt="o", ms=4, capsize=2,
+                            color=GROUND_COLORS[name])
+        bottom.axhline(0, color="k", lw=0.6)
+        bottom.set(xticks=range(len(r["differences"])), xticklabels=[n.replace("ctrl", "c") for n in r["differences"]],
+                   xlim=(-0.5, len(r["differences"]) - 0.5))
+        bottom.tick_params(axis="x", labelrotation=60, labelsize=7)
+        for ax in (top, bottom):
+            ax.grid(color="#eeeeee", lw=0.5)
+    axes[0, 0].set_ylabel(r"$\alpha$ of the window")
+    axes[1, 0].set_ylabel(r"difference of $\alpha$")
+    lags = f"lags {LONG_FIT[0]} to {LONG_FIT[1]} s" if suffix else f"lags up to {result['lags'][-1]} s"
+    fig.suptitle(f"The same flight around the group time: windows of {result['window_s']} s, {lags}", fontsize=9)
+    save(fig, path)
+
+
+def figure_phases(result, path):
+    """One panel per class: the share of time in glide, search and climb of each window, with bands."""
+    keys = [*CLASSES, "all"]
+    fig, axes = plt.subplots(1, len(keys), figsize=(11, 2.8), sharey=True, constrained_layout=True)
+    for ax, k in zip(axes, keys):
+        r = result["classes"][k]["phases"]
+        for n, phase in enumerate(PHASES):
+            for i, stage in enumerate(STAGES):
+                v = r["share"][stage][phase]
+                ax.errorbar(i + 0.2 * (n - 1), v["value"], [[v["value"] - v["band"][0]], [v["band"][1] - v["value"]]], fmt="o", ms=3,
+                            capsize=2, color=PHASE_COLORS[phase], label=phase if i == 0 else None)
+        ax.set(xticks=range(len(STAGES)), xticklabels=STAGES, xlim=(-0.5, len(STAGES) - 0.5),
+               title=f"{k}, {r['events']:,} events".replace(",", " "))
+        ax.title.set_fontsize(8)
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].set_ylabel("share of labelled time (%)")
+    axes[0].legend(frameon=False, fontsize=7)
+    fig.suptitle(f"Phases of our labels in the windows of {result['window_s']} s", fontsize=9)
+    save(fig, path)
+
+
+def draw_ground(result, tag=""):
+    figure_ground(result, longlags.RESULTS / f"prepost_ground{tag}.pdf")
+    figure_ground(result, longlags.RESULTS / f"prepost_ground_long{tag}.pdf", "_long")
+    figure_phases(result, longlags.RESULTS / f"prepost_phases{tag}.pdf")
+
+
+def run_ground(flights, membership, summary, width, sample=None, recompute=False):
+    """The timeline per ground class: JSON and figure in longlags.RESULTS."""
+    flights, _, wins, p, lags = window_pieces(flights, membership, summary, width, sample, recompute)
+    block, of_pilot, of_block = twoway.cells(flights, summary)
+    counts = twoway.counts(of_pilot, of_block, np.random.default_rng(SEED))
+    units = decompose.msd_units(p, "episode", decompose.flight_table(flights, summary)[0], block)
+    where = ground_class(units.flight)
+    masks = {k: where == k for k in CLASSES} | {"all": np.ones(len(where), bool)}
+    result = {"window_s": width, "lags": lags.tolist(), "long_fit": LONG_FIT, "n_boot": N_BOOT,
+              "windows made": wins["population"].value_counts().to_dict(),
+              "classes": {k: timeline(units, counts, lags, m) for k, m in masks.items()}}
+    kept = flights.set_index(flights["flight_id"].astype("int64"))[["flight", "dt_native"]]
+    share = phase_shares(*unit_windows(p, units, wins), phase_terms.read_runs(phase_terms.SET, kept))
+    for k, m in masks.items():
+        result["classes"][k]["phases"] = phases_on(units, counts, share, m)
+    tag = f"_sample{sample}" if sample else ""
+    (longlags.RESULTS / f"prepost_ground{tag}.json").write_text(json.dumps(result, indent=1))
+    draw_ground(result, tag)
     return result
 
 
 if __name__ == "__main__":
-    if "--redraw" in sys.argv:  # the forest plot from the JSON, nothing recomputed
+    if "--redraw" in sys.argv and "--ground" not in sys.argv:  # the forest plot from the JSON, nothing recomputed
         w = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else OPEN_WINDOW_S
         tamsd.folders()
         tag = f"_sample{sys.argv[sys.argv.index('--sample') + 1]}" if "--sample" in sys.argv else ""
@@ -681,7 +864,17 @@ if __name__ == "__main__":
     width = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else OPEN_WINDOW_S if OPEN else LONG_S
     if OPEN:
         tamsd.folders()
+        longlags.RESULTS.mkdir(parents=True, exist_ok=True)
+        if "--redraw" in sys.argv and "--ground" in sys.argv:
+            draw_ground(json.loads((longlags.RESULTS / "prepost_ground.json").read_text()))
+            sys.exit()
         sample = int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else None
+        if "--ground" in sys.argv:
+            width = int(sys.argv[sys.argv.index("--window") + 1]) if "--window" in sys.argv else WINDOW_S
+            out = run_ground(flights, membership, summary, width, sample, "--recompute" in sys.argv)
+            for k, r in out["classes"].items():
+                print(k, r["events"], {n: [round(d["value"], 4), np.round(d["band"], 4).tolist()] for n, d in r["differences"].items()})
+            sys.exit()
         out = run_open(flights, membership, summary, width, sample, "--recompute" in sys.argv)
         for variant, v in out.get("mock", {}).get("variants", {}).items():
             print("mock", variant, v["counts"], {k: [round(v[k]["g"]["H_loc(1000 s)"]["value"], 4),

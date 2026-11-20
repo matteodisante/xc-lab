@@ -13,6 +13,10 @@ that size) are measured too.
 
     uv run python longlags.py [--run NAME] [--recompute]    # after tamsd.py; writes out/<run>/longlags.json and .pdf
     uv run python longlags.py --redraw                       # the figure again, from the saved JSON
+
+With --dt5, load_pieces() keeps only the flights whose logger interval is at most MAX_DT s, and the results of this
+script and of the story's scripts (cohorts.py, perlag_msd.py, opening.py, contrasts.py) go to RESULTS, the
+folder of the run with the suffix _dt5.
 """
 
 import json
@@ -35,6 +39,9 @@ MIN_FLIGHTS = 100  # flights every population of a panel keeps at its longest la
 FIXED_LAG = 2760  # s: the longest lag of the panel "fixed", a lag of LONG_LAGS
 POOLED = ("solo", "group", "group_solo")
 PIECES = CACHE / "long_pieces.npz"
+MAX_DT = 5  # s: the largest native logger interval of the flights of the story (with --dt5)
+DT5 = "--dt5" in sys.argv
+RESULTS = OUT.with_name(OUT.name + "_dt5") if DT5 else OUT
 
 
 def measure(flights, membership, summary):
@@ -45,6 +52,17 @@ def measure(flights, membership, summary):
     spans = pd.concat([pooled, sized[sized["population"].isin(SIZES)]], ignore_index=True)
     found = tamsd.measure("para", flights, spans, LONG_LAGS)
     np.savez(PIECES, **found)
+
+
+def load_pieces():
+    """The pieces cache; with --dt5 only the pieces of the flights with dt_native <= MAX_DT s. The groups are those
+    of the run, built on every flight."""
+    p = dict(np.load(PIECES))
+    if DT5:
+        dt = pd.read_parquet(LABELS / "flights.parquet", columns=["flight", "dt_native"]).set_index("flight")["dt_native"]
+        keep = dt.reindex(p["flight"]).to_numpy() <= MAX_DT + 1e-6
+        p = {k: v[keep] if len(v) == len(keep) else v for k, v in p.items()}
+    return p
 
 
 def populations(p):
@@ -128,20 +146,26 @@ def figure(result, path):
 
 if __name__ == "__main__":
     if "--redraw" in sys.argv:  # the figure from the saved JSON
-        figure(json.loads((OUT / "longlags.json").read_text()), OUT / "longlags.pdf")
+        figure(json.loads((RESULTS / "longlags.json").read_text()), RESULTS / "longlags.pdf")
         sys.exit()
     if "--recompute" in sys.argv or not PIECES.exists():
         measure(tamsd.read_flights(), pd.read_parquet(LABELS / "membership.parquet"),
                 pd.read_parquet(LABELS / "flight_summary.parquet"))
-    p = dict(np.load(PIECES))
+    p = load_pieces()
+    RESULTS.mkdir(parents=True, exist_ok=True)
     block, of_pilot, of_block = twoway.cells(with_takeoffs(tamsd.read_flights()), pd.read_parquet(LABELS / "flight_summary.parquet"))
     rng = np.random.default_rng(SEED)
     counts = twoway.counts(of_pilot, of_block, rng)
     masks = populations(p)
-    result = {"min_flights": MIN_FLIGHTS, "available": {k: available(p, m) for k, m in masks.items()}, "panels": {}}
+    every = dict(np.load(PIECES))
+    result = {"min_flights": MIN_FLIGHTS, "dt": {"max_dt": MAX_DT if DT5 else None, "flights": int(np.unique(p["flight"]).size),
+                                                  "of": int(np.unique(every["flight"]).size),
+                                                  "by population": {k: [int(np.unique(q["flight"][q["population"] == k]).size) for q in (p, every)]
+                                                                    for k in POOLED}},
+              "available": {k: available(p, m) for k, m in masks.items()}, "panels": {}}
     for name, tau in panels(result["available"]).items():
         assert all(longest(result["available"][k]) >= tau for k in POOLED), f"fewer than {MIN_FLIGHTS} flights at {tau} s"
         result["panels"][name] = {"tau_max": tau, "curves": {k: curve(p, masks[k], block, rng, tau, counts, twoway.band) for k in POOLED}}
         print(name, tau, {k: c["flights"] for k, c in result["panels"][name]["curves"].items()})
-    (OUT / "longlags.json").write_text(json.dumps(result, indent=1))
-    figure(result, OUT / "longlags.pdf")
+    (RESULTS / "longlags.json").write_text(json.dumps(result, indent=1))
+    figure(result, RESULTS / "longlags.pdf")

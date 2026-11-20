@@ -203,14 +203,16 @@ def local_h(lags, msd):
     return np.array(out)
 
 
-def ensemble(values, blocks, rng, counts=None):
+def ensemble(values, blocks, rng, counts=None, weights=None):
     """Equal-weight mean over flights, and N_BOOT bootstrap means resampling whole blocks. With `counts`
-    (N_BOOT rows, one column per block code in `blocks`) the draws are those counts, not drawn from rng."""
+    (N_BOOT rows, one column per block code in `blocks`) the draws are those counts, not drawn from rng; then
+    `weights` (one per row of `values`) replace the equal weights, in the mean and in every draw."""
     if counts is not None:
-        sums, n = np.zeros((counts.shape[1], values.shape[1])), np.bincount(blocks, minlength=counts.shape[1]).astype(float)
-        np.add.at(sums, blocks, values)
+        w = np.ones(len(values)) if weights is None else np.asarray(weights, float)
+        sums, n = np.zeros((counts.shape[1], values.shape[1])), np.bincount(blocks, weights=w, minlength=counts.shape[1])
+        np.add.at(sums, blocks, values * w[:, None])
         draws = [(counts[a:a + 50] @ sums) / (counts[a:a + 50] @ n)[:, None] for a in range(0, len(counts), 50)]
-        return values.mean(axis=0), np.concatenate(draws)
+        return (values.mean(axis=0) if weights is None else w @ values / w.sum()), np.concatenate(draws)
     ids, k = np.unique(blocks, return_inverse=True)
     sums, counts = np.zeros((len(ids), values.shape[1])), np.bincount(k, minlength=len(ids)).astype(float)
     np.add.at(sums, k, values)
