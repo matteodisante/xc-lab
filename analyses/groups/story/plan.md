@@ -164,6 +164,8 @@ Tool: windows of fixed length before, at the start, at the end and after each gr
 class; equal-length windows need no chain. *Exists for H; redo with the class and ≤ 5 s.* Phases: only the
 shares of time in glide, search and climb per window, as a control of composition (if groups form in climbs, the
 "start" window holds a climb by construction); the same shares answer Ch. 9 (does the group form in a climb?).
+Last step: the carry-over of the group on the solo time around it, A(d) − S by the distance from the group
+(carry.py), moved here from Ch. 2 since it uses the same windows.
 
 **7. How: the dynamics.**
 Q: which phases does the group change?
@@ -223,3 +225,9 @@ M7; (5) M3, M6 → Ch. 7, 8; (6) Ch. 9, 10.
 - A threshold on the opening selects on the outcome; few mountain flights remain at $\mathcal O>0.5$.
 - An unsupervised refit has no true labels: the criteria above decide, and Vilpellet's labels stay as the
   comparison.
+
+## Outside the story
+
+- `tamsd.summarize` and `longlags.curve` still pool the origins per flight (one weight per flight). No figure or
+  macro of story.tex uses them (its curves come from `cohorts.py`, one weight per piece), but `raw`, `pools`,
+  `size`, `episodes`, `curvature` do.

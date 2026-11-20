@@ -30,20 +30,14 @@
 \setlength{\parindent}{0pt}
 \input{../vs-solo/generated/comparisons/macros}
 
-% One block per step: question, how, result, where it shows, take home, left out.
-% Colors: questions in purple (whole text); problem and answer labels in red and green; the rest black.
+% One block per step: Q, Why, Tool, Result, Observation, Deduction, Take home; Hypothesis and Comment where needed.
+% Colors: questions in purple (whole text); answer labels in green; the rest black.
 \definecolor{question}{HTML}{7B2D8E}
 \definecolor{problem}{HTML}{C0392B}
 \definecolor{answer}{HTML}{1E7B34}
 \newcommand{\Q}{\item[\textcolor{question}{\textbf{Q.}}]\color{question}}
-\newcommand{\How}{\item[\textcolor{black}{\textbf{How.}}]\color{black}}
-\newcommand{\Prob}{\item[\textcolor{problem}{\textbf{Problem.}}]\color{black}}
 \newcommand{\Res}{\item[\textcolor{answer}{\textbf{Result.}}]\color{black}}
-\newcommand{\Shows}{\item[\textcolor{answer}{\textbf{Where.}}]\color{black}}
 \newcommand{\Home}{\item[\textcolor{answer}{\textbf{Take home.}}]\color{black}}
-\newcommand{\Out}{\item[\textcolor{black}{\textbf{Left out.}}]\color{black}}
-\newcommand{\Rule}{\item[\textcolor{black}{\textbf{Rule.}}]\color{black}}
-\newcommand{\Test}{\item[\textcolor{black}{\textbf{Test.}}]\color{black}}
 \newcommand{\Obs}{\item[\textcolor{answer}{\textbf{Observation.}}]\color{black}}
 \newcommand{\Hyp}{\item[\textcolor{question}{\textbf{Hypothesis.}}]\color{question}}
 \newcommand{\Ded}{\item[\textcolor{answer}{\textbf{Deduction.}}]\color{black}}
@@ -84,14 +78,30 @@ displacement (Sec.~\ref{measures}).
   \[ X_\G-X_\Sl=(X_\G-X_\A)+(X_\A-X_\Sl). \]
   \begin{itemize}
   \item $\G-\A$ compares two moments of the \emph{same flights}: same pilot, wing, day, site and flight shape.
-    What changes is flying with others, and the moment of the flight. It is the group effect proper.
+    What changes is flying with others, and the moment of the flight. It is the group effect proper, up to the
+    moment (Sec.~\ref{ch:when}) and the direction (Sec.~\ref{which-way}).
   \item $\A-\Sl$ compares \emph{different flights}, both alone: who flies, where, when, which flight. It is the
     selection of the flights that have group time, plus any carry-over of the group on the solo time around it.
   \item $\G-\Sl$ is the raw total.
   \end{itemize}
-  Each control of the chapters below acts on one term: the ground class and the same pilot on $\A-\Sl$, the
-  timeline of the flight on $\G-\A$.
+  $\G-\A$ already holds the flight fixed, so the controls of the chapters below that compare flights (the ground
+  class, the opening, the same pilot) act mostly on $\A-\Sl$; the timeline of the flight acts on $\G-\A$.
 \end{method}
+
+\textbf{How to read a step.} Every step answers one question in a fixed order:
+\begin{itemize}
+\item \textbf{Q.} the question;
+\item \textbf{Why.} why we ask it and what the answer would change; from the second chapter on, it follows from
+  the take home of the chapter before;
+\item \textbf{Tool.} the analysis, and why this one;
+\item \textbf{Result.} the figures, tables and numbers;
+\item \textbf{Observation.} what we see in them;
+\item \textbf{Deduction.} what follows;
+\item \textbf{Take home.} what we keep.
+\end{itemize}
+A \textbf{Hypothesis} states what we expect before the result, and a \textbf{Comment} adds what the step does not
+need; both appear only where they carry something. How a statistic is built goes in a \emph{method} box, what goes
+wrong with an obvious choice in a \emph{problem} box, apart from the observations.
 
 \textbf{The chapters.} Is group time more persistent (Sec.~\ref{ch:straighter})? Is it the group or the flights
 (Sec.~\ref{ch:identity})? Where (Sec.~\ref{ground}), on which flights (Sec.~\ref{ch:flights}), for whom
@@ -100,10 +110,17 @@ geometry (Sec.~\ref{ch:geometry}) of the motion. Which way round (Sec.~\ref{whic
 (Sec.~\ref{ch:found}).
 
 \textbf{Data.} Paragliders, flights declared open on the FFVL catalogue (free distance or distance with 1--3
-points), logged every \DtMax~s or faster, so that every flight has phases: \DtFlights{} flights; those logged
-more slowly (\DtDroppedPercent\%) are dropped. Group time comes from the grouping run, built on every flight: a
-partner logged more slowly still makes a flight's time group time, but only the tracks of the flights kept are
-analysed.
+points), logged every \DtMax~s or faster, so that every flight has phases (glide, search, climb,
+Sec.~\ref{phases}); those logged more slowly (\DtDroppedPercent\%) are dropped. \DtFlights{} of them give at least
+one piece (Sec.~\ref{definitions}) and enter the statistics of $\alpha$; the tables of the opening count every
+declared open flight, with or without pieces.
+
+\textbf{Group time.} It comes from the grouping run of the group-identification note, whose name gives its
+parameters: two pilots are in contact when one is on the path of the other within $\delta=120$~s, 500~m
+horizontally and 300~m vertically (headings compared only in glide), for at least the duration $\tau^*$ at which
+pairs of pilots shifted in time explain at most a share $q=0.1$ of the contacts. A pilot flies in a group while
+in contact with at least one other. The run is built on every flight: a partner logged more slowly still makes a
+flight's time group time, but only the tracks of the flights kept are analysed.
 
 \section{Measures}\label{measures}
 
@@ -116,18 +133,18 @@ analysed.
 \item[A] The solo time of the same group flights (same pilots and days); the unit is again the stretch.
 \item[Segment] Loggers sometimes miss fixes. The cleaning of the tracks (old repository soaring-anomalous-transport) splits a track
   where two consecutive fixes are more than $\min(10\,\mathrm{d}t,\ \max(20~\mathrm{s},\ 2\,\mathrm{d}t))$
-  apart. Each part is a segment.
+  apart, with $\mathrm{d}t$ the logging interval of the flight. Each part is a segment.
 \item[Piece] The part of one segment that lies in one population: for $\Sl$ a whole segment, for $\G$ a
   stretch in a group, for $\A$ a stretch alone. A piece never crosses a gap. A flight can give several
   pieces: several segments, or several stretches in and out of a group.
 
   \textbf{Our choice: only the pieces of at least \PieceMinS~s are kept} ($=1\,000~\mathrm{s}/\Support$, so
-  that at the lag 1\,000~s at least 20\% of the piece gives origins). Every shorter piece is dropped: short
-  segments, and the stretches in a group or alone shorter than about 21~min. Every statistic of this
-  document is on these pieces. Why:
+  that at the lag 1\,000~s at least \SupportOriginsPercent\% of the piece gives origins). Every shorter piece is dropped: short
+  segments, and the stretches in a group or alone shorter than about \PieceMinMinutes~min. The statistics of $\alpha$ and of
+  the phases are on these pieces. Why:
   \begin{itemize}
   \item \emph{One population up to 1\,000~s.} Every lag from 10~s to 1\,000~s sees the same pieces, so along
-    these three decades $\alpha$ changes with the dynamics only, never with the pieces kept. Without the
+    these two decades $\alpha$ changes with the dynamics only, never with the pieces kept. Without the
     threshold the shortest lags would also take pieces of a few minutes, and the population would change
     along the curve exactly where it is now fixed.
   \item \emph{Short stretches are mostly edges.} A stretch in a group of a few minutes is mostly its entry and
@@ -136,27 +153,25 @@ analysed.
   The price: $\G$ describes the stretches in a group that last, not the brief encounters.
 \item[TA-MSD] Time-averaged MSD of one piece $p$, in three steps.
   \begin{enumerate}
-  \item Positions: the fixes, linearly interpolated on a grid of $\Delta t=10$~s, give the horizontal
+  \item Positions: the fixes, linearly interpolated on a grid of $\Delta t=\GridS$~s, give the horizontal
     position $x_j=(E_j,N_j)$ east and north, $j=0,\dots,M-1$; duration $T_p=(M-1)\Delta t$.
   \item At lag $\tau=k\Delta t$, every origin $j$ with $j+k\le M-1$ gives one squared displacement
     $|x_{j+k}-x_j|^2$; there are $M-k$ origins. Their mean is the TA-MSD:
     \[ \overline{\delta^2_p}(\tau) = \frac{1}{M-k}\sum_{j=0}^{M-k-1}|x_{j+k}-x_j|^2 , \]
     the discrete form of $\frac{1}{T_p-\tau}\int_0^{T_p-\tau}|x(t+\tau)-x(t)|^2\,dt$.
   \item Repeated at every lag of a \textbf{fixed grid}, not at every multiple of $\Delta t$: one curve
-    $\overline{\delta^2_p}(\tau)$ per piece. A piece of the cohort lasts at least $\tau_\mathrm{max}/0.8$, so
-    even at $\tau_\mathrm{max}$ at least 20\% of its length gives origins.
+    $\overline{\delta^2_p}(\tau)$ per piece. A piece of the cohort lasts at least $\tau_\mathrm{max}/\Support$, so
+    even at $\tau_\mathrm{max}$ at least \SupportOriginsPercent\% of its length gives origins.
   \end{enumerate}
-  \emph{The grid of lags.} Geometric: each lag is about 1.225 times the previous one, then rounded to a
-  multiple of $\Delta t=10$~s,
-  \[ \frac{\tau_{i+1}}{\tau_i}\simeq10^{3/34}\approx1.225 \qquad\text{(34 steps per factor 1\,000, about 11
+  \emph{The grid of lags.} Geometric: each lag is about \LagRatio{} times the previous one, then rounded to a
+  multiple of $\Delta t=\GridS$~s,
+  \[ \frac{\tau_{i+1}}{\tau_i}\simeq10^{\LagDecades/\LagSteps}\approx\LagRatio \qquad\text{(\LagSteps{} steps per factor \LagFactor, about \LagsPerDecade{}
      lags per decade)}, \]
-  from 10~s to 25\,810~s. The 37 lags, in seconds:
+  from \LagMin~s to \LagMax~s. The \LagCount{} lags, in seconds:
   \begin{center}\small
-  10, 20, 30, 40, 50, 60, 80, 90, 100, 110, 140, 170, 210, 260, 320, 390, 470, 580, 710, 870,\\
-  1\,000, 1\,230, 1\,500, 1\,840, 2\,250, 2\,760, 3\,380, 4\,150, 5\,080, 6\,220, 7\,630, 9\,350, 11\,450,
-  14\,030, 17\,190, 21\,060, 25\,810.
+  \LagList.
   \end{center}
-  Below 200~s the rounding to 10~s makes the steps larger than 1.225.
+  Below 200~s the rounding to \GridS~s makes the steps larger than \LagRatio.
 \item[MSD] At each lag $\tau$, the mean of the $N$ values $\overline{\delta^2_p}(\tau)$ of the pieces of a
   fixed cohort, one weight per piece:
   \[ \mathrm{MSD}(\tau) = \frac{1}{N}\sum_{p}\overline{\delta^2_p}(\tau). \]
@@ -166,10 +181,10 @@ analysed.
   $\alpha(\tau)=\dfrac{1}{2}\dfrac{d\log\mathrm{MSD}}{d\log\tau}$. For a power law $\mathrm{MSD}\propto\tau^{2\alpha}$
   it is the exponent.
   \begin{enumerate}
-  \item \emph{Lags}: the grid $\tau_k$ of the TA-MSD, consecutive lags in the ratio $\approx1.225$.
+  \item \emph{Lags}: the grid $\tau_k$ of the TA-MSD, consecutive lags in the ratio $\approx\LagRatio$.
   \item \emph{Window}: the lags within \HalfDecade{} decades of $\tau$,
     $W(\tau)=\{k:\ |\log_{10}\tau_k-\log_{10}\tau|\le\HalfDecade\}$, that is $\tau_k\in[\tau^-,\tau^+]$ with
-    $\tau^\pm=\tau\cdot10^{\pm\HalfDecade}$. It holds 5 to 7 lags over most of the grid; with fewer than 3 (the
+    $\tau^\pm=\tau\cdot10^{\pm\HalfDecade}$. It holds \WindowLagsMin{} to \WindowLagsMax{} lags over most of the grid; with fewer than 3 (the
     ends of the grid), the 3 nearest.
   \item \emph{Fit}: with $u_k=\log\tau_k$, $y_k=\log\mathrm{MSD}(\tau_k)$ and the means $\bar u,\bar y$ over $W$,
     the least-squares line through the points $(u_k,y_k)$, $k\in W(\tau)$, equal weight per lag, has half-slope
@@ -177,7 +192,7 @@ analysed.
   \end{enumerate}
 
 \item[$\boldsymbol{H}$] Half the least-squares slope of the straight line fitted to $\log\mathrm{MSD}$ against
-  $\log\tau$ over the lags $\tau_1,\dots,\tau_K$ of the grid, from 10~s (the shortest lag of the 10-s grid) to
+  $\log\tau$ over the lags $\tau_1,\dots,\tau_K$ of the grid, from \LagMin~s (the shortest lag of the \GridS-s grid) to
   the $\tau_\mathrm{max}$ of the cohort, one weight per lag. So $H$ depends on the cohort through its range. With $u_k=\log\tau_k$ and
   $y_k=\log\mathrm{MSD}(\tau_k)$:
   \[ H = \frac{1}{2}\,\frac{\sum_k (u_k-\bar u)(y_k-\bar y)}{\sum_k (u_k-\bar u)^2}. \]
@@ -187,7 +202,7 @@ analysed.
   parabolic weight that peaks at the middle of the range and vanishes at its ends:
   \[ H = \int_{u_0}^{u_1} w(u)\,\alpha(u)\,du, \qquad w(u) = \frac{6}{L^3}\Big[\big(\tfrac{L}{2}\big)^2-(u-\bar u)^2\Big],
   \qquad \int w = 1. \]
-  Our lags are geometric, rounded to the 10-s grid, so this holds approximately. For a pure power law
+  Our lags are geometric, rounded to the \GridS-s grid, so this holds approximately. For a pure power law
   $\alpha$ is constant and $H=\alpha$.
 \end{description}
 
@@ -196,13 +211,17 @@ analysed.
 Pieces are not independent: those of one pilot share skill and wing, those of one block share the day and
 the air. A \emph{block} is the set of flights joined by a group episode or by the same site and day.
 \begin{itemize}
-\item Pilots and blocks cross, so three bootstraps of 1000 draws each resample with replacement the
+\item Pilots and blocks cross, so three bootstraps of \NBoot{} draws each resample with replacement the
   pilots, the blocks and the cells (pilot $\times$ block); in a draw each piece weighs the count of its
   pilot, block or cell.
 \item With $V_p$, $V_b$, $V_c$ the variances of an estimate over the three sets of draws (Cameron, Gelbach
-  and Miller 2011):
-  \[ V = \max(V_p + V_b - V_c,\ V_p,\ V_b), \qquad \text{band} = \text{estimate} \pm 1.645\sqrt{V}\quad(90\%). \]
-\item Code: \texttt{twoway.py}; \texttt{coverage.py} checks the coverage of the band.
+  and Miller~\cite{cameron2011}):
+  \[ V = \max(V_p + V_b - V_c,\ V_p,\ V_b), \qquad \text{band} = \text{estimate} \pm \BandZ\sqrt{V}\quad(90\%). \]
+\item \emph{Shared draws.} $\Sl$, $\A$ and $\G$ are computed in the same draws, so every gap and every difference
+  has its own band, from its values over the draws; "paired" draws are the same for two estimators of one
+  population.
+\item Code: \texttt{twoway.py}; \texttt{coverage.py} checks on synthetic data with pilot and block effects that the
+  band of nominal 90\% covers the true value in \CovNewMin--\CovNewMax\% of the datasets.
 \end{itemize}
 
 
@@ -210,10 +229,14 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \begin{step}
 \Q Should a lag-resolved statistic use every flight, with fewer flights at longer lags?
   \textcolor{answer}{\textbf{No}}
-\Rule The TA-MSD of a piece $p$ at lag $\tau$ averages over the origins $t_j=j\Delta t\in[0,T_p-\tau]$. For
-  enough origins we ask $T_p-\tau\ge 0.2\,T_p$, that is $T_p\ge\tau/0.8$. So the longer the lag, the fewer the
-  pieces.
-\Prob If every lag uses all the pieces it can, the population changes with $\tau$. From $\tau_1$ to $\tau_2$
+\Why The TA-MSD of a piece $p$ at lag $\tau$ averages over the origins $t_j=j\Delta t\in[0,T_p-\tau]$. For
+  enough origins, and so a reliable estimate, we ask $T_p-\tau\ge (1-\Support)\,T_p$, that is
+  $T_p\ge\tau/\Support$, our choice. So the longer
+  the lag, the fewer the pieces, and an exponent read across lags may also read which pieces leave.
+\end{step}
+
+\begin{problembox}{the population changes with the lag}
+  If every lag uses all the pieces it can, the population changes with $\tau$. From $\tau_1$ to $\tau_2$
   the short pieces drop out. Let
   \begin{itemize}
   \item $a$: MSD at $\tau_1$ of all the pieces present at $\tau_1$;
@@ -241,8 +264,11 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   lower MSD ($a_k<b_k$), $r_k$ is negative and rises to 0 across the window, its slope is positive and
   $\hat\alpha_\mathrm{pool}>\alpha$. With the two lags $\tau^-,\tau^+$ only, the extra term is
   $\tfrac12\log(b/a)/\log(\tau^+/\tau^-)$, the formula of $H$ above.
-\Test Nested fixed cohorts, each on its own lag range. If the length of the pieces does not select, the
-  cohorts give the same $\alpha$ at the lags they share. Two checks:
+\end{problembox}
+
+\begin{step}
+\Tool Nested fixed cohorts, each on its own lag range. If the length of the pieces does not select, the
+  cohorts give the same $\alpha$ at the lags they share, within the bands. Two checks:
   \begin{itemize}
   \item the whole curves $\alpha(\tau)$ of the cohorts, overlaid: do they coincide where they overlap
     (Fig.~\ref{fig:cohorts})?
@@ -263,22 +289,24 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \begin{itemize}
   \item \emph{Pieces}: a longer $\tau_\mathrm{max}$ explores longer lags but keeps fewer pieces ($\G$: from
     \CohortPiecesFirst{} to \CohortPiecesLast, Fig.~\ref{fig:tradeoff} right).
-  \item \emph{Level}: from the cohort to 1~h on, the longer the cohort, the higher the curve $\alpha(\tau)$, at all
-    the shared lags but at most one per step. Below 1~h the cohorts are close: $\alpha(1\,000~\mathrm{s})$ grows with
-    $\tau_\mathrm{max}$ for $\A$ and $\G$, while for $\Sl$ it first goes down, from the cohort to 1\,000~s to the
-    one to 2\,760~s, and then up (Fig.~\ref{fig:tradeoff} left). The step is largest from the cohort to
-    1~h to the one to 2~h, from \AlphaStepHourMin{} to \AlphaStepHourMax, against at most
-    \AlphaStepBeforeMax{} between the shorter cohorts (Fig.~\ref{fig:tradeoff} left).
+  \item \emph{Level}: from the cohort to 1~h on, each longer cohort has a higher curve $\alpha(\tau)$ than the one
+    before, in the three populations, at every shared lag but at most one. Below 1~h the cohorts are close:
+    $\alpha(1\,000~\mathrm{s})$ grows with $\tau_\mathrm{max}$ for $\A$ and $\G$, while for $\Sl$ it first goes
+    down, from the cohort to 1\,000~s to the one to 2\,760~s, and then up (Fig.~\ref{fig:tradeoff} left). From the
+    cohort to 1~h to the one to 2~h, $\alpha(1\,000~\mathrm{s})$ rises by \AlphaStepHourMin{} to
+    \AlphaStepHourMax, and the next step is of the same order, against at most \AlphaStepBeforeMax{} between the
+    shorter cohorts.
   \item \emph{Shape}: from 2~h on the end of the curve changes: a second peak, then a descent
     (Fig.~\ref{fig:cohorts}).
-  \item \emph{Contrasts}: at \GapSpreadLag~s the selection moves $\alpha$ more than the gap $\G-\Sl$
-    (Fig.~\ref{fig:gaps}). Among the cohorts that reach beyond, the gaps differ at most by \GapSpreadLowGS{} ($\G-\Sl$),
+  \item \emph{Contrasts} (Fig.~\ref{fig:gaps}): up to \GapSpreadLag~s the cohort moves the gaps less than $\alpha$
+    itself. Among the cohorts that reach beyond, the gaps differ at most by \GapSpreadLowGS{} ($\G-\Sl$),
     \GapSpreadLowAS{} ($\A-\Sl$) and \GapSpreadLowGA{} ($\G-\A$) up to \GapSpreadLag~s; above it by
     \GapSpreadHighGS, \GapSpreadHighAS{} and \GapSpreadHighGA.
-  \item \emph{Whole dataset} (red, Fig.~\ref{fig:cohorts}): up to about 700~s every piece reaches the lag and
-    the red curve is the cohort to 1\,000~s. From about $10^3$~s it leaves all the cohorts. In $\Sl$ it first
-    falls below them, up to about $3\cdot10^3$~s; in $\A$ and $\G$ it rises above them from about
-    $1.5\cdot10^3$~s. From about $4\cdot10^3$~s it climbs steeply, up to $\alpha=\PoolSMax$ ($\Sl$),
+  \item \emph{Whole dataset} (red, Fig.~\ref{fig:cohorts}): up to about \PoolSame~s every piece reaches the lag and
+    the red curve is the cohort to 1\,000~s. From about \PoolLeave~s it leaves the band of the cohort to 1~h. In
+    $\Sl$ it first falls below it, up to about \PoolBelowEnd~s; in $\A$ it rises above it from about
+    \PoolAboveA~s, in $\G$ from about \PoolAboveG~s. From about \PoolSteep~s it is above every cohort in the three
+    populations and climbs steeply, up to $\alpha=\PoolSMax$ ($\Sl$),
     \PoolAMax{} ($\A$), \PoolGMax{} ($\G$), above the ballistic 1, while the cohorts slowly descend. In the
     top row its MSD lies below the longer cohorts and joins each of them at its $\tau_\mathrm{max}$: it is not
     higher, it grows faster, and in log--log it bends upward where the cohorts are straight.
@@ -286,7 +314,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/cohorts_tradeoff.pdf}
-  \caption{Left: $\Hk$ against the $\tau_\mathrm{max}$ of the cohort (pieces of at least $\tau_\mathrm{max}/0.8$);
+  \caption{Left: $\Hk$ against the $\tau_\mathrm{max}$ of the cohort (pieces of at least $\tau_\mathrm{max}/\Support$);
   90\% bands. Right: pieces of each cohort. Every declared open flight (no condition on the opening).}
   \label{fig:tradeoff}
   \end{figure}
@@ -301,17 +329,18 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \Ded\mbox{}
   \begin{itemize}
   \item \textbf{The choice of the cohort matters for the gaps $\G-\Sl$, $\G-\A$, $\A-\Sl$ from about
-    $10^3$~s on.}
+    \GapSpreadLag~s on.}
   \item \textbf{The red curve is the extra term of the Problem}, $\log(b/a)/\log(\tau_2/\tau_1)$. Where the
     pieces that drop out have the lower MSD ($b>a$) the term is positive and the pool climbs above every cohort;
-    in $\Sl$ between $10^3$ and $3\cdot10^3$~s the solo flights that drop out are a little straighter than
-    those that stay ($b<a$), and the pool falls below. Its rise from $4\cdot10^3$~s and its $\alpha>1$ say how
+    in $\Sl$ between \PoolLeave{} and \PoolBelowEnd~s the solo flights that drop out are a little straighter than
+    those that stay ($b<a$), and the pool falls below. Its rise from \PoolSteep~s and its $\alpha>1$ say how
     fast the short flights leave, not how the flights move. \textbf{So the pool cannot be used.}
   \item Any single cohort is a compromise. Carrying five curves per population is not practical either.
   \end{itemize}
 \Home\mbox{}
   \begin{itemize}
-  \item \textbf{The longest flights are straighter at every scale} $\Longrightarrow$ a longer cohort selects straighter flights.
+  \item \textbf{From the cohort to 1~h on, the longer flights are straighter at every shared lag}
+    $\Longrightarrow$ a longer cohort selects straighter flights.
   \item \textbf{Never the pool for a lag-resolved statistic.} Without a fixed cohort the short pieces leave at
     long lags, the remaining ones have a higher MSD ($b>a$), and the extra term
     $\log(b/a)/\log(\tau_2/\tau_1)>0$ raises $\hat\alpha_\mathrm{pool}$ above 1 only because the short flights
@@ -323,6 +352,9 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 
 \begin{step}
 \Q How do we get \textbf{one curve per population over every lag}, using at each lag the pieces that reach it?
+\Why The step above rules out the pool, and any single cohort is a compromise between lags and pieces.
+\Tool The chained MSD: what we want of it, what goes wrong with the obvious choices, how it is built, and the proof
+  on a toy (the boxes below); then its MSD and its exponent on the data.
 \end{step}
 
 \begin{method}{what we want}
@@ -332,8 +364,10 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item \emph{Every lag}, from 10~s to the longest flights. The long lags exist only in the long flights, so
     these must enter.
   \item \emph{At each lag, as many pieces as possible}: the short flights too, at the lags they reach.
-  \item \emph{No composition term}: along the lags of one fit of $\alpha$ the set of pieces must not change,
-    or the slope also measures which pieces leave (Sec.~\ref{fixed-cohort}).
+  \item \emph{No composition term}: each increment of $\log\mathrm{MSD}$ along the lags of one fit of $\alpha$
+    must compare one set of pieces with itself, or the slope also measures which pieces leave
+    (Sec.~\ref{fixed-cohort}). Which pieces reach the long lags (the selection) is another matter, which no
+    method removes (Comment of Sec.~\ref{which-cohort}).
   \item \emph{One curve per population.} Five cohorts give five curves for each of $\Sl$, $\A$, $\G$ and for each
     gap, and above $10^3$~s the gaps depend on the cohort (Sec.~\ref{fixed-cohort}): no single message.
   \end{enumerate}
@@ -357,7 +391,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   with $a_k$ the MSD of the pool at $\tau_k$, $b_k$ that of the pieces of $P(\tau^+)$ at the same lag, and
   $\alpha(\tau)$ the exponent of these pieces. Where the shorter pieces have the lower MSD, $r_k<0$ rises to 0 at
   $\tau^+$, and \textbf{the pool is steeper than the pieces it is made of}. What it inflates is the growth of the
-  MSD with the lag; its value is in fact the lower one, since the pool still holds the short pieces. In the
+  MSD with the lag: within the window the pool still holds shorter pieces, so its level lies below that of the
+  pieces of $P(\tau^+)$ and climbs toward it at $\tau^+$. In the
   data this is the red curve of Fig.~\ref{fig:cohorts} (Sec.~\ref{fixed-cohort}, Observation).
 
   \textbf{The mean of the cohort curves.} With nested cohorts $c$ to $\tau_c$ and any weights $w_c$ (equal, or the
@@ -401,7 +436,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \begin{itemize}
   \item Up to 1\,000~s the chained MSD and the pool coincide: every piece reaches every lag.
   \item Above, in $\A$ and $\G$ the pool lies above $\mathrm{MSD}^*$, more and more with the lag: at each step the
-    pieces that leave had the lower MSD ($b>a$). In $\Sl$ it lies slightly below up to about $6\cdot10^3$~s, since
+    pieces that leave had the lower MSD ($b>a$). In $\Sl$ it lies slightly below up to about \PoolMsdCross~s, since
     the short solo flights that leave are a little straighter (Sec.~\ref{fixed-cohort}), and above beyond.
   \item At the longest lags the pool bends upward, while $\mathrm{MSD}^*$ stays close to a line.
   \end{itemize}
@@ -481,6 +516,9 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   gives \ToyPlMean{} at \ToyPlTau~s and up to \ToyPlMeanMax, irregular along $\tau$, since it depends on where the
   ends of the cohorts fall in the window.
 
+  The toy proves the mechanism, not its size: with $\beta=\ToyPlBeta$ the pool stays below \ToyPlTop, while in the
+  data it goes above 1 (Result below).
+
   \begin{center}
   \includegraphics[width=0.9\textwidth]{chained_scheme.pdf}
   \captionof{figure}{The toy. Top: which pieces (rows, short to long) enter each lag of the window of
@@ -497,7 +535,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \Res \textbf{The exponent} (Fig.~\ref{fig:chained-pool}): $\alpha^*$ and the half-slopes of the pool, with the
   same fit.
   \begin{itemize}
-  \item \textbf{The pool is not an option}: from $10^3$~s on its $\alpha$ runs away, up to \PoolSMax{} ($\Sl$),
+  \item \textbf{The pool is not an option}: pool minus $\alpha^*$ is above 0, band included, from \PoolRunsAwayA~s
+    in $\A$, \PoolRunsAwayG~s in $\G$ and \PoolRunsAwayS~s in $\Sl$, and its $\alpha$ runs away, up to \PoolSMax{} ($\Sl$),
     \PoolAMax{} ($\A$), \PoolGMax{} ($\G$), above the ballistic $\alpha=1$, which no cohort reaches.
     Pool minus $\alpha^*$ at 6\,220~s: \PoolSMinusChainVeryLong{} ($\Sl$), \PoolAMinusChainVeryLong{} ($\A$),
     \PoolGMinusChainVeryLong{} ($\G$), the composition term alone.
@@ -516,9 +555,9 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   on the pieces of at least $\tau^+/\Support$~s: every piece at 10~s (\ChainGFirstPieces{} in $\G$), only the
   long flights at the end (\ChainGLastPieces{} pieces at \ChainGLastLag~s in $\G$). Since the longest flights are
   straighter at every scale (Sec.~\ref{fixed-cohort}), a change of $\alpha^*$ at long lags may come from the
-  flights that change, not from the dynamics. No method removes it: the lag $\tau$ exists only in the pieces of
-  at least $\tau/\Support$~s, so at 3~h only the pieces of about 3.75~h count.
-\Rule \textbf{Solid and dashed.} Solid while the window ends within \ChainSelFree~s ($\tau\le\ChainSolidEnd$~s):
+  flights that change, not from the dynamics. No method removes it: the lag $\tau^+$ exists only in the pieces of
+  at least $\tau^+/\Support$~s, about $\PlusFactor\,\tau$, so at \PlusLagHours~h only the pieces of about \PlusPieceHours~h count.
+\Ded \textbf{Solid and dashed.} Solid while the window ends within \ChainSelFree~s ($\tau\le\ChainSolidEnd$~s):
   there every step runs on at least the pieces of the cohort to 1~h, and the selection is measured small
   (Result above), against $\G-\A=\ChainGAThousand$ at 1\,000~s. Dashed beyond: the long flights only.
 \Home\mbox{}
@@ -527,7 +566,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
     piece that reaches it, no composition term.
   \item Not the pool: using all the pieces at each lag, $\alpha$ goes above 1 at long lags.
   \item Solid up to \ChainSolidEnd~s, where the selection is small; dashed beyond, the long flights only.
-  \item $\G-\A$ does not depend on the pieces; $\A-\Sl$ does, at short lags.
+  \item Against the cohort to 1~h, $\G-\A$ hardly moves (\ChainGAThousand{} against \GapAllGAThousand{} at
+    1\,000~s); $\A-\Sl$ does, at short lags (\ChainASTen{} against \GapAllASTen{} at 10~s).
   \end{itemize}
 \end{step}
 
@@ -565,7 +605,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \MinOpening{} (against \BelowEvery\%) in the cohort to \DeclTauLongest~s. A flight that comes back moves away
   and then back, so its displacement stops growing, and at long lags $\alpha$ falls.
 
-  \emph{With what it goes.} $\mathcal O$ is lower in the mountains, where relief and airspace bend the route
+  \emph{With what it goes.} With $z_0$ the altitude of the takeoff and $T$ the duration of the flight, $\mathcal O$
+  is lower in the mountains, where relief and airspace bend the route
   (median \TakeoffHighMedian{} for takeoffs at $z_0\ge\MountainM$~m, \TakeoffLowMedian{} below), and in the long
   flights (median \MedianEvery{} on every flight, \MedianFixed{} in the cohort to \DeclTauFixed~s, \MedianLongest{}
   to \DeclTauLongest~s). A threshold $\mathcal O>\theta$ would keep these shares of the flights:
@@ -602,12 +643,12 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \emph{Labels.} Every fix is labelled transition (glide), search or climb by the three-state hidden Markov
   model of Vilpellet, Darmon and Benzaquen~\cite{vilpellet2026}, refitted on our flights
   (Appendix~\ref{app:phases}). Tracks logged every 2 to \DtMax~s are splined to 1~s first. A run is a maximal
-  sequence of fixes with one label; it belongs to the population of the stretch that holds its middle, whole,
-  since cutting it where a flight enters or leaves a group would shorten the durations.
+  sequence of fixes with one label; it belongs to the population of the piece that holds its middle, whole
+  (runs whose middle lies in no piece are dropped), since cutting it where a flight enters or leaves a group would shorten the durations.
 
   \emph{What a search is.} The model labels search whatever is neither a climb nor a straight glide: a pilot
   turning without rising. The same label covers four moments of the cycle, about a quarter each
-  (\PhCtxFound\%, \PhCtxFailed\%, \PhCtxRecentre\%, \PhCtxExit\% of the searches), told apart only by the runs
+  (\PhCtxFound\%, \PhCtxFailed\%, \PhCtxRecentre\%, \PhCtxExit\% of all the searches), told apart only by the runs
   before and after it:
   \begin{center}\footnotesize
   \begin{tabular}{@{}l l l@{}}
@@ -625,7 +666,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   the searches and of the glides, and only its duration is read. Searches at the edge of a segment, whose
   neighbour is unknown (\PhSearchDropped\%), are left out. The model alone cannot tell these moments apart,
   since the pilot turns without rising in all four; the sequence does it directly, with no new training. Vilpellet's
-  labels show the same four moments in the same shares.
+  labels show the same four moments in shares within \PhCtxMaxDiff{} points.
 
   \emph{Statistics}, one value per flight and population (the part of the flight in it), then averaged over the
   flights:
@@ -650,6 +691,10 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \subsection{Tails of the durations}\label{tails}
 
 \begin{method}{the tail exponent and its threshold}
+  \emph{Why.} The means of the phase statistics say how a phase is flown on average; the tails of the durations
+  say how often a glide, a search or a climb is very long, as in the distributions of durations of Vilpellet,
+  Darmon and Benzaquen~\cite{vilpellet2026}.
+
   The durations $x$ of glides, of searches that end in a climb and of climbs: survival $P(X>x)$ and, above a
   threshold $x_\mathrm{min}$, the Hill estimate of the tail exponent of $P(X>x)\sim x^{-\mu}$,
   \[ \hat\mu=\frac{n}{\sum_{i:\,x_i\ge x_\mathrm{min}}\ln(x_i/x_\mathrm{min})}, \]
@@ -670,9 +715,9 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \begin{method}{the route}
   The path with each climb replaced by its chord, from its first to its last fix, and parametrised by the arc
   length: the waiting in the climbs is gone, the shape of the path is left. Its exponent $\alpha_\mathrm{route}$
-  is read on the MSD in arc length as $\alpha$ is in time. In arc length with the circles kept, the exponent
-  equals the one in time within 0.01 (ridges work): a paraglider waits while circling, so only the chord removes
-  the waiting.
+  is read on the MSD in arc length as $\alpha$ is in time, as in our study of the ridges (xc-lab). In arc length
+  with the circles kept, the exponent equals the one in time within \RouteCheckMax{} (Sec.~\ref{ch:geometry}): a
+  paraglider waits while circling, so only the chord removes the waiting.
 \end{method}
 
 \section{Is group time more persistent?}\label{ch:straighter}
@@ -682,9 +727,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \Why It is the starting fact: without it there is nothing to explain.
 \Tool $\alpha^*(\tau)$ of $\G$ and $\Sl$ at every lag, and the gap $\Delta\alpha^*_{\G-\Sl}(\tau)$, every flight
   (Sec.~\ref{which-cohort}).
-\Res The adopted curves and their gaps (Fig.~\ref{fig:chained}). $\G-\A$ is \ChainGAThousand{} at 1\,000~s,
-  as in every cohort. $\A-\Sl$ at 10~s is \ChainASTen, against \GapAllASTen{} in the cohort to 1~h, and
-  \ChainASThousand{} at 1\,000~s: the pieces shorter than 1~h count for $\A-\Sl$ (Sec.~\ref{solo-time}).
+\Res The curves $\alpha^*$ and their gaps (Fig.~\ref{fig:chained}); $\A$ is drawn already, for the next chapter.
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/chained.pdf}
@@ -694,17 +737,21 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \label{fig:chained}
   \end{figure}
 \Obs $\G-\Sl$ is about zero up to 100~s (\ChainGSTen{} at 10~s, \ChainGSHundred{} at 100~s), grows from about
-  200~s, is \ChainGSThreeTwenty{} at 320~s and \ChainGSThousand{} at 1\,000~s, and stays at that level up to the end
-  of the solid range (\ChainGSLong{} at 2\,760~s).
-\Home \textbf{Yes, from a few hundred seconds on}: below, group time and solo flights are equally persistent.
+  \ChainGSGrow~s, is \ChainGSThreeTwenty{} at 320~s and \ChainGSThousand{} at 1\,000~s, and stays at that level up to the end
+  of the solid range, \ChainSolidEnd~s.
+\Ded The gap is real at the lags of a stretch of flight, hundreds to thousands of seconds, and absent at the lags of
+  a turn. Below 100~s there is no net gap; whether it hides two terms that cancel is the next question.
+\Home \textbf{Yes, from a few hundred seconds on}: group time is more persistent than solo flights, by
+  \ChainGSThousand{} at 1\,000~s; below 100~s there is no net gap.
 \end{step}
 
 \section{The group or the flights?}\label{ch:identity}
 
 \begin{step}
 \Q Is the gap a property of the moment spent in a group, or of the flights that have group time?
-\Why $\G-\Sl$ mixes two things: flying with others, and which pilots, days and places have group time. They
-  call for different explanations.
+\Why Chapter~\ref{ch:straighter} found $\G-\Sl>0$ from a few hundred seconds on and no net gap below 100~s. But
+  $\G-\Sl$ mixes two things: flying with others, and which pilots, days and places have group time. They call for
+  different explanations.
 \Tool The identity of Sec.~\ref{question}: $\G-\A$ (same flights) and $\A-\Sl$ (different flights), at every lag,
   with the shared draws (Fig.~\ref{fig:identity}).
 \Res At 10~s: $\G-\A=\ChainGATen$, $\A-\Sl=\ChainASTen$. At 1\,000~s: $\G-\A=\ChainGAThousand$,
@@ -718,100 +765,32 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \end{figure}
 \Obs\mbox{}
   \begin{itemize}
-  \item Opposite shapes. $\G-\A$ is negative at the short lags and grows from about 200~s; $\A-\Sl$ is positive
-    at the short lags and turns slightly negative from about 600~s.
+  \item Opposite shapes. $\G-\A$ is negative at the short lags and grows from about \ChainGAGrow~s; $\A-\Sl$ is positive
+    at the short lags and turns slightly negative near \ChainASNegative~s.
   \item Below 100~s the two terms cancel, and $\G-\Sl\approx0$. From about $10^3$~s the whole of $\G-\Sl$ is
     $\G-\A$.
   \end{itemize}
 \Ded\mbox{}
   \begin{itemize}
   \item \textbf{At long lags the gap belongs to the moment in a group}: it lives within the same flights.
-  \item $\A-\Sl$ compares different flights, and its sign changes with the lag: before reading it, the ground
-    (Sec.~\ref{ground}).
+  \item The absence of a gap below 100~s is a cancellation: within the same flights group time is \emph{less}
+    persistent there, and the flights with group time are more persistent than solo flights.
+  \item $\A-\Sl$ compares different flights, and its sign changes with the lag. Different flights fly over
+    different ground, which changes $\alpha^*$ itself: before reading $\A-\Sl$, the ground.
   \end{itemize}
-\Home The group effect proper, $\G-\A$, carries $\G-\Sl$ from about $10^3$~s on; $\A-\Sl$ is small and still to
-  be explained.
-\end{step}
-
-\subsection{The solo time of group flights}\label{solo-time}
-
-\begin{step}
-\Obs $\A-\Sl$ in the cohort to 1~h (Fig.~\ref{fig:gaps-opening}), against $\G-\A$:
-  \begin{center}
-  \begin{tabular}{@{}l c c c c c@{}}
-  $\tau$ (s) & 10 & 100 & 320 & 1\,000 & 2\,760 \\
-  \midrule
-  $\A-\Sl$ & \GapAllASTen & \GapAllASHundred & \GapAllASThreeTwenty & \GapAllASThousand & \GapAllASLong \\
-  $\G-\A$ & \GapAllGATen & \GapAllGAHundred & \GapAllGAThreeTwenty & \GapAllGAThousand & \GapAllGALong \\
-  \end{tabular}
-  \end{center}
-  (every declared open flight. At $\mathcal O>\MinOpening$ the same shape: $\A-\Sl$ goes from \GapMinASTen{}
-  at 10~s to \GapMinASThousand{} at 1\,000~s; at $\mathcal O>\Stricter$ it is smaller: \GapStrictASTen{} at 10~s.)
-  Opposite shapes: $\A-\Sl$ is largest at the shortest lags and vanishes by $10^3$--$2\cdot10^3$~s; $\G-\A$ is
-  negative at the short lags and grows with $\tau$.
-\Q Why is the solo time of group flights a little straighter than solo flights, at short lags only?
-\Hyp Three readings:
-  \begin{enumerate}
-  \item \textbf{Residual}: alone, but near groups flying in the area, the pilot keeps some of their benefit.
-  \item \textbf{Zones}: the solo time of group flights happens in straighter zones. It would favour
-    straight $\to$ group (Sec.~\ref{which-way}).
-  \item \textbf{Partition of the phases}: groups form mostly in the climbs, where the pilots circle together
-    ($\G-\A<0$ at short lags: more circling in $\G$). The climbs go to $\G$, and $\A$ keeps more glides, which
-    are straight at short lags.
-  \end{enumerate}
-\Ded\mbox{}
-  \begin{itemize}
-  \item (2) predicts a gap at long lags, where the straightness of a route shows (as for $\G$ and for
-    $\mathcal O$). $\A-\Sl$ vanishes there: $\A-\Sl$ gives no support to (2).
-  \item (3) explains both the shape (short lags only) and the sign of $\G-\A$ at short lags.
-  \item (1) is not separated from (3) here.
-  \end{itemize}
-\Com \textbf{The size depends on the pieces.} On the chained curve, with the pieces shorter than 1~h too
-  (Sec.~\ref{which-cohort}), $\A-\Sl$ at 10~s is \ChainASTen, against \GapAllASTen{} in the cohort to 1~h, and
-  it turns negative from $10^3$~s, \ChainASThousand{} at 1\,000~s. Within each ground class it stays positive:
-  the negative sign comes from where $\Sl$ and $\A$ fly (Sec.~\ref{ground}).
-\Test\mbox{}
-  \begin{itemize}
-  \item (3): the share of time in climb of $\G$, $\A$, $\Sl$. Done in Sec.~\ref{ch:dynamics}: group time holds
-    \PhShareClimbGAAll{} points more climb than the solo time of the same flights, so (3) holds.
-  \item (1): $\A-\Sl$ against the time from the nearest stretch of group time of the same flight: windows of
-    \WhenWindow~s in the solo time of group flights, binned by that distance, against windows of solo flights,
-    the exponent over 320 to 1\,000~s (Table~\ref{tab:carry}).
-  \end{itemize}
-\Res\mbox{}
-  \begin{table}[H]
-  \centering
-  \resizebox{\textwidth}{!}{\input{../vs-solo/generated/comparisons/carry_table}}
-  \caption{$\A(d)-\Sl$ of the exponent over 320 to 1\,000~s, by the distance $d$ of the solo window from the nearest
-  group time of its flight, per ground class, 90\% bands; numbers of windows.}
-  \label{tab:carry}
-  \end{table}
-  In the high mountains \CarryHighMtnNear{} at \CarryNearLabel{} and \CarryHighMtnFar{} at \CarryFarLabel; in the low
-  mountains \CarryLowMtnNear{} and \CarryLowMtnFar.
-\Ded \textbf{No carry-over}: $\A-\Sl$ does not fall as the solo time moves away from the group, in any class; it
-  stays or grows. Reading (1) fails. The solo time far from the group comes from long solo stretches, a selection of
-  the flight, so the growth itself is not read.
-\Home\mbox{}
-  \begin{itemize}
-  \item At long lags the solo time of group flights is as straight as solo flights: the long-lag gap is all
-    in the group time.
-  \item At short lags it is straighter, by \GapAllASTen{} at 10~s. Most likely the partition of the phases
-    between $\G$ and $\A$, to test.
-  \end{itemize}
+\Home On every flight, the group effect proper, $\G-\A$, carries $\G-\Sl$ from about $10^3$~s on. $\A-\Sl$ is
+  small and changes sign with the lag: a comparison between flights, to be read where they fly.
 \end{step}
 
 \section{Where? Plains and mountains}\label{ground}
 
 \begin{step}
 \Q Does the group effect depend on the ground under the flight?
-\end{step}
-
-\begin{step}
+\Why Chapter~\ref{ch:identity} left $\A-\Sl$ to be read where the flights fly. The ground is both a moderator
+  and a confounder: groups fly more in the mountains (\GroundMountainG\% of the flights of $\G$, \GroundMountainS\%
+  of $\Sl$), and the relief changes $\alpha^*$ itself.
 \Tool The ground class of each flight (Sec.~\ref{ground-class}); in each class $\alpha^*$ and its gaps
   (Sec.~\ref{which-cohort}).
-\end{step}
-
-\begin{step}
 \Res Flights and gaps at 1\,000~s per class (Table~\ref{tab:ground}); the gaps at every lag
   (Fig.~\ref{fig:ground-gaps}) and $\alpha^*$ (Fig.~\ref{fig:ground-alpha}).
   \begin{table}[H]
@@ -840,7 +819,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item \emph{$\G-\Sl$ grows with the relief}: at 1\,000~s \GroundPlainsGSThousand{} in the plains,
     \GroundHillsGSThousand{} in the hills, \GroundLowMtnGSThousand{} in the low and \GroundHighMtnGSThousand{} in
     the high mountains. $\G-\A$ the same way, from \GroundPlainsGAThousand{} to \GroundHighMtnGAThousand. In the
-    plains $\G-\A$ stays negative up to about 300~s.
+    plains $\G-\A$ stays negative or unresolved up to about \GroundPlainsGAPositive~s.
   \item \emph{$\A-\Sl$ is positive in every class}: at 1\,000~s \GroundPlainsASThousand, \GroundHillsASThousand,
     \GroundLowMtnASThousand, \GroundHighMtnASThousand; on every flight it is \ChainASThousand.
   \item \emph{$\alpha^*$ changes regime with the ground} (Fig.~\ref{fig:ground-alpha}): in the plains and the
@@ -874,7 +853,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \Q Is the effect larger in the mountains, or the same effect on another scale?
 \Why $\alpha^*$ itself differs between the classes, so the same $\Delta\alpha^*$ is a different share of what a
   solo flight lacks to be ballistic. To compare the classes we divide each gap by $1-\alpha^*_b$, our choice of
-  normalisation, used only here.
+  normalisation, used only to compare ground classes.
 \Tool The normalised gaps $(\alpha^*_a-\alpha^*_b)/(1-\alpha^*_b)$ per class, computed in every draw
   (Fig.~\ref{fig:ground-rel}); their peak and the lag of the peak.
 \Res Peak of the normalised $\G-\Sl$: \GroundPlainsPeakGS{} at \GroundPlainsPeakGSLag~s (plains),
@@ -890,24 +869,23 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \end{figure}
 \Obs\mbox{}
   \begin{itemize}
-  \item The peaks of the normalised $\G-\Sl$ are close in the four classes, and so are those of $\G-\A$
-    (\GroundPlainsPeakGA{} to \GroundHighMtnPeakGA).
-  \item The lag of the peak is shorter in the mountains (\GroundLowMtnPeakGSLag{} and
-    \GroundHighMtnPeakGSLag~s) than in the plains and the hills (\GroundPlainsPeakGSLag{} and
-    \GroundHillsPeakGSLag~s).
+  \item The peaks of the normalised $\G-\A$ are close in the four classes (\GroundPlainsPeakGA{} to
+    \GroundHighMtnPeakGA); those of $\G-\Sl$ are of the same order, the hills highest, within wide bands.
+  \item The lag of the peak of $\G-\Sl$ is shorter in the mountains (\GroundLowMtnPeakGSLag{} and
+    \GroundHighMtnPeakGSLag~s) than in the plains and the hills, where it lies at the last solid lag
+    (\GroundPlainsPeakGSLag{} and \GroundHillsPeakGSLag~s): there it is a lower bound.
   \end{itemize}
 \Ded \textbf{Normalised, the effect has about the same size on every ground; the ground sets the scale at which
-  it shows}: hundreds of seconds in the mountains, thousands in the plains. The growth of the absolute gap with the
-  relief is mostly the lower $\alpha^*$ of the mountains.
-\Com In the plains and the hills the peak lies at the end of the solid range, on the longer flights. Peaks over
-  the solid lags only.
+  it shows}: about $10^3$~s or less in the mountains, at least the end of the solid range in the plains and the
+  hills. The growth of the absolute gap with the relief is mostly the lower $\alpha^*$ of the mountains.
+\Com Peaks over the solid lags only. In the plains and the hills the peak of $\G-\Sl$ rests on the longer flights.
 \Home Same effect, different scale.
 \end{step}
 
 \begin{step}
 \Q Does the effect peak at the scale of one glide and climb cycle?
-\Why A cycle is the natural unit of progress of a soaring flight; if the cycle is shorter in the mountains, it
-  would explain the shorter scale of the effect there.
+\Why The step above found the effect at a shorter scale in the mountains. A cycle is the natural unit of progress
+  of a soaring flight; if the cycle is shorter in the mountains, it would explain that scale.
 \Tool The mean length of a cycle, 60/climbs per hour, of $\Sl$, $\A$, $\G$ per class (Sec.~\ref{phases}), against
   the lag of the peak (Table~\ref{tab:cycle}).
 \Res\mbox{}
@@ -918,10 +896,12 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   the normalised gaps (solid lags).}
   \label{tab:cycle}
   \end{table}
-\Obs The cycle lasts 8 to 9~min in every class, a little shorter in $\G$; the peaks lie at 1.3 to 4 cycles and
-  move between the classes while the cycle does not.
-\Ded \textbf{No}: the scale of the effect does not follow the cycle. Why it is shorter in the mountains stays open
+\Obs The cycle lasts between \PhCycleGHighMtn{} and \PhCycleAHighMtn~min in every class, \PhCycleShortMin{} to
+  \PhCycleShortMax~min shorter in $\G$ than in $\A$; the peaks lie at \PhCycleRatioMin{} to \PhCycleRatioMax{} cycles and move between the classes while the cycle does not.
+\Ded \textbf{No}: the scale of the effect is not set by the cycle. Why it is shorter in the mountains stays open
   (Sec.~\ref{ch:found}).
+\Home The ground sets the scale of the effect, the cycle does not; from here on, a comparison made on every
+  flight is checked at fixed ground class.
 \end{step}
 
 \section{Which flights? The opening}\label{ch:flights}
@@ -929,6 +909,18 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \subsection{A first look: where group time is straighter}\label{first-look}
 
 \begin{step}
+\Q Does flying in a group add straightness whatever the geometry of the path?
+\Why Chapter~\ref{ground} found the effect on every ground, at a scale set by the ground. The shape of the whole
+  flight is another property of the flights compared: most declared open flights come back toward their start
+  (Sec.~\ref{opening}), and a group may straighten some shapes and not others. A threshold on $\mathcal O$ is the
+  obvious way to look, and where we started.
+\Tool The nested cohorts (Sec.~\ref{fixed-cohort}) of every declared open flight and of those with
+  $\mathcal O>\MinOpening$ and $\mathcal O>\Stricter$: their $\alpha(\tau)$ and the gaps; the numbers in the cohort
+  to \GapCohortTau~s.
+\Res Fig.~\ref{fig:declared-cohorts} and \ref{fig:gaps-opening}. At 1\,000~s, $\G-\Sl$ is \GapAllGSThousand{} (a),
+  \GapMinGSThousand{} (b) and \GapStrictGSThousand{} (c); $\G-\A$ is \GapAllGAThousand, \GapMinGAThousand{} and
+  \GapStrictGAThousand. $\A-\Sl$ in (a): \GapAllASTen{} at 10~s, \GapAllASThousand{} at 1\,000~s, \GapAllASLong{}
+  at \OpenTauFixed~s.
   \begin{figure}[H]
   \centering
   \textbf{(a)} every declared open flight\\
@@ -942,10 +934,6 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   piece, 90\% bands, same axes. Each curve stops at the $\tau_\mathrm{max}$ of its cohort.}
   \label{fig:declared-cohorts}
   \end{figure}
-\Obs In Fig.~\ref{fig:declared-cohorts}(a, b) the curves of $\G$ sit above those of $\Sl$ and $\A$ and resist
-  the fall of $\alpha$ at long lags. In (c), $\mathcal O>\Stricter$, they are close.
-\Q Does flying in a group add straightness whatever the geometry of the path?
-\Test Gaps $\Delta\alpha(\tau)$ between the populations at the three thresholds (Fig.~\ref{fig:gaps-opening}).
   \begin{figure}[H]
   \centering
   \textbf{(a)} every declared open flight\\
@@ -958,27 +946,31 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   from the shared two-way draws, same axes.}
   \label{fig:gaps-opening}
   \end{figure}
-\Res\mbox{}
+\Obs\mbox{}
   \begin{itemize}
-  \item $\G$ is straighter than $\A$ from $\tau\approx2$--$3\cdot10^2$~s on, in (a) and (b).
-  \item The gaps shrink as the threshold rises (cohort to \GapCohortTau~s, at 1\,000~s): $\G-\Sl$ goes from
-    \GapAllGSThousand{} (a) to \GapMinGSThousand{} (b) and \GapStrictGSThousand{} (c); $\G-\A$ from
-    \GapAllGAThousand{} to \GapMinGAThousand{} and \GapStrictGAThousand.
-  \item In (c) they are small but still resolved, from 470~s on.
-  \item $\A-\Sl$ has the opposite shape: \GapAllASTen{} at 10~s, it falls to \GapAllASThousand{} at
-    1\,000~s and \GapAllASLong{} at 2\,760~s (Sec.~\ref{solo-time}). There $\G-\Sl\approx\G-\A$.
+  \item In (a) and (b) the curves of $\G$ sit above those of $\Sl$ and $\A$ and resist the fall of $\alpha$ at long
+    lags; $\G$ is straighter than $\A$ from $\tau\approx\GapAllGAFrom$~s in (a) and
+    \GapMinGAFrom~s in (b) on.
+  \item The gaps shrink as the threshold rises. In (c) the curves are close, and the gaps small but still resolved
+    from about \GapStrictGSFrom~s ($\G-\Sl$) and \GapStrictGAFrom~s ($\G-\A$) on.
+  \item $\A-\Sl$ has the opposite shape: largest at 10~s, about zero at \OpenTauFixed~s, where
+    $\G-\Sl\approx\G-\A$.
   \end{itemize}
 \Ded \textbf{At first sight the group effect depends on the geometry of the path}: the more open the
-  flights kept, the smaller it is. The last step of this chapter tests it.
+  flights kept, the smaller it is. Two readings: the flights that fly in a group have another shape (next step), or
+  the threshold changes which flights are compared (last step of this chapter, Sec.~\ref{opening-ground}).
+\Home On every flight, the more open the flights kept, the smaller the group effect; the next two steps ask why.
 \end{step}
 
 \subsection{The flight or the stretch?}\label{flight-or-stretch}
 
 \begin{step}
 \Q Is $\G-\Sl$ a property of the flights that fly in a group, or of their group time?
+\Why The first look found the effect shrinking as the flights kept get more open. If the flights that fly in a
+  group had another shape, $\G-\Sl$ would only say which flights fly in a group.
 \Hyp \textbf{The flight.} Group flights are more open as a whole, and more open flights have a higher $\alpha$
   (Sec.~\ref{open-flights}): then $\G-\Sl$ would only say which flights fly in a group.
-\Test Opening of solo flights and of group flights (entered a group at least once), every declared open
+\Tool Opening of solo flights and of group flights (entered a group at least once), every declared open
   flight (Fig.~\ref{fig:opening-kind}).
   \begin{figure}[H]
   \centering
@@ -986,7 +978,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \caption{Opening of the declared open solo and group flights. Solid: \MinOpening; dotted: \Stricter.}
   \label{fig:opening-kind}
   \end{figure}
-\Res Group flights are \emph{less} open, in every stratum:
+\Res Median opening of solo and group flights, on every flight and by takeoff altitude and duration:
   \begin{center}
   \begin{tabular}{@{}l c c@{}}
   median $\mathcal O$ & solo flights & group flights \\
@@ -1002,6 +994,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   takeoffs at $z_0\ge\MountainM$~m & \KindSoloMountain\% & \KindGroupMountain\% \\
   \end{tabular}
   \end{center}
+\Obs Group flights are never more open: slightly less in every stratum, as open among the flights of at least
+  \DurationS~s.
 \Ded\mbox{}
   \begin{itemize}
   \item \textbf{The hypothesis of the flight fails}: group flights are not more open, they are slightly less.
@@ -1010,11 +1004,11 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
     \item group flights are not more open than solo flights (Fig.~\ref{fig:opening-kind});
     \item $\G-\A>0$, and $\G$ and $\A$ come from the same flights, so the opening of the flight cannot
       explain it;
-    \item $\A-\Sl\approx0$ from $10^3$~s on (Sec.~\ref{solo-time}): at long lags, outside its group time a
-      group flight is as straight as a solo flight.
+    \item on every flight $\A-\Sl$ is small at the long lags (Sec.~\ref{ch:identity}): there, outside its group
+      time a group flight is about as straight as a solo flight.
     \end{enumerate}
-  \item \textbf{Group time is the stretch where the flight gets straighter}, in flights that, as a whole, are
-    not more open.
+  \item \textbf{So group time looks like the stretch where the flight gets straighter}, in flights that, as a
+    whole, are not more open. The direct test, the opening of each piece, is still to do (Comment).
   \end{itemize}
 \Com $\mathcal O$ and $\alpha$ measure different things: $\mathcal O$ the whole path, from end to end; $\alpha$
   the straightness of the stretches up to $\tau_\mathrm{max}$. A flight can have straight legs and come back.
@@ -1024,26 +1018,30 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item in a straight flight the stretches alone are straight too;
   \item fewer pieces.
   \end{itemize}
+\Com Left out:
+  \begin{itemize}
+  \item The opening of each piece ($\G$, $\A$, $\Sl$): the direct test that $\G$ is the straighter stretch;
+    it needs the path length of the pieces, not in the cache.
+  \item \OpeningAboveOne{} solo flights have $\mathcal O>1$ (path shorter than the chord): a data error to check.
+  \end{itemize}
 \Home\mbox{}
   \begin{itemize}
   \item The group effect is not a straightness added whatever the path: it shrinks as the flights kept get
     more open.
-  \item It is not a property of the flights that fly in a group: they are not more open than solo flights.
-  \item It is a property of the group time: the straighter stretch of its flight. At long lags the whole
+  \item The shape of the flights that fly in a group does not explain it: they are never more open than solo
+    flights.
+  \item It points to the group time: the straighter stretch of its flight. At long lags the whole
     gap $\G-\Sl$ is $\G-\A$.
-  \end{itemize}
-\Out\mbox{}
-  \begin{itemize}
-  \item The opening of each piece ($\G$, $\A$, $\Sl$): the direct test that $\G$ is the straighter stretch;
-    it needs the path length of the pieces, not in the cache.
-  \item 15 solo flights have $\mathcal O>1$ (path shorter than the chord): a data error to check.
   \end{itemize}
 \end{step}
 
+\subsection{The opening or the ground?}\label{opening-ground}
+
 \begin{step}
 \Q Is the effect of the opening an effect of the ground?
-\Why A threshold on $\mathcal O$ keeps the lowland flights (Sec.~\ref{opening}) and the effect is smaller there
-  (Sec.~\ref{ground}). And the identity says where the opening can act: $\mathcal O$ is a property of the whole
+\Why The first look was on every flight, but a threshold on $\mathcal O$ keeps the lowland flights
+  (Sec.~\ref{opening}) and the effect is smaller there (Sec.~\ref{ground}): the comparison has to be made at fixed
+  ground class. And the identity says where the opening can act: $\mathcal O$ is a property of the whole
   flight, the same for $\G$ and $\A$ of one flight.
 \Tool The gaps per ground class and threshold on $\mathcal O$ (Table~\ref{tab:ground-opening},
   Fig.~\ref{fig:ground-opening}); the opening of $\Sl$, $\A$, $\G$ per class (Table~\ref{tab:opening-class}).
@@ -1077,9 +1075,10 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item Within a class, $\G$ is about as open as $\Sl$, a little more in the plains and the hills, a little less
     in the low mountains (Table~\ref{tab:opening-class}). $\G$ and $\A$ fly more in the mountains than $\Sl$
     (\GroundMountainG\% and \GroundMountainA\% of their flights, against \GroundMountainS\%).
-  \item $\A-\Sl$ falls to about zero at $\mathcal O>\Stricter$ in every class, absolute and normalised.
-  \item $\G-\A$ stays positive in every class. In absolute terms it shrinks in the mountains as the threshold
-    rises; normalised by $1-\alpha^*_\A$ it changes little, within wide bands in the low mountains
+  \item $\A-\Sl$ falls to about zero at $\mathcal O>\Stricter$ in every class; normalised, slightly negative in the
+    low mountains.
+  \item $\G-\A$ stays positive in every class. In absolute terms it shrinks at $\mathcal O>\Stricter$ in the hills
+    and the mountains; normalised by $1-\alpha^*_\A$ it changes little, within wide bands in the low mountains
     (Fig.~\ref{fig:ground-opening}).
   \end{itemize}
 \Ded\mbox{}
@@ -1087,21 +1086,23 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item \textbf{The opening acts on the comparison between flights}: it selects which flights are compared and
     removes $\A-\Sl$. Within a flight, the group effect survives every threshold; what it loses in absolute terms
     is the room left by a more persistent solo time.
-  \item Group flights look less open because they fly more in the mountains, not because the group flies more
-    folded paths.
-  \item So the puzzle of the first two steps dissolves: the shrinking of the effect with the opening was the
-    ground and the selection of the flights, not the geometry of the path.
+  \item Within a class, group time is about as open as solo flights: on every flight, group flights look less
+    open mostly because they fly more over the mountains (by ground class; by takeoff altitude the shares are
+    close).
+  \item So the shrinking of the effect with the opening, in the first step, is mostly the ground and the
+    selection of the flights. Within a class no dependence on the geometry of the path is detected, though a
+    threshold that selects on the outcome could hide one.
   \end{itemize}
-\Home The group effect within a flight does not depend on the shape of the flight; the opening, like the ground,
-  acts on $\A-\Sl$.
+\Home Within a flight, no dependence of the group effect on the shape of the flight is detected; the opening,
+  like the ground, acts mostly on $\A-\Sl$, which compares flights.
 \end{step}
 
 \section{Who?}\label{ch:who}
 
 \begin{step}
 \Q Does $\A-\Sl$ come from the pilots?
-\Why $\A-\Sl$ compares different flights, and the pilots who fly in groups may be other pilots: more
-  experienced, on other wings. If so, part of $\G-\Sl$ is who flies, not the group.
+\Why Chapters~\ref{ground} and~\ref{ch:flights} left $\A-\Sl$ positive in every class, a difference between
+  flights. The pilots who fly in groups may be other pilots: more experienced, on other wings. If so, part of $\G-\Sl$ is who flies, not the group.
 \Tool $\A-\Sl'$, with $\Sl'$ the solo flights of the pilots who also have group flights (\PilotShareS\% of
   $\Sl$), next to $\A-\Sl$, per ground class (Table~\ref{tab:pilot}, Fig.~\ref{fig:pilot}). $\G-\A$ already holds
   the pilot fixed.
@@ -1116,28 +1117,34 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/pilot.pdf}
-  \caption{$\A-\Sl$ and $\A-\Sl'$ of $\alpha^*$ per ground class; solid up to \ChainSolidEnd~s, dashed beyond; 90\%
+  \caption{$\A-\Sl$ and $\A-\Sl'$ of $\alpha^*$ per ground class, and $\G-\Sl'$; solid up to \ChainSolidEnd~s, dashed beyond; 90\%
   bands.}
   \label{fig:pilot}
   \end{figure}
-\Obs $\A-\Sl'$ follows $\A-\Sl$ in every class, within the bands, a little smaller (Table~\ref{tab:pilot}).
+\Obs $\A-\Sl'$ follows $\A-\Sl$ in every class, within the bands, equal or a little smaller (Table~\ref{tab:pilot}).
   The pilots with group flights fly most of the solo flights.
-\Ded \textbf{$\A-\Sl$ does not come from the pilots}: the same pilots, alone on a flight without group time, are
-  less persistent than alone on a flight with group time. What is left: when and where within a class (day,
-  site), and a carry-over of the group on the solo time around it (Sec.~\ref{ch:when}).
-\Home Not who flies: $\A-\Sl$ is a property of the flights with group time, not of their pilots.
+\Ded \textbf{$\A-\Sl$ does not come from which pilots fly, to first order}: the pilots with group flights, alone on a
+  flight without group time, are less persistent than alone on a flight with group time. $\Sl'$ restricts the
+  pilots but does not pair them: each pilot weighs by its solo flights in $\Sl'$ and by its group flights in $\A$.
+  What is left: when and where within a class (day, site), and a carry-over of the group on the solo time around it (Sec.~\ref{ch:when}).
+\Home Not who flies, to first order: $\A-\Sl$ belongs to the flights with group time more than to their
+  pilots.
 \end{step}
 
 \section{When in the flight?}\label{ch:when}
 
 \begin{step}
 \Q Is group time more persistent than the solo time just before and just after it?
-\Why $\G-\A$ compares the group time with any solo time of the same flight. The moment matters: the start of a
-  flight, the hour, the conditions that change; and the timeline is the first test of the direction
+\Why Chapters~\ref{ground}--\ref{ch:who} read $\A-\Sl$, the comparison between flights. $\G-\A$, the group effect
+  proper, compares the group time with any solo time of the same flight; but the moment matters: the start of a
+  flight, the hour, the conditions that change. The timeline is also the first test of the direction
   (Sec.~\ref{which-way}).
-\Tool For every stretch of group time, windows of fixed length of the same flight: before it, at its start, at
-  its end, after it (\texttt{prepost.py}), per ground class. Windows of one length need no chain: every window
-  reaches every lag. Controls: two consecutive solo windows of the same flights, with no change of state.
+\Tool For every stretch of group time, four windows of \WhenWindow~s of the same flight (\texttt{prepost.py}):
+  \emph{pre}, the window before it, if a solo stretch at least that long precedes it; \emph{start} and \emph{end},
+  its first and last window, which overlap when the stretch is shorter than two windows; \emph{post}, the window
+  after it, if a solo stretch at least that long follows it. An event is a stretch with the four windows. Windows
+  of one length need no chain: every window reaches every lag. Control: two consecutive solo windows of the same
+  flights, with no change of state. Per ground class.
 \Res Windows of \WhenWindow~s, the exponent fitted over the lags from 10~s to 1\,000~s of each window
   (Table~\ref{tab:prepost}, Fig.~\ref{fig:prepost}); \WhenAllEvents{} events with the four windows. Every flight:
   start $-$ pre $=\WhenAllStartMinusPre$ \WhenAllStartMinusPreBand, end $-$ start $=\WhenAllEndMinusStart$, post $-$
@@ -1157,15 +1164,16 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   ground class, 90\% bands.}
   \label{fig:prepost}
   \end{figure}
-\Obs Over 10 to 1\,000~s the four windows have the same exponent within about 0.01, as large as the drift between
-  two consecutive solo windows.
-\Com One fit over 10 to 1\,000~s weighs the middle of the range most, around 100~s, where $\G-\A\approx0$: it is
-  negative below and positive above 300~s (Sec.~\ref{ch:identity}), and the two cancel. The timeline has to be read
-  where the effect lives.
+\Obs Over 10 to 1\,000~s the four windows have the same exponent, within differences as large as the drift
+  between two consecutive solo windows.
+\Ded The fit over 10 to 1\,000~s sees no change. It weighs the middle of the range most, around 100~s, where
+  $\G-\A\approx0$: negative below about \ChainGAGrow~s and positive above (Sec.~\ref{ch:identity}), so the two cancel.
+\Home Over the whole range the timeline is flat; it has to be read where the effect lives.
 \end{step}
 
 \begin{step}
 \Q Read on the long lags, does the persistence change when the pilot joins and leaves the group?
+\Why The step above found the timeline flat over 10 to 1\,000~s, a range where $\G-\A$ changes sign.
 \Tool The same windows, the exponent fitted over \WhenLongLo{} to \WhenLongHi~s only; the shares of time in glide,
   search and climb of each window (our labels), as the control of the composition: groups may form in climbs, so
   the start window may hold a climb by construction.
@@ -1198,43 +1206,112 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \end{figure}
 \Obs\mbox{}
   \begin{itemize}
-  \item The exponent rises into the group time, a little more by its end, and falls clearly after it, below the
-    level before; the fall is far outside the control. The same in the classes, weaker in the plains.
+  \item On every flight the exponent rises into the group time, a little more by its end, and falls after it, back
+    to about the level before; the fall is far outside the control.
+  \item Per class (Table~\ref{tab:prepost-long}), the fall after the group is resolved in the hills and the
+    mountains; the rise at the entry only in the high mountains; the rise from start to end in the hills and the
+    low mountains, where in the hills the control drifts as much.
   \item The start window holds more climb than the window before, and the window after holds less.
   \end{itemize}
 \Ded\mbox{}
   \begin{itemize}
-  \item \textbf{The persistence switches on with the group and off when it ends}, on the same flights, minutes apart.
-  \item It is not the composition: more climb at the start would lower the exponent, which rises; less climb after
-    would raise it, which falls.
+  \item \textbf{The persistence switches on with the group and off when it ends}, on the same flights, minutes
+    apart; the exit is the clearest sign.
+  \item It is not the composition, if a climb lowers the exponent as circling does: more climb at the start would
+    lower it, which rises; less climb after would raise it, which falls.
   \end{itemize}
 \Home Group time is more persistent than the solo time right before and right after it: the effect belongs to the
-  time in the group, not to the flight or the hour.
+  time in the group more than to the flight, if the moment of the flight does not make it (next step).
+\end{step}
+
+\begin{step}
+\Q Is the change at the entry and the exit made by the group, or by the moment of the flight?
+\Why The window before the group lies earlier in the flight and the window after it later. If the exponent were
+  low after the takeoff and before the landing, it would rise from pre to start and fall from end to post with no
+  group at all.
+\Tool Mock events (\texttt{prepost.py}): for every event, solo flights, never in a group, in which the four windows
+  fit at the same flight-clock times inside one solo stretch, under calipers of month, local hour and wing class;
+  measured like the real windows, the mocks of one event weighing one event. The steps of the mocks show what the
+  moment of the flight does alone; real $-$ mock is what is left for the group, with the shared draws.
+  \WhenMockEvents{} mock events for \WhenMockRealEvents{} real events.
+\Res Table~\ref{tab:prepost-mock}. Every flight, mock: start $-$ pre $=\WhenMockAllStartMinusPre$
+  \WhenMockAllStartMinusPreBand, end $-$ start $=\WhenMockAllEndMinusStart$ \WhenMockAllEndMinusStartBand, post $-$
+  end $=\WhenMockAllPostMinusEnd$ \WhenMockAllPostMinusEndBand. Real $-$ mock: \WhenRealMinusMockAllStartMinusPre{}
+  \WhenRealMinusMockAllStartMinusPreBand, \WhenRealMinusMockAllEndMinusStart{}
+  \WhenRealMinusMockAllEndMinusStartBand, \WhenRealMinusMockAllPostMinusEnd{}
+  \WhenRealMinusMockAllPostMinusEndBand.
+  \begin{table}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{../vs-solo/generated/comparisons/prepost_mock_table}}
+  \caption{Steps of the exponent fitted over \WhenLongLo{} to \WhenLongHi~s between the windows of the timeline: real
+  events, mock events in solo flights at the same flight-clock times, and real $-$ mock, per ground class;
+  $^*$: the 90\% band excludes 0.}
+  \label{tab:prepost-mock}
+  \end{table}
+\Obs\mbox{}
+  \begin{itemize}
+  \item In the solo flights the moment alone moves the exponent little: no rise at the entry, no fall at the exit,
+    a small rise from start to end.
+  \item Real $-$ mock: the fall after the group stays on every flight and in the hills and the mountains; the rise
+    at the entry stays on every flight and in the high mountains; the rise from start to end shrinks, resolved on
+    every flight and in the low mountains only.
+  \end{itemize}
+\Ded \textbf{The moment of the flight does not make the timeline}: the fall at the exit and the rise at the entry
+  belong to the group. Part of the rise within the group time is the drift of the exponent along the flight.
+\Home The persistence switches on with the group and off when it ends, beyond what the moment of the flight does;
+  the exit is the clearest sign.
+\end{step}
+
+\subsection{The solo time around the group}\label{carry}
+
+\begin{step}
+\Q Does the group carry over to the solo time around it?
+\Why Chapter~\ref{ch:who} left two sources of $\A-\Sl$ within a class: the day and the site, and a carry-over. Alone
+  but near the group, a pilot may keep some of its benefit. The windows of the timeline can measure it.
+\Tool $\A(d)-\Sl$: windows of \WhenWindow~s in the solo time of group flights, binned by their distance $d$ from the
+  nearest group time of the same flight, against windows of solo flights; the exponent over \WhenLongLo{} to
+  \WhenLongHi~s, per ground class. A carry-over makes $\A(d)-\Sl$ largest near the group.
+\Res Table~\ref{tab:carry}. In the high mountains \CarryHighMtnNear{} at \CarryNearLabel{} and \CarryHighMtnFar{} at
+  \CarryFarLabel; in the low mountains \CarryLowMtnNear{} and \CarryLowMtnFar.
+  \begin{table}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{../vs-solo/generated/comparisons/carry_table}}
+  \caption{$\A(d)-\Sl$ of the exponent over \WhenLongLo{} to \WhenLongHi~s, by the distance $d$ of the solo window
+  from the nearest group time of its flight, per ground class, 90\% bands; numbers of windows.}
+  \label{tab:carry}
+  \end{table}
+\Obs $\A(d)-\Sl$ does not fall as the solo time moves away from the group, in any class; it stays or grows.
+\Ded \textbf{No sign of a carry-over} at these lags. The solo time far from the group comes from long solo
+  stretches, a selection of the flight, so the growth itself is not read.
+\Home No carry-over is detected over \WhenLongLo{} to \WhenLongHi~s. What is left of $\A-\Sl$ within a class is the
+  day and the site, and at the short lags the phases (next chapter).
 \end{step}
 
 \section{How: the dynamics}\label{ch:dynamics}
 
 \begin{step}
 \Q Which phases of the flight does the group change?
-\Why $\alpha^*$ in time mixes the shape of the path and the way it is flown. The phases say the second: how
-  long the pilot glides, searches and climbs, how fast and how well.
+\Why Chapter~\ref{ch:when} found that the persistence belongs to the time in the group. What changes in the way
+  the pilot flies? $\alpha^*$ in time mixes the shape of the path and the way it is flown; the phases say the
+  second: how long the pilot glides, searches and climbs, how fast and how well.
+\Hyp Groups form mostly in the climbs, where the pilots circle together ($\G-\A<0$ at short lags,
+  Sec.~\ref{ch:identity}), so the climbs go to $\G$ and $\A$ keeps more glides; and a group finds the climbs sooner
+  (shorter searches, fewer weak climbs).
 \Tool The phase statistics and the tails of the durations (Sec.~\ref{phases}, \ref{tails}), for $\G-\A$ and
   $\A-\Sl$, per ground class.
-\Hyp From what is above: groups form mostly in the climbs, where the pilots circle together ($\G-\A<0$ at short
-  lags), so the climbs go to $\G$ and $\A$ keeps more glides (Sec.~\ref{solo-time}); a group finds the climbs
-  sooner (shorter searches, fewer weak climbs).
 \Com The composition of the phases is to $\G-\A$ what the ground is to $\A-\Sl$: the grouping catches pilots in the
   same thermal, so group time may hold more climbs by construction. Two steps: the composition, then the
   performance within each phase.
-\Res \textbf{Composition} (Fig.~\ref{fig:phases-composition}): group time holds \PhShareClimbGAAll{} points
-  more climb than the solo time of the same flights \PhShareClimbGAAllBand, and \PhCphGAAll{} more climbs per hour
-  \PhCphGAAllBand; a glide and climb cycle lasts \PhCycleGAll~min in $\G$, \PhCycleSAll~min in $\Sl$.
+\Res \textbf{Composition} (Fig.~\ref{fig:phases-composition}, Appendix~\ref{app:phases-table}): group time holds
+  \PhShareClimbGAAll{} points more climb than the solo time of the same flights \PhShareClimbGAAllBand, and
+  \PhCphGAAll{} more climbs per hour \PhCphGAAllBand; a glide and climb cycle lasts \PhCycleGAll~min in $\G$,
+  \PhCycleAAll~min in $\A$.
   \textbf{Performance} (Table~\ref{tab:phases-main}, Fig.~\ref{fig:phases-performance}): in group time the glide is
-  faster by \PhSpeedGAAll~km/h \PhSpeedGAAllBand{} and loses \PhSinkGAAll~m per km \PhSinkGAAllBand; the searches
-  find a thermal \PhFoundGAAll{} points more often \PhFoundGAAllBand; the climb rate does not change
-  (\PhRateGAAll~m/s \PhRateGAAllBand). \textbf{Tails} (Fig.~\ref{fig:phases-tails}): above \PhXminGlideAll~s the
-  glides of $\G$ have a heavier tail, $\mu_\G-\mu_\A=\PhMuGlideGAAll$ \PhMuGlideGAAllBand; searches and climbs differ
-  within the bands.
+  faster by \PhSpeedGAAll~km/h \PhSpeedGAAllBand{} and the height lost per km changes by \PhSinkGAAll~m
+  \PhSinkGAAllBand; the searches find a thermal \PhFoundGAAll{} points more often \PhFoundGAAllBand; the climb rate
+  is not higher (\PhRateGAAll~m/s \PhRateGAAllBand). \textbf{Tails} (Fig.~\ref{fig:phases-tails}): above
+  \PhXminGlideAll~s the glides of $\G$ have a heavier tail on every flight, $\mu_\G-\mu_\A=\PhMuGlideGAAll$
+  \PhMuGlideGAAllBand, resolved in the mountains only; searches and climbs differ within the bands.
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/phases_composition.pdf}
@@ -1265,22 +1342,24 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 \Obs\mbox{}
   \begin{itemize}
   \item The hypothesis of the composition holds: group time is richer in climbs and climbs more often, in every
-    ground class. It is why $\G-\A<0$ at the short lags, where circling dominates.
+    ground class, consistent with $\G-\A<0$ at the short lags, where circling dominates.
   \item Yet group time is more persistent at long lags. More climbs alone would lower $\alpha^*$ there: the gain
     comes from the other phases.
   \item In a group the pilot glides faster and more efficiently, and searches succeed more often; the climb is not
-    stronger. The gains in glide are larger in the mountains (Table~\ref{tab:phases-main}).
-  \item Long glides are more frequent in a group (heavier tail).
-  \item $\A-\Sl$: the solo time of group flights also glides better, climbs stronger and searches better than
-    solo flights.
+    stronger. The height saved per km is larger in the mountains (Table~\ref{tab:phases-main}).
+  \item In the mountains the durations of the long glides decay more slowly in a group, on tens to hundreds of
+    glides above the threshold.
+  \item $\A-\Sl$: the solo time of group flights climbs stronger than solo flights in the hills and the low
+    mountains (Table~\ref{tab:phases-main}).
   \end{itemize}
 \Ded\mbox{}
   \begin{itemize}
-  \item \textbf{The group effect lives in the search and the glide, not in the climb}: the group climbs as fast
-    as a pilot alone, but finds the climbs more reliably, spends its cycles faster and glides longer and better
-    between them. A more regular progress is a more persistent one, although the group circles more.
-  \item $\A-\Sl$ is a better flying even alone, on the same pilots (Sec.~\ref{ch:who}): a stronger climb rate points to
-    the day and the site more than to the pilot.
+  \item \textbf{The group effect lives in the search and the glide, not in the climb}: the group climbs about as
+    fast as a pilot alone, but finds the climbs more reliably, spends its cycles faster and glides better between
+    them. A more regular progress would be a more persistent one, although the group circles more: how much of the
+    effect is timing, Sec.~\ref{ch:geometry} measures.
+  \item $\A-\Sl$ is a stronger climb even alone, on pilots who also fly solo flights (Sec.~\ref{ch:who}): it points
+    to the day and the site more than to the pilot.
   \end{itemize}
 \Com The link from the phases to $\alpha^*$ is qualitative here: no formula maps the phase statistics on the
   exponent. Sec.~\ref{ch:geometry} separates shape and timing on the route.
@@ -1289,28 +1368,34 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 
 \begin{step}
 \Q \textbf{The wind test}: why does group time glide faster and lose less height per km?
+\Why The step above found both, against the polar of the wing, which makes a faster glide lose more height in the
+  same air. A tailwind would give both without any group effect.
 \Hyp \textbf{Why the group glides faster.} The speed-to-fly of MacCready grows with the climb expected next: a group
   that makes the next climb more certain lets the pilot fly faster, as birds in a flock. But in the same air a
   faster glide loses more height per km (the polar of the wing), and group time is faster \emph{and} loses less.
   So the air of the glide is better too: lines of lift shared by the group, the pilot ahead showing where the air
   rises, or a tailwind.
-\Test The drift speed of the climbs (chord over duration, a proxy of the wind at the height of the thermals) and
+\Tool The drift speed of the climbs (chord over duration, a proxy of the wind at the height of the thermals) and
   the height gained per climb, for $\G-\A$ and $\A-\Sl$ per class (Appendix~\ref{app:phases-table}).
 \Res Drift speed, $\G-\A$: \PhDriftGAAll~m/s on every flight, \PhDriftGALowMtn{} and \PhDriftGAHighMtn~m/s in the low
-  and high mountains, where the glide gains are largest. Height gained per climb, $\G-\A$: \PhGainGAAll~m on every
+  and high mountains, where the height saved per km is largest. Height gained per climb, $\G-\A$: \PhGainGAAll~m on every
   flight. $\A-\Sl$: \PhGainASAll~m per climb. Horizontal distance per climb, $\G-\A$: \PhChordGAAll~m
   \PhChordGAAllBand.
-\Ded \textbf{The wind does not explain the faster and flatter glide of group time}: within the same flights, group
-  time drifts as much as the solo time, and less in the mountains. What is left is the speed-to-fly of a more
-  certain next climb together with better air in glide. The group does not climb higher either; the solo time of
-  group flights does, a sign of better days (Sec.~\ref{ch:who}).
-\Home Not the wind: a more certain next climb and better air in glide.
+\Obs Group time drifts no faster than the solo time of the same flights, and slower in the mountains.
+\Ded \textbf{The wind at the height of the thermals does not explain the faster and flatter glide of group
+  time}. The drift is a speed, not the component along the glide: a tailwind along the glide line is not
+  excluded. What is left is the speed-to-fly of a more certain next climb together with better air in glide. On
+  every flight the group does not climb higher either; the solo time of group flights does, a sign of better days
+  (Sec.~\ref{ch:who}).
+\Home Not the wind of the thermals: most likely a more certain next climb and better air in glide.
 \end{step}
 
 \begin{step}
 \Q How does the group use the thermals?
-\Why The group climbs more often but not faster: what changes is how long it stays in a thermal. The height
-  gained per climb says it, at a climb rate that does not move.
+\Why The group climbs more often, at about the same rate, and glides better: what may change is how long it stays
+  in a thermal, and so how high it leaves.
+\Tool The height gained per climb, next to the climbs per hour, the climb rate and the height lost per km, $\G-\A$
+  per class; the duration of the exit from a thermal.
 \Res $\G-\A$ per class (Appendix~\ref{app:phases-table}):
   \begin{center}\footnotesize
   \begin{tabular}{@{}l c c c c@{}}
@@ -1324,36 +1409,40 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \bottomrule
   \end{tabular}
   \end{center}
-  On a climb of about \PhGainSAll~m for a solo flight.
+  A climb of the solo time of group flights gains \PhGainAAll~m.
 \Obs\mbox{}
   \begin{itemize}
   \item In the plains group time climbs more often and \emph{less high} per climb; in the high mountains more often
     and \emph{higher}; in the hills and the low mountains the height per climb does not change within the bands.
-  \item The climb rate stays about the same everywhere, and the glide loses less height everywhere.
+  \item The climb rate moves by a few hundredths of m/s at most: lower in the plains, higher in the high mountains.
+    The glide loses less height everywhere.
   \item In the high mountains the extra height belongs to group time: $\A-\Sl$ is compatible with zero there, while
     $\G-\A$ and $\G-\Sl$ are not.
-  \item The exit from a thermal lasts the same in a group (median $\G-\A=\PhExitDurGAAll$~s): the group does not
-    leave faster, it leaves at another height.
+  \item The exit from a thermal lasts a little longer in a group (median $\G-\A=\PhExitDurGAAll$~s
+    \PhExitDurGAAllBand); its mean does not move (Appendix~\ref{app:phases-table}). The group does not leave
+    faster.
   \end{itemize}
-\Hyp Two strategies of the cycle, both of a more certain next climb:
+\Ded Two readings, both of a more certain next climb, still hypotheses:
   \begin{enumerate}
   \item \emph{Plains}: the group leaves the thermal earlier, when staying is no longer worth it, since the next
     climb is more certain: the race strategy of MacCready, taking only the good part of a thermal.
   \item \emph{High mountains}: height is margin for the crossings and the ridges, and the group often leaves
     together, so the first to arrive keep climbing while they wait.
   \end{enumerate}
-\Com Small effects: $\pm7$ to 12~m on a climb of about \PhGainSAll~m, 4 to 6\%; the signs are clear, the readings
-  are hypotheses. The test: when the pilot leaves a thermal against the time its climb rate falls, and in the
+\Com Small effects: \PhGainGAPlains{} and \PhGainGAHighMtn~m on a climb of \PhGainAAll~m, a few percent; the signs
+  are clear, the readings are hypotheses. The test: when the pilot leaves a thermal against the time its climb rate falls, and in the
   mountains whether those who wait are the first to arrive.
-\Home \textbf{The group does not find stronger thermals; it changes how it uses them.} It flies the climb and glide
-  cycle with more confidence: in the plains it leaves earlier, in the mountains it climbs higher, and everywhere it
-  then glides better.
+\Home \textbf{The group does not find stronger thermals; it changes how it uses them.} In the plains it climbs less
+  high per climb, in the high mountains higher, and everywhere it then glides better; the strategies behind are
+  hypotheses.
 \end{step}
 
 \section{How: the geometry}\label{ch:geometry}
 
 \begin{step}
 \Q Is the group effect in the shape of the route or in the way the route is flown?
+\Why Chapter~\ref{ch:dynamics} found the gains in the search and the glide, but no formula maps the phases on
+  $\alpha^*$. The route measures the split directly.
 \Hyp $\alpha^*$ is a statistic in time, and the MSD at $\tau$ mixes two things:
   \begin{enumerate}
   \item \textbf{Geometry}: how much the route turns at the scale covered in $\tau$ (detours, zig-zags between
@@ -1365,17 +1454,17 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \end{enumerate}
   In the plains the thermals are spread more evenly and the ground constrains the route little: we expect
   mostly (2).
-\Test\mbox{}
+\Tool\mbox{}
   \begin{itemize}
   \item \textbf{The route}: each climb of the phases of Vilpellet replaced by its chord, the path in arc
     length, so that the waiting is gone and only the shape is left (as in the ridges work). $\alpha$ of $\Sl$,
-    $\A$, $\G$ on the route, in each ground class. If $\G-\Sl$ stays on the route, the group flies straighter
+    $\A$, $\G$ on the route, in each ground class. If $\G-\A$ stays on the route, the group flies straighter
     paths (geometry); if it vanishes, it comes from the way the route is flown (intermittency). The gap in time
     minus the gap on the route is the share of the dynamics.
   \item \textbf{The check}: the exponent in arc length with the circles kept must equal $\alpha^*$ in time, since a
     paraglider waits while circling.
-  \item Arc grid of \RouteDs~m, about 10~s of flight; the lags in arc length are compared with those in time
-    through the median speed of $\Sl$ along its route, \RouteSpeed~m/s, an approximate mapping. Same chain, same
+  \item Arc grid of \RouteDs~m; the lags in arc length are placed on the scale of time through the median speed of
+    $\Sl$ along its route, \RouteSpeed~m/s, the same for the three populations: an approximate mapping. Same chain, same
     window, same shared draws as in time.
   \end{itemize}
 \Res The check holds: with the circles kept, the exponent in arc length stays within \RouteCheckMax{} of
@@ -1402,25 +1491,29 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item The group gap survives on the route almost whole: in time it is larger by a few thousandths at 1\,000~s
     and by nothing at 320~s.
   \item In the plains the route keeps about half of the small gap in time.
-  \item $\A-\Sl$ on the route follows $\A-\Sl$ in time.
+  \item $\A-\Sl$ on the route follows $\A-\Sl$ in time in each class; on every flight it stays near zero on the
+    route, while in time it turns negative near \ChainASNegative~s.
   \end{itemize}
 \Ded\mbox{}
   \begin{itemize}
   \item \textbf{The group effect is mostly in the shape of the path}: once the waiting in the climbs is gone, group
     time still follows a straighter route than the solo time of the same flights. The share of the timing is
-    small, larger in the plains, where we expected it.
+    small; relative to the gap it is largest in the plains, where we expected it.
   \item This agrees with the phases: the route keeps the searches and the glides, where the group gains
     (Sec.~\ref{ch:dynamics}); fewer failed searches and straighter glide lines make a straighter route.
   \end{itemize}
 \Com The route keeps the searches as flown: separating the searches from the glides on the route is the next
   step of the geometry, as in the ridges work.
-\Home The group straightens the route itself; the timing adds little, except in the plains.
+\Home Group time follows a straighter route than the solo time of the same flights; the timing adds little,
+  relatively more in the plains.
 \end{step}
 
 \section{Which way round?}\label{which-way}
 
 \begin{step}
 \Q Does the group make the stretch straighter, or does a straight stretch make the group?
+\Why Every chapter above found an association: group time is more persistent than the solo time of the same flights,
+  switches on and off with the group, and follows a straighter route. Both directions predict all of it.
 \Hyp Two options:
   \begin{enumerate}
   \item \textbf{group $\to$ straight}: the group finds, selects or holds straighter paths (shared search of
@@ -1428,42 +1521,33 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \item \textbf{straight $\to$ group}: on a straight leg the paths of pilots converge on the same corridor,
     so they meet, and they stay together while the leg lasts.
   \end{enumerate}
-\Com \textbf{The gaps alone do not separate them.} Both predict $\G-\A>0$, $\A-\Sl\approx0$ at long lags and group
-  flights no more open than solo flights. Every gap above is an association.
-\Test What could separate them:
-  \begin{itemize}
-  \item \emph{Timing} (Sec.~\ref{ch:when}): does the straightness rise before the entry into the group
-    (2) or only after it (1)? Does the group split when the path bends (2)? Done at the scale of a window: the step
-    below.
-  \item \emph{Same place, same time}: solo pilots on the same leg in the same hour. As straight as $\G$: the
-    straightness belongs to the leg (2, or the conditions). Less straight: the group adds it (1).
-  \item \emph{How the group formed}: groups that leave the same takeoff together did not form on a straight
-    leg. If their group time is as much straighter, (1).
-  \end{itemize}
-\Home\mbox{}
-  \begin{itemize}
-  \item The direction is open: group $\to$ straight or straight $\to$ group.
-  \end{itemize}
-\end{step}
-
-\begin{step}
-\Q What does the timeline say about the direction?
 \Tool The long-lag timeline of Sec.~\ref{ch:when}. If a straight leg makes the group (2), the pilots converge on it,
   so the window before the group already lies on the straight leg and is as persistent as the start; and the group
   splits when the path bends, so the window after is less persistent. If the group makes the path straight (1), the
   persistence rises only at the entry and falls at the exit.
 \Res Before $\to$ start: \WhenAllLongStartMinusPre{} \WhenAllLongStartMinusPreBand; end $\to$ after:
-  \WhenAllLongPostMinusEnd{} \WhenAllLongPostMinusEndBand; the level after is the level before.
+  \WhenAllLongPostMinusEnd{} \WhenAllLongPostMinusEndBand; the level after is about the level before. Per class the
+  rise at the entry is resolved only in the high mountains (Table~\ref{tab:prepost-long}). Both steps survive the
+  mock events in solo flights (Table~\ref{tab:prepost-mock}).
+\Obs The window before is less persistent than the start; the window after falls back.
 \Ded\mbox{}
   \begin{itemize}
-  \item \textbf{The entry favours (1)}: the window before is less persistent than the start, so the straight leg
-    does not precede the group, at the resolution of a window of \WhenWindow~s.
+  \item \textbf{The entry leans to (1)}: on every flight and in the high mountains, a straight leg of the length of a
+    window (\WhenWindow~s) does not precede the group. A shorter straight leg, just before the meeting, would not
+    show.
   \item The exit does not separate them: both readings predict the fall after the group.
   \end{itemize}
-\Com A window of \WhenWindow~s is long: a straight leg shorter than that, just before the meeting, would not show. The
-  finer test is the timing of the entry at a shorter scale, and the groups that leave the same takeoff together
-  (Test above).
-\Home The data lean to group $\to$ persistent at the entry; the direction is not settled.
+\Com Tests still to do:
+  \begin{itemize}
+  \item \emph{Timing at a shorter scale}: does the straightness rise before the entry into the group (2) or only
+    after it (1)? Does the group split when the path bends (2)?
+  \item \emph{Same place, same time}: solo pilots on the same leg in the same hour. As straight as $\G$: the
+    straightness belongs to the leg (2, or the conditions). Less straight: the group adds it (1).
+  \item \emph{How the group formed}: groups that leave the same takeoff together did not form on a straight
+    leg. If their group time is as much straighter, (1).
+  \end{itemize}
+\Home The data lean to group $\to$ persistent at the entry, on every flight and in the high mountains; the direction
+  is not settled.
 \end{step}
 
 \section{What we found}\label{ch:found}
@@ -1479,19 +1563,23 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
     every ground and shows at a shorter scale in the mountains. The negative $\A-\Sl$ on every flight is a Simpson's
     paradox of the ground (Sec.~\ref{ground}).
   \item The opening selects which flights are compared and acts on $\A-\Sl$; within a flight the group effect
-    survives every threshold. Group flights look less open because they fly in the mountains (Sec.~\ref{ch:flights}).
-  \item $\A-\Sl$ does not come from the pilots (Sec.~\ref{ch:who}).
+    survives every threshold. Group flights look less open mostly because they fly over the mountains
+    (Sec.~\ref{ch:flights}).
+  \item $\A-\Sl$ does not come from which pilots fly, to first order (Sec.~\ref{ch:who}), nor from a carry-over of
+    the group on the solo time around it (Sec.~\ref{carry}).
   \item On the long lags the persistence switches on when the pilot joins the group and off when the group ends,
-    against the composition of the phases (Sec.~\ref{ch:when}).
+    against the composition of the phases and beyond what the moment of the flight does in solo flights; per class
+    the exit is the clearest sign (Sec.~\ref{ch:when}).
   \item In a group the pilot climbs more often but not faster; the searches end in a climb more often; the glides
-    are faster and lose less height, and the wind does not explain it. It changes how the thermals are used: shorter
-    climbs in the plains, higher ones in the high mountains (Sec.~\ref{ch:dynamics}).
+    are faster and lose less height, and the wind does not explain it. It changes how the thermals are used: less
+    height per climb in the plains, more in the high mountains (Sec.~\ref{ch:dynamics}).
   \item The effect is mostly in the shape of the route: it survives once the waiting in the climbs is removed; the
-    timing adds little, more in the plains (Sec.~\ref{ch:geometry}).
-  \item The entry into the group favours group $\to$ persistent; the direction is not settled (Sec.~\ref{which-way}).
+    timing adds little, relatively more in the plains (Sec.~\ref{ch:geometry}).
+  \item The entry into the group leans to group $\to$ persistent; the direction is not settled (Sec.~\ref{which-way}).
   \end{enumerate}
-  In one line: \textbf{flying with others makes the path of a paraglider straighter, by finding the climbs more
-  reliably and gliding along better lines between them, on every ground, at a scale set by the ground.}
+  In one line: \textbf{the group time of a paraglider is straighter than its solo time, on every ground, at a scale
+  set by the ground; in a group the pilot finds the climbs more reliably and glides better between them. Which way
+  round is not settled.}
 \Com \textbf{What the data do not say.}
   \begin{itemize}
   \item The direction at a finer scale than a window of \WhenWindow~s.
@@ -1499,8 +1587,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
     better air that a group finds; and why the faster glide does not cost height.
   \item Why the scale of the effect is shorter in the mountains: the glide and climb cycle does not explain it
     (Sec.~\ref{ground}).
-  \item Where $\A-\Sl$ comes from, once the pilot is excluded: the day, the site, a carry-over of the group.
-  \item Beyond 2\,250~s: the curves rest on the long flights only, and the level of the chained MSD is a
+  \item Where $\A-\Sl$ comes from, once the pilot and the carry-over are excluded: the day, the site.
+  \item Beyond \ChainSolidEnd~s: the curves rest on the long flights only, and the level of the chained MSD is a
     construction.
   \end{itemize}
 \Com \textbf{Tools still missing.}
@@ -1514,30 +1602,17 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \end{itemize}
 \end{step}
 
-\section*{Next}
-\begin{itemize}
-\item MSD one weight per piece: \texttt{tamsd.summarize} and \texttt{longlags.curve} pool the origins per
-  flight; change them, rerun \texttt{tamsd}, \texttt{longlags}, \texttt{raw} (the cohort table and
-  $\alpha(\DeclTauLongest~\mathrm{s})$ of this document change). \texttt{matched}, \texttt{decomposition},
-  \texttt{prepost} already use one weight per piece or window. Add the $1/n_f$ robustness line. Outside this
-  story, \texttt{pools}, \texttt{size}, \texttt{episodes}, \texttt{curvature} and others also pool per flight.
-\item Route-only caliper in \texttt{matched.py}: more controls.
-\item Cohort for the same-route step: up to 1~h no visible selection (Fig.~\ref{fig:tradeoff}); check that
-  the cohort to 1~h keeps enough $\G$ pieces per level after matching.
-\end{itemize}
-
 \appendix
 \section{One weight per piece or per flight}\label{app:weights}
 
 \begin{step}
 \Q Do the flights split into many stretches drive the MSD?
-\Prob With one weight per piece, a flight with $n_f$ pieces weighs $n_f$. $\G$ and $\A$ have more than one
-  piece per flight (dataset to 1\,000~s: \RawPiecesOneG{} pieces on \RawFlightsOneG{} flights in $\G$,
-  \RawPiecesOneA{} on \RawFlightsOneA{} in $\A$), $\Sl$ almost one.
+\Why With one weight per piece, a flight with $n_f$ pieces weighs $n_f$. $\G$ and $\A$ have more than one
+  piece per flight on average, $\Sl$ almost one: \WeightPiecesPerFlightS{} ($\Sl$), \WeightPiecesPerFlightA{}
+  ($\A$), \WeightPiecesPerFlightG{} ($\G$).
 \Tool The chained MSD with one weight per flight: in every step of the chain the pieces of one flight share a
   total weight 1. The gaps per ground class against those with one weight per piece, with the shared draws
-  (Fig.~\ref{fig:weights}). Pieces per flight on average: \WeightPiecesPerFlightS{} ($\Sl$),
-  \WeightPiecesPerFlightA{} ($\A$), \WeightPiecesPerFlightG{} ($\G$).
+  (Fig.~\ref{fig:weights}).
 \Res Per flight minus per piece at 1\,000~s, every flight: $\G-\Sl$ \WeightMinusGSAllThousand, $\G-\A$
   \WeightMinusGAAllThousand, $\A-\Sl$ \WeightMinusASAllThousand; in the high mountains $\G-\A$
   \WeightMinusGAHighMtnThousand{} \WeightMinusGAHighMtnThousandBand{} and $\A-\Sl$ \WeightMinusASHighMtnThousand{}
@@ -1549,10 +1624,10 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   their differences; 90\% bands from the shared draws.}
   \label{fig:weights}
   \end{figure}
-\Obs The gaps do not move on every flight; in the mountains, where $\A$ has the most pieces per flight, $\A-\Sl$
-  falls and $\G-\A$ rises by a few thousandths.
-\Ded \textbf{No}: the conclusions do not depend on the weight. One weight per piece stays, the choice of the
-  text.
+\Obs The gaps do not move on every flight; in the high mountains, where $\A$ has the most pieces per flight,
+  $\A-\Sl$ falls and $\G-\A$ rises by a few thousandths.
+\Ded \textbf{No}: the conclusions do not depend on the weight.
+\Home One weight per piece stays, the choice of the text.
 \end{step}
 
 \section{The per-lag cohort}\label{app:perlag}
@@ -1571,27 +1646,17 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
   In the pool it is the other way round: it depends on the lag and not on the window (top left).
 
   \textbf{One MSD curve per window.} A lag $\tau_k$ falls in several windows. In the pool its MSD is the same in
-  all of them. In the per-lag cohort it changes with the window, since $\tau^+$ does. The lag 2\,250~s, for
+  all of them. In the per-lag cohort it changes with the window, since $\tau^+$ does. The lag \PerLagExample~s, for
   instance:
   \begin{center}\small
-  \begin{tabular}{rrr}
-  \toprule
-  window of $\tau$ & longest lag $\tau^+$ & pieces of $\mathrm{MSD}_\tau(2\,250~\mathrm{s})$ \\
-  \midrule
-  1\,840~s & 2\,760~s & $T_p\ge3\,450$~s \\
-  2\,250~s & 3\,380~s & $T_p\ge4\,225$~s \\
-  2\,760~s & 4\,150~s & $T_p\ge5\,188$~s \\
-  \midrule
-  pool, any window & & $T_p\ge2\,812$~s \\
-  \bottomrule
-  \end{tabular}
+  \input{../vs-solo/generated/comparisons/perlag_window_table}
   \end{center}
   Three windows, three sets, three values of the MSD at the same lag. So the per-lag cohort gives one short MSD
   curve per window, from $\tau^-$ to $\tau^+$, which meets the pool at $\tau^+$, where the two sets coincide.
 
   \textbf{Below 1\,000~s they coincide.} Every piece of the cache lasts at least \PieceMinS~s
   ($=1\,000/\Support$), so $P(\tau)$ holds all of them up to 1\,000~s: pool and per-lag cohort coincide while
-  the window ends within 1\,000~s ($\tau\le580$~s).
+  the window ends within 1\,000~s ($\tau\le\PerLagCoincideEnd$~s).
 \end{method}
 
 \begin{step}
@@ -1661,7 +1726,8 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
 \Res \textbf{The exponent} (Fig.~\ref{fig:perlag-pool}): the half-slopes of the curves of
   Fig.~\ref{fig:perlag-msd}, with the same fit for both.
   \begin{itemize}
-  \item \textbf{The pool is not an option}: from $10^3$~s on its $\alpha$ runs away, up to \PoolSMax{} ($\Sl$),
+  \item \textbf{The pool is not an option}: pool minus per-lag is above 0, band included, from \PerLagPoolRunsAwayA~s
+    in $\A$, \PerLagPoolRunsAwayG~s in $\G$ and \PerLagPoolRunsAwayS~s in $\Sl$, and its $\alpha$ runs away, up to \PoolSMax{} ($\Sl$),
     \PoolAMax{} ($\A$), \PoolGMax{} ($\G$), above the ballistic $\alpha=1$, which no cohort reaches.
     Pool minus per-lag at 6\,220~s: \PoolSMinusVeryLong{} ($\Sl$), \PoolAMinusVeryLong{} ($\A$),
     \PoolGMinusVeryLong{} ($\G$). It is the composition term alone.
@@ -1681,15 +1747,15 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
   (\PerLagGLastPieces{} pieces at \PerLagGLastLag~s in $\G$). Since the longest flights are straighter at every
   scale (Sec.~\ref{fixed-cohort}), a rise of $\alpha$ at long lags may come from the flights that change, not
   from the dynamics. No method removes it: the lag $\tau$ needs pieces of at least
-  $\tau^+/\Support=\tau\cdot10^{\HalfDecade}/\Support\approx2.2\,\tau$, so at 3~h only the pieces of about
-  6.7~h count.
-\Rule \textbf{Solid and dashed.} Solid while the window ends within \PerLagSelFree~s ($\tau\le\PerLagSolidEnd$~s):
+  $\tau^+/\Support=\tau\cdot10^{\HalfDecade}/\Support\approx\PlusFactor\,\tau$, so at \PlusLagHours~h only the pieces of about
+  \PlusPieceHours~h count.
+\Ded \textbf{Solid and dashed.} Solid while the window ends within \PerLagSelFree~s ($\tau\le\PerLagSolidEnd$~s):
   there the pieces are at least those of the cohort to 1~h, and the selection is measured small (at most
   \PerLagAMinusCohortMax{} in $\alpha$, against $\G-\A=\PerLagGAThousand$ at 1\,000~s). Dashed beyond: the long
   flights only.
 \Res The per-lag curves and their gaps (Fig.~\ref{fig:perlag}). $\G-\A$ is \PerLagGAThousand{} at 1\,000~s,
-  as in every cohort. $\A-\Sl$ at 10~s is \PerLagASTen, against \GapAllASTen{} in the cohort to 1~h: the pieces
-  shorter than 1~h count for $\A-\Sl$ (Sec.~\ref{solo-time}).
+  against \GapAllGAThousand{} in the cohort to 1~h. $\A-\Sl$ at 10~s is \PerLagASTen, against \GapAllASTen{} in the
+  cohort to 1~h: the pieces shorter than 1~h count for $\A-\Sl$.
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/perlag.pdf}
@@ -1721,14 +1787,14 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
 \Q How are the phases labelled, and how much does our refit change Vilpellet's labels?
 \Tool His three-state model (three yes/no features over 30~s, Viterbi decoding, 90-fix majority vote),
   refitted on 1-Hz flights by Baum--Welch with the transition matrix estimated, several starts, held-out
-  likelihood, one model per discipline; tracks at 2--5~s splined to 1~s (cadence check); agreement with his
+  likelihood, one model per discipline; tracks at 2--\DtMax~s splined to 1~s (cadence check); agreement with his
   labels per state and ground class; the change of the grouping on a sample of days.
 \Res\mbox{}
   \begin{itemize}
   \item \emph{Training.} Paragliders: \RefitTrainPara{} flights logged at 1~Hz (and \RefitHeldPara{} held out),
     drawn in equal quotas over the ground classes from \RefitPoolPara; hang gliders: \RefitTrainHang{} (and
     \RefitHeldHang{} held out). \RefitStarts{} starts per discipline: his parameters, random ones and perturbed
-    ones. Convergence in a few tens of iterations.
+    ones. Convergence in at most \RefitIterMax{} iterations.
   \item \emph{Which optimum.} The starts end in different local optima. The best held-out likelihood
     (\RefitLLBestParaFix{} per fix, against \RefitLLHisParaFix{} with his parameters) turns the search into a
     partly straight and rising state. \textbf{We keep the best optimum whose three states keep his meaning}
@@ -1737,13 +1803,15 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
     same parameters. The labels serve because they mean a phase of the flight; a better fit that redefines the
     search would not answer our questions.
   \item \emph{Hang gliders}: their own fit converges and keeps the meaning; its labels and those of the
-    paraglider fit agree on almost every fix.
+    paraglider fit agree on \RefitHangVsPara\% of the fixes.
   \item \emph{Cadence}: thinned to 2~s and splined back, \RefitCadenceParaTwo\% of the paraglider labels are
     unchanged; at 5~s \RefitCadenceParaFive\% (hang gliders \RefitCadenceHangFive\%).
   \item \emph{Against his labels}: \RefitAgreePara\% of the paraglider fixes agree (hang gliders
     \RefitAgreeHang\%), from \RefitAgreePlains\% in the plains to \RefitAgreeHighMtn\% in the high mountains. Our
     model changes phase more often: \RefitSearchPerHourOurs{} searches per hour against \RefitSearchPerHourHis,
-    \RefitSearchShareOurs\% of the time in search against \RefitSearchShareHis\%, at the expense of the glide.
+    \RefitSearchShareOurs\% of the time in search against \RefitSearchShareHis\%, at the expense of the glide. These
+    count every run labelled search; the statistics of the text count fewer, since the context rule of
+    Sec.~\ref{phases} moves the re-centrings into the climbs and the exits apart.
   \item \emph{The statistics of Sec.~\ref{ch:dynamics} with his labels} (on the 1-Hz flights his labels cover): the
     sign of the gaps $\G-\A$ and $\A-\Sl$ agrees in \PhSignAgree{} of \PhSignTotal{} cases.
   \item \emph{Grouping.} The phases enter it only through the heading condition, checked when both pilots glide
@@ -1767,8 +1835,9 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
 \begin{step}
 \Q Do the tail exponents depend on the threshold?
 \Tool The Kolmogorov--Smirnov threshold of each curve and the Hill plots $\hat\mu(x_\mathrm{min})$ of $\Sl$,
-  $\A$, $\G$ per phase. The scan of the threshold runs on the durations binned at 1~s below 200~s and 1\% above,
-  over 80 candidates between the 50th and the 99.99th percentile, with at least 50 durations above.
+  $\A$, $\G$ per phase. The scan of the threshold runs on the durations binned at 1~s below \TailFineBelow~s and \TailBinPercent\% above,
+  over \TailCandidates{} candidates between the percentiles \TailQuantileLo{} and \TailQuantileHi{} of the durations, with at least
+  \TailMinRuns{} durations above.
 \Res\mbox{}
   \begin{table}[H]
   \centering
@@ -1781,11 +1850,13 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
   \includegraphics[width=\textwidth]{open_declared_dt5/phases_hill.pdf}
   \caption{Hill plots $\hat\mu(x_\mathrm{min})$ of $\Sl$, $\A$, $\G$ per phase, with the per-curve thresholds.}
   \end{figure}
-\Obs Above the thresholds the tails are thin: tens to a few hundred durations of $\G$, and $\mu$ between 4 and 10,
-  close to an exponential decay. The climb bands are wide.
+\Obs Above the thresholds the tails are thin: \TailAboveMin{} to \TailAboveMax{} durations of $\G$, and $\mu$ between about \TailMuMin{} and \TailMuMax,
+  steep tails. The climb bands are wide.
 \end{step}
 
-\begin{thebibliography}{4}\small
+\begin{thebibliography}{5}\small
+\bibitem{cameron2011} A. C. Cameron, J. B. Gelbach, D. L. Miller. Robust inference with multiway clustering.
+  \emph{Journal of Business \& Economic Statistics} 29, 238--249 (2011).
 \bibitem{kaplan1958} E. L. Kaplan, P. Meier. Nonparametric estimation from incomplete observations.
 \emph{Journal of the American Statistical Association} 53(282):457--481, 1958. doi:10.1080/01621459.1958.10501452.
 \bibitem{marshall1887} A. Marshall. Remedies for fluctuations of general prices. \emph{Contemporary Review}
