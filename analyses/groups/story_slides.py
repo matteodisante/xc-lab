@@ -331,9 +331,11 @@ def pilots():
 
 def steps(suffix, name):
     """prepost_ground.pdf and prepost_ground_long.pdf, panel of every flight: the exponent of the four windows (left) and the
-    three steps with the control of two solo windows of group flights (right)."""
+    three steps with the drift between two consecutive solo windows of group flights (right); a dashed line joins the four
+    exponents."""
     r = read("prepost_ground")["classes"]["all"]
     fig, (left, right) = plt.subplots(1, 2, figsize=(6.0, 2.0), gridspec_kw={"width_ratios": [1, 1.1]})
+    left.plot(range(4), [r["alpha" + suffix][s]["value"] for s in prepost.STAGES], color=GREY, lw=1.0, ls="--", zorder=1)
     for i, stage in enumerate(prepost.STAGES):
         bar(left, i, None, r["alpha" + suffix][stage], True, prepost.LINES[stage][0], ms=7)
     left.set(xticks=range(4), xticklabels=prepost.STAGES, xlim=(-0.5, 3.5), ylabel=r"$\alpha$ of the window")
@@ -341,7 +343,7 @@ def steps(suffix, name):
     for i, key in enumerate(keys):
         bar(right, i, None, r["differences" + suffix][key], True, prepost.GROUND_COLORS[key], ms=7)
     right.axhline(0, color="k", lw=0.6)
-    right.set(xticks=range(4), xticklabels=["entry", "inside", "exit", "control"], xlim=(-0.5, 3.5), ylabel=r"difference of $\alpha$")
+    right.set(xticks=range(4), xticklabels=["entry", "inside", "exit", "drift"], xlim=(-0.5, 3.5), ylabel=r"difference of $\alpha$")
     for ax in (left, right):
         ax.grid(color="#eeeeee", lw=0.5)
         ax.tick_params(axis="x", labelsize=8)
@@ -356,12 +358,29 @@ def when_long():
     steps("_long", "when_long")
 
 
+def control_steps():
+    """The three steps of the exponent over the long lags (prepost_ground.json, "mock", every flight): the real events that have a
+    control and the control events (solo flights at the same flight-clock times), each with its 90% band."""
+    m = read("prepost_ground")["mock"]["classes"]["all"]
+    keys = ("start - pre", "end - start", "post - end")
+    fig, ax = plt.subplots(figsize=(3.6, 2.2))
+    for key, off, color in (("real", -0.12, INK), ("mock", 0.12, GREY)):
+        for i, k in enumerate(keys):
+            bar(ax, i + off, None, m[key][k], True, color, ms=7, label="real" if key == "real" and i == 0 else "control (solo flights)" if i == 0 else None)
+    ax.axhline(0, color="k", lw=0.6)
+    ax.set(xticks=range(3), xticklabels=["entry", "inside", "exit"], xlim=(-0.5, 2.5), ylabel=r"step of $\alpha$")
+    ax.grid(color="#eeeeee", lw=0.5)
+    ax.legend(frameon=False, loc="lower left", fontsize=7)
+    write(fig, "control")
+
+
 def carry():
-    """carry.pdf, bottom row: A(d) - S of the exponent over the long lags per bin of the distance d from the group time,
-    on every flight and in the high mountains."""
+    """carry.pdf, bottom row, every flight: A(d) - S of the exponent over the long lags per bin of the distance d from the
+    group time."""
     c = read("carry")
-    fig, axes = plt.subplots(1, 2, figsize=(6.0, 2.0), sharey=True)
-    for ax, k in zip(axes, ("all", "high mountains")):
+    fig, ax0 = plt.subplots(figsize=(3.6, 2.1))
+    axes = [ax0]
+    for ax, k in zip(axes, ("all",)):
         r = c["classes"][k]
         for i, b in enumerate(r["bins"]):
             bar(ax, i, None, b["diff"], True, carry_module.BIN_COLOR, ms=7)
@@ -552,6 +571,214 @@ def simpson():
     (DECK / "tikz/simpson_macros.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in macros.items()))
 
 
+def memory_figure(name, curve):
+    """legs.json: C(tau) = <cos of the heading change over the lag tau> of S, A and G in each ground class (curve(class, pop) gives
+    value, band and tau_c), the level C = 1/e as a dotted line, tau_c of A as a dot on its curve, and the lag of the peak of the
+    absolute G - A of the class (legs.json, "peak test") as a grey dashed line."""
+    legs = read("legs")
+    fig, axes = class_row(WIDE, 2.0, r"$C(\tau)$")
+    lags = legs["lags_s"]
+    for ax, c in zip(axes, CLASSES):
+        for pop, color in (("solo", S), ("group_solo", A), ("group", G)):
+            q = curve(legs, c, pop)
+            ax.fill_between(lags, *q["band"], color=color, alpha=0.15, lw=0)
+            ax.plot(lags, q["value"], color=color, lw=1.5)
+        ax.axhline(np.exp(-1), color=INK, lw=0.8, ls=":")
+        tc = curve(legs, c, "group_solo")["tau_c"]["value"]
+        if tc is not None and np.isfinite(tc):
+            ax.plot(tc, np.exp(-1), "o", ms=5, mfc="white", mec=A, mew=1.6, zorder=5)
+        ax.axvline(legs["peak test"][c]["peak_lag_s"], color=GREY, lw=0.9, ls="--")
+        ax.set(xscale="log", xlim=(lags[0], lags[-1]), xlabel=r"$\tau$ (s)", ylim=(0, 1))
+        ax.set_title(c, fontsize=9)
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].text(12, np.exp(-1) + 0.02, "1/e", fontsize=7, va="bottom")
+    handles = [Line2D([], [], color=color, lw=1.5) for color in (S, A, G)] + [
+        Line2D([], [], ls="", marker="o", ms=5, mfc="white", mec=A, mew=1.6), Line2D([], [], color=GREY, lw=0.9, ls="--")]
+    fig.legend(handles=handles, labels=["S", "A", "G", r"$\tau_c$ of A", r"peak of G $-$ A"], frameon=False, loc="upper center", ncol=5,
+               bbox_to_anchor=(0.5, 1.0))
+    write(fig, name, rect=(0, 0, 1, 0.9))
+
+
+def route_memory():
+    memory_figure("route_memory", lambda legs, c, pop: legs["strata"][c][pop]["time"])
+
+
+def chained_line(ax, lags, value, band, color, lw=1.5, alpha=0.15):
+    """The band, then the curve solid up to cohorts.SELECTION_FREE and dashed beyond (from the last solid point)."""
+    lags, value = np.asarray(lags, float), np.asarray(value, float)
+    ax.fill_between(lags, *np.array(band, float), color=color, alpha=alpha, lw=0)
+    keep = lags <= cohorts.SELECTION_FREE
+    tail = np.arange(len(lags)) >= keep.sum() - 1
+    ax.plot(lags[keep], value[keep], color=color, lw=lw)
+    ax.plot(lags[tail], value[tail], color=color, lw=lw, ls="--")
+
+
+def gap_axis(ax, g):
+    """A right y axis on `ax` with C*_G - C*_A (paired band, thinner line, lighter band) and its zero as a thin dotted line, all in
+    the colour of G - A; returns the axis."""
+    color = GAP["G - A"]
+    right = ax.twinx()
+    chained_line(right, g["lags"], g["value"], g["band"], color, lw=1.5, alpha=0.14)
+    right.axhline(0, color=color, lw=0.8, ls=":")
+    right.tick_params(axis="y", colors=color)
+    return right
+
+
+def gap_limits(gaps):
+    """The limits of the right axis that hold the solid part of the curves `gaps` and their bands, padded."""
+    v = np.concatenate([np.array(x, float)[np.array(g["lags"]) <= cohorts.SELECTION_FREE] for g in gaps for x in (g["value"], *g["band"])])
+    pad = 0.05 * (v.max() - v.min())
+    return v.min() - pad, v.max() + pad
+
+
+def route_memory_chained():
+    """legs.json, "chained": one row of panels, one per ground class. Left axis: C*(tau) of S, A, G (chain over every piece that
+    reaches the lag; band: 90% over flights; solid up to cohorts.SELECTION_FREE, dashed beyond), the level 1/e, tau_c of A, and the
+    lag of the peak of the absolute G - A of the class (grey dashed). Right axis, the same limits in every panel: C*_G - C*_A with
+    its paired band."""
+    legs = read("legs")
+    chained, peaks = legs["chained"]["strata"], legs["peak test chained"]
+    fig, axes = plt.subplots(1, len(CLASSES), figsize=(WIDE + 0.5, 2.1), sharex=True, sharey=True)
+    x1 = max(chained[c][p]["lags"][-1] for c in CLASSES for p in ("solo", "group_solo", "group"))
+    limits = gap_limits([chained[c]["G - A"] for c in CLASSES])
+    for i, (ax, c) in enumerate(zip(axes, CLASSES)):
+        for pop, color in (("solo", S), ("group_solo", A), ("group", G)):
+            q = chained[c][pop]
+            chained_line(ax, q["lags"], q["value"], q["band"], color)
+        ax.axhline(np.exp(-1), color=INK, lw=0.8, ls=":")
+        tc = chained[c]["group_solo"]["tau_c"]["value"]
+        if tc is not None and np.isfinite(tc):
+            ax.plot(tc, np.exp(-1), "o", ms=2.8, mfc="white", mec=A, mew=1.0, zorder=5)
+        ax.axvline(peaks[c]["peak_lag_s"], color=GREY, lw=0.9, ls="--")
+        ax.grid(color="#eeeeee", lw=0.5)
+        ax.set_title(c, fontsize=10)
+        ax.set(xscale="log", xlim=(10, x1), ylim=(0, 1))
+        ax.set_xlabel(r"$\tau$ (s)", fontsize=10)
+        ax.tick_params(labelsize=9)
+        right = gap_axis(ax, chained[c]["G - A"])
+        right.set_ylim(*limits)
+        right.tick_params(axis="y", labelsize=9)
+        if i < len(CLASSES) - 1:
+            right.tick_params(axis="y", right=False, labelright=False)
+        else:
+            right.set_ylabel(r"$C^*_G-C^*_A$", color=GAP["G - A"], fontsize=10)
+    axes[0].set_xticks([10, 100, 1000, 10000], ["10", "$10^2$", "$10^3$", "$10^4$"], fontsize=9)
+    axes[0].minorticks_off()
+    axes[0].set_ylabel(r"$C^*(\tau)$", fontsize=10)
+    axes[0].text(12, np.exp(-1) + 0.02, "1/e", fontsize=9, va="bottom")
+    handles = [Line2D([], [], color=color, lw=1.5) for color in (S, A, G)] + [
+        Line2D([], [], color=GAP["G - A"], lw=1.5), Line2D([], [], ls="", marker="o", ms=2.8, mfc="white", mec=A, mew=1.0),
+        Line2D([], [], color=GREY, lw=0.9, ls="--")]
+    fig.legend(handles=handles, labels=["S", "A", "G", r"$C^*_G-C^*_A$", r"$\tau_c$ of A", r"peak of G $-$ A"], frameon=False,
+               loc="upper center", ncol=6, fontsize=9.5, bbox_to_anchor=(0.5, 1.0))
+    write(fig, "route_memory2", rect=(0, 0, 1, 0.9))
+
+
+def why_peak():
+    """High mountains, two panels on a log lag axis up to the end of the solid part: C* of A and G of the route (top, 1/e dotted,
+    tau_c of A as a hollow dot) and the absolute G - A of alpha* of the real path (bottom); the top panel has a right axis with C*_G - C*_A. Three zones on both panels: both
+    remember (up to the lag where the paired band of C*_G - C*_A first lies above zero), A forgets and G holds (up to tau_c of A),
+    both forget; the peak lag of G - A is the grey dashed line."""
+    legs, c = read("legs"), "high mountains"
+    chained, peak = legs["chained"]["strata"][c], legs["peak test chained"][c]
+    gap_c = chained["G - A"]
+    lo = np.array(gap_c["band"][0], float)
+    lag1 = float(np.array(gap_c["lags"])[lo > 0][0])
+    tc = chained["group_solo"]["tau_c"]["value"]
+    x1 = cohorts.SELECTION_FREE
+    fig, (top, bot) = plt.subplots(2, 1, figsize=(5.8, 2.9), sharex=True)
+    for pop, color in (("group_solo", A), ("group", G)):
+        q = chained[pop]
+        chained_line(top, q["lags"], q["value"], q["band"], color)
+    top.axhline(np.exp(-1), color=INK, lw=0.8, ls=":")
+    top.plot(tc, np.exp(-1), "o", ms=5, mfc="white", mec=A, mew=1.4, zorder=5)
+    top.text(11, np.exp(-1) + 0.02, "1/e", fontsize=8, va="bottom")
+    right = gap_axis(top, gap_c)
+    right.set_ylim(*gap_limits([gap_c]))
+    right.set_ylabel(r"$C^*_G-C^*_A$", color=GAP["G - A"])
+    g = read("contrasts_ground")[c]["gaps"]["G - A"]
+    contrasts.curve(bot, g, GAP["G - A"])
+    bot.axhline(0, color=INK, lw=0.6)
+    top.set(xscale="log", xlim=(10, x1), ylim=(0, 1), ylabel=r"route memory $C^*$")
+    top.set_yticks([0, 0.5, 1])
+    bot.set(xlabel=r"$\tau$ (s)", ylabel=r"$\alpha^*_G-\alpha^*_A$")
+    k = cohorts.solid(g["lags"])
+    v = np.concatenate([np.array(x, float)[k] for x in (g["value"], *g["band"])])
+    pad = 0.08 * (v.max() - v.min())
+    bot.set_ylim(v.min() - pad, v.max() + pad)
+    zones = ((10, lag1, "both remember"), (lag1, tc, "A forgets, G holds"), (tc, x1, "both forget"))
+    for i, (a, b, text) in enumerate(zones):
+        for ax in (top, bot):
+            ax.axvspan(a, b, color="#f0f0f0" if i % 2 == 0 else "white", lw=0, zorder=0)
+            ax.axvline(peak["peak_lag_s"], color=GREY, lw=0.9, ls="--")
+        top.text(np.sqrt(a * b), 1.03, text, fontsize=8.5, ha="center", va="bottom", transform=top.get_xaxis_transform())
+    for ax in (top, bot):
+        ax.grid(color="#eeeeee", lw=0.5, zorder=1)
+    bot.legend([Line2D([], [], color=A, lw=1.5), Line2D([], [], color=G, lw=1.5), Line2D([], [], color=GAP["G - A"], lw=1.5)],
+               ["A", "G", r"$C^*_G-C^*_A$"], frameon=False, loc="upper left", ncol=3, fontsize=8, handlelength=1.5)
+    write(fig, "why_peak")
+
+
+def path_memory():
+    memory_figure("path_memory", lambda legs, c, pop: legs["path"][c][pop])
+
+
+def legs_tables():
+    """legs_macros.tex and legs_table.tex: the memory of the route (lag and length at which C falls to 1/e, lag at 0.5) from legs.json."""
+    legs = read("legs")
+    st, tmax = legs["strata"], int(legs["lags_s"][-1])
+    first = lambda q: q["value"] is not None and np.isfinite(q["value"])
+    sec = lambda q: f"{q['value']:.0f}" if first(q) else f"$>${tmax}"
+    sband = lambda q: f"[{q['band'][0]:.0f}, {q['band'][1]:.0f}]"
+    km = lambda q: f"{q['value'] / 1000:.1f}"
+    kband = lambda q: f"[{q['band'][0] / 1000:.1f}, {q['band'][1] / 1000:.1f}]"
+    macros = {"LegTmax": str(tmax)}
+    for cls, tag in (("low mountains", "Low"), ("high mountains", "High")):
+        for pop, P in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+            time, space = st[cls][pop]["time"]["tau_c"], st[cls][pop]["space"]["s_c"]
+            macros[f"LegTc{tag}{P}"] = f"{time['value']:.0f}"
+            macros[f"LegTc{tag}{P}Band"] = sband(time)
+            macros[f"LegSc{tag}{P}"] = km(space)
+    for pop, P in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+        macros[f"LegCPlains{P}"] = f"{st['plains'][pop]['time']['value'][-1]:.2f}"
+    lags, peaks = np.array(legs["lags_s"], float), read("phases_refit")["peaks"]
+    for c, tag in (("low mountains", "Low"), ("high mountains", "High")):  # where the memory of G exceeds that of A most
+        gap = np.array(st[c]["group"]["time"]["value"], float) - np.array(st[c]["group_solo"]["time"]["value"], float)
+        macros[f"LegGapLag{tag}"] = f"{lags[np.nanargmax(gap)]:.0f}"
+        macros[f"LegGap{tag}"] = f"{np.nanmax(gap):.2f}"
+        macros[f"LegPeakLag{tag}"] = str(peaks[c]["G - A"]["lag"])
+    peak = read("legs")["peak test"]
+    for c, tag in (("low mountains", "Low"), ("high mountains", "High"), ("all", "All")):
+        macros[f"LegThalf{tag}A"] = f"{peak[c]['route']['A']['tau_half']['value']:.0f}"
+        macros[f"LegRatio{tag}"] = f"{peak[c]['route']['ratio_peak_tau_half_A']:.1f}"
+        macros[f"LegRatioTc{tag}"] = f"{peak[c]['route']['ratio_peak_tau_c_A']:.1f}"
+    for c, tag in (("plains", "Plains"), ("hills", "Hills"), ("low mountains", "Low"), ("high mountains", "High")):  # chained C*
+        q = legs["chained"]["strata"][c]["group_solo"]
+        tc = q["tau_c"]["value"]
+        macros[f"LegChainTc{tag}A"] = f"{tc:.0f}" if tc is not None and np.isfinite(tc) else f"$>${q['lags'][-1]:.0f}"
+    pc = legs["peak test chained"]
+    for c, tag in (("low mountains", "Low"), ("high mountains", "High")):
+        macros[f"LegChainRatio{tag}"] = f"{pc[c]['peak_lag_s'] / pc[c]['A']['tau_c']['value']:.2f}"
+    macros["LegThalfHillsA"] = f"{peak['hills']['route']['A']['tau_half']['value']:.0f}"
+    for c, tag in (("low mountains", "Low"), ("high mountains", "High")):
+        for P in ("A", "G"):
+            macros[f"LegPathTc{tag}{P}"] = f"{peak[c]['path'][P]['tau_c']['value']:.0f}"
+    (DECK / "tikz/legs_macros.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in macros.items()))
+    rows = []
+    for cls in CLASSES:
+        for i, (pop, P) in enumerate((("solo", r"$\Sl$"), ("group_solo", r"$\A$"), ("group", r"$\G$"))):
+            time, space = st[cls][pop]["time"], st[cls][pop]["space"]
+            c, s = time["tau_c"], space["s_c"]
+            rows.append(f"{cls if i == 0 else ''} & {P} & {sec(time['tau_half'])} & "
+                        + (f"{sec(c)} {sband(c)}" if first(c) else f"$>${tmax}") + " & "
+                        + (f"{km(s)} {kband(s)}" if first(s) else f"$>${legs['cohort']['s_max_m'] / 1000:.0f}") + r" \\")
+        rows.append(r"\addlinespace[2pt]")
+    lines = [r"\begin{tabular}{@{}l l r r r@{}}", r"\toprule",
+             r"ground class & & $\tau_{1/2}$ (s) & $\tau_c$ [90\,\% band] (s) & $s_c$ [90\,\% band] (km) \\", r"\midrule", *rows[:-1],
+             r"\bottomrule", r"\end{tabular}"]
+    (DECK / "tikz/legs_table.tex").write_text("\n".join(lines) + "\n")
+
+
 def deck_tables():
     """The tables of the deck, from the generated tables of the report: the control events named as such, the three steps of every
     flight (real, control, real - control), the block of every flight of the full table of the phase statistics, and the main
@@ -574,10 +801,11 @@ def deck_tables():
 
 
 if __name__ == "__main__":
-    for f in (nested, chain_pool, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots, when_all, when_long, carry,
-              performance, glides, searches_climbs, route, forest, tails):
+    for f in (nested, chain_pool, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots, when_all, when_long, control_steps, carry,
+              performance, glides, searches_climbs, route, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
         f()
     deck_tables()
     simpson()
+    legs_tables()
     for name, (w, h) in SIZES.items():
         print(f"slide_{name}: {w:.2f} x {h:.2f} in")
