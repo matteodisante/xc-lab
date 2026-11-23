@@ -1,0 +1,11 @@
+% Plan view of three pilots: apart, then in contact, then apart; the group time of the middle one in orange.
+\begin{tikzpicture}[x=0.6cm,y=0.72cm,line width=1.5pt]
+  \foreach \a/\p in {1.6/0,0.0/1.3,-1.5/2.1}{
+    \draw[muted,domain=0:9,samples=70,smooth,variable=\x]
+      plot (\x,{\a*(1-exp(-((\x-4.5)^2)/4))+0.16*sin((4*\x+\p) r)});}
+  \draw[orangeJ,domain=3.3:5.7,samples=30,smooth,variable=\x] plot (\x,{0.16*sin((4*\x+1.3) r)});
+  \draw[orangeJ,dashed,line width=1pt] (4.5,0) ellipse (1.5 and 0.85);
+  \node[orangeJ,font=\large\bfseries] at (4.5,1.4) {G};
+  \node[muted,font=\footnotesize] at (1.0,-0.9) {apart};
+  \node[muted,font=\footnotesize] at (8.0,-0.9) {apart};
+\end{tikzpicture}

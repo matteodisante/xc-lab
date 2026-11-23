@@ -1,0 +1,1396 @@
+% Coverage: story question -> main frame (label m-...) and its technical frames (label t-..., linked at the bottom right of the main frame).
+% The main line follows the questions of analyses/groups/story/story.tex one by one; frame titles are the questions, shortened.
+%
+% Story question (line of \Q)                                                -> main frame; technical frames
+%   Data, three populations and one identity (Sec. question; method box) ....... m-question; t-data, t-populations (the data frame is technical, linked from m-question)
+%   TA-MSD, alpha(tau) (Sec. definitions) ...................................... m-pool; t-pieces
+%   Bands (Sec. bands), weights ................................................ m-persistent; t-bands, t-weights
+%   l.230  Every flight at every lag? (fixed cohort) ........................... m-pool; t-poolwhy, t-pooltoy, t-cohort, t-tradeoff, t-cohgaps
+%   l.354  One curve per population? (chained MSD) ............................. m-chain; t-chain, t-pooltoy, t-chainlook, t-chainpool
+%   l.726  Is group time more persistent? ...................................... m-persistent; t-gapchain
+%   l.751  The group or the flights? ........................................... m-gaps; t-identity
+%   l.788  Does the effect depend on the ground? (with the Simpson's paradox) ... m-ground; t-simpson, t-simpsondata, t-where, t-groundtab, t-groundgaps, t-groundalpha, t-forest, t-groundclass
+%   l.853  Larger in the mountains, or another scale? .......................... m-scale; t-relgaps
+%   l.886  Does the effect peak at the scale of one cycle? ..................... m-scale (merged); t-cycle
+%   l.912  Does flying in a group add straightness whatever the path? .......... t-openthreshold (technical, linked from t-kindmain); t-openingdef, t-opengaps, t-opencohorts, t-openstrict, t-threshold
+%   l.968  The flight or the stretch? .......................................... t-kindmain (technical, linked from m-gaps); t-openingdef, t-kind, t-openthreshold, t-openground
+%   l.1041 The opening or the ground? ........................................... t-openground (technical, linked from t-kindmain); t-og, t-ogclass, t-ogtab
+%   l.1103 Does A-S come from the pilots? ...................................... m-pilots; t-pilot, t-pilottab
+%   l.1137 Group time against the solo time just before and after it (10-1000 s)  m-when-all; t-windows, t-windowstab
+%   l.1175 On the long lags, does it change at the entry and the exit? ......... m-when-long; t-long, t-longtab, t-moment
+%   l.1228 The group, or the moment of the flight? (mock events) ............... m-control; t-control, t-moment
+%   l.1268 Does the group carry over to the solo time around it? ............... m-carry; t-carry
+%   l.1293 Which phases does the group change? ................................. m-phases; t-phcomp, t-phperf, t-phmain, t-phmain2, t-phall, t-phsearch, t-tools, t-refit
+%   (tails of the durations, part of the same step) ............................ m-tails (glides), m-tails2 (searches, climbs); t-tails3, t-survival, t-tailnum, t-hill, t-hillmethod
+%   l.1370 The wind test ....................................................... t-wind (technical, linked from m-phases)
+%   l.1394 How does the group use the thermals? ................................ m-thermals; t-thermals
+%   l.1443 The shape of the route, or the timing? ............................... m-route; t-routegaps, t-routecheck
+%   l.1514 Which way round? ................................................... m-direction; t-readings
+%   What we found (the red thread with the answers); what the data do not say; tools missing  m-found, m-open; t-found, t-notsaid
+% t-groundclass is the ground-class method (linked from m-ground); t-openingdef is the opening of a flight (linked from t-kindmain, returns to t-kindmain and t-openthreshold).
+% Main line: eight chapters (Persistent?, Group or flights?, Where?, Who?, When?, Dynamics, Geometry, Direction); the opening of the flights (t-kindmain, linked from m-gaps) and its robustness are technical. The talk opens with m-question, m-thread (the red thread), m-pool; m-found closes it with the same thread and the answers.
+% Every technical frame is linked from its main frame (pills above the take-home box); t-moment returns to m-control and to m-when-long.
+% Appendix questions: weights l.1609 -> t-weights (from m-persistent);
+%   phase labels l.1787 -> t-refit (from m-phases); tail thresholds l.1836 -> t-hill (from m-tails).
+% Tables of the story: ground, cycle, opening-class, ground-opening, pilot, prepost, prepost-long, prepost-mock, carry, phases-main,
+%   phases (every flight), tails, per-lag window, opening shares: all in a technical frame. Left out: the (b) variants of the
+%   cohorts figures (same as (a) and (c) with another opening threshold), the per-class blocks of the full phase table (the kept
+%   statistics are in the main table), the hang-glider fit of the phase labels.
+% Colours: S blue, A aqua, G orange; gaps as in the story: G-S orange, G-A brown, A-S aqua; ground classes light green to dark brown (contrasts.CLASS_COLORS);
+%   thresholds of the opening in one steel ramp; real ink, control grey; path light grey, route dark grey hatched.
+% Figures (analyses/groups/story_slides.py draws the slide_* ones from the JSON of the run with the helpers and colours of the story scripts:
+%   contrasts.curve/finish/CLASS_COLORS/PILOT_COLORS, cohorts.solid_dashed/YLIM/GAP_YLIM, raw.GAP_COLORS, tamsd.COLORS/save, prepost.LINES/GROUND_COLORS,
+%   phase_gaps.CLASS_KEYS, carry.BIN_COLOR; same panels as the story figure, fewer of them and at the size of the slide; multi-panel figures use \qstepwide):
+%   m-pool slide_cohorts (cohorts.pdf, cohorts_tradeoff.pdf); m-chain slide_chain_pool (chained_pool.pdf, the longest cohort drawn thicker); m-persistent slide_persistent (chained.pdf); m-gaps slide_gaps (identity.pdf);
+%   m-ground slide_ground_gaps (ground_gaps.pdf, G-A and A-S); t-where slide_where (shares of ground_table, S panel of ground_alpha.pdf); m-scale slide_cycle
+%   (ground_relgaps G-A with the cycle on the lag axis, the story has a table); slide_scale is no longer used; t-openthreshold slide_opening (cohorts_gaps.pdf and
+%   variants); t-kindmain slide_opening_kind (opening_kind.pdf of the story without the threshold lines); t-openground slide_opening_ground (ground_opening_rel.pdf, G-A);
+%   m-pilots slide_pilots (pilot.pdf); m-when-all, m-when-long slide_when_all, slide_when_long (prepost_ground*.pdf, panels of every flight);
+%   m-control table cut from prepost_mock_table (tikz/prepost_control_all.tex); m-carry slide_carry (carry.pdf, bottom row);
+%   m-phases slide_performance (phases_performance.pdf, G-A); m-tails slide_glides, m-tails2 slide_searches_climbs (phases_tails.pdf rows);
+%   m-route slide_route (route_gaps.pdf); m-thermals: a table of numbers, no story figure; slide_forest and slide_tails are in technical frames.
+% Data frame: no figure of a real group episode in xc-lab (the examples of the group-identification note are timelines and
+%   schematics, not maps); tikz/contact.tex is a schematic plan view.
+\documentclass[11pt,aspectratio=169]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathpazo}
+\usefonttheme{serif}
+\usepackage{amsmath,amssymb,booktabs,array,tabularx,graphicx,microtype}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,decorations.pathreplacing,patterns,fit,backgrounds}
+
+% Figures come from the run of analyses/groups; paths in the story are relative to this folder.
+\graphicspath{{../../../analyses/groups/out/d120_eh500_ez300_th45_g120_q0.1/}}
+
+% Numbers of the story: same macros file as the report.
+\input{../../../analyses/groups/vs-solo/generated/comparisons/macros}
+\input{tikz/simpson_macros}
+
+% Colours of the report: S, G and A; neutrals for text, grids and fills.
+\definecolor{blueI}{HTML}{2A78D6}
+\definecolor{orangeJ}{HTML}{EB6834}
+\definecolor{aqua}{HTML}{1BAF7A}
+\definecolor{brownGA}{HTML}{8C2F0F}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{muted}{HTML}{9A9893}
+\definecolor{light}{HTML}{E6E5E1}
+\definecolor{steel}{RGB}{74,96,121}
+\definecolor{steellight}{RGB}{192,206,220}
+
+\newif\ifq
+\gdef\curchap{0}
+\tikzset{
+  >={Stealth[length=1.8mm]},
+  every picture/.style={line cap=round, line join=round},
+  lbl/.style={font=\footnotesize},
+  note/.style={font=\footnotesize, text=ink2},
+}
+
+\newcommand{\Sl}{\mathrm{S}}
+\newcommand{\G}{\mathrm{G}}
+\newcommand{\A}{\mathrm{A}}
+\newcommand{\Hloc}{\alpha}  % the code and the macros still call it H_loc
+\newcommand{\Hk}{\Hloc(1000~\mathrm{s})}
+\newcommand{\MSD}{\mathrm{MSD}}
+\newcommand{\mv}[1]{\text{#1}}  % a number macro with its own $ signs, inside a formula
+
+% Theme: steel-blue title bar, white pages, as in the earlier decks.
+\setbeamercolor{structure}{fg=steel}
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{frametitle}{fg=white,bg=steel}
+\setbeamercolor{alerted text}{fg=blueI}
+\setbeamercolor{takeaway}{fg=steel,bg=steellight!30}
+\definecolor{question}{HTML}{7B2D8E}
+\definecolor{answer}{HTML}{1E7B34}
+\setbeamercolor{defbox}{fg=ink,bg=steellight!28}
+\setbeamercolor{chapbar}{fg=muted,bg=steellight!22}
+\setbeamersize{text margin left=7mm,text margin right=7mm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\textcolor{steel}{\small$\bullet$}}
+\setbeamertemplate{itemize subitem}{\textcolor{steel}{\textendash}}
+\setbeamertemplate{itemize/enumerate body begin}{\setlength{\itemsep}{0.3em}}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=7.4mm,dp=2.4mm,center]{frametitle}
+    \large\insertframetitle\strut
+    \ifq\begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,fill=white,text=question,rounded corners=1.5pt,inner xsep=2.5pt,inner ysep=1.5pt,font=\small\bfseries]
+      at([xshift=2.4mm,yshift=-4.9mm]current page.north west){Q.};
+    \end{tikzpicture}\fi
+  \end{beamercolorbox}
+  \ifnum\curchap>0\relax
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3mm,dp=1mm,center]{chapbar}\chapbar\end{beamercolorbox}
+  \fi
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east,text=white,inner sep=0pt,xshift=-2.3mm,yshift=-4.2mm]
+      at(current page.north east){\small\insertframenumber};
+  \end{tikzpicture}}
+\setbeamertemplate{footline}{}
+
+
+% The chapter bar under the title bar: \chap{n} before a frame sets the current chapter (0: no bar).
+\newcommand{\chap}[1]{\gdef\curchap{#1}\global\qfalse}
+\newcommand{\chapq}[1]{\gdef\curchap{#1}\global\qtrue}
+\newcommand{\chapitem}[2]{\ifnum\curchap=#1\relax\textcolor{steel}{\bfseries #2}\else\textcolor{muted}{#2}\fi}
+\newcommand{\chapbar}{\scriptsize
+  \chapitem1{Persistent?}\ \textperiodcentered\ \chapitem2{Group or flights?}\ \textperiodcentered\ \chapitem3{Where?}\ \textperiodcentered\
+  \chapitem4{Who?}\ \textperiodcentered\ \chapitem5{When?}\ \textperiodcentered\
+  \chapitem6{Dynamics}\ \textperiodcentered\ \chapitem7{Geometry}\ \textperiodcentered\ \chapitem8{Direction}}
+\newcommand{\qfig}[2][0.62]{\includegraphics[width=\linewidth,height=#1\textheight,keepaspectratio]{#2}}
+% Links between a main frame and its technical frames: buttons under the observations of a question frame, on the line above the take-home box elsewhere.
+\setbeamerfont{button}{size=\footnotesize}
+\newcommand{\tb}[2]{\mbox{\hyperlink{#1}{\beamergotobutton{#2}}}\hskip3pt plus 2pt\relax}
+\gdef\tlinks{}
+\newcommand{\tl}[1]{\gdef\tlinks{#1}}
+\newcommand{\tlprint}{\ifx\tlinks\empty\else{\raggedleft\fontsize{9}{12}\selectfont\tlinks\par}\gdef\tlinks{}\fi}
+% \tlbelowtrue in a \qstep frame: the links go on one full-width line above the take-home box instead of under the observations.
+\newif\iftlbelow
+\newcommand{\tlcol}{\ifx\tlinks\empty\else\iftlbelow\else{\raggedright\fontsize{8}{12.5}\selectfont\textcolor{muted}{Details $\to$}\hskip3pt\tlinks\par}\gdef\tlinks{}\fi\fi}
+\newcommand{\Def}{\textcolor{answer}{\bfseries Def.}\ }
+% The grammar of a question frame (story: Q, Tool, Result, Observation, Take home): the title is the question.
+% \qstep{tool}{result}{observation items}{take home}; the links of \tl go under the observations.
+% The thread line above the Tool line of a question frame: \thread{...} before \qstep or \qstepwide links it to the previous take home.
+\definecolor{threadgrey}{HTML}{6F6D68}
+\gdef\thr{}
+\newcommand{\thread}[1]{\gdef\thr{#1}}
+\newcommand{\thrprint}{\ifx\thr\empty\else{\small\itshape\textcolor{question}{\thr}\par}\vspace{0.3mm}\gdef\thr{}\fi}
+% Wide frames: the thread line carries the links of the frame on its right.
+\gdef\tlup{0}
+\newcommand{\linksup}{\gdef\tlup{1}}
+\newcommand{\thrlinks}{\noindent{\small\itshape\textcolor{question}{\thr}}%
+  \if1\tlup\hfill{\setbeamerfont{button}{size=\scriptsize}\fontsize{7}{9}\selectfont\textcolor{muted}{Details $\to$}\hskip2pt\tlinks}\gdef\tlinks{}\gdef\tlup{0}\fi\par\vspace{0.3mm}\gdef\thr{}}
+\newlength{\qh}\setlength{\qh}{2.0in}
+\newcommand{\qstep}[5][.56]{%
+  \vspace{-3.5mm}\thrprint{\small\textcolor{answer}{\bfseries Tool.} #2\par}\vspace{1.5mm}
+  \begin{columns}[T,onlytextwidth]
+  \column{#1\textwidth}\centering #3\par
+  \column{\dimexpr.98\textwidth-#1\textwidth\relax}
+  \vbox to \qh{{\small\fontsize{10}{11.8}\selectfont\textcolor{answer}{\bfseries Observation.}\par\vspace{1mm}
+  \begin{itemize}\setlength{\itemsep}{0.5em}\setlength{\leftmargini}{1.1em}#4\end{itemize}}\vfill\tlcol}
+  \end{columns}
+  {\renewcommand{\tksep}{3pt}\takeaway{\normalsize\textcolor{answer}{\bfseries Take home.}\ #5}}}
+% Wide variant of \qstep, for the multi-panel figures: Tool and links on one line, the figure across the page, two observation lines, the take home.
+% \qstepwide{tool}{\wfig{figure}}{observation 1}{observation 2}{take home}
+\newcommand{\tlinline}{\ifx\tlinks\empty\else{\raggedleft\fontsize{8}{10}\selectfont\textcolor{muted}{Details $\to$}\hskip3pt\tlinks\par}\gdef\tlinks{}\fi}
+\newcommand{\wfig}[2][46mm]{{\centering\makebox[\linewidth][c]{\includegraphics[width=\dimexpr\paperwidth-8mm\relax,height=#1,keepaspectratio]{#2}}\par}}
+\newcommand{\qstepwide}[5]{%
+  \ifnum\curchap=0\relax\vspace{-3mm}\else\vspace{-6mm}\fi\thrlinks{\small\textcolor{answer}{\bfseries Tool.} #1\par}\vspace{0.5mm}
+  #2\par\vspace{0.5mm}
+  {\fontsize{10}{11.8}\selectfont\noindent\begin{tabularx}{\linewidth}{@{}l X@{}}\textcolor{answer}{\bfseries Observation.} & #3\\ & #4\ifx\tlinks\empty\else\hfill{\fontsize{8}{10}\selectfont\textcolor{muted}{Details $\to$}\hskip3pt\tlinks}\fi\end{tabularx}\par}\gdef\tlinks{}
+  \vfill\vskip1pt
+  {\begin{beamercolorbox}[wd=\linewidth,sep=3pt]{takeaway}\normalsize\textcolor{answer}{\bfseries Take home.}\ #5\end{beamercolorbox}}}
+\newcommand{\back}[1]{\tl{\hyperlink{#1}{\beamerreturnbutton{main frame}}}}
+\newcommand{\backs}[4]{\tl{\hyperlink{#1}{\beamerreturnbutton{#2}}\hspace{3pt}\hyperlink{#3}{\beamerreturnbutton{#4}}}}
+
+% A card of the answers frame: equal size, heading and one or two lines.
+\newcommand{\card}[2]{{\setlength{\fboxsep}{8pt}\setlength{\fboxrule}{0.8pt}%
+  \fcolorbox{steel}{steellight!20}{\parbox[t][27mm][t]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+  {\Large\textcolor{steel}{\bfseries #1}}\par\vspace{2mm}\raggedright\large #2}}}}
+
+% A row of the answers frame: heading on the left, one or two lines on the right.
+\newcommand{\cardrow}[2]{{\setlength{\fboxsep}{8pt}\setlength{\fboxrule}{0.8pt}%
+  \fcolorbox{steel}{steellight!20}{\parbox[c][15mm][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+  \parbox[c]{.29\linewidth}{\raggedright\large\textcolor{steel}{\bfseries #1}}\parbox[c]{.66\linewidth}{\raggedright\normalsize #2}}}}}
+\newcommand{\source}[1]{\par\vspace{1mm}{\fontsize{7}{8.3}\selectfont\color{ink2}#1\par}}
+\newcommand{\tksep}{4pt}
+\newcommand{\takeaway}[2][\linewidth]{\par\vfill\tlprint\vskip1pt
+  \begin{beamercolorbox}[wd=#1,sep=\tksep]{takeaway}\small #2\end{beamercolorbox}}
+% The take-home line of a main frame, a size up.
+\newcommand{\take}[1]{\takeaway{\normalsize #1}}
+% A figure of the run, up to the width of the page (it may run into the margins) and at most the given height.
+\newcommand{\fig}[2][0.5\textheight]{%
+  {\centering\makebox[\linewidth][c]{\includegraphics[width=\paperwidth,height=#1,keepaspectratio]{#2}}\par}}
+% A table of the report, scaled to fit the width and the given height.
+\newcommand{\tab}[2][0.6\textheight]{%
+  {\centering\footnotesize\adjustbox{max width=\linewidth,max totalheight=#1}{\input{#2}}\par}}
+% A full-page divider that opens one part of the talk.
+\newcommand{\partframe}[2]{%
+\begin{frame}[plain,noframenumbering]
+\begin{tikzpicture}[remember picture,overlay]
+ \fill[steel](current page.south west)rectangle(current page.north east);
+ \node[text=white,align=center,text width=.82\paperwidth]at([yshift=4mm]current page.center)
+   {{\Large\bfseries #1}\\[3mm]{\normalsize\color{steellight}#2}};
+\end{tikzpicture}
+\end{frame}}
+
+\hypersetup{pdftitle={Flying in a group},pdfauthor={Authors},
+  colorlinks=true,urlcolor=blueI,linkcolor=blueI}
+
+
+\begin{document}
+
+%% ------------------------------------------------------------------ main line
+%% 1. Title
+\chap{0}
+\begin{frame}[plain,label=m-title]
+\begin{tikzpicture}[remember picture,overlay]
+ \fill[steel](current page.south west)rectangle(current page.north east);
+ \fill[steellight](current page.south west)rectangle([yshift=20mm]current page.south east);
+ \node[text=white,align=center,text width=.86\paperwidth]at([yshift=8mm]current page.center)
+   {{\huge\bfseries What changes when paragliders fly in a group}};
+ \node[text=steel,align=center]at([yshift=10mm]current page.south)
+   {{\normalsize Matteo Di Sante}\\[1.5mm]{\footnotesize 24 November 2026}};
+\end{tikzpicture}
+\end{frame}
+
+%% 2. The question
+\chap{0}
+\begin{frame}[label=m-question]{The group effect is $\G-\A$, not $\G-\Sl$}
+\tl{\tb{t-data}{data}\tb{t-populations}{populations}}
+{\centering\input{tikz/flights}\par}
+\vfill
+{\setlength{\abovedisplayskip}{0pt}\setlength{\belowdisplayskip}{0pt}\LARGE\[ X_\G-X_\Sl\;=\;{\color{brownGA}\underbrace{(X_\G-X_\A)}_{\text{the group}}}\;+\;{\color{aqua}\underbrace{(X_\A-X_\Sl)}_{\text{the flights}}} \]}
+\vfill
+{\centering\normalsize $\A-\Sl$ compares different flights: other routes, days, places.\par}
+\take{\textcolor{brownGA}{\bfseries The group effect is $\G-\A$: the same flights, in a group or not.}}
+\end{frame}
+
+%% 3. The thread
+% The eight chapters of the chapter bar as stations on one red curve, grouped in three acts; a station links to the first frame of its chapter.
+\definecolor{redthread}{HTML}{D1202F}
+\newcommand{\station}[6]{% x, link, name, subtitle, side (above or below), row height
+  \node[circle,fill=redthread,draw=white,line width=1pt,inner sep=3.4pt] (st#2) at (#1,{0.65*sin(#1*40)}) {};
+  \node[anchor=#5,align=center,text width=24mm,inner sep=0pt] (lb#2) at (#1,#6) {\hyperlink{#2}{\textcolor{ink}{\bfseries\normalsize #3}}\\[-0.2mm]{\small\textcolor{ink2}{#4}}};
+  \draw[redthread!45,line width=0.6pt] (st#2) -- (#1,{#6+0.0});}
+% The same station with its answer instead of its subtitle (end of the talk).
+\newcommand{\answerstation}[6]{% x, link, name, answer, side (above or below), row height
+  \node[circle,fill=redthread,draw=white,line width=1pt,inner sep=3.4pt] (st#2) at (#1,{0.65*sin(#1*40)}) {};
+  \node[anchor=#5,align=center,text width=30mm,inner sep=0pt] (lb#2) at (#1,#6) {\hyperlink{#2}{\textcolor{ink}{\bfseries\normalsize #3}}\\[-0.2mm]{\small\hyphenpenalty=10000\exhyphenpenalty=10000\binoppenalty=10000\relpenalty=10000 \textcolor{answer}{#4}}};
+  \draw[redthread!45,line width=0.6pt] (st#2) -- (#1,{#6+0.0});}
+\chap{0}
+\begin{frame}[label=m-thread]{The thread}
+\centering\vspace{0mm}
+\begin{tikzpicture}[x=0.97cm,y=1cm]
+  \fill[steellight!40] (-0.4,-3.0) rectangle (1.96,4.15);
+  \fill[steellight!16] (1.96,-3.0) rectangle (8.88,4.15);
+  \fill[steellight!40] (8.88,-3.0) rectangle (14.2,4.15);
+  \node[text=steel,font=\normalsize\bfseries,align=center] at (0.78,3.65) {Is there\\an effect?};
+  \node[text=steel,font=\normalsize\bfseries] at (5.42,3.65) {Is it the group?};
+  \node[text=steel,font=\normalsize\bfseries] at (11.54,3.65) {How, and which way?};
+  \draw[redthread,line width=2.8pt,line cap=round] plot[domain=-0.3:14.1,samples=120,smooth] (\x,{0.65*sin(\x*40)});
+  \station{1.1}{m-persistent}{Persistent?}{is group time more persistent?}{south}{1.0}
+  \station{2.83}{m-gaps}{Group or flights?}{$\G-\A$ or $\A-\Sl$?}{north}{-1.0}
+  \station{4.56}{m-ground}{Where?}{ground, scale}{south}{1.0}
+  \station{6.29}{m-pilots}{Who?}{pilots}{north}{-1.0}
+  \station{8.01}{m-when-all}{When?}{entry, exit, moment of the flight}{south}{1.0}
+  \station{9.74}{m-phases}{Dynamics}{phases, durations}{north}{-1.0}
+  \station{11.47}{m-route}{Geometry}{route or timing?}{south}{1.0}
+  \station{13.2}{m-direction}{Direction}{which way round?}{north}{-1.0}
+\end{tikzpicture}
+\end{frame}
+
+%% 5. Why not pool
+% Figure: slide_cohorts, story figure redrawn (cohorts.pdf; cohorts.draw_alpha/shades): alpha of the nested cohorts of S with the pool, and the pieces that reach each lag (the pieces of each cohort, cohorts_tradeoff.pdf right).
+\chapq{0}
+\begin{frame}[label=m-pool]{Every flight at every lag: can we simply pool them?}
+\linksup\thread{First a question of method, before any result.}
+\tl{\tb{t-poolwhy}{why}\tb{t-pieces}{TA-MSD}\tb{t-cohort}{MSDs}\tb{t-tradeoff}{trade-off}\tb{t-cohgaps}{gaps}}
+\qstepwide{Pool: all pieces that reach the lag; cohort: fixed pieces; $\alpha=\tfrac12\,d\log\MSD/d\log\tau$.}
+{\wfig{open_declared_dt5/slide_cohorts.pdf}}
+{Right: beyond $10^3$~s the short pieces leave the pool.}
+{Left: the longer cohorts lie higher: those that leave are less straight.}
+{No: as the short, less straight flights leave, the pool's $\alpha$ climbs above 1.}
+\end{frame}
+
+%% 6. The chained MSD
+% Figure: slide_chain_pool, story figures redrawn together (chained_pool.pdf, cohorts.pdf): the pool, alpha* and the five nested cohorts, per population.
+% From the JSON: alpha* within 0.011 of the cohorts up to 1 h, the cohorts to 2 h and 3 h up to 0.034 above; the pool up to 0.26 above.
+\chapq{0}
+\begin{frame}[label=m-chain]{One curve for every lag, on every flight?}
+\tl{\tb{t-chain}{definition}\tb{t-pooltoy}{toy}\tb{t-chainlook}{MSD$^*$}\tb{t-chainpool}{vs pool}}
+\thread{The pool is out; one cohort is a compromise, five cohorts are five curves.}
+\qstepwide{Chained MSD$^*$: each step to the next lag uses only the pieces that reach both; $\alpha^*$ is its slope.}
+{\wfig[42mm]{open_declared_dt5/slide_chain_pool.pdf}}
+{$\alpha^*$ follows every cohort; the pool runs away.}
+{Toy where every piece has $\alpha=\ToyPlAlpha$: chain \ToyPlChained, pool \ToyPlPool.}
+{Yes, $\alpha^*$: every flight, one curve that follows all the cohorts.}
+\end{frame}
+
+%% 7. Persistent?
+% Figure: slide_persistent, story figure redrawn (chained.pdf, contrasts.curve): alpha* of S, A, G and G-S with its band; the dotted cohort curves and the other two gaps are in the story figure and the technical frame.
+\chapq{1}
+\begin{frame}[label=m-persistent]{Is group time more persistent?}
+\tl{\tb{t-gapchain}{figure}\tb{t-bands}{bands}\tb{t-weights}{weights}}
+\qstepwide{Chained $\alpha^*(\tau)$ of $\Sl$, $\A$, $\G$.}
+{\wfig{open_declared_dt5/slide_persistent.pdf}}
+{No gap up to 100~s.}{$\G-\Sl$ grows visibly from about 200~s.}
+{Yes: the gap grows visibly from about 200~s on.}
+\end{frame}
+
+%% 8. Group or flights?
+% Figure: slide_gaps, story figure redrawn (identity.pdf, contrasts.curve, raw.GAP_COLORS): the same three gaps.
+% From the JSON: G-A is 79% of G-S at 320 s, 91% at 470 s, all of it at 580 s (A-S = 0 there); the story says "from about 10^3 s".
+\chapq{2}
+\begin{frame}[label=m-gaps]{The group or the flights?}
+\tl{\tb{t-identity}{figure}\tb{t-kindmain}{opening}}
+\thread{Is the gap $\G-\Sl$ due to the group, or to the flights that have group time?}
+\qstep[.60]{Split $\G-\Sl$ into $\G-\A$ and $\A-\Sl$: same flights against different flights.}
+{\qfig{open_declared_dt5/slide_gaps.pdf}}
+{\item Below 100~s: $\G-\Sl=(\G-\A)+(\A-\Sl)\approx0$.
+ \item Beyond a few hundred seconds, $\G-\Sl\approx\G-\A$.
+ \item $\A-\Sl$ is small, slightly negative at long lags (Simpson’s paradox).}
+{The group: within the same flights, group time is straighter.}
+\end{frame}
+
+%% 9. Where? the ground
+% Figure: slide_ground_gaps, story figure redrawn (ground_gaps.pdf, contrasts.curve, contrasts.CLASS_COLORS): the G-A and A-S panels with every flight in grey; G-S is in the technical frame, G-A normalised in m-scale.
+\chapq{3}
+\begin{frame}[label=m-ground]{Does the effect depend on the ground?}
+\tl{\tb{t-simpson}{Simpson}\tb{t-simpsondata}{our data}\tb{t-groundgaps}{3 panels}\tb{t-groundtab}{table}\tb{t-forest}{strata}\tb{t-groundclass}{classes}}
+\thread{The gap is the group's: the same over plains and mountains?}
+\qstepwide{The group effect $\G-\A$, and $\A-\Sl$, per ground class.}
+{\wfig[42mm]{open_declared_dt5/slide_ground_gaps.pdf}}
+{At 1\,000~s: $(\G-\A)_{\text{high mountains}}\approx5\times(\G-\A)_{\text{plains}}$.}
+{$\A-\Sl>0$ in every class, $<0$ on every flight: Simpson's paradox.}
+{Yes: in absolute terms $\G-\A$ grows with the relief, about fivefold.}
+\end{frame}
+
+%% 10. Where? the scale and the cycle
+% Figure: slide_cycle, new: the G-A panel of ground_relgaps.pdf with the cycle length (grey band) marked on the lag axis and the peak of each curve (dot); the story has the numbers in a table (technical frame).
+\chapq{3}
+\begin{frame}[label=m-scale]{Larger in the mountains, also in relative terms?}
+\tl{\tb{t-relgaps}{3 panels}\tb{t-cycle}{table}}
+\thread{Larger in the mountains in absolute terms, where $\alpha^*$ itself is lower.}
+\qstep[.56]{Normalised $\G-\A$; grey band: the cycle (glide, search, climb), \PhCycleGHighMtn--\PhCycleAHighMtn~min everywhere.}
+{\qfig{open_declared_dt5/slide_cycle.pdf}}
+{\item Peak \GroundPlainsPeakGA--\GroundHighMtnPeakGA{} in every class.
+ \item Peak at \GroundLowMtnPeakGALag--\GroundHighMtnPeakGALag~s in the mountains, \GroundPlainsPeakGALag--\GroundHillsPeakGALag~s in plains and hills. \\ 
+ One possible explanation: the relief cuts the route into shorter legs.
+ \item The cycle durations don't explain the peak.
+{Same in relative terms: the ground sets only the lag, not via the cycle.}
+\end{frame}
+
+%% 15. Who?
+% Figure: slide_pilots, story figure redrawn (pilot.pdf, contrasts.curve, contrasts.PILOT_COLORS): A-S and A-S' per class; the panel of every flight and G-S' are in the technical frame.
+\chapq{4}
+\begin{frame}[label=m-pilots]{Does $\A-\Sl$ come from the pilots?}
+\tl{\tb{t-pilot}{5 panels}\tb{t-pilottab}{table}}
+\thread{Now the flights with group time: $\A-\Sl$ is positive in every class. Are their pilots different?}
+\qstepwide{$\A-\Sl'$ against $\A-\Sl$, $\Sl'$: solo flights of group pilots, so the pilots match.}
+{\wfig{open_declared_dt5/slide_pilots.pdf}}
+{$\A-\Sl'$ follows $\A-\Sl$ in every class.}
+{Equal or a little smaller, within the bands.}
+{No, to first order: $\A-\Sl'$ follows $\A-\Sl$, so it belongs to the flights.}
+\end{frame}
+
+%% 16. When? the whole range
+% Figure: slide_when_all, story figure redrawn (prepost_ground.pdf, panel of every flight: the four windows and the steps with the control; prepost.LINES and GROUND_COLORS).
+\chapq{5}
+\begin{frame}[label=m-when-all]{Before and after the group, over 10 to 1\,000~s?}
+\tl{\tb{t-windows}{figure}\tb{t-windowstab}{table}}
+\linksup
+\thread{Now where in the flight: $\G-\A$ against the solo time just around it.}
+\qstepwide{Windows pre, start, end, post (\WhenWindow~s) of one flight and their steps: pilot and day fixed.}
+{\wfig{open_declared_dt5/slide_when_all.pdf}}
+{Same exponent in the four windows, within the control drift.}
+{Control: two consecutive solo windows of group flights.}
+{No: flat over the whole range, within the control drift; read where it lives.}
+\end{frame}
+
+%% 17. When? the long lags
+% Figure: slide_when_long, story figure redrawn (prepost_ground_long.pdf, panel of every flight).
+\chapq{5}
+\begin{frame}[label=m-when-long]{On the long lags, does it change at the entry and the exit?}
+\tl{\tb{t-long}{figure}\tb{t-longtab}{table}\tb{t-moment}{composition}}
+\thread{Flat over 10 to 1\,000~s, where $\G-\A$ changes sign: read the long lags.}
+\qstepwide{Same windows, fitted over \WhenLongLo{} to \WhenLongHi~s: the short lags, where $\G-\A$ flips sign, drop out.}
+{\wfig{open_declared_dt5/slide_when_long.pdf}}
+{Every flight: entry \WhenAllLongStartMinusPre, exit \WhenAllLongPostMinusEnd.}
+{The start window holds more climb.}
+{Yes: more persistent than the solo time around, if not the flight's moment.}
+\end{frame}
+
+%% 18. When? real against control
+% Table: the row of every flight of prepost_mock_table (real, control, real - control), cut by story_slides.py: shorter than a figure of the same numbers.
+\chapq{5}
+\begin{frame}[label=m-control]{The group, or the moment of the flight?}
+\setlength{\qh}{1.75in}
+\tl{\tb{t-control}{table}\tb{t-moment}{composition}}
+\thread{The window before lies earlier in the flight: the group, or the moment?}
+\qstep[.50]{Control windows at the same flight time in solo flights: what the moment does alone.}
+{\renewcommand{\arraystretch}{1.6}\large\adjustbox{max width=\linewidth}{\input{tikz/prepost_control_all}}\par\vspace{2mm}{\footnotesize steps of the exponent, every flight; $^\ast$: the 90\% band excludes 0}}
+{\item Per class: the fall resolved in the hills and the mountains; the rise only in the high mountains.
+ \item Plains: neither resolved.}
+{The group: on every flight the persistence rises at the entry and falls at the exit, beyond the moment of the flight.}
+\end{frame}
+
+%% 19. When? carry-over
+% Figure: slide_carry, story figure redrawn (carry.pdf, bottom row, carry.BIN_COLOR): A(d) - S per distance bin on every flight and in the high mountains; the other classes are in the technical table.
+\chapq{5}
+\begin{frame}[label=m-carry]{Does the group carry over to the solo time around it?}
+\tl{\tb{t-carry}{table}}
+\thread{The change belongs to the group. Does it linger in the solo time nearby?}
+\qstepwide{$\A(d)-\Sl$ by distance $d$ from the group: a carry-over would be largest near it.}
+{\wfig{open_declared_dt5/slide_carry.pdf}}
+{It does not fall as $d$ grows.}
+{High mountains: \CarryNearLabel{} \CarryHighMtnNear, \CarryFarLabel{} \CarryHighMtnFar.}
+{No: no carry-over is detected over \WhenLongLo{} to \WhenLongHi~s.}
+\end{frame}
+
+%% 20. Dynamics: phases
+% Figure: slide_performance, story figure redrawn (phases_performance.pdf, forest of phase_gaps, G-A only): the height lost, the searches that end in a climb and the climb rate per class; A-S, the drift and the exit duration are in the technical frame. The composition and the wind are one click away.
+\chapq{6}
+\begin{frame}[label=m-phases]{Which phases does the group change?}
+\tl{\tb{t-phcomp}{composition}\tb{t-phperf}{5 panels}\tb{t-phmain}{tables}\tb{t-wind}{wind}}
+\linksup
+\thread{Now how: what changes in the pilot's flying?}
+\qstepwide{$\G-\A$ of three statistics within the phases: how the pilot glides, searches and climbs.}
+{\wfig{open_declared_dt5/slide_performance.pdf}}
+{Searches end in a climb more often; less height lost.}
+{Climb rate not higher; more climbs per hour (\PhCphGAAll).}
+{Search and glide: climbs found more reliably, better glides between them; not faster climbs.}
+\end{frame}
+
+%% 21. Dynamics: tails (1/2) glides
+% Figure: slide_glides, story figure redrawn (phases_tails.pdf, glide row, four classes): survival of S, A, G and mu.
+\chapq{6}
+\begin{frame}[label=m-tails]{The tails of the durations (1/2): glides}
+\tl{\tb{m-tails2}{2/2}\tb{t-survival}{figure}\tb{t-tails3}{phases}\tb{t-tailnum}{numbers}\tb{t-hill}{thresholds}\tb{t-hillmethod}{method}}
+\thread{Same question, the rare events: do the long glides last longer?}
+\qstepwide{Survival of glide durations and Hill exponent $\mu$ (smaller: heavier tail): the rare long glides.}
+{\wfig[42mm]{open_declared_dt5/slide_glides.pdf}}
+{Plains, hills: $\mu_\G-\mu_\A=$ \PhMuGlideGAPlains, \PhMuGlideGAHills; within the bands.}
+{Low, high mountains: \PhMuGlideGALowMtn, \PhMuGlideGAHighMtn; resolved.}
+{Yes, only in the mountains: the long glides decay more slowly in a group.}
+\end{frame}
+
+%% 21b. Dynamics: tails (2/2) searches and climbs
+% Figure: slide_searches_climbs, story figure redrawn (phases_tails.pdf, search and climb rows): every flight and the high mountains, where the glides differ.
+\chapq{6}
+\begin{frame}[label=m-tails2]{The tails of the durations (2/2): searches and climbs}
+\tl{\tb{t-tails3}{phases}\tb{t-survival}{figure}\tb{t-tailnum}{numbers}\hyperlink{m-tails}{\beamerreturnbutton{1/2}}}
+\linksup
+\thread{The same tail test for the two other phases.}
+\qstepwide{Survival of the durations of searches (ending in a climb) and climbs, Hill $\mu$.}
+{\wfig[42mm]{open_declared_dt5/slide_searches_climbs.pdf}}
+{Searches, $\mu_\G-\mu_\A$: \PhMuSearchGAAll{} (every flight), \PhMuSearchGAHighMtn{} (high mtn).}
+{Climbs: \PhMuClimbGAAll{} (every flight), \PhMuClimbGAHighMtn{} (high mtn); all within the bands.}
+{No: searches and climbs show no difference between $\G$ and $\A$, within the bands.}
+\end{frame}
+
+%% 23. Dynamics: thermals
+% No story figure: a four-row table of the numbers of the report.
+\chapq{6}
+\begin{frame}[label=m-thermals]{How does the group use the thermals?}
+\tl{\tb{t-thermals}{table}}
+\thread{More climbs, same rate, better glides: how long does the group stay in a thermal?}
+\qstep[.50]{Height per climb and climbs per hour, $\G-\A$: how long it stays, so how high it leaves.}
+{\renewcommand{\arraystretch}{1.6}\large
+\begin{tabular}{@{}l r r@{}}
+\toprule
+$\G-\A$ & height (m) & climbs/h \\
+\midrule
+plains & \PhGainGAPlains & \PhCphGAPlains \\
+hills & \PhGainGAHills & \PhCphGAHills \\
+low mtn & \PhGainGALowMtn & \PhCphGALowMtn \\
+high mtn & \PhGainGAHighMtn & \PhCphGAHighMtn \\
+\bottomrule
+\end{tabular}}
+{\item Plains: less height per climb; high mountains: more.
+ \item More climbs per hour everywhere.}
+{Differently: more climbs per hour; the thermals are not stronger.}
+\end{frame}
+
+%% 24. Geometry
+% Figure: slide_route, story figure redrawn (route_gaps.pdf, raw.GAP_COLORS): G-A on the route and in time for every flight, the plains and the high mountains; A-S and the other classes are in the technical frame.
+\chapq{7}
+\begin{frame}[label=m-route]{The shape of the route, or the timing?}
+\tl{\tb{t-routegaps}{5 panels}\tb{t-routecheck}{check}}
+\linksup
+\thread{No formula maps the phases on $\alpha^*$: split route and timing directly.}
+\qstepwide{Climbs replaced by chords, read in arc length: the waiting is gone, only the shape is left.}
+{\wfig{open_declared_dt5/slide_route.pdf}}
+{\Def Timing = time $-$ route: the waiting in the circles (circles kept: $\alpha^*$ in time).}
+{$\G-\A$ at 1\,000~s: route \RouteGAAllThousand, time \ChainGAThousand{} (route: about 85\%).}
+{The shape: group time is straighter than the solo time of the same flights even without the waiting; the timing is secondary.}
+\end{frame}
+
+%% 25. Direction
+\chapq{8}
+\begin{frame}[label=m-direction]{Which way round?}
+\setlength{\qh}{1.8in}
+\tl{\tb{t-readings}{the two readings}}
+\thread{All so far is association: does the group straighten, or the straight leg gather it?}
+\qstep{Long-lag windows: if a straight leg made the group, the rise would come before the entry.}
+{\adjustbox{max width=\linewidth,max height=0.42\textheight}{\begin{tikzpicture}[x=1cm,y=1cm,line width=1.5pt,every node/.style={font=\normalsize}]
+  \node[draw=orangeJ,text=orangeJ,rounded corners,inner sep=5pt] (g1) at (0,2.7) {group};
+  \node[draw=ink,text=ink,rounded corners,inner sep=5pt] (s1) at (3.4,2.7) {straight};
+  \draw[->,orangeJ] (g1)--(s1);
+  \node[text=ink2] at (1.7,1.85) {group time finds straight paths};
+  \node[draw=ink,text=ink,rounded corners,inner sep=5pt] (s2) at (0,0.5) {straight};
+  \node[draw=orangeJ,text=orangeJ,rounded corners,inner sep=5pt] (g2) at (3.4,0.5) {group};
+  \draw[->,ink] (s2)--(g2);
+  \node[text=ink2] at (1.7,-0.35) {pilots meet on a straight leg};
+\end{tikzpicture}}}
+{\item Entry: \WhenAllLongStartMinusPre, on every flight and in the high mountains, at the scale of a \WhenWindow~s window.
+ \item Exit: \WhenAllLongPostMinusEnd; both readings predict it.}
+{Group $\to$ straight: a straight leg that gathered the group would show before joining; the persistence rises only after.}
+\end{frame}
+
+%% 26. What we found
+\chap{0}
+\begin{frame}[label=m-found]{What we found}
+\tl{\tb{t-found}{in full}}
+\centering\vspace{-1.5mm}
+\begin{tikzpicture}[x=0.95cm,y=0.85cm]
+  \fill[steellight!40] (-0.4,-3.2) rectangle (1.96,4.35);
+  \fill[steellight!16] (1.96,-3.2) rectangle (8.88,4.35);
+  \fill[steellight!40] (8.88,-3.2) rectangle (14.2,4.35);
+  \node[text=steel,font=\normalsize\bfseries,align=center] at (0.78,3.85) {Is there\\an effect?};
+  \node[text=steel,font=\normalsize\bfseries] at (5.42,3.85) {Is it the group?};
+  \node[text=steel,font=\normalsize\bfseries] at (11.54,3.85) {How, and which way?};
+  \draw[redthread,line width=2.8pt,line cap=round] plot[domain=-0.3:14.1,samples=120,smooth] (\x,{0.65*sin(\x*40)});
+  \answerstation{1.1}{m-persistent}{Persistent?}{Yes, visibly from about 200~s}{south}{1.05}
+  \answerstation{2.83}{m-gaps}{Group or flights?}{The group: $\G-\A$, same flights}{north}{-1.05}
+  \answerstation{4.56}{m-ground}{Where?}{Same relative size; the ground sets the lag}{south}{1.05}
+  \answerstation{6.29}{m-pilots}{Who?}{$\A-\Sl$: not the pilots}{north}{-1.05}
+  \answerstation{8.01}{m-when-all}{When?}{Up at the entry, down at the exit}{south}{1.05}
+  \answerstation{9.74}{m-phases}{Dynamics}{Climbs found more reliably, better glides}{north}{-1.05}
+  \answerstation{11.47}{m-route}{Geometry}{Straighter shape, not only less circling}{south}{1.05}
+  \answerstation{13.2}{m-direction}{Direction}{Group $\to$ straight}{north}{-1.05}
+\end{tikzpicture}
+\take{Flying in a group straightens the path: in the same flights, in its shape, after joining.}
+\end{frame}
+
+%% 27. What is open
+\chap{0}
+\begin{frame}[label=m-open]{What is open}
+\tl{\tb{t-notsaid}{what is missing}}
+\begin{itemize}\setlength{\itemsep}{0.9em}\Large
+  \item The direction at a scale finer than one window.
+  \item How the group shows the lines: information, following, air.
+  \item Why the scale is shorter in the mountains.
+  \item Where $\A-\Sl$ comes from: the day, the site.
+  \item Why the faster glide does not cost height.
+  \item Beyond \ChainSolidEnd~s only the long flights.
+\end{itemize}
+\vfill\tlprint
+\end{frame}
+
+%% ------------------------------------------------------------------ technical slides
+\appendix
+\chap{0}
+\partframe{Technical slides}{details of the main slides}
+
+%% ===== Methods
+%% Methods: the data
+\chap{0}
+\begin{frame}[label=t-data]{Methods · the data: flights and groups}
+\back{m-question}
+\begin{columns}[T,onlytextwidth]
+\column{.54\textwidth}\large
+\begin{itemize}\setlength{\itemsep}{0.7em}
+  \item FFVL archive, paragliders: \FlightsEvery{} flights declared \textbf{open}, logged every \DtMax~s or faster.
+  \item \KindGroupFlights{} have group time; \KindSoloFlights{} never.
+  \item A group: contact within $120$~s, 500~m horizontally, 300~m vertically; in contact with at least one other pilot.
+\end{itemize}
+\column{.42\textwidth}
+\begin{center}\input{tikz/contact}\end{center}
+\end{columns}
+\take{Of \FlightsEvery{} flights, \KindGroupFlights{} have group time: a flight can be alone and in a group.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-populations]{Methods · the data and the three populations}
+\back{m-question}
+\begin{columns}[T,onlytextwidth]
+\column{.52\textwidth}\small
+\begin{itemize}\setlength{\itemsep}{0.5em}
+  \item[\textcolor{steel}{$\Sl$}] flights never in a group.
+  \item[\textcolor{steel}{$\G$}] group time: the stretches of group flights in a group.
+  \item[\textcolor{steel}{$\A$}] the solo time of the same group flights.
+\end{itemize}
+The unit is the stretch: a flight with three stretches in a group gives three pieces.
+\column{.44\textwidth}\small
+Paragliders, flights declared open (FFVL), logged every \DtMax~s or faster: the slower ones (\DtDroppedPercent\%) are dropped; \DtFlights{} flights give a piece.\\[2mm]
+Group time from the grouping run: in contact within $\delta=120$~s, 500~m horizontally and 300~m vertically; a group while in contact with at least one other.
+\end{columns}
+\takeaway{$\G-\A$ compares two moments of the same flights; $\A-\Sl$ compares different flights, both alone.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-pieces]{Methods · pieces, TA-MSD and $\alpha(\tau)$}
+\back{m-pool}
+\small
+Piece: the part of a segment in one population; only pieces of at least \PieceMinS~s ($=1\,000/\Support$) are kept.
+{\footnotesize
+\[ \overline{\delta^2_p}(\tau)=\frac{1}{M-k}\sum_{j=0}^{M-k-1}|x_{j+k}-x_j|^2,\qquad \MSD(\tau)=\frac1N\sum_p\overline{\delta^2_p}(\tau) \]
+\[ \alpha(\tau)=\frac12\,\frac{\sum_{k\in W}(u_k-\bar u)(y_k-\bar y)}{\sum_{k\in W}(u_k-\bar u)^2},\qquad u_k=\log\tau_k,\ y_k=\log\MSD(\tau_k) \]}
+\begin{itemize}\setlength{\itemsep}{0.3em}\footnotesize
+  \item Positions on a grid of \GridS~s; one weight per piece; \LagCount{} lags, geometric, from \LagMin{} to \LagMax~s.
+  \item Window $W(\tau)$: the lags within \HalfDecade{} decades of $\tau$.
+  \item A piece lasts at least $\tau_\mathrm{max}/\Support$: at least \SupportOriginsPercent\% of it gives origins at $\tau_\mathrm{max}$.
+\end{itemize}
+\takeaway{$\alpha(\tau)$ is half the log-slope of the MSD in a window around $\tau$, on pieces that all reach the lags of the window.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-bands]{Methods · the bands}
+\back{m-persistent}
+\small
+Pieces are not independent: pilots share skill and wing, blocks (a group episode, or one site and day) share the air.
+\[ V=\max(V_p+V_b-V_c,\;V_p,\;V_b),\qquad \text{band}=\text{estimate}\pm\BandZ\sqrt V\ \ (90\%) \]
+\begin{itemize}\setlength{\itemsep}{0.5em}
+  \item Three bootstraps of \NBoot{} draws resample the pilots, the blocks and the cells (pilot $\times$ block); $V_p$, $V_b$, $V_c$ are the variances over them (Cameron, Gelbach, Miller).
+  \item $\Sl$, $\A$, $\G$ in the same draws: every gap has its own band.
+  \item On synthetic data with pilot and block effects, the nominal 90\% band covers in \CovNewMin--\CovNewMax\% of the datasets.
+\end{itemize}
+\takeaway{Every band of the talk is a 90\% band that counts pilots and blocks, not pieces.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-poolwhy]{Methods · why the pool's $\alpha$ rises when pieces leave}
+\tl{\hyperlink{m-pool}{\beamerreturnbutton{main frame}}\hspace{3pt}\tb{t-pooltoy}{on a toy}\tb{t-cohort}{on the data}}
+\begin{columns}[c,onlytextwidth]
+\column{.50\textwidth}\centering
+\begin{tikzpicture}[x=1.06cm,y=0.84cm]
+  \draw[->,ink2] (0,0) -- (5.3,0) node[below left,font=\small]{$\log\tau$};
+  \draw[->,ink2] (0,0) -- (0,5.0) node[left,font=\small]{$\log\MSD$};
+  \foreach \x/\n in {1/\tau_1,4/\tau_2} {\draw[muted,dashed] (\x,0) -- (\x,4.6); \node[below,font=\small] at (\x,0) {$\n$};}
+  \draw[steel,line width=1.6pt] (0.75,2.05) -- (4.6,4.36) node[above left,font=\footnotesize,align=right,text=steel] {long pieces, stay};
+  \draw[aqua,line width=1.6pt] (0.3,0.48) -- (2.0,1.5) node[right,font=\footnotesize,align=left,text=aqua] {short pieces,\\ gone at $\tau_2$};
+  \draw[orangeJ!70!red,line width=1.8pt,dashed] (1,1.5) -- (4,4.0);
+  \node[font=\footnotesize,text=orangeJ!70!red,anchor=north west] at (3.2,2.95) {pool};
+  \fill[steel] (1,2.2) circle (2.4pt) node[above left,font=\small,text=ink] {$b$};
+  \fill[orangeJ!70!red] (1,1.5) circle (2.4pt) node[below right,font=\small,text=ink] {$a$};
+  \fill[steel] (4,4.0) circle (2.4pt) node[below right,font=\small,text=ink] {$c$};
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror},ink2] (0.88,2.2) -- (0.88,1.5) node[midway,left=2pt,font=\footnotesize]{$\log\frac{b}{a}$};
+\end{tikzpicture}
+\column{.46\textwidth}\small
+\begin{itemize}\setlength{\itemsep}{0.3em}
+  \item $a$: MSD at $\tau_1$ of every piece present at $\tau_1$ (the pool);
+  \item $b$: MSD at $\tau_1$ of the pieces still present at $\tau_2$;
+  \item $c$: MSD at $\tau_2$ of these same pieces.
+\end{itemize}
+\[ 2H=\frac{\log(c/b)}{\log(\tau_2/\tau_1)} \]
+\[ \begin{aligned}2\hat H_\mathrm{pool}&=\frac{\log(c/a)}{\log(\tau_2/\tau_1)}\\&=2H+\frac{\log(b/a)}{\log(\tau_2/\tau_1)}\end{aligned} \]
+\end{columns}
+\takeaway{If the pieces that leave have the smaller MSD ($b>a$), the pool is steeper than every piece it holds: $\alpha$ rises because of who leaves.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-pooltoy]{Methods · the pool on a toy: every piece with $\alpha=\ToyPlAlpha$}
+\backs{m-pool}{pool}{m-chain}{chain}
+\begin{columns}[c,onlytextwidth]
+\column{.52\textwidth}\centering
+\includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio,trim=316bp 0 0 236bp,clip]{chained_scheme.pdf}
+\column{.45\textwidth}\small
+\[ \overline{\delta^2_p}(\tau)=c_p\,\tau^{2\alpha},\qquad c_p=\Big(\frac{T_p}{T_0}\Big)^{\beta} \]
+Longer pieces are straighter at every scale, as in the data; $\alpha=\ToyPlAlpha$, $\beta=\ToyPlBeta$.\\[2mm]
+Pool, local exponent: $\alpha+\tfrac{\beta}{2}\,g(y)$, $g$ from 0 to $\tfrac12$ as only the longest pieces remain.
+\end{columns}
+\takeaway{Every piece has $\alpha=\ToyPlAlpha$, yet the pool jumps to \ToyPlJump{} as the short pieces start to leave and rises toward \ToyPlTop: the rise is who leaves. The chain stays at \ToyPlChained.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-cohort]{Methods · why a fixed cohort?}
+\back{m-pool}
+\fig[0.576\textheight]{open_declared_dt5/cohorts_msd.pdf}
+\takeaway{\footnotesize At long lags the short pieces leave the pool: with $a$, $b$ the MSD at $\tau_1$ of all pieces and of those that reach $\tau_2$, $2\hat H_\mathrm{pool}=2H+\log(b/a)/\log(\tau_2/\tau_1)$. Nested cohorts, \CohortPiecesFirst{} pieces down to \CohortPiecesLast{} in $\G$; red is the pool. From the cohort to 1~h on, the longer flights are straighter at every shared lag: never the pool for a lag-resolved statistic.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-tradeoff]{Methods · the cohort and its trade-off}
+\back{m-pool}
+\fig[0.66\textheight]{open_declared_dt5/cohorts_tradeoff.pdf}
+\takeaway{Left: $\Hk$ against the $\tau_\mathrm{max}$ of the cohort; right: the pieces of each cohort.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-cohgaps]{Methods · the gaps in each cohort}
+\back{m-pool}
+\fig[0.7\textheight]{open_declared_dt5/cohorts_gaps_msd.pdf}
+\takeaway{Above about \GapSpreadLag~s the choice of the cohort matters for the gaps.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-chain]{Methods · the chained MSD: definition}
+\backs{m-chain}{main frame}{t-pooltoy}{toy}
+\begin{columns}[c,onlytextwidth]
+\column{.46\textwidth}
+\includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio,trim=318bp 280bp 0 0,clip]{chained_scheme.pdf}
+\column{.51\textwidth}\small
+$P(\tau)=\{p:\ T_p\ge\tau/\Support\}$: the pieces that reach $\tau$.\\
+$M_S(\tau)$: the mean TA-MSD at $\tau$ over a set $S$ of pieces.
+\[ \MSD^*(\tau_1)=M_{P(\tau_1)}(\tau_1) \]
+\[ \MSD^*(\tau_{k+1})=\MSD^*(\tau_k)\,\frac{M_{P(\tau_{k+1})}(\tau_{k+1})}{M_{P(\tau_{k+1})}(\tau_k)} \]
+$\alpha^*(\tau)$: half the slope of $\log\MSD^*$ against $\log\tau$ over the window of $\tau$, as for $\alpha$.\\[1.5mm]
+The pieces of $P(\tau_{k+1})$ reach $\tau_k$ too: each factor compares one set of pieces with itself, as in the Kaplan--Meier estimator.
+\end{columns}
+\takeaway{Every lag, at each lag every piece that reaches it, no composition term, one curve per population.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-chainlook]{Methods · what does the chained MSD look like?}
+\back{m-chain}
+\fig[0.543\textheight]{open_declared_dt5/chained_msd.pdf}
+\[ \text{slope of }\log\MSD^*\text{ against }\log\tau\;=\;2\alpha^* \]
+\takeaway{One curve per population, $\alpha^*$: no pool, which goes above 1 at long lags. Solid up to \ChainSolidEnd~s, where the selection is small; dashed beyond.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-chainpool]{Methods · the chained exponent against the pool}
+\back{m-chain}
+\fig[0.6\textheight]{open_declared_dt5/chained_pool.pdf}
+\takeaway{The pool runs away above 1; $\alpha^*$ stays within \ChainGMinusCohortMax{} ($\G$) of the cohort to 1~h up to \ChainSolidEnd~s.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-groundclass]{Methods · the ground class of a flight}
+\back{m-ground}
+\begin{columns}[T,onlytextwidth]
+\column{.42\textwidth}
+\definecolor{cPlains}{HTML}{8fcf6b}\definecolor{cHills}{HTML}{3f9a4a}\definecolor{cLow}{HTML}{a8793a}\definecolor{cHigh}{HTML}{5a3a1c}
+\begin{center}\begin{tikzpicture}[x=0.52mm,y=0.7mm,font=\scriptsize]
+  % ground profile
+  \fill[light] (0,0)--(0,10)--plot[smooth,tension=0.7] coordinates{(0,10)(8,14)(16,11)(24,18)(32,15)(40,22)(48,17)(56,12)(64,16)(72,11)}--(72,0)--cycle;
+  \draw[ink2,thick,smooth,tension=0.7] plot coordinates{(0,10)(8,14)(16,11)(24,18)(32,15)(40,22)(48,17)(56,12)(64,16)(72,11)};
+  % median line
+  \draw[steel,dashed] (0,16)--(72,16);
+  \node[steel,anchor=south west,inner sep=1pt,yshift=0.6mm] at (0,16) {median};
+  % track: dots every 10 s, first and last 10\% trimmed
+  \foreach \i/\x/\y in {0/4/40,1/11/41,2/18/43,3/25/44,4/32/44,5/39/45,6/46/44,7/53/42,8/60/41,9/67/40}{
+    \ifnum\i=0 \node[circle,fill=muted,inner sep=1.2pt] at (\x,\y){};\else
+    \ifnum\i=9 \node[circle,fill=muted,inner sep=1.2pt] at (\x,\y){};\else
+      \node[circle,fill=ink,inner sep=1.2pt] at (\x,\y){};
+      \draw[ink2,densely dotted] (\x,\y-1.5)--(\x,{12+0.8*\i});\fi\fi}
+  \draw[muted] (4,40)--(11,41)--(18,43)--(25,44)--(32,44)--(39,45)--(46,44)--(53,42)--(60,41)--(67,40);
+  \node[muted,anchor=south] at (4,43) {trimmed};
+  \node[muted,anchor=south] at (67,43) {trimmed};
+  \node[ink,anchor=south] at (36,47) {kept points};
+  % class axis
+  \fill[cPlains] (78,0) rectangle (82,10);
+  \fill[cHills]  (78,10) rectangle (82,20);
+  \fill[cLow]    (78,20) rectangle (82,32);
+  \fill[cHigh]   (78,32) rectangle (82,44);
+  \foreach \y/\t in {10/\GroundEdgeLow,20/\GroundEdgeMid,32/\GroundEdgeHigh}{\draw[ink2] (77,\y)--(83,\y);\node[anchor=west,inner sep=1pt] at (83,\y){\t~m};}
+  \node[anchor=west,inner sep=1pt] at (83,4){plains};
+  \node[anchor=west,inner sep=1pt] at (83,15){hills};
+  \node[anchor=west,inner sep=1pt] at (83,26){low mt.};
+  \node[anchor=west,inner sep=1pt] at (83,38){high mt.};
+\end{tikzpicture}\end{center}
+\column{.55\textwidth}\fontsize{8.5}{10}\selectfont
+\begin{itemize}\setlength{\itemsep}{0.25em}
+  \item Ground: IGN BD ALTI v2, 25~m, averaged over blocks of \GroundCell~m: the bare ground under the pilot, whatever the altitude of the flight.
+  \item Points: the positions every 10~s, without the first and last \GroundTrim\% of the duration (reaching the zone from the takeoff, leaving it toward the landing).
+  \item Ground of the flight: the median of the ground under these points; points off the model dropped; under \GroundMinOnDem\% of the points on it: no class (\GroundUnknown\% of the flights).
+  \item Classes: plains $<\GroundEdgeLow$~m $\le$ hills $<\GroundEdgeMid$~m $\le$ low mountains $<\GroundEdgeHigh$~m $\le$ high mountains.
+  \item One class per flight: its group time and its solo time take the class of the flight. The trim changes the class of \GroundChanged\% of the flights.
+\end{itemize}
+\end{columns}
+\takeaway{One class per flight, from the median ground under its central part: the group time and the solo time of a flight are always compared on the same ground.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-openingdef]{Methods · the opening of a flight}
+\backs{t-kindmain}{opening}{t-openthreshold}{thresholds}
+\begin{columns}[T,onlytextwidth]
+\column{.50\textwidth}
+\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{open_declared_dt5/opening.pdf}
+\column{.47\textwidth}\footnotesize
+\begin{itemize}\setlength{\itemsep}{0.4em}
+  \item Opening $\mathcal O=|x_\mathrm{end}-x_0|/\ell$: 1 for a straight flight, near 0 for one that comes back.
+  \item No threshold on $\mathcal O$: every declared open flight is kept.
+\end{itemize}
+\end{columns}
+\takeaway{Declared open is not open: the median $\mathcal O$ is \MedianEvery{}.}
+\end{frame}
+
+%% Robustness: the effect at each opening threshold
+% Figure: slide_opening, story figure redrawn (cohorts_gaps.pdf and its min0.1, min0.5 variants, one steel ramp for the thresholds): the cohort to 3600 s of each, G-S and G-A; A-S and the other cohorts are in the technical frames.
+\chap{0}
+\begin{frame}[label=t-openthreshold]{Robustness · the effect at each opening threshold}
+\linksup
+\tl{\hyperlink{t-kindmain}{\beamerreturnbutton{opening}}\hspace{3pt}\tb{t-openingdef}{$\mathcal O$}\tb{t-opengaps}{cohorts}\tb{t-opencohorts}{$\alpha$}\tb{t-openstrict}{strict}\tb{t-threshold}{cut}}
+\qstepwide{Nested cohorts by opening $\mathcal O$ (end-to-end over path): geometry would change the effect.}
+{\wfig{open_declared_dt5/slide_opening.pdf}}
+{$\G-\A$ at 1\,000~s: \GapAllGAThousand, \GapMinGAThousand, \GapStrictGAThousand.}
+{Resolved from \GapStrictGAFrom~s at $\mathcal O>\Stricter$.}
+{The effect holds at every threshold; it shrinks as the flights kept get more open, mostly because a threshold keeps the lowland flights (next).}
+\end{frame}
+
+%% Robustness: the opening or the ground
+% Figure: slide_opening_ground, story figure redrawn (ground_opening_rel.pdf, G-A row, contrasts.curve and finish): four classes, three thresholds in one steel ramp; the G-S and A-S rows are in the technical frame.
+\chap{0}
+\begin{frame}[label=t-openground]{Robustness · the opening or the ground}
+\linksup
+\tl{\hyperlink{t-kindmain}{\beamerreturnbutton{opening}}\hspace{3pt}\tb{t-og}{3 rows}\tb{t-ogclass}{classes}\tb{t-ogtab}{table}}
+\qstepwide{Normalised $\G-\A$ per class, at each opening threshold: the ground held fixed.}
+{\wfig{open_declared_dt5/slide_opening_ground.pdf}}
+{$\G-\A$ stays positive at every threshold.}
+{$\A-\Sl$ falls to zero at $\mathcal O>\Stricter$.}
+{Mostly the ground: normalised, $\G-\A$ ignores the shape; the opening acts on $\A-\Sl$.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-threshold]{Methods · what a threshold on the opening would keep}
+\back{t-openthreshold}
+\begin{center}\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+ & $z_0\ge\MountainM$~m & $z_0<\MountainM$~m & $T\ge\DurationS$~s & $T<\DurationS$~s \\
+\midrule
+$\theta=\Stricter$ & \TakeoffHighStrict\% & \TakeoffLowStrict\% & \DurationLongStrict\% & \DurationShortStrict\% \\
+ & (\TakeoffHighStrictN) & (\TakeoffLowStrictN) & (\DurationLongStrictN) & (\DurationShortStrictN) \\
+$\theta=\MinOpening$ & \TakeoffHighKeep\% & \TakeoffLowKeep\% & \DurationLongKeep\% & \DurationShortKeep\% \\
+ & (\TakeoffHighKeepN) & (\TakeoffLowKeepN) & (\DurationLongKeepN) & (\DurationShortKeepN) \\
+\midrule
+declared open flights & \TakeoffHighFlights & \TakeoffLowFlights & \DurationLongFlights & \DurationShortFlights \\
+\bottomrule
+\end{tabular}
+\end{center}
+{\small $\mathcal O$ is lower in the mountains (median \TakeoffHighMedian{} at $z_0\ge\MountainM$~m, \TakeoffLowMedian{} below) and in the long flights.}
+\takeaway{A threshold on $\mathcal O$ selects the region, the length and the straightness itself: our choice is no threshold.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-tools]{Methods · phases, tails, route}
+\back{m-phases}
+\begin{itemize}\setlength{\itemsep}{1.0em}\large
+  \item[\textcolor{steel}{\textbf{Phases}}] Glide, search, climb, from a three-state hidden Markov model (Vilpellet et al.).
+  \item[\textcolor{steel}{\textbf{Tails}}] Survival of the durations of each phase and a Hill exponent $\mu$ above one common threshold.
+  \item[\textcolor{steel}{\textbf{Route}}] The path with each climb replaced by its chord, in arc length: the waiting is gone.
+\end{itemize}
+\takeaway{They say how the motion is flown, where $\alpha$ only says how persistent it is.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-phsearch]{Methods · phases: what a search is}
+\back{m-phases}
+\begin{columns}[T,onlytextwidth]
+\column{.62\textwidth}\scriptsize
+\renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+sequence & moment (share of the searches) & counted as \\
+\midrule
+glide $\to$ search $\to$ climb & finds a thermal (\PhCtxFound\%) & search \\
+glide $\to$ search $\to$ glide & fails (\PhCtxFailed\%) & search \\
+climb $\to$ search $\to$ climb & thermal lost, found (\PhCtxRecentre\%) & part of the climb \\
+climb $\to$ search $\to$ glide & leaving the thermal (\PhCtxExit\%) & exit, apart \\
+\bottomrule
+\end{tabular}\\[2mm]
+Searches at the edge of a segment, with an unknown neighbour (\PhSearchDropped\%), are left out; his labels give the same shares within \PhCtxMaxDiff{} points.
+\column{.34\textwidth}\scriptsize
+Per flight and population, then averaged:
+\begin{itemize}\setlength{\itemsep}{0.2em}
+  \item glide: share, speed, height lost per km;
+  \item search: share, per hour, share that find a thermal;
+  \item climb: per hour, rate, share, height and chord, drift speed.
+\end{itemize}
+\[ X=\frac{\sum_u w_u\,n_u/T_u}{\sum_u w_u\,d_u/T_u} \]
+\end{columns}
+\takeaway{A search is what follows a glide; two climbs joined by a re-centring are one climb. Average first, ratio after.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-refit]{Methods · the phase labels: the refit}
+\back{m-phases}
+\begin{columns}[T,onlytextwidth]
+\column{.55\textwidth}\small
+\begin{itemize}\setlength{\itemsep}{0.4em}
+  \item Vilpellet's three-state model refitted on 1-Hz flights (Baum--Welch, \RefitStarts{} starts, one model per discipline); best optimum whose states keep his meaning.
+  \item Tracks of 2--\DtMax~s splined to 1~s: \RefitCadenceParaTwo\% of the labels unchanged at 2~s, \RefitCadenceParaFive\% at 5~s.
+  \item Agreement with his labels: \RefitAgreePara\% of the fixes, from \RefitAgreePlains\% (plains) to \RefitAgreeHighMtn\% (high mountains).
+\end{itemize}
+\column{.41\textwidth}\small
+\begin{itemize}\setlength{\itemsep}{0.4em}
+  \item Ours changes phase more often: \RefitSearchPerHourOurs{} searches per hour against \RefitSearchPerHourHis.
+  \item With his labels the sign of the gaps agrees in \PhSignAgree{} of \PhSignTotal{} cases.
+  \item The grouping recomputed with ours on \GroupCheckDays{} days: flights with group time change by \GroupCheckFlightsChange\%, group time by \GroupCheckTimeChange\%.
+\end{itemize}
+\end{columns}
+\takeaway{The labels serve because they mean a phase of the flight; the gaps and the grouping do not depend on the choice.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-hillmethod]{Methods · tails: the Hill exponent and its threshold}
+\back{m-tails}
+\small
+\[ P(X>x)\sim x^{-\mu},\qquad \hat\mu=\frac{n}{\sum_{i:\,x_i\ge x_\mathrm{min}}\ln(x_i/x_\mathrm{min})} \]
+\begin{itemize}\setlength{\itemsep}{0.5em}
+  \item Durations of glides, of searches that end in a climb and of climbs.
+  \item Threshold of a curve: the $x_\mathrm{min}$ that minimises the Kolmogorov--Smirnov distance to the fitted power law (Clauset, Shalizi, Newman).
+  \item We read $\mu$ of $\Sl$, $\A$, $\G$ above one threshold per phase, the largest of their three, re-chosen in every draw: the three exponents describe the same durations and the identity $\G-\Sl=(\G-\A)+(\A-\Sl)$ stays exact.
+\end{itemize}
+\takeaway{One threshold for the three populations: the gap of $\mu$ does not mix the range with the population.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-weights]{Methods · one weight per piece or per flight}
+\back{m-persistent}
+\fig[0.72\textheight]{open_declared_dt5/weights.pdf}
+\takeaway{The conclusions do not depend on the weight: one weight per piece stays (largest shift \WeightMaxShift).}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-gapchain]{Persistent? · the gap at every lag}
+\back{m-persistent}
+\fig[0.592\textheight]{open_declared_dt5/chained.pdf}
+\[ \Delta\alpha^*_{\G-\Sl}(\tau)=\alpha^*_\G(\tau)-\alpha^*_\Sl(\tau) \]
+\takeaway{Yes, from a few hundred seconds on: $\G-\Sl=\ChainGSThousand$ at 1\,000~s; below 100~s there is no net gap.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-identity]{Group or flights? · the identity}
+\back{m-gaps}
+\begin{columns}[T,onlytextwidth]
+\column{.52\textwidth}
+\includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{open_declared_dt5/identity.pdf}
+\column{.44\textwidth}\small
+\vspace{4mm}
+\[ \G-\Sl=(\G-\A)+(\A-\Sl) \]
+At 1\,000~s:
+\[ \G-\A=\mv{\ChainGAThousand},\qquad \A-\Sl=\mv{\ChainASThousand} \]
+Below 100~s the two terms cancel.
+\end{columns}
+\takeaway{At long lags the gap belongs to the moment in a group: $\G-\A$ carries $\G-\Sl$ from about $10^3$~s on, within the same flights.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-simpson]{Where? · Simpson's paradox: the algebra}
+\back{m-ground}
+Populations $P$, with class shares $w_c^P$ ($\sum_c w_c^P=1$) and a value $x_c^P$ in each class $c$:
+\[ X^P=\sum_c w_c^P\,x_c^P \]
+\[ X^\A-X^\Sl=\underbrace{\sum_c w_c^\A\,\bigl(x_c^\A-x_c^\Sl\bigr)}_{\text{within the classes}}
+ +\underbrace{\sum_c \bigl(w_c^\A-w_c^\Sl\bigr)\,x_c^\Sl}_{\text{composition}} \]
+If $x_c^\A>x_c^\Sl$ in every class, the first term is positive. If $\A$ weighs more on the classes where $x$ is low, the second is negative and can win: the overall difference flips sign.
+
+\medskip
+Classic example: a hospital better at easy and at hard operations has the lower overall survival if it operates many more hard cases.
+\takeaway{Compare at fixed class: the sign on the mix of classes reads where the populations are, not how they differ.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-simpsondata]{Where? · Simpson's paradox in our data}
+\backs{m-ground}{main frame}{t-simpson}{algebra}
+\tab[0.42\textheight]{tikz/simpson_table}
+\[ \A-\Sl=\underbrace{\mv{\SimpWithin}}_{\text{within}}\ \underbrace{\mv{\SimpComp}}_{\text{composition}}\ =\ \mv{\SimpSum} \]
+\centering\small $x=\alpha^*(1\,000~\mathrm{s})$, $w$: share of the pieces at 1\,000~s; measured on every flight: \mv{\SimpMeasured}\par
+\takeaway{$\A$ is above $\Sl$ in every class, by little; $\A$ flies more in the mountains (\SimpMountainA\% of its pieces against \SimpMountainS\%), where $\alpha^*$ is about 0.1 lower: the mix wins. Exactly, the slope of the MSD of all flights weighs each class by its share of the MSD, $n_cM_c/\sum n M$, not of the pieces: both measured values lie above the means.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-where]{Where? · where each population flies, and $\alpha^*$ per class}
+\backs{m-ground}{main frame}{t-simpsondata}{our data}
+\fig[0.6\textheight]{open_declared_dt5/slide_where.pdf}
+\takeaway{Left: shares of the pieces at 1\,000~s per class. Right: $\alpha^*$ of $\Sl$ per class: lower in the mountains at long lags, as for $\A$ and $\G$ (\hyperlink{t-groundalpha}{all three}).}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-groundalpha]{Where? · why $\A-\Sl$ is negative on every flight}
+\back{m-ground}
+\fig[0.6\textheight]{open_declared_dt5/ground_alpha.pdf}
+\[ \text{in plains or hills: }\Sl\ \mv{\GroundLowlandS}\%,\quad \A\ \mv{\GroundLowlandA}\% \]
+\takeaway{Simpson's paradox: $\Sl$ flies more over lowlands, where $\alpha^*$ is higher. Within each class $\A$ is above $\Sl$. Compare populations at fixed ground class.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-pilot]{Who? · the pilots}
+\back{m-pilots}
+\fig[0.6\textheight]{open_declared_dt5/pilot.pdf}
+\[ \A-\Sl'\ \text{against}\ \A-\Sl,\qquad \Sl':\ \text{solo flights of pilots who also fly in groups (\mv{\PilotShareS}\% of }\Sl) \]
+\takeaway{Not who flies, to first order: $\A-\Sl$ belongs to the flights with group time more than to their pilots.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-pilottab]{Who? · the pilots: the table}
+\back{m-pilots}
+\tab[0.46\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/pilot_table}
+\vspace{1mm}
+{\small Flights of $\Sl$ and $\Sl'$, and $\A-\Sl$, $\A-\Sl'$ of $\alpha^*$ at 1\,000~s with 90\% bands, per ground class.}
+\takeaway{$\A-\Sl'$ follows $\A-\Sl$ in every class, within the bands: equal or a little smaller.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-carry]{When? · the carry-over: the table}
+\back{m-carry}
+\begin{itemize}\setlength{\itemsep}{0.4em}\small
+  \item Solo windows of \WhenWindow~s of group flights, binned by the distance $d$ from the nearest group time.
+  \item Compared with solo flights, exponent over \WhenLongLo{} to \WhenLongHi~s.
+\end{itemize}
+\vspace{1mm}
+\tab[0.50\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/carry_table}
+\[ \A(d)-\Sl:\quad \mv{\CarryNearLabel}\ \mv{\CarryHighMtnNear},\qquad \mv{\CarryFarLabel}\ \mv{\CarryHighMtnFar}\qquad(\text{high mountains}) \]
+\takeaway{No carry-over is detected: $\A(d)-\Sl$ does not fall as the solo time moves away from the group.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-groundgaps]{Where? · the gaps at every lag, per ground class}
+\back{m-ground}
+\fig[0.526\textheight]{open_declared_dt5/ground_gaps.pdf}
+\[ \G-\Sl\text{ at 1\,000~s:}\quad \text{plains }\mv{\GroundPlainsGSThousand},\ \text{hills }\mv{\GroundHillsGSThousand},\ \text{low mtn }\mv{\GroundLowMtnGSThousand},\ \text{high mtn }\mv{\GroundHighMtnGSThousand} \]
+\takeaway{In absolute terms the group effect grows with the relief: small in the plains, largest in the high mountains.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-groundtab]{Where? · ground: flights and gaps at 1\,000~s}
+\back{m-ground}
+\tab[0.46\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/ground_table}
+\vspace{1mm}
+{\small Flights of each population and gaps of $\alpha^*$ at 1\,000~s per ground class, 90\% bands; every declared open flight with a class.}
+\takeaway{$\G-\A$ and $\A-\Sl$ are positive in every class; $\G-\Sl$ is several times larger in the mountains than in the plains.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-forest]{Where? · $\G-\A$ at 1\,000~s, chained $\alpha^*$: weights, ground, opening}
+\back{m-ground}
+\fig[0.629\textheight]{open_declared_dt5/slide_forest.pdf}
+\takeaway{Positive in every stratum; larger over the mountains, where the flights are less open. Chained $\alpha^*$ throughout: the opening rows are the chains of the flights with $\mathcal O>\MinOpening$ and $>\Stricter$, not the nested cohort of the thresholds frame.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-opengaps]{Which flights? · the gaps in the nested cohorts}
+\back{t-openthreshold}
+\fig[0.516\textheight]{open_declared_dt5/cohorts_gaps.pdf}
+\[ \G-\Sl\text{ at 1\,000~s:}\quad \text{every flight }\mv{\GapAllGSThousand},\quad \mathcal O>\MinOpening:\ \mv{\GapMinGSThousand},\quad \mathcal O>\Stricter:\ \mv{\GapStrictGSThousand} \]
+\takeaway{On every flight, the more open the flights kept, the smaller the group effect; the next two steps ask why.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-opencohorts]{Which flights? · the $\alpha$ of the nested cohorts}
+\back{t-openthreshold}
+\fig[0.6\textheight]{open_declared_dt5/cohorts.pdf}
+\[ \G-\A\text{ at 1\,000~s:}\quad \text{every flight }\mv{\GapAllGAThousand},\quad \mathcal O>\MinOpening:\ \mv{\GapMinGAThousand},\quad \mathcal O>\Stricter:\ \mv{\GapStrictGAThousand} \]
+\takeaway{$\G$ sits above $\Sl$ and $\A$ and resists the fall at long lags; $\G-\A$ resolved from \GapAllGAFrom~s.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-openstrict]{Which flights? · the gaps with the strictest opening}
+\back{t-openthreshold}
+\fig[0.66\textheight]{open_declared_dt5/cohorts_gaps_min0.5.pdf}
+\takeaway{With $\mathcal O>\Stricter$ the gaps are small, but still resolved from about \GapStrictGSFrom~s ($\G-\Sl$).}
+\end{frame}
+
+%% Group or flights?: the opening of the flights (technical, linked from m-gaps)
+% Figure: slide_opening_kind (opening_kind.pdf of the story without the threshold lines); the medians by stratum are in t-kind.
+\chap{0}
+\begin{frame}[label=t-kindmain]{Group or flights? · are flights with group time more open?}
+\setlength{\qh}{1.4in}\tlbelowtrue
+\tl{\hyperlink{m-gaps}{\beamerreturnbutton{main frame}}\hspace{3pt}\tb{t-openingdef}{opening}\tb{t-kind}{table}\tb{t-openthreshold}{thresholds}\tb{t-openground}{opening or ground}}
+\thread{Or is a flight with group time straighter as a whole, over its whole path?}
+\qstep[.44]{Opening $\mathcal O=|x_\mathrm{end}-x_0|/\ell$: end-to-end over path length, 1 straight, near 0 back home.}
+{\qfig[0.42]{open_declared_dt5/slide_opening_kind.pdf}}
+{\item Same shape; the median of flights with group time is lower: \KindGroupMedian{} $<$ \KindSoloMedian{} (solo flights).
+ \item At the same takeoff altitude the medians nearly agree (\KindGroupMedianLow{} against \KindSoloMedianLow, \KindGroupMedianHigh{} against \KindSoloMedianHigh); equal, \KindGroupMedianLong, for flights of at least \DurationS~s: the lower median is mostly where they fly.}
+{No: the straightness is in the group time, not in the shape of the whole flight.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-kind]{Which flights? · the flight or the stretch: the table}
+\tl{\hyperlink{t-kindmain}{\beamerreturnbutton{opening}}}
+\begin{columns}[T,onlytextwidth]
+\column{.46\textwidth}
+\includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{open_declared_dt5/opening_kind.pdf}
+\column{.50\textwidth}\scriptsize
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}l c c@{}}
+\toprule
+median $\mathcal O$ & solo flights & group flights \\
+\midrule
+every flight & \KindSoloMedian & \KindGroupMedian \\
+$z_0<\MountainM$~m & \KindSoloMedianLow & \KindGroupMedianLow \\
+$z_0\ge\MountainM$~m & \KindSoloMedianHigh & \KindGroupMedianHigh \\
+$T<\DurationS$~s & \KindSoloMedianShort & \KindGroupMedianShort \\
+$T\ge\DurationS$~s & \KindSoloMedianLong & \KindGroupMedianLong \\
+\midrule
+flights & \KindSoloFlights & \KindGroupFlights \\
+median duration (s) & \KindSoloDuration & \KindGroupDuration \\
+takeoffs at $z_0\ge\MountainM$~m & \KindSoloMountain\% & \KindGroupMountain\% \\
+\bottomrule
+\end{tabular}
+\end{columns}
+\takeaway{Group flights are never more open, so their shape does not explain the effect: it points to the group time, the straighter stretch of its flight.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-og]{Which flights? · the opening or the ground: every lag}
+\back{t-openground}
+\fig[0.659\textheight]{open_declared_dt5/ground_opening_rel.pdf}
+\takeaway{Normalised gaps. Within a flight no dependence of the group effect on its shape is detected; the opening, like the ground, acts mostly on $\A-\Sl$, which compares flights.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-ogclass]{Which flights? · the opening of each population, per class}
+\back{t-openground}
+\tab[0.40\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/opening_class_table}
+\vspace{2mm}
+{\small Median opening of $\Sl$, $\A$, $\G$ and the share of each class among every flight and among $\mathcal O>\Stricter$.}
+\takeaway{A threshold on $\mathcal O$ keeps the lowlands (\OpenLowlandAll\% of the flights, \OpenLowlandStrict\% above \Stricter); within a class $\G$ is about as open as $\Sl$.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-ogtab]{Which flights? · gaps per class and threshold: the table}
+\back{t-openground}
+\tab[0.58\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/ground_opening_table}
+\takeaway{$\A-\Sl$ falls to about zero at $\mathcal O>\Stricter$ in every class; $\G-\A$ stays positive: the opening acts on the comparison between flights.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-relgaps]{Where? · the normalised gaps}
+\back{m-scale}
+\fig[0.506\textheight]{open_declared_dt5/ground_relgaps.pdf}
+\[ \frac{\alpha^*_a-\alpha^*_b}{1-\alpha^*_b} \]
+\takeaway{Same effect, different scale: normalised, it has about the same size on every ground, which sets the scale at which it shows.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-cycle]{Where? · the cycle and the peak: the table}
+\back{m-scale}
+\tab[0.46\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/phases_cycle_table}
+\vspace{1mm}
+{\small The cycle lasts \PhCycleGHighMtn{} to \PhCycleAHighMtn~min in every class, \PhCycleShortMin{} to \PhCycleShortMax~min shorter in $\G$ than in $\A$; the peaks lie at \PhCycleRatioMin{} to \PhCycleRatioMax{} cycles; a peak at the end of the solid range, \ChainSolidEnd~s, is a lower bound.}
+\takeaway{No: the peaks move between the classes while the cycle does not. The glide and climb cycle does not set the scale of the effect.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-windows]{When? · windows around the group, 10 to 1\,000~s}
+\back{m-when-all}
+\fig[0.551\textheight]{open_declared_dt5/prepost_ground.pdf}
+\[ \alpha_\text{pre},\ \alpha_\text{start},\ \alpha_\text{end},\ \alpha_\text{post}:\ \text{windows of \mv{\WhenWindow}~s, fit over 10 to 1\,000~s} \]
+\takeaway{Over the whole range the timeline is flat ($\G-\A$ changes sign near 150~s); it has to be read where the effect lives.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-windowstab]{When? · windows, 10 to 1\,000~s: the table}
+\back{m-when-all}
+\tab[0.46\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/prepost_ground_table}
+\vspace{1mm}
+{\small Events with the four windows and differences of the exponent, per ground class, with the control of two consecutive solo windows of group flights.}
+\takeaway{The four windows have the same exponent, within differences as large as the drift between two solo windows.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-long]{When? · windows on the long lags}
+\back{m-when-long}
+\fig[0.539\textheight]{open_declared_dt5/prepost_ground_long.pdf}
+\[ \text{start}-\text{pre}=\mv{\WhenAllLongStartMinusPre},\qquad \text{post}-\text{end}=\mv{\WhenAllLongPostMinusEnd}\qquad(\mv{\WhenLongLo}\text{ to }\mv{\WhenLongHi}~\mathrm{s}) \]
+\takeaway{Group time is more persistent than the solo time right before and right after it: the effect belongs to the time in the group.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-longtab]{When? · long lags: the table}
+\back{m-when-long}
+\tab[0.46\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/prepost_long_table}
+\vspace{1mm}
+{\small Differences of the exponent over \WhenLongLo{} to \WhenLongHi~s between the windows, the control, and the share of time in climb of each window; $^*$: the 90\% band excludes 0.}
+\takeaway{Per class the fall after the group is resolved in the hills and the mountains, the rise at the entry in the high mountains only.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-moment]{When? · the group or the moment: the composition}
+\backs{m-control}{main frame: control}{m-when-long}{main frame: long lags}
+\fig[0.46\textheight]{open_declared_dt5/prepost_phases.pdf}
+\[ \text{time in climb: }\mv{\WhenAllClimbPre}\%\to\mv{\WhenAllClimbStart}\%\to\mv{\WhenAllClimbEnd}\%\to\mv{\WhenAllClimbPost}\%\quad(\text{pre, start, end, post}) \]
+\[ \text{real}-\text{control:}\quad \text{entry }\mv{\WhenRealMinusMockAllStartMinusPre},\qquad \text{exit }\mv{\WhenRealMinusMockAllPostMinusEnd} \]
+\takeaway{On every flight the persistence rises at the entry and falls at the exit, beyond what the moment of the flight does; per class the fall is clearer.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-control]{When? · real events against control events}
+\back{m-control}
+\tab[0.46\textheight]{tikz/prepost_control_table}
+\vspace{1mm}
+{\small Control events: for every real event, solo flights that never meet a group, with the four windows at the same flight-clock times inside one solo stretch (calipers of month, local hour and wing class); \WhenMockEvents{} control events for \WhenMockRealEvents{} real ones. $^*$: the 90\% band excludes 0.}
+\takeaway{The moment of the flight does not make the timeline: the fall at the exit and the rise at the entry belong to the group.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-phcomp]{Dynamics · the composition of the phases}
+\tl{\hyperlink{m-phases}{\beamerreturnbutton{main frame}}\hspace{3pt}\tb{t-phall}{T: all}\tb{t-phmain2}{T: table 2}\tb{t-phsearch}{T: search}\tb{t-refit}{T: labels}\tb{t-tools}{T: tools}}
+\fig[0.539\textheight]{open_declared_dt5/phases_composition.pdf}
+\[ \G-\A:\quad \text{climb share }\mv{\PhShareClimbGAAll}\text{ points},\qquad \text{climbs per hour }\mv{\PhCphGAAll} \]
+\takeaway{Group time holds more climbs and more climbs per hour, in every ground class: the composition, consistent with $\G-\A<0$ at short lags.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-phperf]{Dynamics · the performance within each phase}
+\back{m-phases}
+\fig[0.55\textheight]{open_declared_dt5/phases_performance.pdf}
+{\footnotesize\[ \G-\A:\ \text{glide speed }\mv{\PhSpeedGAAll}~\text{km/h},\ \text{searches finding a thermal }\mv{\PhFoundGAAll}~\text{points},\ \text{climb rate }\mv{\PhRateGAAll}~\text{m/s} \]}
+\takeaway{In a group, pilots find the climbs more reliably and glide better between them; they do not climb faster.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-phmain]{Dynamics · the main phase statistics, plains to low mountains}
+\back{m-phases}
+\tab[0.74\textheight]{tikz/phases_main_a}
+\takeaway{$\G-\A$ and $\A-\Sl$ per ground class, the non-redundant statistics, 90\% bands; the cycle numbers of the same run are in the cycle table of the ground frames.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-phmain2]{Dynamics · the main phase statistics, high mountains and every flight}
+\back{m-phases}
+\tab[0.66\textheight]{tikz/phases_main_b}
+\takeaway{The height saved per km is larger in the mountains; $\A$ climbs stronger than $\Sl$ in the hills and the low mountains.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-phall]{Dynamics · every phase statistic, every flight}
+\back{m-phases}
+\tab[0.74\textheight]{tikz/phases_all_table}
+\takeaway{All the statistics on every flight: $\Sl$, $\A$, $\G$ and the three gaps; the other classes in the report, the kept ones in the main table.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-tails3]{Dynamics · the tails of the three phases}
+\back{m-tails}
+\fig[0.663\textheight]{open_declared_dt5/slide_tails.pdf}
+\take{In the mountains the long glides decay more slowly in a group; searches and climbs do not differ.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-survival]{Dynamics · the survival of the durations}
+\back{m-tails}
+\fig[0.671\textheight]{open_declared_dt5/phases_tails.pdf}
+\takeaway{Above \PhXminGlideAll~s the glides of $\G$ have a heavier tail on every flight, $\mu_\G-\mu_\A=\PhMuGlideGAAll$; searches and climbs differ within the bands.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-tailnum]{Dynamics · the tail exponents in numbers}
+\back{m-tails}
+\tab[0.70\textheight]{../../../analyses/groups/vs-solo/generated/comparisons/phases_tail_table}
+\takeaway{Glides, $\G-\A$: \PhMuGlideGLowMtn{} against \PhMuGlideALowMtn{} in the low mountains, \PhMuGlideGHighMtn{} against \PhMuGlideAHighMtn{} in the high mountains; unresolved in the plains and the hills. Tens to hundreds of glides above the threshold.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-hill]{Dynamics · thresholds of the tails}
+\back{m-tails}
+\fig[0.657\textheight]{open_declared_dt5/phases_hill.pdf}
+\takeaway{Hill plots $\hat\mu(x_\mathrm{min})$ of $\Sl$, $\A$, $\G$ per phase, with the per-curve thresholds; above them \TailAboveMin{} to \TailAboveMax{} durations of $\G$ and $\mu$ between about \TailMuMin{} and \TailMuMax.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-wind]{Dynamics · the wind test: why a faster, flatter glide?}
+\back{m-phases}
+\begin{itemize}\setlength{\itemsep}{0.8em}\large
+  \item In the same air a faster glide loses more height (the polar of the wing); group time is faster and loses less.
+  \item A tailwind would give both: test the drift speed of the climbs, chord over duration.
+\end{itemize}
+\begin{center}\renewcommand{\arraystretch}{1.4}\large
+\begin{tabular}{@{}l r@{}}
+\toprule
+$\G-\A$, every flight & \\
+\midrule
+drift of a climb & \PhDriftGAAll~m/s \\
+glide speed & \PhSpeedGAAll~km/h \\
+height lost & \PhSinkGAAll~m/km \\
+\bottomrule
+\end{tabular}\end{center}
+{\small No faster drift; slower in the mountains. A tailwind along the glide is not excluded.}
+\takeaway{Not the wind of the thermals: most likely a more certain next climb and better air in glide.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-thermals]{Dynamics · the thermals: the table}
+\back{m-thermals}
+\begin{center}\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+$\G-\A$ & climbs/h & height/climb (m) & climb rate (m/s) & height lost (m/km) \\
+\midrule
+plains & \PhCphGAPlains & \PhGainGAPlains & \PhRateGAPlains & \PhSinkGAPlains \\
+hills & \PhCphGAHills & \PhGainGAHills & \PhRateGAHills & \PhSinkGAHills \\
+low mountains & \PhCphGALowMtn & \PhGainGALowMtn & \PhRateGALowMtn & \PhSinkGALowMtn \\
+high mountains & \PhCphGAHighMtn & \PhGainGAHighMtn & \PhRateGAHighMtn & \PhSinkGAHighMtn \\
+\bottomrule
+\end{tabular}
+\end{center}
+{\small A climb of the solo time of group flights gains \PhGainAAll~m.}
+\takeaway{In a group the thermals are not stronger, they are used differently: less height per climb in the plains, more in the high mountains, and everywhere the glide is better.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-routegaps]{Geometry · the route at every class}
+\back{m-route}
+\fig[0.6\textheight]{open_declared_dt5/route_gaps.pdf}
+\[ \G-\A\ \text{on the route at the scale of 1\,000~s: }\mv{\RouteGAAllThousand}\ \ (\text{in time }\mv{\ChainGAThousand}) \]
+\takeaway{Group time follows a straighter route than the solo time of the same flights; the timing adds little, relatively more in the plains.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-routecheck]{Geometry · the check of the route}
+\back{m-route}
+\fig[0.66\textheight]{open_declared_dt5/route_check.pdf}
+\takeaway{With the circles kept, arc length gives $\alpha^*$ in time, within \RouteCheckMax: the timing is the waiting in the circles.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-readings]{Direction · the two readings and what each predicts}
+\back{m-direction}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}\small
+\textbf{group $\to$ straight}: group time finds, selects or holds straighter paths. The persistence rises at the entry and falls at the exit.
+\column{.48\textwidth}\small
+\textbf{straight $\to$ group}: on a straight leg the paths converge, so pilots meet and stay together. The window before the group is already as persistent as the start; the window after is less.
+\end{columns}
+\[ \text{before}\to\text{start: }\mv{\WhenAllLongStartMinusPre}\ \mv{\WhenAllLongStartMinusPreBand},\qquad \text{end}\to\text{after: }\mv{\WhenAllLongPostMinusEnd}\ \mv{\WhenAllLongPostMinusEndBand} \]
+\begin{itemize}\setlength{\itemsep}{0.3em}\small
+  \item The rise at the entry is resolved on every flight and in the high mountains; both steps survive the control events.
+  \item The exit does not separate the two readings.
+  \item To do: the timing at a shorter scale; solo pilots on the same leg and hour; groups that leave the same takeoff together.
+\end{itemize}
+\takeaway{The entry points to group $\to$ straight, for legs of a window (\WhenWindow~s); a shorter leg would not show.}
+\end{frame}
+
+%% =====
+\chap{0}
+\begin{frame}[label=t-notsaid]{Open · what the data do not say, and what is missing}
+\back{m-open}
+\begin{columns}[T,onlytextwidth]
+\column{.48\textwidth}\footnotesize
+\textbf{Not said}
+\begin{itemize}\setlength{\itemsep}{0.3em}
+  \item The direction at a scale finer than a window of \WhenWindow~s.
+  \item How the group shows the lines: information, following, better air; why the faster glide does not cost height.
+  \item Why the scale is shorter in the mountains: not the cycle.
+  \item Where $\A-\Sl$ comes from, once pilots and carry-over are out: the day, the site.
+  \item Beyond \ChainSolidEnd~s: the long flights only; the level of the chained MSD is a construction.
+\end{itemize}
+\column{.48\textwidth}\footnotesize
+\textbf{Tools still missing}
+\begin{itemize}\setlength{\itemsep}{0.3em}
+  \item The timing of the entry at a shorter scale; groups leaving the same takeoff.
+  \item Within a group, who leads and who follows.
+  \item The route split between searches and glides, with the tools of the ridges work.
+  \item The same site and day for $\A-\Sl$; the weather beyond the drift of the climbs.
+\end{itemize}
+\end{columns}
+\takeaway{Group time is straighter than solo time, on every ground, at a scale set by the ground; the entry points to group $\to$ straight, finer scales are open.}
+\end{frame}
+
+\chap{0}
+\begin{frame}[label=t-found]{What we found · in full}
+\back{m-found}
+\begin{enumerate}\setlength{\itemsep}{0.45em}\normalsize
+  \item Group time is more persistent from a few hundred seconds on.
+  \item At long lags the gap is $\G-\A$, within the same flights.
+  \item The absolute effect grows with the relief.
+  \item The opening acts on $\A-\Sl$; within a flight the effect survives it.
+  \item $\A-\Sl$ comes neither from the pilots nor from carry-over.
+  \item Every flight: persistence rises at the entry, falls at the exit; per class the fall is clearer.
+  \item More climbs, found more reliably, better glides; not the wind.
+  \item Mostly in the shape of the route; the timing adds little.
+  \item The entry points to group $\to$ straight: the persistence rises after joining, not before.
+\end{enumerate}
+\takeaway{Group time is straighter than solo time, on every ground, at a scale set by the ground.}
+\end{frame}
+
+\end{document}
