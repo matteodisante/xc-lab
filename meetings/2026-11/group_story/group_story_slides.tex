@@ -22,14 +22,15 @@
 %   l.1228 The group, or the moment of the flight? (mock events) ............... m-control; t-control, t-moment
 %   l.1514 Which way round? ................................................... m-direction; t-readings
 %   l.1268 Does the group carry over to the solo time around it? ............... m-carry; t-carry
-%   l.1293 Which phases does the group change? ................................. m-phases; t-phcomp, t-phperf, t-phmain, t-phmain2, t-phall, t-phsearch, t-tools, t-refit
+%   l.1293 Which phases does the group change? ................................. m-phases (the time per phase), m-find (the finding), m-glide (the glides); t-phcomp, t-phperf, t-phmain, t-phmain2, t-phall, t-phsearch, t-tools, t-refit
 %   (tails of the durations, part of the same step) ............................ m-tails (glides), m-tails2 (searches, climbs); t-tails3, t-survival, t-tailnum, t-hill, t-hillmethod
-%   l.1370 The wind test ....................................................... t-wind (technical, linked from m-phases)
-%   l.1394 How does the group use the thermals? ................................ m-thermals; t-thermals
-%   l.1443 The shape of the route, or the timing? ............................... m-route; t-routegaps, t-routecheck
+%   l.1370 The wind test ....................................................... t-wind (technical, linked from m-glide)
+%   l.1394 How does the group use the thermals? ................................ t-thermalsmain (from m-find); t-thermals
+%   l.1443 The shape of the route, or the waiting? ............................... m-route; t-routegaps, t-routecheck
+%   (overview of the how: one cycle glide-search-climb, links to the two chapters) .... m-how (before m-phases; no technical frame)
 %   What we found (the red thread with the answers); what the data do not say; tools missing  m-found, m-open; t-found, t-notsaid
 % t-groundclass is the ground-class method (linked from m-ground); t-openingdef is the opening of a flight (linked from t-kindmain, returns to t-kindmain and t-openthreshold).
-% Main line: seven chapters (Persistent?, Group or flights?, Where?, When?, Cause?, Dynamics, Geometry); the pilots (t-pilotsmain), the opening of the flights (t-kindmain, linked from m-gaps) and its robustness are technical. The talk opens with m-question, m-thread (the red thread), m-pool; m-found closes it with the same thread and the answers.
+% Main line: seven chapters (Persistent?, Group or flights?, Where?, When?, Cause?, Dynamics, Geometry), with m-how as the overview that opens the how (no chapter bar); the pilots (t-pilotsmain), the opening of the flights (t-kindmain, linked from m-gaps) and its robustness are technical. The talk opens with m-question, m-thread (the red thread), m-pool; m-found closes it with the same thread and the answers.
 % Every technical frame is linked from its main frame (pills above the take-home box); t-moment returns to m-control and to m-when-long.
 % Appendix questions: weights l.1609 -> t-weights (from m-persistent);
 %   phase labels l.1787 -> t-refit (from m-phases); tail thresholds l.1836 -> t-hill (from m-tails).
@@ -48,8 +49,9 @@
 %   variants); t-kindmain slide_opening_kind (opening_kind.pdf of the story without the threshold lines); t-openground slide_opening_ground (ground_opening_rel.pdf, G-A);
 %   t-pilotsmain slide_pilots (pilot.pdf); t-whenall, m-when-long slide_when_all, slide_when_long (prepost_ground*.pdf, panels of every flight);
 %   m-control slide_control (prepost_ground.json, key mock; the table is in t-control); m-carry slide_carry (carry.pdf, bottom row);
-%   m-phases slide_performance (phases_performance.pdf, G-A); m-tails slide_glides, m-tails2 slide_searches_climbs (phases_tails.pdf rows);
-%   m-route slide_route (route_gaps.pdf); m-thermals: a table of numbers, no story figure; slide_forest and slide_tails are in technical frames.
+%   m-phases slide_dyn_time (stacked shares of A and G, G-A of the three main shares; phases_refit.json), m-find slide_dyn_find (G-A in % of A, five statistics in two blocks), m-glide slide_dyn_glide (G-A per class and every flight with 90% bands);
+%   m-tails slide_dyn_tails_glides (tail of the glide survival of S, A, G above x_min with bands, and the ratio P_G/P_A without band; every flight), m-tails2 slide_dyn_tails_sc (mu_G-mu_A per class and every flight for searches and climbs, 90% bands; phases_refit.json, tails; survival curves in t-survival, t-tails3);
+%   m-route slide_route (route_gaps.pdf); t-thermalsmain: a table of numbers, no story figure; slide_forest and slide_tails are in technical frames.
 % Data frame: no figure of a real group episode in xc-lab (the examples of the group-identification note are timelines and
 %   schematics, not maps); tikz/contact.tex is a schematic plan view.
 \documentclass[11pt,aspectratio=169]{beamer}
@@ -281,7 +283,7 @@
   \station{7.15}{m-when-long}{When?}{entry, exit, moment of the flight}{north}{-1.0}
   \station{9.17}{m-direction}{Cause?}{group $\to$ straight, or straight $\to$ group?}{south}{1.0}
   \station{11.18}{m-phases}{Dynamics}{phases, durations}{north}{-1.0}
-  \station{13.20}{m-route}{Geometry}{route or timing?}{south}{1.0}
+  \station{13.20}{m-route}{Geometry}{route or waiting?}{south}{1.0}
 \end{tikzpicture}
 \end{frame}
 
@@ -457,82 +459,127 @@
 {Group $\to$ straight: the persistence comes and goes with the group.}
 \end{frame}
 
-%% 20. Dynamics: phases
-% Figure: slide_performance, story figure redrawn (phases_performance.pdf, forest of phase_gaps, G-A only): the height lost, the searches that end in a climb and the climb rate per class; A-S, the drift and the exit duration are in the technical frame. The composition and the wind are one click away.
+%% 20-. Dynamics: how, overview
+% One cycle of soaring flight (glide, search, climb): per phase the quantities and the tail exponent of the durations, on the whole cycle the share of time in each phase; links to the dynamics and geometry frames. Phase colours as in slide_dyn_time (story_slides.py PHASES).
+% Under the diagram, the two groups of causes of a growing alpha*: dynamics (how the path is flown, slides 17--21, steel) and topology (the shape of the path, slide 22, brownGA); the slide numbers are written by hand.
+\chap{0}
+\begin{frame}[label=m-how]{How is group time flown? Beyond $\alpha^*$}
+\definecolor{dyglide}{HTML}{7F9BB8}
+\definecolor{dysearch}{HTML}{9A7FC0}
+\definecolor{dyclimb}{HTML}{2F4465}
+\linksup\tl{\tb{m-phases}{dynamics}\tb{m-route}{geometry}}
+\thread{It is the group: what differs in the way the flight is flown?}
+\vspace{-3mm}\thrlinks
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,line width=1.4pt]
+  \tikzset{phase/.style={rounded corners=3pt,minimum width=3.0cm,minimum height=0.75cm,font=\large\bfseries,inner sep=3pt},
+           qty/.style={anchor=north,align=center,text width=4.5cm,inner sep=0pt,font=\footnotesize,text=ink}}
+  \node[phase,fill=dyglide,text=ink] (g) at (3.4,0) {glide};
+  \node[phase,fill=dysearch,text=white] (s) at (8.0,0) {search};
+  \node[phase,fill=dyclimb,text=white] (c) at (12.6,0) {climb};
+  \draw[->,steel] (g.east) -- (s.west);
+  \draw[->,steel] (s.east) -- (c.west);
+  \draw[->,steel,rounded corners=5pt] (c.north) -- ++(0,0.45) -| (g.north);
+  \node[anchor=south,font=\footnotesize,text=ink2] at (8.0,0.88) {one cycle, repeated};
+  \node[anchor=north west,align=left,text width=1.1cm,inner sep=0pt,font=\footnotesize\bfseries,text=ink2] at (0,-0.5) {per phase:};
+  \node[qty] at (3.4,-0.5) {speed, height lost per km\\durations: tail exponent $\mu$};
+  \node[qty] at (8.0,-0.5) {ends in a climb?\\durations: tail exponent $\mu$};
+  \node[qty] at (12.6,-0.5) {rate, climbs per hour\\durations: tail exponent $\mu$};
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},line width=0.8pt,steel] (0,-1.35) -- (14.6,-1.35)
+    node[midway,below=4pt,font=\small,text=ink2] {the whole cycle: share of time in each phase};
+\end{tikzpicture}
+\end{center}
+\vspace{-2mm}
+{\small\noindent\parbox[c]{0.26\linewidth}{\raggedright $\alpha^*$ grows when the pilot progresses straight in time:}\hspace{3mm}%
+\begin{tabular}[c]{@{}l@{\hspace{2mm}}l@{}}
+${\color{steel}\left.\begin{array}{@{}l@{}}\text{\textcolor{ink}{\makebox[3.7cm][l]{longer and better glides}}}\\ \text{\textcolor{ink}{less circling}}\\ \text{\textcolor{ink}{thermals found sooner}}\end{array}\right\}}$
+  & \parbox[c]{6cm}{\raggedright\textcolor{steel}{\bfseries dynamics}: how the path is flown\\ (slides 17--21)}\\[2mm]
+${\color{brownGA}\left.\begin{array}{@{}l@{}}\text{\textcolor{ink}{\makebox[3.7cm][l]{a straighter route}}}\end{array}\right\}}$
+  & \parbox[c]{6cm}{\raggedright\textcolor{brownGA}{\bfseries topology}: the shape of the path\\ (slide 22)}
+\end{tabular}\par}
+\end{frame}
+
+%% 20. Dynamics: where the time goes
+% Figure: slide_dyn_time (phases_refit.json, every flight): the share of the time in glide, search, climb and exit of A and G; G-A of the three main shares per class.
 \chapq{6}
-\begin{frame}[label=m-phases]{Which phases does the group change?}
-\tl{\tb{t-phcomp}{composition}\tb{t-phperf}{5 panels}\tb{t-phmain}{tables}\tb{t-wind}{wind}}
+\begin{frame}[label=m-phases]{Where does the group's time go?}
+\tl{\tb{t-phcomp}{composition}\tb{t-phmain}{tables}\tb{t-phall}{all statistics}\tb{t-refit}{labels}}
 \linksup
-\thread{Now how: what changes in the pilot's flying?}
-\qstepwide{$\G-\A$ of three statistics within the phases: how the pilot glides, searches and climbs.}
-{\wfig{open_declared_dt5/slide_performance.pdf}}
-{Searches end in a climb more often; less height lost.}
-{Climb rate not higher; more climbs per hour (\PhCphGAAll).}
-{Search and glide: climbs found more reliably, better glides between them; not faster climbs.}
+\thread{First the time: where does it go?}
+\qstepwide{Share of the time in each phase, $\A$ and $\G$ (left); $\G-\A$ per ground class, 90\% bands (right).}
+{\wfig[42mm]{open_declared_dt5/slide_dyn_time.pdf}}
+{In group time: less glide and search, more climb, in every class.}
+{Group time: \PhCphGAAll{} climbs per hour, a cycle \PhCycleGAAll~min shorter.}
+{In a group the pilot spends more time climbing, less gliding and searching.}
+\end{frame}
+
+%% 20b. Dynamics: finding the thermals
+% Figure: slide_dyn_find (5.0 x 2.8 in; phases_refit.json, 100 (G-A)/A with 90% bands, one horizontal dot plot, the two blocks headed by a bold label): searches that end in a climb, searches per hour, time in search (found more reliably?), climb rate, mean exit duration (stronger?), per class and every flight.
+\chapq{6}
+\begin{frame}[label=m-find]{Climbing better, or finding better?}
+\tl{\tb{t-phperf}{5 panels}\tb{t-phmain}{tables}\tb{t-phall}{all}\tb{t-thermalsmain}{thermals}}
+\thread{More climbing: stronger thermals, or thermals found more reliably?}
+\qstep[.62]{$\G-\A$ in \% of $\A$, per ground class and every flight, 90\% bands.}
+{\qfig{open_declared_dt5/slide_dyn_find.pdf}}
+{\item Fewer searches, and more of them end in a climb: searching is more efficient.
+ \item Climb rate and exit unchanged: the thermals are not stronger.}
+{Found more reliably, not stronger.}
+\end{frame}
+
+%% 20c. Dynamics: between the thermals
+% Figure: slide_dyn_glide (phases_refit.json, G-A with 90% bands): glide speed and height lost per km, per class and every flight.
+\chapq{6}
+\begin{frame}[label=m-glide]{And between the thermals?}
+\tl{\tb{t-wind}{wind}\tb{t-phperf}{5 panels}\tb{t-phmain}{tables}\tb{t-phall}{all statistics}}
+\linksup
+\thread{If the thermals are found better, what about the glides?}
+\qstepwide{$\G-\A$ per ground class and on every flight, 90\% bands.}
+{\wfig[42mm]{open_declared_dt5/slide_dyn_glide.pdf}}
+{Faster and flatter in every class: one wing alone cannot do both.}
+{Help from better air, or from a tailwind along the glide (not measured).}
+{Between thermals: better air, or a tailwind; not a better wing.}
 \end{frame}
 
 %% 21. Dynamics: tails (1/2) glides
-% Figure: slide_glides, story figure redrawn (phases_tails.pdf, glide row, four classes): survival of S, A, G and mu.
+% Figure: slide_dyn_tails_glides (phases_refit.json, tails, every flight): left the survival of S, A, G above the common threshold x_min with 90% bands, right the ratio P_G/P_A of the values (no band: the JSON keeps the band of each curve, not the draws); mu_G-mu_A per class in the observation.
 \chapq{6}
 \begin{frame}[label=m-tails]{The tails of the durations (1/2): glides}
-\tl{\tb{m-tails2}{2/2}\tb{t-survival}{figure}\tb{t-tails3}{phases}\tb{t-tailnum}{numbers}\tb{t-hill}{thresholds}\tb{t-hillmethod}{method}}
+\tl{\tb{m-tails2}{2/2}\tb{t-survival}{figure}\tb{t-tailnum}{numbers}\tb{t-hillmethod}{method}}
+\linksup
 \thread{Same question, the rare events: do the long glides last longer?}
-\qstepwide{Survival of glide durations and Hill exponent $\mu$ (smaller: heavier tail): the rare long glides.}
-{\wfig[42mm]{open_declared_dt5/slide_glides.pdf}}
-{Plains, hills: $\mu_\G-\mu_\A=$ \PhMuGlideGAPlains, \PhMuGlideGAHills; within the bands.}
-{Low, high mountains: \PhMuGlideGALowMtn, \PhMuGlideGAHighMtn; resolved.}
-{Yes, only in the mountains: the long glides decay more slowly in a group.}
+\qstepwide{Glides longer than $x_\mathrm{min}$: tail of $\Sl,\A,\G$ (left) and $P_\G/P_\A$ (right), every flight.}
+{\wfig[44mm]{open_declared_dt5/slide_dyn_tails_glides.pdf}}
+{Fewer group glides reach $x_\mathrm{min}$, but beyond it they die off more slowly: the ratio grows past 1.}
+{$\mu_\G-\mu_\A$: low mtn \PhMuGlideGALowMtn{} \PhMuGlideGALowMtnBand, high mtn \PhMuGlideGAHighMtn{} \PhMuGlideGAHighMtnBand; not in plains, hills.}
+{Typical glides shorter, the longest ones more frequent: a heavier tail, resolved in the mountains.}
 \end{frame}
 
 %% 21b. Dynamics: tails (2/2) searches and climbs
-% Figure: slide_searches_climbs, story figure redrawn (phases_tails.pdf, search and climb rows): every flight and the high mountains, where the glides differ.
+% Figure: slide_dyn_tails_sc (phases_refit.json, tails): one forest of mu_G-mu_A per class and every flight with 90% bands, circles = searches that end in a climb, squares = climbs; the survival curves of both are in t-survival and t-tails3 (linked in the pills).
 \chapq{6}
 \begin{frame}[label=m-tails2]{The tails of the durations (2/2): searches and climbs}
 \tl{\tb{t-tails3}{phases}\tb{t-survival}{figure}\tb{t-tailnum}{numbers}\hyperlink{m-tails}{\beamerreturnbutton{1/2}}}
 \linksup
 \thread{The same tail test for the two other phases.}
-\qstepwide{Survival of the durations of searches (ending in a climb) and climbs, Hill $\mu$.}
-{\wfig[42mm]{open_declared_dt5/slide_searches_climbs.pdf}}
-{Searches, $\mu_\G-\mu_\A$: \PhMuSearchGAAll{} (every flight), \PhMuSearchGAHighMtn{} (high mtn).}
-{Climbs: \PhMuClimbGAAll{} (every flight), \PhMuClimbGAHighMtn{} (high mtn); all within the bands.}
-{No: searches and climbs show no difference between $\G$ and $\A$, within the bands.}
-\end{frame}
-
-%% 23. Dynamics: thermals
-% No story figure: a four-row table of the numbers of the report.
-\chapq{6}
-\begin{frame}[label=m-thermals]{How does the group use the thermals?}
-\tl{\tb{t-thermals}{table}}
-\thread{More climbs, same rate, better glides: how long does the group stay in a thermal?}
-\qstep[.50]{Height per climb and climbs per hour, $\G-\A$: how long it stays, so how high it leaves.}
-{\renewcommand{\arraystretch}{1.6}\large
-\begin{tabular}{@{}l r r@{}}
-\toprule
-$\G-\A$ & height (m) & climbs/h \\
-\midrule
-plains & \PhGainGAPlains & \PhCphGAPlains \\
-hills & \PhGainGAHills & \PhCphGAHills \\
-low mtn & \PhGainGALowMtn & \PhCphGALowMtn \\
-high mtn & \PhGainGAHighMtn & \PhCphGAHighMtn \\
-\bottomrule
-\end{tabular}}
-{\item Plains: less height per climb; high mountains: more.
- \item More climbs per hour everywhere.}
-{Differently: more climbs per hour; the thermals are not stronger.}
+\qstepwide{Searches ending in a climb and climbs: $\mu_\G-\mu_\A$ per class, 90\% bands.}
+{\wfig[44mm]{open_declared_dt5/slide_dyn_tails_sc.pdf}}
+{Searches, every flight: $\mu_\G-\mu_\A=$ \PhMuSearchGAAll{} \PhMuSearchGAAllBand.}
+{Climbs, every flight: \PhMuClimbGAAll{} \PhMuClimbGAAllBand; every class within the bands.}
+{No: the tails of searches and climbs do not change in a group.}
 \end{frame}
 
 %% 24. Geometry
 % Figure: slide_route, story figure redrawn (route_gaps.pdf, raw.GAP_COLORS): G-A on the route and in time for every flight, the plains and the high mountains; A-S and the other classes are in the technical frame.
 \chapq{7}
-\begin{frame}[label=m-route]{The shape of the route, or the timing?}
+\begin{frame}[label=m-route]{A straighter shape, or less waiting?}
 \tl{\tb{t-routegaps}{5 panels}\tb{t-routecheck}{check}}
 \linksup
-\thread{No formula maps the phases on $\alpha^*$: split route and timing directly.}
-\qstepwide{Climbs replaced by chords, read in arc length: the waiting is gone, only the shape is left.}
-{\wfig{open_declared_dt5/slide_route.pdf}}
-{\Def Timing = time $-$ route: the waiting in the circles (circles kept: $\alpha^*$ in time).}
-{$\G-\A$ at 1\,000~s: route \RouteGAAllThousand, time \ChainGAThousand{} (route: about 85\%).}
-{The shape: group time is straighter than the solo time of the same flights even without the waiting; the timing is secondary.}
+\thread{The group climbs sooner and more often: is its straighter path only less waiting in the thermals?}
+\qstepwide{Remove the waiting: each climb replaced by its chord, the path read in length; only its shape is left.}
+{\wfig[38mm]{open_declared_dt5/slide_route.pdf}}
+{Two components: the shape of the path (topology) and the waiting in the climbs (dynamics).}
+{$\G-\A$ at 1\,000~s: route \RouteGAAllThousand, time \ChainGAThousand{} ($\approx$85\%); more waiting in the plains.}
+{Mostly topology: a straighter path; in the mountains it also sets the lag (slides 10--11).}
 \end{frame}
 
 %% 26. What we found
@@ -1291,7 +1338,7 @@ $s_p(\tau)=\sum_t\cos\bigl(\theta(t+\tau)-\theta(t)\bigr)$ over the origins of p
 
 \chap{0}
 \begin{frame}[label=t-phperf]{Dynamics · the performance within each phase}
-\back{m-phases}
+\backs{m-find}{finding}{m-glide}{glide}
 \fig[0.55\textheight]{open_declared_dt5/phases_performance.pdf}
 {\footnotesize\[ \G-\A:\ \text{glide speed }\mv{\PhSpeedGAAll}~\text{km/h},\ \text{searches finding a thermal }\mv{\PhFoundGAAll}~\text{points},\ \text{climb rate }\mv{\PhRateGAAll}~\text{m/s} \]}
 \takeaway{In a group, pilots find the climbs more reliably and glide better between them; they do not climb faster.}
@@ -1299,21 +1346,21 @@ $s_p(\tau)=\sum_t\cos\bigl(\theta(t+\tau)-\theta(t)\bigr)$ over the origins of p
 
 \chap{0}
 \begin{frame}[label=t-phmain]{Dynamics · the main phase statistics, plains to low mountains}
-\back{m-phases}
+\tl{\hyperlink{m-phases}{\beamerreturnbutton{phases}}\hspace{3pt}\hyperlink{m-find}{\beamerreturnbutton{finding}}\hspace{3pt}\hyperlink{m-glide}{\beamerreturnbutton{glide}}}
 \tab[0.74\textheight]{tikz/phases_main_a}
 \takeaway{$\G-\A$ and $\A-\Sl$ per ground class, the non-redundant statistics, 90\% bands; the cycle numbers of the same run are in the cycle table of the ground frames.}
 \end{frame}
 
 \chap{0}
 \begin{frame}[label=t-phmain2]{Dynamics · the main phase statistics, high mountains and every flight}
-\back{m-phases}
+\tl{\hyperlink{m-phases}{\beamerreturnbutton{phases}}\hspace{3pt}\hyperlink{m-find}{\beamerreturnbutton{finding}}\hspace{3pt}\hyperlink{m-glide}{\beamerreturnbutton{glide}}}
 \tab[0.66\textheight]{tikz/phases_main_b}
 \takeaway{The height saved per km is larger in the mountains; $\A$ climbs stronger than $\Sl$ in the hills and the low mountains.}
 \end{frame}
 
 \chap{0}
 \begin{frame}[label=t-phall]{Dynamics · every phase statistic, every flight}
-\back{m-phases}
+\tl{\hyperlink{m-phases}{\beamerreturnbutton{phases}}\hspace{3pt}\hyperlink{m-find}{\beamerreturnbutton{finding}}\hspace{3pt}\hyperlink{m-glide}{\beamerreturnbutton{glide}}}
 \tab[0.74\textheight]{tikz/phases_all_table}
 \takeaway{All the statistics on every flight: $\Sl$, $\A$, $\G$ and the three gaps; the other classes in the report, the kept ones in the main table.}
 \end{frame}
@@ -1350,7 +1397,7 @@ $s_p(\tau)=\sum_t\cos\bigl(\theta(t+\tau)-\theta(t)\bigr)$ over the origins of p
 %% =====
 \chap{0}
 \begin{frame}[label=t-wind]{Dynamics · the wind test: why a faster, flatter glide?}
-\back{m-phases}
+\back{m-glide}
 \begin{itemize}\setlength{\itemsep}{0.8em}\large
   \item In the same air a faster glide loses more height (the polar of the wing); group time is faster and loses less.
   \item A tailwind would give both: test the drift speed of the climbs, chord over duration.
@@ -1369,9 +1416,32 @@ height lost & \PhSinkGAAll~m/km \\
 \takeaway{Not the wind of the thermals: most likely a more certain next climb and better air in glide.}
 \end{frame}
 
+%% 23. Dynamics: thermals
+% No story figure: a four-row table of the numbers of the report.
+\chap{0}
+\begin{frame}[label=t-thermalsmain]{Dynamics · how does the group use the thermals?}
+\tl{\hyperlink{m-find}{\beamerreturnbutton{main frame}}\hspace{3pt}\tb{t-thermals}{table}}
+\thread{How long does the group stay in a thermal, so how high does it leave?}
+\qstep[.50]{Height per climb and climbs per hour, $\G-\A$: how long it stays, so how high it leaves.}
+{\renewcommand{\arraystretch}{1.6}\large
+\begin{tabular}{@{}l r r@{}}
+\toprule
+$\G-\A$ & height (m) & climbs/h \\
+\midrule
+plains & \PhGainGAPlains & \PhCphGAPlains \\
+hills & \PhGainGAHills & \PhCphGAHills \\
+low mtn & \PhGainGALowMtn & \PhCphGALowMtn \\
+high mtn & \PhGainGAHighMtn & \PhCphGAHighMtn \\
+\bottomrule
+\end{tabular}}
+{\item Plains: less height per climb; high mountains: more.
+ \item More climbs per hour everywhere.}
+{Differently: more climbs per hour; the thermals are not stronger.}
+\end{frame}
+
 \chap{0}
 \begin{frame}[label=t-thermals]{Dynamics · the thermals: the table}
-\back{m-thermals}
+\backs{t-thermalsmain}{thermals}{m-find}{main frame}
 \begin{center}\footnotesize
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{@{}l c c c c@{}}

@@ -85,10 +85,11 @@ def bar(ax, x, y, q, vertical, color, ms=6, **kw):
     """One estimate {value, band} as a dot with its 90% band: at x with the value along y if `vertical`, else at y along x."""
     lo, hi = q["band"]
     err = [[q["value"] - lo], [hi - q["value"]]]
+    fmt = kw.pop("fmt", "o")
     if vertical:
-        ax.errorbar(x, q["value"], yerr=err, fmt="o", ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
+        ax.errorbar(x, q["value"], yerr=err, fmt=fmt, ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
     else:
-        ax.errorbar(q["value"], y, xerr=err, fmt="o", ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
+        ax.errorbar(q["value"], y, xerr=err, fmt=fmt, ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
 
 
 def spread(ys, gap):
@@ -395,59 +396,220 @@ def carry():
 
 # ---- dynamics ----
 
-PERF = (("height lost per km of glide (m/km)", "height lost per km\nof glide (m/km)"),
-        ("searches that end in a climb (%)", "searches that end\nin a climb (%)"), ("climb rate (m/s)", "climb rate\n(m/s)"))
+KEYS = phase_gaps.CLASS_KEYS  # the four ground classes and every flight
+SHORT = ("plains", "hills", "low mtn", "high mtn", "all")
+KCOLORS = [CLASS_COLORS[c] for c in CLASSES] + [INK]
+PHASES = (("glide", "time in glide (%)", "#7f9bb8"), ("search", "time in search (%)", "#9a7fc0"),
+          ("climb", "time in climb (%)", "#2f4465"), ("exit", "time in exit (%)", "#b3aea4"))
 
 
-def performance():
-    """phases_performance.pdf: G - A of the height lost per km, the searches that end in a climb and the climb rate, per class
-    and on every flight, with 90% bands (forest of phase_gaps, the gap G - A only)."""
-    ph = read("phases_refit")["phases"]
-    ys = np.arange(len(phase_gaps.CLASS_KEYS))
-    fig, axes = plt.subplots(1, 3, figsize=(WIDE, 2.0), sharey=True)
-    for ax, (key, title) in zip(axes, PERF):
-        for y, c in zip(ys, phase_gaps.CLASS_KEYS):
-            bar(ax, None, y, ph[c]["gaps"]["G - A"][key], False, GAP["G - A"], ms=6)
-        ax.axvline(0, color="k", lw=0.6)
-        ax.grid(axis="x", color="#eeeeee", lw=0.5)
-        ax.xaxis.set_major_locator(MaxNLocator(3))
-        ax.set_title(title, fontsize=8.5)
-    axes[0].set_yticks(ys, phase_gaps.CLASS_KEYS)
-    axes[0].set_ylim(ys[-1] + 0.5, -0.5)
-    write(fig, "performance")
+def phase_data():
+    return read("phases_refit")["phases"]
 
 
-def survival_row(panels, name):
-    """phases_tails.pdf: the survival of the durations of S, A, G with its band, the common threshold (dotted) and the Hill
-    exponent mu of each, one panel per (phase, class) of `panels`."""
+def class_axis(ax, ylabel):
+    """Zero line, grid and the short class names under the dots of a panel whose x axis is the ground class."""
+    ax.axhline(0, color="k", lw=0.6)
+    ax.grid(axis="y", color="#eeeeee", lw=0.5)
+    ax.set_xticks(range(len(KEYS)), SHORT, rotation=45, ha="right", rotation_mode="anchor", fontsize=7.5)
+    ax.set_xlim(-0.6, len(KEYS) - 0.4)
+    ax.yaxis.set_major_locator(MaxNLocator(4))
+    ax.set_ylabel(ylabel)
+
+
+def gap_panel(ax, ph, stat, title, ylabel):
+    """G - A of the statistic `stat` per class and on every flight, with the 90% bands."""
+    for i, (k, color) in enumerate(zip(KEYS, KCOLORS)):
+        bar(ax, i, None, ph[k]["gaps"]["G - A"][stat], True, color, ms=6)
+    ax.set_title(title, fontsize=8.5)
+    class_axis(ax, ylabel)
+
+
+def dyn_time():
+    """Left: the share of the time in glide, search, climb and exit of A and G on every flight. Right: G - A of the three main
+    shares per class and on every flight, with 90% bands."""
+    ph = phase_data()
+    fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE, 2.0), gridspec_kw={"width_ratios": [1.5, 1]})
+    for y, (pop, color) in enumerate((("group_solo", A), ("group", G))):
+        x0 = 0
+        for _, stat, c in PHASES:
+            v = ph["all"]["statistics"][{"group_solo": "A", "group": "G"}[pop]][stat]["value"]
+            left.barh(y, v, left=x0, height=0.62, color=c, edgecolor="white", lw=0.8)
+            if v > 5:
+                left.text(x0 + v / 2, y, f"{v:.1f}", ha="center", va="center", fontsize=8, color="white" if c in ("#2f4465", "#7f9bb8", "#9a7fc0") else INK)
+            x0 += v
+    left.set(xlim=(0, 100), ylim=(1.55, -0.55), yticks=[0, 1], yticklabels=["A", "G"], xlabel="share of the time (%)")
+    for tick, color in zip(left.get_yticklabels(), (A, G)):
+        tick.set(color=color, fontsize=11, fontweight="bold")
+    left.tick_params(axis="y", length=0)
+    left.spines[["top", "right", "left"]].set_visible(False)
+    for j, (_, stat, c) in enumerate(PHASES[:3]):
+        for i, k in enumerate(KEYS):
+            bar(right, i + (j - 1) * 0.26, None, ph[k]["gaps"]["G - A"][stat], True, c, ms=4.5)
+    class_axis(right, "G − A (pts)")
+    fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in PHASES], labels=[n for n, _, _ in PHASES], frameon=False,
+               loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.0), handlelength=1.2, columnspacing=1.2)
+    write(fig, "dyn_time", rect=(0, 0, 1, 0.9))
+
+
+def dyn_find():
+    """G - A as a percentage of A, 100 (G - A) / A, of five statistics in two blocks (found more reliably: searches that end in
+    a climb, searches per hour, time in search; stronger: climb rate, mean exit duration). One dot per ground class and one,
+    larger and black, on every flight, with 90% bands: the band of G - A divided by the value of A, times 100."""
+    ph = phase_data()
+    rows = ((0, "Found more reliably?", None),
+            (0.95, "searches ending in a climb", "searches that end in a climb (%)"),
+            (2.4, "searches per hour", "searches per hour"),
+            (3.85, "time in search", "time in search (%)"),
+            (5.15, "Stronger?", None),
+            (6.1, "climb rate", "climb rate (m/s)"),
+            (7.55, "mean exit duration", "mean exit duration (s)"))
+    offsets = np.linspace(-0.47, 0.47, len(KEYS))
+    fig, ax = plt.subplots(figsize=(5.0, 2.8))
+    for r, label, stat in rows:
+        if stat is None:
+            continue
+        for k, color, off in zip(KEYS, KCOLORS, offsets):
+            a = ph[k]["statistics"]["A"][stat]["value"]
+            g = ph[k]["gaps"]["G - A"][stat]
+            q = {"value": 100 * g["value"] / a, "band": [100 * g["band"][0] / a, 100 * g["band"][1] / a]}
+            bar(ax, None, r + off, q, False, color, ms=6 if k == "all" else 3.5, zorder=3 if k == "all" else 2)
+    ax.set_ylim(8.2, -0.4)
+    ax.set_yticks([r for r, _, _ in rows], [label for _, label, _ in rows], fontsize=9.5)
+    for tick, (_, _, stat) in zip(ax.get_yticklabels(), rows):
+        if stat is None:
+            tick.set(fontweight="bold", color=INK)
+    ax.tick_params(axis="y", length=0)
+    ax.axvline(0, color="k", lw=0.8)
+    ax.grid(axis="x", color="#eeeeee", lw=0.5)
+    ax.set_axisbelow(True)
+    ax.tick_params(axis="x", labelsize=9.5)
+    ax.set_xlabel("G − A (% of A)", fontsize=9.5)
+    ax.spines[["top", "right", "left"]].set_visible(False)
+    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=6 if k == "all" else 4.5)
+                        for k, c in zip(KEYS, KCOLORS)], labels=SHORT[:-1] + ("every flight",), frameon=False,
+               loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.1, columnspacing=0.8)
+    write(fig, "dyn_find", rect=(0, 0, 1, 0.92))
+
+
+def dyn_glide():
+    """G - A per class and on every flight of the glide speed and the height lost per km of glide, with 90% bands."""
+    ph = phase_data()
+    panels = (("glide speed (km/h)", "glide speed", "G − A (km/h)"),
+              ("height lost per km of glide (m/km)", "height lost per km of glide", "G − A (m/km)"))
+    fig, axes = plt.subplots(1, 2, figsize=(4.8, 2.0))
+    for ax, (stat, title, ylabel) in zip(axes, panels):
+        gap_panel(ax, ph, stat, title, ylabel)
+    write(fig, "dyn_glide")
+
+
+def survival_panel(ax, phase, c, title, legend=False):
+    """The survival of the durations of S, A, G with its 90% band and the common threshold (dotted)."""
+    d = read("phases_refit")["tails"][c][phase]
+    for pop, short in raw.POPS.items():
+        s = d["survival"][short]
+        g, v, b = np.array(s["grid"]), np.array(s["value"]), np.array(s["band"])
+        ok = v > 0
+        ax.fill_between(g[ok], np.maximum(b[0][ok], 1e-9), b[1][ok], color=COLORS[pop], alpha=0.3, lw=0)
+        ax.plot(g[ok], v[ok], color=COLORS[pop], lw=1.5, label=short)
+    ax.axvline(d["xmin"]["common"], color=GREY, lw=0.8, ls=":")
+    ax.set(xscale="log", yscale="log", xlim=(1, 8e3), ylim=(1e-5, 1.2), xlabel="duration $x$ (s)", title=title)
+    ax.set_xticks([1, 100, 1e4])
+    ax.set_yticks([1, 1e-2, 1e-4])
+    ax.minorticks_off()
+    ax.grid(color="#eeeeee", lw=0.5)
+    ax.set_ylabel("$P(X>x)$")
+    if legend:
+        ax.legend(frameon=False, loc="lower left", fontsize=7.5, handlelength=1.2)
+
+
+def forest_axis(ax, labels):
+    """The ground classes down the y axis of a horizontal forest, named only if `labels`."""
+    ax.set_ylim(len(KEYS) - 0.4, -0.6)
+    ax.set_yticks(range(len(KEYS)), SHORT if labels else [], fontsize=8)
+    ax.grid(axis="x", color="#eeeeee", lw=0.5)
+    ax.xaxis.set_major_locator(MaxNLocator(3, integer=True))
+
+
+def mu_panel(ax, phase, title, labels=True):
+    """The Hill exponent mu of S, A, G per class and on every flight, with 90% bands."""
     t = read("phases_refit")["tails"]
-    fig, axes = plt.subplots(1, len(panels), figsize=(WIDE, 2.0), sharey=True)
-    for ax, (phase, c, title) in zip(axes, panels):
-        d = t[c][phase]
-        for pop, short in raw.POPS.items():
-            s, mu = d["survival"][short], d["mu"][short]
-            g, v, b = np.array(s["grid"]), np.array(s["value"]), np.array(s["band"])
-            ok = v > 0
-            ax.fill_between(g[ok], np.maximum(b[0][ok], 1e-9), b[1][ok], color=COLORS[pop], alpha=0.2, lw=0)
-            ax.plot(g[ok], v[ok], color=COLORS[pop], lw=1.5, label=f"{short}: {mu['value']:.2f}")
-        ax.axvline(d["xmin"]["common"], color=GREY, lw=0.8, ls=":")
-        ax.set(xscale="log", yscale="log", xlim=(1, 8e3), ylim=(1e-5, 1.2), xlabel=r"$\tau$ (s)", title=title)
-        ax.set_xticks([1, 100, 1e4])
-        ax.set_yticks([1, 1e-2, 1e-4])
-        ax.minorticks_off()
-        ax.grid(color="#eeeeee", lw=0.5)
-        ax.legend(frameon=False, loc="lower left", fontsize=7, handlelength=1.2, title=r"$\mu$", title_fontsize=7, alignment="left")
-    axes[0].set_ylabel("survival")
-    write(fig, name)
+    for i, k in enumerate(KEYS):
+        for off, pop, short in ((-0.26, "solo", "S"), (0, "group_solo", "A"), (0.26, "group", "G")):
+            bar(ax, None, i + off, t[k][phase]["mu"][short], False, COLORS[pop], ms=4.5)
+    forest_axis(ax, labels)
+    ax.set(title=title, xlabel=r"$\mu$ (Hill exponent)")
 
 
-def glides():
-    survival_row([("transition", c, c) for c in CLASSES], "glides")
+def mu_gap_panel(ax, series, title):
+    """mu_G - mu_A per class and on every flight, with 90% bands: one series per (phase, marker, offset) of `series`."""
+    t = read("phases_refit")["tails"]
+    for phase, fmt, off in series:
+        for i, k in enumerate(KEYS):
+            bar(ax, None, i + off, t[k][phase]["gaps"]["G - A"], False, GAP["G - A"], ms=5, fmt=fmt)
+    ax.axvline(0, color="k", lw=0.6)
+    forest_axis(ax, False)
+    ax.set(title=title, xlabel=r"$\mu_G-\mu_A$")
 
 
-def searches_climbs():
-    survival_row([(phase, c, f"{text}, {name}") for phase, text in (("search", "searches"), ("climb", "climbs"))
-                  for c, name in (("all", "all"), ("high mountains", "high mtn"))], "searches_climbs")
+def dyn_tails_glides():
+    """Glide durations on every flight, above the common threshold x_min. Left: the survival P(X>x) of S, A, G with its 90% band
+    on log axes. Right: the ratio P_G(x)/P_A(x) of the values of the curves, up to the longest duration reached by A and G, with a
+    line at 1; the JSON keeps the band of each curve and not the draws, so the ratio has no band."""
+    d = read("phases_refit")["tails"]["all"]["transition"]
+    xmin = d["xmin"]["common"]
+    surv = {k: {key: np.array(v) for key, v in d["survival"][k].items()} for k in "SAG"}
+    grid = surv["S"]["grid"]
+    xmax = min(grid[s["value"] > 0].max() for s in surv.values())
+    sel = (grid >= xmin) & (grid <= xmax)
+    fig, (left, right) = plt.subplots(1, 2, figsize=(5.2, 2.3), gridspec_kw={"width_ratios": [1, 1]})
+    for pop, k, c in (("solo", "S", S), ("group_solo", "A", A), ("group", "G", G)):
+        s = surv[k]
+        left.fill_between(grid[sel], s["band"][0][sel], s["band"][1][sel], color=c, alpha=0.3, lw=0)
+        left.plot(grid[sel], s["value"][sel], color=c, lw=2, label=k)
+    left.set(xscale="log", yscale="log", xlabel=r"duration $x$ (s), $x\geq x_\mathrm{min}$", ylabel="$P(X>x)$")
+    left.set_xlim(xmin, xmax)
+    left.minorticks_off()
+    left.xaxis.set_major_locator(plt.FixedLocator([2000, 4000]))
+    left.set_xticklabels(["2000", "4000"])
+    left.grid(color="#eeeeee", lw=0.5)
+    left.legend(frameon=False, loc="lower left", fontsize=10, handlelength=1.2)
+    ratio = surv["G"]["value"][sel] / surv["A"]["value"][sel]
+    right.plot(grid[sel], ratio, color=GAP["G - A"], lw=2)
+    right.axhline(1, color="k", lw=0.8)
+    right.set(xscale="log", xlabel=r"duration $x$ (s), $x\geq x_\mathrm{min}$", ylabel=r"$P_G/P_A$")
+    right.set_xlim(xmin, xmax)
+    right.minorticks_off()
+    right.xaxis.set_major_locator(plt.FixedLocator([2000, 4000]))
+    right.set_xticklabels(["2000", "4000"])
+    right.yaxis.set_major_locator(MaxNLocator(4))
+    right.grid(color="#eeeeee", lw=0.5)
+    for ax in (left, right):
+        ax.tick_params(labelsize=9)
+        ax.xaxis.label.set_size(10)
+        ax.yaxis.label.set_size(10)
+    write(fig, "dyn_tails_glides")
+
+
+def dyn_tails_sc():
+    """mu_G - mu_A of the durations of the searches that end in a climb (circles) and of the climbs (squares) per ground class and
+    on every flight, with 90% bands, one row per class."""
+    t = read("phases_refit")["tails"]
+    fig, ax = plt.subplots(figsize=(4.6, 2.2))
+    for phase, fmt, off, color in (("search", "o", -0.17, "#9a7fc0"), ("climb", "s", 0.17, "#2f4465")):
+        for i, k in enumerate(KEYS):
+            bar(ax, None, i + off, t[k][phase]["gaps"]["G - A"], False, color, ms=6, fmt=fmt)
+    ax.axvline(0, color="k", lw=0.8)
+    forest_axis(ax, False)
+    ax.set_yticks(range(len(KEYS)), SHORT[:-1] + ("every flight",))
+    ax.xaxis.set_major_locator(MaxNLocator(5, integer=True))
+    ax.tick_params(labelsize=9.5)
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlabel(r"$\mu_G-\mu_A$", fontsize=10.5)
+    ax.spines[["top", "right", "left"]].set_visible(False)
+    fig.legend(handles=[Line2D([], [], marker=m, ls="", color=c, ms=6, label=n) for m, c, n in (("o", "#9a7fc0", "searches ending in a climb"), ("s", "#2f4465", "climbs"))],
+               frameon=False, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.2, columnspacing=1.2)
+    write(fig, "dyn_tails_sc", rect=(0, 0, 1, 0.9))
 
 
 # ---- geometry ----
@@ -802,7 +964,7 @@ def deck_tables():
 
 if __name__ == "__main__":
     for f in (nested, chain_pool, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots, when_all, when_long, control_steps, carry,
-              performance, glides, searches_climbs, route, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
+              dyn_time, dyn_find, dyn_glide, dyn_tails_glides, dyn_tails_sc, route, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
         f()
     deck_tables()
     simpson()
