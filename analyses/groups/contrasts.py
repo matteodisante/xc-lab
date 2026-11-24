@@ -158,15 +158,15 @@ DESIGNS = {"all": design_all, "ground": design_ground, "ground_opening": design_
 
 # ---- the figures ----
 
-def curve(ax, g, color, label=None, ls="-", alpha=1.0, band=True):
+def curve(ax, g, color, label=None, ls="-", alpha=1.0, band=True, lw=1.5):
     """The curve `g` (lags, value, band): its band, then solid up to cohorts.SELECTION_FREE and dashed beyond."""
     lags, v, b = np.array(g["lags"]), np.array(g["value"]), np.array(g["band"])
     if band:
         ax.fill_between(lags, b[0], b[1], color=color, alpha=0.15 * alpha, lw=0)
     keep = cohorts.solid(lags)
     tail = np.arange(len(keep)) >= keep.sum() - 1  # the solid part is a prefix: the window grows with the lag
-    ax.plot(lags[keep], v[keep], color=color, lw=1.5, ls=ls, alpha=alpha, label=label)
-    ax.plot(lags[tail], v[tail], color=color, lw=1.5, ls="--", alpha=alpha)
+    ax.plot(lags[keep], v[keep], color=color, lw=lw, ls=ls, alpha=alpha, label=label)
+    ax.plot(lags[tail], v[tail], color=color, lw=lw, ls="--", alpha=alpha)
 
 
 def solid_values(gs):

@@ -49,11 +49,11 @@ plt.rcParams.update({"font.size": 8.5, "axes.labelsize": 9, "axes.titlesize": 9,
                      "legend.fontsize": 8, "pdf.fonttype": 42})
 
 
-def write(fig, name, rect=None):
-    """tamsd.save, with room above the panels (`rect`) for a legend of the whole figure."""
+def write(fig, name, rect=None, pad=None):
+    """tamsd.save, with room above the panels (`rect`) for a legend of the whole figure and optional `pad` around them."""
     path = DIR / f"slide_{name}.pdf"
-    if rect:
-        fig.tight_layout(rect=rect)
+    if rect or pad:
+        fig.tight_layout(rect=rect, pad=pad if pad else 1.08)
         fig.savefig(path, bbox_inches="tight")
         fig.savefig(path.with_suffix(".png"), dpi=200, bbox_inches="tight")
     else:
@@ -104,19 +104,20 @@ def spread(ys, gap):
 # ---- the method ----
 
 def nested():
-    """Left: alpha(tau) of the nested cohorts of S and the pool (every piece that reaches each lag), clipped at the top of the
-    axis. Right: the pieces that reach tau, per population: every piece up to the shortest tau_max, then those of each cohort."""
-    c = read("cohorts")
+    """Left: alpha(tau) of the nested cohorts of every piece (all flights, S+A+G together) and the pool (every piece that
+    reaches each lag), clipped at the top of the axis. Right: the pieces that reach tau, per population: every piece up to
+    the shortest tau_max, then those of each cohort."""
+    c, a = read("cohorts"), read("cohorts")["all"]
     fig, (left, right) = plt.subplots(1, 2, figsize=(6.0, 2.0), gridspec_kw={"width_ratios": [1.25, 1]})
-    pooled = c["pool"]["solo"]
+    pooled = a["pool"]
     lags, band = np.array(pooled["lags"]), np.array(pooled["band"])
     left.fill_between(lags, band[0], band[1], color=cohorts.POOL_COLOR, alpha=0.15, lw=0)
     left.plot(lags, pooled["value"], color=cohorts.POOL_COLOR, lw=1.6, label="pool")
-    for k, (cohort, color) in enumerate(zip(c["alpha"]["solo"], cohorts.shades())):
+    for k, (cohort, color) in enumerate(zip(a["alpha"], cohorts.shades())):
         lags, band = np.array(cohort["lags"]), np.array(cohort["band"])
         left.fill_between(lags, band[0], band[1], color=color, alpha=0.15, lw=0)
         left.plot(lags, cohort["alpha"], color=color, lw=1.3, label=f"to {cohort['tau_max']:,} s" if k in (0, len(cohorts.COHORTS) - 1) else None)
-    left.set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$\alpha(\tau)$ of S", ylim=(0.82, 1.1))
+    left.set(xscale="log", xlabel=r"$\tau$ (s)", ylabel=r"$\alpha(\tau)$", ylim=(0.82, 1.1))
     left.legend(frameon=False, loc="upper left", fontsize=7)
     for pop, short in raw.POPS.items():
         n = [q["pieces"] for q in c["alpha"][pop]]
@@ -131,18 +132,26 @@ def nested():
 def chain_pool():
     """alpha* (chained), the pool and every nested cohort, per population (chained_pool.pdf and cohorts.pdf together)."""
     s, c = read("perlag"), read("cohorts")
-    fig, axes = plt.subplots(1, 3, figsize=(6.0, 2.0), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(5.6, 1.8), sharey=True)
     for ax, (pop, short) in zip(axes, raw.POPS.items()):
         for k, (cohort, color) in enumerate(zip(c["alpha"][pop], cohorts.shades())):
-            ends = k in (0, len(cohorts.COHORTS) - 1) and pop == "solo"
-            ax.plot(cohort["lags"], cohort["alpha"], color=color, lw=1.8 if k == len(c["alpha"][pop]) - 1 else 0.9, label=f"cohort to {cohort['tau_max']:,} s" if ends else None)
-        contrasts.curve(ax, s["pool"][pop], cohorts.POOL_COLOR, "pool" if pop == "solo" else None)
-        contrasts.curve(ax, s["chained"][pop], COLORS[pop], r"chained $\alpha^*$" if pop == "solo" else None)
-        ax.set(xscale="log", xlabel=r"$\tau$ (s)", title=short)
+            ax.plot(cohort["lags"], cohort["alpha"], color=color, lw=1.2 if k == len(c["alpha"][pop]) - 1 else 0.7)
+        contrasts.curve(ax, s["pool"][pop], cohorts.POOL_COLOR, lw=1.1)
+        contrasts.curve(ax, s["chained"][pop], COLORS[pop], lw=1.1)
+        ax.legend(handles=[Line2D([], [], color=COLORS[pop], lw=1.4, label=r"chained $\alpha^*$")], frameon=False, loc="lower left",
+                  fontsize=8, handlelength=1.2, borderaxespad=0.2)
+        ax.set(xscale="log", xlabel=r"$\tau$ (s)")
+        ax.set_title(short, fontsize=10)
+        ax.xaxis.label.set_size(9)
+        ax.tick_params(labelsize=8.5)
         ax.grid(color="#eeeeee", lw=0.5)
     axes[0].set(ylabel=r"$\alpha(\tau)$", ylim=(0.78, 1.05))
-    axes[0].legend(frameon=False, loc="upper left", fontsize=6.5)
-    write(fig, "chain_pool")
+    axes[0].yaxis.label.set_size(9)
+    shades, ends = cohorts.shades(), (cohorts.COHORTS[0], cohorts.COHORTS[-1])
+    handles = [Line2D([], [], color=shades[i], lw=1.4, label=f"cohort to {ends[j]:,} s") for j, i in enumerate((0, -1))]
+    handles += [Line2D([], [], color=cohorts.POOL_COLOR, lw=1.4, label="pool")]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=3, fontsize=9, columnspacing=1.6, handlelength=1.6)
+    write(fig, "chain_pool", rect=[0, 0, 1, 0.88], pad=0.5)
 
 
 # ---- is group time more persistent, the group or the flights ----
@@ -160,6 +169,8 @@ def persistent():
     right.set(ylabel=r"$\Delta\alpha^*(\tau)$", ylim=contrasts.ylim([s["chained gaps"]["G - S"]]))
     for ax in (left, right):
         contrasts.finish(ax)
+    right.set_title(r"G $-$ S", color=GAP["G - S"], fontsize=10, fontweight="bold")
+    left.set_title(r"$\alpha^*$ of S, A, G", fontsize=10)
     write(fig, "persistent")
 
 
@@ -376,8 +387,8 @@ def control_steps():
 
 
 def carry():
-    """carry.pdf, bottom row, every flight: A(d) - S of the exponent over the long lags per bin of the distance d from the
-    group time."""
+    """carry.pdf, bottom row, every flight: A(d) - S of the exponent over the long lags per bin of the time d from the nearest
+    group time; a grey dashed sketch (not data) shows the shape a carry-over would have."""
     c = read("carry")
     fig, ax0 = plt.subplots(figsize=(3.6, 2.1))
     axes = [ax0]
@@ -385,6 +396,11 @@ def carry():
         r = c["classes"][k]
         for i, b in enumerate(r["bins"]):
             bar(ax, i, None, b["diff"], True, carry_module.BIN_COLOR, ms=7)
+        # a sketch, not data: the shape a carry-over would have, high next to the group and fading with d to the far value
+        n, far = len(r["bins"]), r["bins"][-1]["diff"]["value"]
+        sketch = far + 0.012 * np.exp(-np.arange(n) / 0.9)
+        ax.plot(range(n), sketch, color=GREY, lw=1.4, ls="--", label="if carry-over (sketch)")
+        ax.legend(frameon=False, fontsize=7.5, loc="lower right")
         ax.axhline(0, color="k", lw=0.6)
         ax.set(xticks=range(len(r["bins"])), xticklabels=[t.replace(">=", "≥") for t in c["plain"]], xlim=(-0.5, len(r["bins"]) - 0.5),
                title="every flight" if k == "all" else k)
@@ -465,7 +481,7 @@ def dyn_find():
             (6.1, "climb rate", "climb rate (m/s)"),
             (7.55, "mean exit duration", "mean exit duration (s)"))
     offsets = np.linspace(-0.47, 0.47, len(KEYS))
-    fig, ax = plt.subplots(figsize=(5.0, 2.8))
+    fig, ax = plt.subplots(figsize=(5.0, 3.9))
     for r, label, stat in rows:
         if stat is None:
             continue
@@ -488,8 +504,8 @@ def dyn_find():
     ax.spines[["top", "right", "left"]].set_visible(False)
     fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=6 if k == "all" else 4.5)
                         for k, c in zip(KEYS, KCOLORS)], labels=SHORT[:-1] + ("every flight",), frameon=False,
-               loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.1, columnspacing=0.8)
-    write(fig, "dyn_find", rect=(0, 0, 1, 0.92))
+               loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.1, columnspacing=0.8)
+    write(fig, "dyn_find", rect=(0, 0, 1, 0.88))
 
 
 def dyn_glide():
@@ -552,64 +568,139 @@ def mu_gap_panel(ax, series, title):
     ax.set(title=title, xlabel=r"$\mu_G-\mu_A$")
 
 
+def survival_curve(ax, g, v, band, n, color, lw, min_count=20, risk=None):
+    """A survival curve with its 90% band, from its first to its last positive point. The part where fewer than `min_count`
+    events remain above x is dashed: the count is n * P(X>x), n the number of events of the population, or `risk` (the number
+    at risk at each point of `g`) when given; with `risk` the curve stops where nobody is left at risk."""
+    ok = v > 0
+    if risk is not None:
+        ok &= risk > 0
+    ax.fill_between(g[ok], np.maximum(band[0][ok], 1e-9), band[1][ok], color=color, alpha=0.3, lw=0)
+    few = ok & ((v * n if risk is None else risk) < min_count)
+    solid = ok & ~few
+    ax.plot(g[solid], v[solid], color=color, lw=lw)
+    if few.any():
+        i = np.flatnonzero(few)[0]
+        j = max(i - 1, 0)
+        ax.plot(g[j:][ok[j:]], v[j:][ok[j:]], color=color, lw=lw, ls="--")
+    return g[ok].max()
+
+
+def few_legend(ax, loc, anchor=None):
+    """A second legend of `ax` for the dashed part of a survival curve (the S, A, G legend of the panel stays)."""
+    if ax.get_legend():
+        ax.add_artist(ax.get_legend())
+    ax.legend(handles=[Line2D([], [], color=GREY, lw=1.0, ls="--", label="fewer than 20 left")], loc=loc, bbox_to_anchor=anchor,
+              fontsize=7, handlelength=1.0, handletextpad=0.3, borderaxespad=0.1, borderpad=0.2, facecolor="white", edgecolor="none",
+              framealpha=0.9).set_zorder(5)
+
+
 def dyn_tails_glides():
-    """Glide durations on every flight, above the common threshold x_min. Left: the survival P(X>x) of S, A, G with its 90% band
-    on log axes. Right: the ratio P_G(x)/P_A(x) of the values of the curves, up to the longest duration reached by A and G, with a
-    line at 1; the JSON keeps the band of each curve and not the draws, so the ratio has no band."""
-    d = read("phases_refit")["tails"]["all"]["transition"]
+    """Glide durations on every flight. Left (2/3 of the width): mu_G - mu_A per ground class and on every flight, with 90%
+    bands. Right: the survival P(X>x) of S, A, G with its 90% band on log axes, from a little before the common threshold
+    x_min (dashed line). Each curve runs to its own last positive point, dashed where fewer than 20 durations remain above x
+    (n P(X>x), n the number of durations of the population, from the JSON); the x axis ends at the largest last point."""
+    t = read("phases_refit")["tails"]
+    d = t["all"]["transition"]
     xmin = d["xmin"]["common"]
-    surv = {k: {key: np.array(v) for key, v in d["survival"][k].items()} for k in "SAG"}
-    grid = surv["S"]["grid"]
-    xmax = min(grid[s["value"] > 0].max() for s in surv.values())
-    sel = (grid >= xmin) & (grid <= xmax)
-    fig, (left, right) = plt.subplots(1, 2, figsize=(5.2, 2.3), gridspec_kw={"width_ratios": [1, 1]})
-    for pop, k, c in (("solo", "S", S), ("group_solo", "A", A), ("group", "G", G)):
-        s = surv[k]
-        left.fill_between(grid[sel], s["band"][0][sel], s["band"][1][sel], color=c, alpha=0.3, lw=0)
-        left.plot(grid[sel], s["value"][sel], color=c, lw=2, label=k)
-    left.set(xscale="log", yscale="log", xlabel=r"duration $x$ (s), $x\geq x_\mathrm{min}$", ylabel="$P(X>x)$")
-    left.set_xlim(xmin, xmax)
-    left.minorticks_off()
-    left.xaxis.set_major_locator(plt.FixedLocator([2000, 4000]))
-    left.set_xticklabels(["2000", "4000"])
-    left.grid(color="#eeeeee", lw=0.5)
-    left.legend(frameon=False, loc="lower left", fontsize=10, handlelength=1.2)
-    ratio = surv["G"]["value"][sel] / surv["A"]["value"][sel]
-    right.plot(grid[sel], ratio, color=GAP["G - A"], lw=2)
-    right.axhline(1, color="k", lw=0.8)
-    right.set(xscale="log", xlabel=r"duration $x$ (s), $x\geq x_\mathrm{min}$", ylabel=r"$P_G/P_A$")
-    right.set_xlim(xmin, xmax)
+    fig = plt.figure(figsize=(6.4, 2.1))
+    gs = fig.add_gridspec(1, 4, width_ratios=[1, 1, 0.3, 1.35], wspace=0.5)
+    left = fig.add_subplot(gs[0, :2])
+    for i, k in enumerate(KEYS):
+        bar(left, None, i, t[k]["transition"]["gaps"]["G - A"], False, "#7F9BB8", ms=5)
+    left.axvline(0, color="k", lw=0.8)
+    forest_axis(left, False)
+    left.set_yticks(range(len(KEYS)), SHORT[:-1] + ("every flight",))
+    left.xaxis.set_major_locator(MaxNLocator(5, integer=True))
+    left.tick_params(labelsize=8)
+    left.tick_params(axis="y", length=0)
+    left.set_xlabel(r"$\mu_G-\mu_A$", fontsize=9)
+    left.spines[["top", "right", "left"]].set_visible(False)
+    right = fig.add_subplot(gs[0, 3])
+    x0, xmax, lo, hi = 0.7 * xmin, 0, 1.0, 0.0
+    for pop, k in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+        s = {key: np.array(d["survival"][k][key]) for key in ("grid", "value", "band")}
+        xmax = max(xmax, survival_curve(right, s["grid"], s["value"], s["band"], d["runs"][k], COLORS[pop], 1.4))
+        sel = (s["grid"] >= x0) & (s["value"] > 0)
+        lo, hi = min(lo, s["value"][sel].min()), max(hi, s["band"][1][sel].max())
+    right.axvline(xmin, color=GREY, lw=1.2, ls=":")
+    right.text(xmin, 1.0, r"$x_\mathrm{min}$", color=GREY, fontsize=8, ha="center", va="bottom", transform=right.get_xaxis_transform())
+    right.set(xscale="log", yscale="log", xlim=(x0, xmax * 1.05), ylim=(lo / 3, hi * 1.5))
     right.minorticks_off()
     right.xaxis.set_major_locator(plt.FixedLocator([2000, 4000]))
     right.set_xticklabels(["2000", "4000"])
-    right.yaxis.set_major_locator(MaxNLocator(4))
     right.grid(color="#eeeeee", lw=0.5)
-    for ax in (left, right):
-        ax.tick_params(labelsize=9)
-        ax.xaxis.label.set_size(10)
-        ax.yaxis.label.set_size(10)
-    write(fig, "dyn_tails_glides")
+    right.tick_params(labelsize=8, pad=1)
+    right.set_xlabel("duration $x$ (s)", fontsize=8, labelpad=1)
+    right.set_ylabel("$P(X>x)$", fontsize=8, labelpad=1)
+    right.legend(handles=[Line2D([], [], color=c, lw=1.5, label=n) for c, n in ((S, "S"), (A, "A"), (G, "G"))], frameon=False,
+                 loc="lower left", ncol=3, fontsize=7.5, handlelength=0.6, handletextpad=0.25, columnspacing=0.5, borderaxespad=0.1)
+    few_legend(right, "upper right")
+    write(fig, "dyn_tails_glides", rect=(0, 0, 1, 0.97))
 
 
 def dyn_tails_sc():
-    """mu_G - mu_A of the durations of the searches that end in a climb (circles) and of the climbs (squares) per ground class and
-    on every flight, with 90% bands, one row per class."""
+    """Left: mu_G - mu_A per ground class and on every flight, with 90% bands, one row per class: of the censored Hill exponent
+    of all the searches (circles; search_km.json, tail_censored.py) and of the durations of the climbs (squares). Right: the
+    Kaplan-Meier survival P(T>t), T the time to find, of S, A, G of the searches (top; log y, linear x, threshold u of the
+    censored Hill exponent dashed) and the survival P(X>x) of the climbs (bottom; common threshold x_min dashed), every flight,
+    with 90% bands. Each curve runs to its own last positive point; the x axis ends at the largest one. The part with fewer
+    than 20 events above x is drawn dashed: n P(X>x) durations for the climbs (n from the JSON), n P(T>t) searches for the
+    searches (the number at risk, "at risk" of km tail in the JSON)."""
     t = read("phases_refit")["tails"]
-    fig, ax = plt.subplots(figsize=(4.6, 2.2))
+    km = read("search_km")
+    fig = plt.figure(figsize=(6.4, 2.4))
+    gs = fig.add_gridspec(2, 4, width_ratios=[1, 1, 0.2, 1.7], wspace=0.5, hspace=0.45)  # a spacer column between the two parts
+    ax = fig.add_subplot(gs[:, :2])
     for phase, fmt, off, color in (("search", "o", -0.17, "#9a7fc0"), ("climb", "s", 0.17, "#2f4465")):
         for i, k in enumerate(KEYS):
-            bar(ax, None, i + off, t[k][phase]["gaps"]["G - A"], False, color, ms=6, fmt=fmt)
+            gap = km["tail censored"][k]["gaps"]["G - A"] if phase == "search" else t[k][phase]["gaps"]["G - A"]
+            bar(ax, None, i + off, gap, False, color, ms=5, fmt=fmt)
     ax.axvline(0, color="k", lw=0.8)
     forest_axis(ax, False)
     ax.set_yticks(range(len(KEYS)), SHORT[:-1] + ("every flight",))
     ax.xaxis.set_major_locator(MaxNLocator(5, integer=True))
-    ax.tick_params(labelsize=9.5)
+    ax.tick_params(labelsize=8)
     ax.tick_params(axis="y", length=0)
-    ax.set_xlabel(r"$\mu_G-\mu_A$", fontsize=10.5)
+    ax.set_xlabel(r"$\mu_G-\mu_A$", fontsize=9)
     ax.spines[["top", "right", "left"]].set_visible(False)
-    fig.legend(handles=[Line2D([], [], marker=m, ls="", color=c, ms=6, label=n) for m, c, n in (("o", "#9a7fc0", "searches ending in a climb"), ("s", "#2f4465", "climbs"))],
-               frameon=False, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.2, columnspacing=1.2)
-    write(fig, "dyn_tails_sc", rect=(0, 0, 1, 0.9))
+    for row, (phase, title) in enumerate((("search", "searches (KM)"), ("climb", "climbs"))):
+        sx = fig.add_subplot(gs[row, 3])
+        d = t["all"][phase]
+        if phase == "search":
+            curves = {k: (np.array(km["km tail"]["grid"]), *(np.array(km["km tail"]["survival"][k][key]) for key in ("value", "band"))) for k in "SAG"}
+            n = km["km"]["all"]["searches"]
+        else:
+            curves = {k: tuple(np.array(d["survival"][k][key]) for key in ("grid", "value", "band")) for k in "SAG"}
+            n = d["runs"]
+        xmax = 0
+        for pop, k in (("solo", "S"), ("group_solo", "A"), ("group", "G")):
+            g, v, b = curves[k]
+            risk = np.array(km["km tail"]["at risk"][k]) if phase == "search" else None
+            xmax = max(xmax, survival_curve(sx, g, v, b, n[k], COLORS[pop], 1.2, risk=risk))
+        xline = km["tail censored"]["all"]["u"] if phase == "search" else d["xmin"]["common"]
+        sx.axvline(xline, color=GREY, lw=1.2, ls=":")
+        sx.text(xline, 1.0, r"$x_\mathrm{min}$", color=GREY, fontsize=8, ha="center", va="bottom",
+                transform=sx.get_xaxis_transform())
+        sx.set(yscale="log", xlim=(0, 2250) if phase == "search" else (0, xmax * 1.03),  # searches: the KM tail up to 2250 s
+               ylim=(3e-4, 1.5) if phase == "search" else (1e-6, 1.5))
+        sx.text(0.97, 0.93, title, transform=sx.transAxes, fontsize=8, ha="right", va="top")
+        sx.set_yticks([1, 1e-1, 1e-2, 1e-3] if phase == "search" else [1, 1e-3, 1e-6])
+        sx.minorticks_off()
+        sx.xaxis.set_major_locator(MaxNLocator(3, integer=True))
+        sx.tick_params(labelsize=8, pad=1)
+        sx.grid(color="#eeeeee", lw=0.5)
+        sx.set_ylabel("$P(T>t)$" if phase == "search" else "$P(X>x)$", fontsize=8, labelpad=1)
+        if row == 1:
+            sx.set_xlabel("duration $x$ (s)", fontsize=8, labelpad=1)
+        else:
+            sx.legend(handles=[Line2D([], [], color=c, lw=1.5, label=n) for c, n in ((S, "S"), (A, "A"), (G, "G"))], frameon=False,
+                      loc="lower left", ncol=3, fontsize=7.5, handlelength=0.6, handletextpad=0.25, columnspacing=0.5, borderaxespad=0.1)
+        if row == 1:
+            few_legend(sx, "upper right", (1, -0.4))
+    handles = [Line2D([], [], marker=m, ls="", color=c, ms=5, label=n) for m, c, n in (("o", "#9a7fc0", "searches (given-up used while they last)"), ("s", "#2f4465", "climbs"))]
+    ax.legend(handles=handles, frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=8, handletextpad=0.2, columnspacing=1.0)
+    write(fig, "dyn_tails_sc", rect=(0, 0, 1, 0.93))
 
 
 # ---- geometry ----
@@ -633,6 +724,103 @@ def route():
     axes[0].set(ylabel=r"$\Delta\alpha^*$, G − A", ylim=contrasts.ylim(gs))
     axes[0].legend(frameon=False, loc="upper left", fontsize=7)
     write(fig, "route")
+
+
+def route_classes():
+    """route_classes.pdf, the story figure route_gaps.pdf at the size of the slide: per ground class and on every flight, G - A and
+    A - S on the route (band on every lag; line solid on the lags with enough flights, dashed beyond) and in time (dotted)."""
+    r = read("route_alpha")["route"]
+    fig, axes = plt.subplots(1, 5, figsize=(6.4, 2.0), sharey=True)
+    gs = []
+    for ax, k in zip(axes, (*CLASSES, "all")):
+        for name in ("G - A", "A - S"):
+            c, t, color = r[k]["gaps"][name], r[k]["time"][name], GAP[name]
+            x, v, keep = np.array(c["x"]), np.array(c["value"]), np.array(c["solid"])
+            ax.fill_between(x, *c["band"], color=color, alpha=0.15, lw=0)
+            tail = np.arange(len(keep)) >= keep.sum() - 1  # the solid part is a prefix
+            ax.plot(x[keep], v[keep], color=color, lw=1.4)
+            ax.plot(x[tail], v[tail], color=color, lw=1.4, ls="--")
+            tx, tk = np.array(t["x"]), np.array(t["solid"])
+            ax.plot(tx[tk], np.array(t["value"])[tk], color=color, lw=1.2, ls=":")
+            gs += [{"lags": c["x"], "value": c["value"], "band": c["band"]}, {"lags": t["x"], "value": t["value"], "band": t["band"]}]
+        ax.axhline(0, color="k", lw=0.6)
+        ax.set(xscale="log")
+        ax.set_title("every flight" if k == "all" else k, fontsize=9)
+        ax.set_xlabel(r"$\tau$ (s)", fontsize=9)
+        ax.tick_params(labelsize=8.5)
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].set_ylabel(r"$\Delta\alpha^*$", fontsize=9)
+    axes[0].set_ylim(-0.03, 0.06)  # the range of the solid parts; the dashed tails run beyond it
+    handles = [Line2D([], [], color=GAP[n], lw=1.4, ls=ls, label=f"{contrasts.title(n)} {w}")
+               for n in ("G - A", "A - S") for w, ls in (("route", "-"), ("time", ":"))]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=4, fontsize=9, columnspacing=1.6, handlelength=1.8)
+    write(fig, "route_classes", rect=[0, 0, 1, 0.88], pad=0.5)
+
+
+def route_check_slide():
+    """route_check.pdf at the size of the slide: alpha* of S, A, G of the path with the circles kept, read in length (solid; dashed
+    on the lags with few flights) and in time (dotted), and, on the right, their difference; 90% bands."""
+    c = read("route_alpha")["check"]
+    fig, (left, right) = plt.subplots(1, 2, figsize=(5.6, 1.75))
+    ylim = [0.0, 0.0]
+    for pop in raw.POPS:
+        v, lags, keep = c[pop], np.array(c[pop]["lags"]), np.array(c[pop]["solid"])
+        tail = np.arange(len(keep)) >= keep.sum() - 1  # the solid part is a prefix
+        for ax, g in ((left, v["arc"]), (right, v["minus"])):
+            value = np.array(g["value"])
+            ax.fill_between(lags, *g["band"], color=COLORS[pop], alpha=0.15, lw=0)
+            ax.plot(lags[keep], value[keep], color=COLORS[pop], lw=1.4)
+            ax.plot(lags[tail], value[tail], color=COLORS[pop], lw=1.4, ls="--")
+        left.plot(lags[keep], np.array(v["time"]["value"])[keep], color=COLORS[pop], lw=1.2, ls=":")
+        band = np.array(v["minus"]["band"])[:, keep]
+        ylim = [min(ylim[0], band[0].min()), max(ylim[1], band[1].max())]
+    right.axhline(0, color="k", lw=0.6)
+    right.set_ylim(1.1 * ylim[0], 1.1 * ylim[1])
+    left.set(ylim=cohorts.YLIM)
+    left.set_ylabel(r"$\alpha^*$ of the path", fontsize=9)
+    right.set_ylabel(r"$\alpha^*_\ell-\alpha^*_\tau$", fontsize=9)
+    for ax in (left, right):
+        ax.set(xscale="log")
+        ax.set_xlabel(r"$\tau$ (s)", fontsize=9)
+        ax.tick_params(labelsize=8.5)
+        ax.grid(color="#eeeeee", lw=0.5)
+    handles = [Line2D([], [], color=COLORS[pop], lw=1.4, label=short) for pop, short in raw.POPS.items()]
+    handles += [Line2D([], [], color="k", lw=1.2, ls=ls, label=name) for ls, name in (("-", "in length"), (":", "in time"))]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=5, fontsize=9, columnspacing=1.6, handlelength=1.8)
+    write(fig, "route_check", rect=[0, 0, 1, 0.9], pad=0.5)
+
+
+def route_pops():
+    """route_pops.pdf: alpha* of S, A, G on every flight, on the route (solid on the lags with enough flights, dashed beyond; 90% band)
+    and in time (dotted), against tau (route lags mapped as tau = l / v, v the median route speed of S); on the right, route - time
+    per population. The difference is that of the two plotted values at the time lags of the route (log interpolation, only inside
+    the time range): the draws of the two curves are not stored, so it has no band."""
+    r = read("route_alpha")
+    fig, (left, right) = plt.subplots(1, 2, figsize=(5.6, 1.9))
+    for pop in raw.POPS:
+        c, t = r["route"]["all"]["alpha"][pop], r["check"][pop]["time"]
+        x, v, keep = np.array(c["x"]), np.array(c["value"]), np.array(c["solid"])
+        tail = np.arange(len(keep)) >= keep.sum() - 1  # the solid part is a prefix
+        tl, tv, tk = np.array(r["check"][pop]["lags"]), np.array(t["value"]), np.array(r["check"][pop]["solid"])
+        left.fill_between(x, *c["band"], color=COLORS[pop], alpha=0.15, lw=0)
+        left.plot(x[keep], v[keep], color=COLORS[pop], lw=1.4)
+        left.plot(x[tail], v[tail], color=COLORS[pop], lw=1.4, ls="--")
+        left.plot(tl[tk], tv[tk], color=COLORS[pop], lw=1.2, ls=":")
+        inside = keep & (x >= tl[0]) & (x <= tl[-1])
+        right.plot(x[inside], v[inside] - np.interp(np.log(x[inside]), np.log(tl), tv), color=COLORS[pop], lw=1.4)
+    right.axhline(0, color="k", lw=0.6)
+    left.set(ylim=cohorts.YLIM)
+    left.set_ylabel(r"$\alpha^*$", fontsize=9)
+    right.set_ylabel(r"$\alpha^*_\mathrm{route}-\alpha^*_\mathrm{time}$", fontsize=9)
+    for ax in (left, right):
+        ax.set(xscale="log")
+        ax.set_xlabel(r"$\tau$ (s)", fontsize=9)
+        ax.tick_params(labelsize=8.5)
+        ax.grid(color="#eeeeee", lw=0.5)
+    handles = [Line2D([], [], color=COLORS[pop], lw=1.4, label=short) for pop, short in raw.POPS.items()]
+    handles += [Line2D([], [], color="k", lw=1.2, ls=ls, label=name) for ls, name in (("-", "route"), (":", "time"))]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=5, fontsize=9, columnspacing=1.6, handlelength=1.8)
+    write(fig, "route_pops", rect=[0, 0, 1, 0.9], pad=0.5)
 
 
 # ---- technical frames ----
@@ -962,12 +1150,30 @@ def deck_tables():
     (DECK / "tikz/phases_main_b.tex").write_text(table_columns(main, (3, 4)))
 
 
+def km_tables():
+    """tikz/km_macros.tex: the time to find a thermal (search_km.json, Kaplan-Meier with the failed searches censored),
+    every flight: KM median of A and G and G - A, and the gaps of S_km(60 s), F_found(120 s), F_fail(120 s), with bands; and the
+    gap mu_c,G - mu_c,A of the censored Hill exponent of the tail (tail_censored.py)."""
+    k = read("search_km")["km"]["all"]
+    mu = read("search_km")["tail censored"]["all"]["gaps"]["G - A"]
+    s, g = k["summaries"], k["gaps"]["G - A"]
+    sec = lambda q: f"{q['value']:.0f}"
+    band = lambda q, d: f"[{signed(q['band'][0], d)}, {signed(q['band'][1], d)}]"
+    m = {"KmMedA": sec(s["A"]["median time to find (s)"]), "KmMedG": sec(s["G"]["median time to find (s)"]),
+         "KmMedGA": signed(g["median time to find (s)"]["value"], 0), "KmMedGABand": band(g["median time to find (s)"], 0),
+         "KmSixtyGA": signed(g["S_km(60 s)"]["value"], 3), "KmSixtyGABand": band(g["S_km(60 s)"], 3),
+         "KmFoundGA": signed(100 * g["F_found(120 s)"]["value"], 1), "KmFailGA": signed(100 * g["F_fail(120 s)"]["value"], 1),
+         "KmMuGA": signed(mu["value"], 3), "KmMuGABand": band(mu, 3)}
+    (DECK / "tikz/km_macros.tex").write_text("".join(f"\\newcommand{{\\{a}}}{{{b}}}\n" for a, b in m.items()))
+
+
 if __name__ == "__main__":
     for f in (nested, chain_pool, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots, when_all, when_long, control_steps, carry,
-              dyn_time, dyn_find, dyn_glide, dyn_tails_glides, dyn_tails_sc, route, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
+              dyn_time, dyn_find, dyn_glide, dyn_tails_glides, dyn_tails_sc, route, route_classes, route_check_slide, route_pops, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
         f()
     deck_tables()
     simpson()
+    km_tables()
     legs_tables()
     for name, (w, h) in SIZES.items():
         print(f"slide_{name}: {w:.2f} x {h:.2f} in")

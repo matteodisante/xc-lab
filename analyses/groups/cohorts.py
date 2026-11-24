@@ -463,10 +463,13 @@ if __name__ == "__main__":
         p = {k: v[keep] if len(v) == len(keep) else v for k, v in p.items()}
         tag = f"_min{x:g}"
     masks = longlags.populations(p)
+    all_mask = np.ones(len(p["flight"]), dtype=bool)  # every piece of every flight, S+A+G together
     result = {pop: [cohort(p, masks[pop], tau, code, counts, rng) for tau in COHORTS] for pop in raw.POPS}
+    result["all"] = [cohort(p, all_mask, tau, code, counts, rng) for tau in COHORTS]
     gap = gaps(result)
     lag = {pop: per_lag(p, masks[pop], code, counts, rng) for pop in raw.POPS}
     pooled = {pop: pool(p, masks[pop], code, counts, rng) for pop in raw.POPS}
+    pooled["all"] = pool(p, all_mask, code, counts, rng)
     chain = {pop: chained(p, masks[pop], code, counts, rng) for pop in raw.POPS}  # after the calls above
     summary = per_lag_summary(lag, result, pooled, chain)
     (RESULTS / f"perlag{tag}.json").write_text(json.dumps(summary))
@@ -480,7 +483,8 @@ if __name__ == "__main__":
         for c in cs:
             c.pop("rows")
     pool_out = {pop: {"lags": q["lags"], "msd": q["msd"], **twoway.quote(q["rows"])} for pop, q in pooled.items()}
-    (RESULTS / f"cohorts{tag}.json").write_text(json.dumps({"alpha": result, "gaps": gap, "pool": pool_out}))
+    aggregate = {"alpha": result.pop("all"), "pool": pool_out.pop("all")}  # all pieces together: for the slides
+    (RESULTS / f"cohorts{tag}.json").write_text(json.dumps({"alpha": result, "gaps": gap, "pool": pool_out, "all": aggregate}))
     gap_figure(gap, RESULTS / f"cohorts_gaps{tag}.pdf")
     figure(result, RESULTS / f"cohorts{tag}.pdf")
     msd_figure(result, pool_out, RESULTS / f"cohorts_msd{tag}.pdf")
