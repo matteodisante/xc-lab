@@ -380,7 +380,10 @@ WHEN_TAGS = {**GROUND_TAGS, "all": "All"}
 def route_tex():
     """route_alpha.py on the declared open flights up to DtMax s: the step and the speed of the route, the gaps on the
     route at the arc lengths that match 320 and 1000 s (Route<gap><class><scale>, with Band), the same gaps in time
-    minus on the route (RouteMinus...), and the largest difference between alpha* of the path and in time."""
+    minus on the route (RouteMinus...), the largest difference between alpha* of the path and in time (RouteCheckMax) and of G - A
+    (RouteCheckGAMax, over the solid lags, point estimates), and per class at the scale of 1000 s the share of G - A in time that
+    the route keeps (RouteKeep<class>, %), the share that is the waiting (RouteWait<class>, %) and their extremes over the
+    four classes (RouteKeepMin, RouteKeepMax)."""
     if not (DT5 / "route_alpha.json").exists():
         return
     r = read(DT5, "route_alpha")
@@ -388,6 +391,11 @@ def route_tex():
     macro("RouteSpeed", num(r["speed_route_S"], 1))
     macro("RoutePathSpeed", num(r["speed_path_S"], 1))
     macro("RouteCheckMax", num(r["check"]["max_abs"], 3))
+    g, a = r["check"]["group"], r["check"]["group_solo"]
+    n = min(len(g["lags"]), len(a["lags"]))
+    solid = np.array(g["solid"][:n]) & np.array(a["solid"][:n])
+    shift = np.array(g["minus"]["value"][:n]) - np.array(a["minus"]["value"][:n])  # G - A in length minus G - A in time
+    macro("RouteCheckGAMax", num(abs(shift[solid]).max(), 3))
     for tag in ("ThreeTwenty", "Thousand"):
         macro(f"RouteLag{tag}", num(r["route"]["all"]["at"][tag]["lag"], 0))
         macro(f"RouteTimeLag{tag}", num(r["route"]["all"]["at"][tag]["time_lag"], 0))
@@ -397,6 +405,15 @@ def route_tex():
                 at = r["route"][k]["at"][tag][gap]
                 mac_value(f"Route{short}{cls}{tag}", at["route"], 3, True)
                 mac_value(f"RouteMinus{short}{cls}{tag}", at["minus"], 3, True)
+    keep = {}
+    for k, cls in GROUND_TAGS.items():  # time = route + (time minus route)
+        at = r["route"][k]["at"]["Thousand"]["G - A"]
+        time = at["route"]["value"] + at["minus"]["value"]
+        keep[k] = 100 * at["route"]["value"] / time
+        macro(f"RouteKeep{cls}", num(keep[k], 0))
+        macro(f"RouteWait{cls}", num(100 - keep[k], 0))
+    macro("RouteKeepMin", num(min(keep.values()), 0))
+    macro("RouteKeepMax", num(max(keep.values()), 0))
 
 
 def prepost_ground_tex():
@@ -485,7 +502,7 @@ def ground_opening_tex():
              r"\cmidrule(lr){2-4}\cmidrule(l){5-6}", r"ground & $\Sl$ & $\A$ & $\G$ & all & $\mathcal O>\Stricter$ \\", r"\midrule"]
     for k in GROUND_TAGS:
         row = [k, *(f"{cl[k]['median'][pop]:.2f}" for pop in ("solo", "group_solo", "group")),
-               num(100 * cl[k]["flights"] / cl["known"]["flights"], 0), num(100 * cl[k]["flights_strict"] / cl["known"]["flights_strict"], 0)]
+               num(100 * cl[k]["flights"] / cl["known"]["flights"], 1), num(100 * cl[k]["flights_strict"] / cl["known"]["flights_strict"], 1)]
         lines.append(" & ".join(row) + r" \\")
     write("opening_class_table", lines + [r"\bottomrule", r"\end{tabular}"])
     lines = [r"\begin{tabular}{@{}l l l l l@{}}", r"\toprule", r" & & \multicolumn{3}{c}{opening threshold} \\",
@@ -532,6 +549,12 @@ PH_LABELS = {"time in glide (%)": r"time in glide (\%)", "time in search (%)": r
              "height gained per climb (m)": "height gained per climb (m)", "drift speed of a climb (m/s)": "drift speed of a climb (m/s)",
              "time in exit (%)": r"time in exit (\%)", "searches per hour": "searches per hour", "exits per hour": "exits per hour",
              "mean exit duration (s)": "mean exit duration (s)", "median exit duration (s)": "median exit duration (s)", "cycle of a glide and a climb (min)": "glide and climb cycle (min)"}
+# per hour and mean duration of each phase, and the refound searches (phase_gaps.PHYSICAL): macros, not in the full table
+PH_PHYSICAL = {"glides per hour": "GlidePerHour", "mean glide duration (s)": "GlideMean", "mean search duration (s)": "SearchMean",
+               "mean climb duration (s)": "ClimbMean", "refound searches per hour": "RefoundPerHour",
+               "mean refound duration (s)": "RefoundMean", "found searches that follow a climb (%)": "RefoundShare"}
+# the four kinds of search run as shares of their runs and of their time (phase_gaps.KINDS): macros and phases_kinds_table
+PH_KINDS = {f"{k}: share of {w} (%)": f"Kind{k.title()}{w.title()}" for w in ("runs", "time") for k in ("found", "refound", "failed", "exit")}
 PH_GAPS = {"G - A": "GA", "A - S": "AS", "G - S": "GS"}
 PH_PHASES = {"climb": "Climb", "search": "Search", "transition": "Glide"}
 PH_DIGITS = 3  # significant digits of the macros of the phases
@@ -555,24 +578,26 @@ def sig_cell(v, sign=False):
 
 def phases_macros(r, prefix, gaps=PH_GAPS):
     """The macros of one label set of phase_gaps.py: per class, `prefix`+statistic+population or gap+class (value and
-    Band), the flights and hours, the thresholds and the exponents of the durations, the cycle and the peak lags."""
+    Band), the flights and hours, the thresholds and the exponents of the durations, the mean and the median of the durations
+    (`prefix`Dur<Mean|Median><glide or climb><population or gap><class>, Band), the cycle and the peak lags."""
     for key, c in WHEN_TAGS.items():
         d = r["phases"][key]
         for pop in "SAG":
             macro(f"{prefix}Flights{pop}{c}", num(d["flights"][pop], 0))
             macro(f"{prefix}Hours{pop}{c}", num(d["hours"][pop], 0))
         if "contexts" in d:
-            for k, tag in (("unknown", "SearchDropped"), ("found", "CtxFound"), ("failed", "CtxFailed"), ("recentre", "CtxRecentre"), ("exit", "CtxExit")):
+            for k, tag in (("unknown", "SearchDropped"), ("found", "CtxFound"), ("refound", "CtxRefound"), ("failed", "CtxFailed"), ("exit", "CtxExit")):
                 macro(f"{prefix}{tag}{c}", num(100 * d["contexts"]["all"]["share"][k], 1))
                 if key == "all":
                     macro(f"{prefix}{tag}", num(100 * d["contexts"]["all"]["share"][k], 1))
-        for stat, tag in PH_STATS.items():
+        for stat, tag in {**PH_STATS, **PH_PHYSICAL, **PH_KINDS}.items():
             if stat not in d["gaps"]["G - A"]:
                 continue
             for pop in ("S", "A", "G") if gaps is PH_GAPS else ():
                 sig_value(f"{prefix}{tag}{pop}{c}", d["statistics"][pop][stat])
-            for gap, g in gaps.items():
-                sig_value(f"{prefix}{tag}{g}{c}", d["gaps"][gap][stat], True)
+            for gap, g in gaps.items():  # the gaps of the kinds of search have the two decimals of phases_kinds_table
+                v = d["gaps"][gap][stat]
+                mac_value(f"{prefix}{tag}{g}{c}", v, 2 if stat in PH_KINDS else sig(v["value"]), True)
         for phase, ptag in PH_PHASES.items():
             t = r["tails"][key][phase]
             if t is None:
@@ -583,6 +608,11 @@ def phases_macros(r, prefix, gaps=PH_GAPS):
                 macro(f"{prefix}Above{ptag}{pop}{c}", num(t["runs_above"][pop], 0))
             for gap, g in gaps.items():
                 sig_value(f"{prefix}Mu{ptag}{g}{c}", t["gaps"][gap], True)
+            for name, x in ({} if phase == "search" else t["durations"]).items():  # the searches: Kaplan-Meier, duration_tex
+                for pop in ("S", "A", "G") if gaps is PH_GAPS else ():
+                    sig_value(f"{prefix}Dur{name.title()}{ptag}{pop}{c}", x["values"][pop])
+                for gap, g in gaps.items():
+                    sig_value(f"{prefix}Dur{name.title()}{ptag}{g}{c}", x["gaps"][gap], True)
         for gap, g in (("G - A", "GA"), ("G - S", "GS")):
             if r["peaks"] and gaps is PH_GAPS:
                 macro(f"{prefix}Peak{g}Lag{c}", num(r["peaks"][key][gap]["lag"], 0))
@@ -632,6 +662,119 @@ def phases_tail_table(r):
     write("phases_tail_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
 
 
+PH_UNITS = (("glide", "glides per hour", "mean glide duration (s)"), ("search", "searches per hour", "mean search duration (s)"),
+            ("climb", "climbs per hour", "mean climb duration (s)"))
+
+
+def phases_units_table(r):
+    """The number per hour and the mean duration (s) of each phase on every flight: S, A, G and G - A with its band."""
+    d = r["phases"]["all"]
+    lines = [r"\begin{tabular}{@{}l r r r l r r r l@{}}", r"\toprule",
+             r" & \multicolumn{4}{c}{per hour} & \multicolumn{4}{c}{mean duration (s)} \\", r"\cmidrule(lr){2-5}\cmidrule(l){6-9}",
+             r"phase & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\Sl$ & $\A$ & $\G$ & $\G-\A$ \\", r"\midrule"]
+    for phase, hourly, mean in PH_UNITS:
+        row = [phase]
+        for stat in (hourly, mean):
+            row += [num(d["statistics"][pop][stat]["value"], sig(d["statistics"][pop][stat]["value"])) for pop in "SAG"]
+            row.append(sig_cell(d["gaps"]["G - A"][stat], True))
+        lines.append(" & ".join(row) + r" \\")
+    write("phases_units_table", lines + [r"\bottomrule", r"\end{tabular}"])
+    mean = "mean climb duration (s)"  # PhClimbMeanClassBound: the whole percent above every |G - A| of the mean climb, in % of A, per class
+    macro("PhClimbMeanClassBound", num(np.ceil(max(100 * abs(r["phases"][k]["gaps"]["G - A"][mean]["value"]
+                                                          / r["phases"][k]["statistics"]["A"][mean]["value"]) for k in GROUND_TAGS)), 0))
+
+
+def phases_kinds_table(r):
+    """The four kinds of search run on every flight: found (after a glide), refound (after a climb), failed, exit, as a share of
+    the runs and of the time of the four together, S, A, G and G - A with its band."""
+    d = r["phases"]["all"]
+    lines = [r"\begin{tabular}{@{}l r r r l r r r l@{}}", r"\toprule",
+             r" & \multicolumn{4}{c}{share of the runs (\%)} & \multicolumn{4}{c}{share of the time (\%)} \\", r"\cmidrule(lr){2-5}\cmidrule(l){6-9}",
+             r"kind & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\Sl$ & $\A$ & $\G$ & $\G-\A$ \\", r"\midrule"]
+    for kind, text in (("found", "found, after a glide"), ("refound", "found again, after a climb"), ("failed", "failed"),
+                       ("exit", "exit, after a climb")):
+        row = [text]
+        for what in ("runs", "time"):
+            stat = f"{kind}: share of {what} (%)"
+            row += [num(d["statistics"][pop][stat]["value"], 1) for pop in "SAG"] + [cell(d["gaps"]["G - A"][stat], 2, True)]
+        lines.append(" & ".join(row) + r" \\")
+    write("phases_kinds_table", lines + [r"\bottomrule", r"\end{tabular}"])
+
+
+DUR_PHASES = (("transition", "Glide"), ("search", "Search"), ("climb", "Climb"))
+DUR_STATS = (("mean", "Mean"), ("median", "Median"))
+
+
+def duration_summaries(r, km):
+    """The mean and the median of the durations of every flight, {phase: {stat: {values: {S, A, G}, gaps: {G - A, A - S}}}}: the
+    glides and the climbs from phases_refit.json, the searches from search_km.json (Kaplan-Meier median, restricted mean)."""
+    k = km["km"]["all"]
+    names = {"mean": "restricted mean time to find (s)", "median": "median time to find (s)"}
+    out = {phase: r["tails"]["all"][phase]["durations"] for phase in ("transition", "climb")}
+    out["search"] = {st: {"values": {pop: k["summaries"][pop][n] for pop in "SAG"},
+                          "gaps": {gap: k["gaps"][gap][n] for gap in ("G - A", "A - S")}} for st, n in names.items()}
+    return out, k["limit"]
+
+
+def duration_tex(r, km):
+    """PhDur<Mean|Median>Search<S|A|G|GA|AS>All (with Band; those of the glides and the climbs are phases_macros') and PhDurLimitAll,
+    the mean and the median of the durations of every flight, and the table phases_duration_table: per phase, the mean and the
+    median of S, A, G and G - A."""
+    d, limit = duration_summaries(r, km)
+    macro("PhDurLimitAll", num(limit, 0))
+    lines = [r"\begin{tabular}{@{}l l r r r l@{}}", r"\toprule", r"phase & & $\Sl$ & $\A$ & $\G$ & $\G-\A$ \\", r"\midrule"]
+    for phase, tag in DUR_PHASES:
+        for stat, stag in DUR_STATS:
+            x = d[phase][stat]
+            if phase == "search":
+                for pop in "SAG":
+                    sig_value(f"PhDur{stag}{tag}{pop}All", x["values"][pop])
+                for gap, g in (("G - A", "GA"), ("A - S", "AS")):
+                    sig_value(f"PhDur{stag}{tag}{g}All", x["gaps"][gap], True)
+            label = {"transition": "glide", "climb": "climb", "search": "search (KM)"}[phase] if stat == "mean" else ""
+            lines.append(" & ".join([label, stat + (" (restricted)" if phase == "search" and stat == "mean" else "")] +
+                                    [num(x["values"][pop]["value"], sig(x["values"][pop]["value"])) for pop in "SAG"] +
+                                    [sig_cell(x["gaps"]["G - A"], True)]) + r" \\")
+        lines.append(r"\addlinespace")
+    write("phases_duration_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
+
+
+JOIN_KINDS = (("join", "Enter"), ("leave", "Leave"))
+JOIN_PHASES = (("glide", "Glide"), ("search", "Search"), ("climb", "Climb"))
+
+
+def joins_tex(j):
+    """The phase at which pilots enter and leave group time (phase_joins.py): Enter|Leave<Share|Base|Ratio><phase><class> (with
+    Band; shares in %), the events (Enter|LeaveCount<class>, JoinFlights<class>, EnterAtDeparture, LeaveAtLanding, EventsNoPhase) and the table
+    phases_joins_table (per ground class and every flight). A search is a run of any kind but a glide or a climb: the exits
+    from a thermal and the runs with no neighbour count as searches."""
+    for kind, tag in JOIN_KINDS:
+        for key, c in WHEN_TAGS.items():
+            macro(f"{tag}Count{c}", num(j["events by class"][key][kind], 0))
+            for phase, ptag in JOIN_PHASES:
+                x = j[kind][key][phase]
+                for q, qtag in (("share", "Share"), ("baseline", "Base")):
+                    mac_value(f"{tag}{qtag}{ptag}{c}", {"value": 100 * x[q]["value"], "band": [100 * b for b in x[q]["band"]]}, 1)
+                mac_value(f"{tag}Ratio{ptag}{c}", x["ratio"], 2)
+    for key, c in WHEN_TAGS.items():
+        macro(f"JoinFlights{c}", num(j["flights"][key], 0))
+    macro("EnterAtDeparture", num(j["events"]["join at departure"], 0))
+    macro("LeaveAtLanding", num(j["events"]["leave at landing"], 0))
+    macro("EventsNoPhase", num(j["events"]["without a phase"], 0))
+    lines = [r"\begin{tabular}{@{}l l r r l r r l@{}}", r"\toprule",
+             r" & & \multicolumn{3}{c}{enter a group} & \multicolumn{3}{c}{leave a group} \\", r"\cmidrule(lr){3-5}\cmidrule(l){6-8}",
+             r"ground & phase & observed (\%) & chance (\%) & ratio & observed (\%) & chance (\%) & ratio \\", r"\midrule"]
+    for key in WHEN_TAGS:
+        for i, (phase, _) in enumerate(JOIN_PHASES):
+            row = [key if i == 0 else "", phase]
+            for kind, _ in JOIN_KINDS:
+                x = j[kind][key][phase]
+                row += [num(100 * x["share"]["value"], 1), num(100 * x["baseline"]["value"], 1), cell(x["ratio"], 2)]
+            lines.append(" & ".join(row) + r" \\")
+        lines.append(r"\addlinespace")
+    write("phases_joins_table", lines[:-1] + [r"\bottomrule", r"\end{tabular}"])
+
+
 def tail_numbers(r):
     """TailMu{Min,Max}: the smallest and largest tail exponent of S, A, G over the classes and phases; TailAbove{Min,Max}:
     the fewest and most durations of G above the common threshold; the constants of the threshold scan (tail_ks.py)."""
@@ -654,8 +797,14 @@ def phases_cycle_table(r):
     """The cycle of a glide and a climb of S, A, G per class against the lag of the peak of the normalised gaps;
     PhCycleRatioMin/Max: the peak lags of G - A and G - S in cycles (lag over the mean cycle of S, A, G of the
     class), smallest and largest over the classes; PhCycleShortMin/Max: A minus G of the cycle (min), smallest and
-    largest over the classes."""
+    largest over the classes; PhCycleMin/Max: the shortest and the longest cycle of the table, over the rows and S, A, G; PhCycleShortAll: A minus G of the cycle
+    on every flight."""
     cyc = "cycle of a glide and a climb (min)"
+    every = [num(r["phases"][k]["statistics"][p][cyc]["value"], 1) for k in WHEN_TAGS for p in "SAG"]  # as printed in the table
+    macro("PhCycleMin", min(every, key=float))
+    macro("PhCycleMax", max(every, key=float))
+    shorter_all = -r["phases"]["all"]["gaps"]["G - A"][cyc]["value"]
+    macro("PhCycleShortAll", num(shorter_all, sig(shorter_all)))  # A minus G on every flight, a positive number
     lines = [r"\begin{tabular}{@{}l r r r r r@{}}", r"\toprule",
              r" & \multicolumn{3}{c}{cycle (min)} & \multicolumn{2}{c}{peak lag (s)} \\", r"\cmidrule(lr){2-4}\cmidrule(l){5-6}",
              r"ground & $\Sl$ & $\A$ & $\G$ & $\G-\A$ & $\G-\Sl$ \\", r"\midrule"]
@@ -690,11 +839,17 @@ def phases_tex():
                 phases_full_table(r)
                 phases_tail_table(r)
                 phases_cycle_table(r)
+                phases_units_table(r)
+                phases_kinds_table(r)
+                if (DT5 / "search_km.json").exists():
+                    duration_tex(r, read(DT5, "search_km"))
+                if (DT5 / "phase_joins.json").exists():
+                    joins_tex(read(DT5, "phase_joins"))
                 tail_numbers(r)
                 if (DT5 / "phases_vilpellet.json").exists():  # the four moments of a search: ours against his, in points
                     share = lambda x: x["phases"]["all"]["contexts"]["all"]["share"]
                     his = share(read(DT5, "phases_vilpellet"))
-                    macro("PhCtxMaxDiff", num(100 * max(abs(share(r)[k] - his[k]) for k in ("found", "failed", "recentre", "exit")), 1))
+                    macro("PhCtxMaxDiff", num(100 * max(abs(share(r)[k] - his[k]) for k in ("found", "refound", "failed", "exit")), 1))
 
 
 REFIT = OUTS.parents[2] / "methods" / "phase-labelling" / "out"  # the refit of the phase labels (methods/phase-labelling)
@@ -1384,7 +1539,8 @@ def chain_gaps_tex(s):
     """The lags read on the figure of the gaps of alpha* (perlag.json `s`), in two significant figures, over the solid
     lags: ChainGAGrow (the lag from which the lower edge of the band of G - A stays above 0), ChainGSGrow (the lag from
     which the lower edge of the band of G - S stays above the upper edge at the lag GAP_LAGS[100]), ChainASNegative (the
-    first lag where the upper edge of the band of A - S is below 0)."""
+    first lag where the upper edge of the band of A - S is below 0), ChainGAZero (where G - A changes sign, interpolated in log
+    lag) and ChainGSSmall (the largest |G - S| up to 100 s)."""
     end = max(t for t, k in zip(s["lags"], s["solid"]) if k)
     g = {name: d for name, d in s["chained gaps"].items()}
     lags = [t for t in g["G - A"]["lags"] if t <= end]
@@ -1393,6 +1549,12 @@ def chain_gaps_tex(s):
     top = g["G - S"]["band"][1][g["G - S"]["lags"].index(100)]
     macro("ChainGSGrow", sig2(from_lag(lags, lower("G - S") > top)))
     macro("ChainASNegative", sig2(first_lag(g["A - S"]["lags"], np.array(g["A - S"]["band"][1]) < 0)))
+    ga = g["G - A"]
+    sign = next(i for i, v in enumerate(ga["value"]) if v > 0)  # G - A changes sign between the lags sign - 1 and sign
+    x0, x1, v0, v1 = *np.log(ga["lags"][sign - 1:sign + 1]), *ga["value"][sign - 1:sign + 1]
+    macro("ChainGAZero", sig2(float(np.exp(x0 + (x1 - x0) * (0 - v0) / (v1 - v0)))))
+    below = [abs(v) for t, v in zip(g["G - S"]["lags"], g["G - S"]["value"]) if t <= 100]
+    macro("ChainGSSmall", num(max(below), 3))
 
 
 def opening_above_one_tex():

@@ -85,11 +85,11 @@ def bar(ax, x, y, q, vertical, color, ms=6, **kw):
     """One estimate {value, band} as a dot with its 90% band: at x with the value along y if `vertical`, else at y along x."""
     lo, hi = q["band"]
     err = [[q["value"] - lo], [hi - q["value"]]]
-    fmt = kw.pop("fmt", "o")
+    fmt, lw, cap = kw.pop("fmt", "o"), kw.pop("lw", 1.6), kw.pop("capsize", 3)
     if vertical:
-        ax.errorbar(x, q["value"], yerr=err, fmt=fmt, ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
+        ax.errorbar(x, q["value"], yerr=err, fmt=fmt, ms=ms, color=color, elinewidth=lw, capsize=cap, **kw)
     else:
-        ax.errorbar(q["value"], y, xerr=err, fmt=fmt, ms=ms, color=color, elinewidth=1.6, capsize=3, **kw)
+        ax.errorbar(q["value"], y, xerr=err, fmt=fmt, ms=ms, color=color, elinewidth=lw, capsize=cap, **kw)
 
 
 def spread(ys, gap):
@@ -152,6 +152,67 @@ def chain_pool():
     handles += [Line2D([], [], color=cohorts.POOL_COLOR, lw=1.4, label="pool")]
     fig.legend(handles=handles, frameon=False, loc="upper center", ncol=3, fontsize=9, columnspacing=1.6, handlelength=1.6)
     write(fig, "chain_pool", rect=[0, 0, 1, 0.88], pad=0.5)
+
+
+REFERENCE_COHORT = 2  # the cohort to 3600 s ("1 h"), the reference of cohort_msd
+
+
+def cohort_msd():
+    """cohorts_msd.pdf, the MSD row as a ratio: the MSD of every nested cohort and of the pool over that of the cohort to 1 h, on the
+    lags they share, per population (the nested cohorts of longer flights lie above, the pool rises at long lags)."""
+    c = read("cohorts")
+    fig, axes = plt.subplots(1, 3, figsize=(5.6, 1.9), sharey=True)
+    for ax, (pop, short) in zip(axes, raw.POPS.items()):
+        ref = dict(zip(c["alpha"][pop][REFERENCE_COHORT]["lags"], c["alpha"][pop][REFERENCE_COHORT]["msd"]))
+        for q, color, lw in [(c["pool"][pop], cohorts.POOL_COLOR, 1.5)] + [(x, col, 1.2) for x, col in zip(c["alpha"][pop], cohorts.shades())]:
+            lags = [t for t in q["lags"] if t in ref]
+            ax.plot(lags, [m / ref[t] for t, m in zip(q["lags"], q["msd"]) if t in ref], color=color, lw=lw)
+        ax.axhline(1, color="k", lw=0.6)
+        ax.set(xscale="log", xlabel=r"$\tau$ (s)")
+        ax.set_title(short, fontsize=10)
+        ax.tick_params(labelsize=8.5)
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].set_ylabel("MSD over MSD of the cohort to 1 h", fontsize=8)
+    shades, ends = cohorts.shades(), (cohorts.COHORTS[0], cohorts.COHORTS[-1])
+    handles = [Line2D([], [], color=shades[i], lw=1.4, label=f"cohort to {ends[j]:,} s") for j, i in enumerate((0, -1))]
+    handles += [Line2D([], [], color=cohorts.POOL_COLOR, lw=1.4, label="pool")]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=3, fontsize=9, columnspacing=1.6, handlelength=1.6)
+    write(fig, "cohort_msd", rect=[0, 0, 1, 0.88], pad=0.5)
+
+
+def cohort_gaps():
+    """cohorts_gaps_msd.pdf, the bottom row without A - S: G - S and G - A of alpha of every nested cohort."""
+    g = read("cohorts")["gaps"]
+    fig, axes = plt.subplots(1, 2, figsize=(6.0, 2.0), sharey=True)
+    for ax, name in zip(axes, ("G - S", "G - A")):
+        for c, color in zip(g[name], cohorts.shades()):
+            lags, band = np.array(c["lags"]), np.array(c["band"])
+            ax.fill_between(lags, band[0], band[1], color=color, alpha=0.2, lw=0)
+            ax.plot(lags, c["value"], color=color, lw=1.4, label=f"to {c['tau_max']:,} s")
+        ax.axhline(0, color="k", lw=0.6)
+        ax.set(xscale="log", xlabel=r"$\tau$ (s)", title=contrasts.title(name))
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].set(ylabel=r"$\Delta\alpha(\tau)$", ylim=cohorts.GAP_YLIM)
+    axes[0].legend(frameon=False, loc="upper left", fontsize=7)
+    write(fig, "cohort_gaps")
+
+
+def weights():
+    """weights.pdf, every flight: G - A of alpha* with one weight per piece (grey) and one per flight, and the three gaps with one
+    weight per flight minus one per piece."""
+    r = read("contrasts_all_perflight")["all"]
+    fig, (left, right) = plt.subplots(1, 2, figsize=(6.0, 2.0))
+    contrasts.curve(left, r["gaps per piece"]["G - A"], "#777777", "one weight per piece")
+    contrasts.curve(left, r["gaps"]["G - A"], GAP["G - A"], "one weight per flight")
+    left.set(ylabel=r"$\Delta\alpha^*$, G $-$ A", ylim=contrasts.ylim([r["gaps"]["G - A"], r["gaps per piece"]["G - A"]]))
+    left.legend(frameon=False, loc="upper left", fontsize=7)
+    for name in raw.GAPS:
+        contrasts.curve(right, r["gaps minus per piece"][name], GAP[name], contrasts.title(name))
+    right.set(ylabel=r"per flight $-$ per piece", ylim=contrasts.ylim([r["gaps minus per piece"][n] for n in raw.GAPS], (0, 0)))
+    right.legend(frameon=False, loc="upper left", fontsize=7)
+    for ax in (left, right):
+        contrasts.finish(ax)
+    write(fig, "weights")
 
 
 # ---- is group time more persistent, the group or the flights ----
@@ -370,6 +431,24 @@ def when_long():
     steps("_long", "when_long")
 
 
+def when_long_classes():
+    """prepost_ground_long.pdf, the difference row: the three steps of the exponent over the long lags and the drift between two
+    consecutive solo windows of group flights, per ground class and on every flight, with 90% bands."""
+    r = read("prepost_ground")["classes"]
+    keys = ("start - pre", "end - start", "post - end", "ctrlA2 - ctrlA1")
+    names = ("entry", "inside", "exit", "drift")
+    fig, ax = plt.subplots(figsize=(6.0, 2.0))
+    for i, k in enumerate(KEYS):
+        for j, key in enumerate(keys):
+            bar(ax, i + (j - 1.5) * 0.17, None, r[k]["differences_long"][key], True, prepost.GROUND_COLORS[key], ms=5, lw=1.3, capsize=2)
+    ax.axhline(0, color="k", lw=0.6)
+    ax.set(xticks=range(len(KEYS)), xticklabels=SHORT[:-1] + ("every flight",), xlim=(-0.6, len(KEYS) - 0.4), ylabel=r"difference of $\alpha$")
+    ax.grid(axis="y", color="#eeeeee", lw=0.5)
+    ax.legend(handles=[Line2D([], [], marker="o", ls="", color=prepost.GROUND_COLORS[k], ms=5, label=n) for k, n in zip(keys, names)],
+              frameon=False, loc="upper center", bbox_to_anchor=(0.5, 1.17), ncol=4, fontsize=8, handletextpad=0.1, columnspacing=1.2)
+    write(fig, "when_long_classes")
+
+
 def control_steps():
     """The three steps of the exponent over the long lags (prepost_ground.json, "mock", every flight): the real events that have a
     control and the control events (solo flights at the same flight-clock times), each with its 90% band."""
@@ -442,57 +521,74 @@ def gap_panel(ax, ph, stat, title, ylabel):
 
 
 def dyn_time():
-    """Left: the share of the time in glide, search, climb and exit of A and G on every flight. Right: G - A of the three main
-    shares per class and on every flight, with 90% bands."""
+    """Left: the share of the time in glide, search, climb and exit of S, A and G on every flight. Right: G - A (top) and A - S
+    (bottom) of the three main shares per class and on every flight, with 90% bands."""
     ph = phase_data()
-    fig, (left, right) = plt.subplots(1, 2, figsize=(WIDE, 2.0), gridspec_kw={"width_ratios": [1.5, 1]})
-    for y, (pop, color) in enumerate((("group_solo", A), ("group", G))):
+    fig = plt.figure(figsize=(WIDE, 2.5))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.5, 1], hspace=0.2, wspace=0.28)
+    left = fig.add_subplot(gs[:, 0])
+    for y, (short, color) in enumerate((("S", S), ("A", A), ("G", G))):
         x0 = 0
         for _, stat, c in PHASES:
-            v = ph["all"]["statistics"][{"group_solo": "A", "group": "G"}[pop]][stat]["value"]
-            left.barh(y, v, left=x0, height=0.62, color=c, edgecolor="white", lw=0.8)
-            if v > 5:
+            v = ph["all"]["statistics"][short][stat]["value"]
+            left.barh(y, v, left=x0, height=0.66, color=c, edgecolor="white", lw=0.8)
+            if v >= 15:
                 left.text(x0 + v / 2, y, f"{v:.1f}", ha="center", va="center", fontsize=8, color="white" if c in ("#2f4465", "#7f9bb8", "#9a7fc0") else INK)
+            elif v > 5:  # a narrow segment: its label above the bar
+                left.text(x0 + v / 2, y - 0.37, f"{v:.1f}", ha="center", va="bottom", fontsize=7.5, color=INK)
             x0 += v
-    left.set(xlim=(0, 100), ylim=(1.55, -0.55), yticks=[0, 1], yticklabels=["A", "G"], xlabel="share of the time (%)")
-    for tick, color in zip(left.get_yticklabels(), (A, G)):
+    left.set(xlim=(0, 100), ylim=(2.55, -0.55), yticks=[0, 1, 2], yticklabels=["S", "A", "G"], xlabel="share of the time (%)")
+    for tick, color in zip(left.get_yticklabels(), (S, A, G)):
         tick.set(color=color, fontsize=11, fontweight="bold")
     left.tick_params(axis="y", length=0)
     left.spines[["top", "right", "left"]].set_visible(False)
-    for j, (_, stat, c) in enumerate(PHASES[:3]):
-        for i, k in enumerate(KEYS):
-            bar(right, i + (j - 1) * 0.26, None, ph[k]["gaps"]["G - A"][stat], True, c, ms=4.5)
-    class_axis(right, "G − A (pts)")
+    for row, gap in enumerate(("G - A", "A - S")):
+        ax = fig.add_subplot(gs[row, 1])
+        for j, (_, stat, c) in enumerate(PHASES[:3]):
+            for i, k in enumerate(KEYS):
+                bar(ax, i + (j - 1) * 0.26, None, ph[k]["gaps"][gap][stat], True, c, ms=4.5)
+        class_axis(ax, gap.replace("-", "−") + " (pts)")
+        if row == 0:
+            ax.set_xticklabels([])
     fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in PHASES], labels=[n for n, _, _ in PHASES], frameon=False,
                loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.0), handlelength=1.2, columnspacing=1.2)
-    write(fig, "dyn_time", rect=(0, 0, 1, 0.9))
+    write(fig, "dyn_time", rect=(0, 0, 1, 0.92))
+
+
+FIND_ROWS = ((0, "Found more reliably?", None),
+             (1.1, "searches ending in a climb", "searches that end in a climb (%)"),
+             (2.9, "searches per hour", "searches per hour"),
+             (4.7, "time in search", "time in search (%)"),
+             (6.1, "Stronger?", None),
+             (7.2, "climb rate", "climb rate (m/s)"),
+             (9.0, "mean exit duration", "mean exit duration (s)"))
+GAP_ROWS = (("G - A", "A", "o", -0.4), ("A - S", "S", "s", 0.4))  # gap, the population it is measured against, marker, sub-row offset
+
+
+def marker_legend(fig, ms=4.5):
+    """The legend of the markers of the two gaps (grey circle: G - A in % of A; grey square: A - S in % of S) above the classes'."""
+    return [Line2D([], [], marker=m, ls="", color=GREY, ms=ms, label=f"{g.replace('-', '−')} (% of {base})") for g, base, m, _ in GAP_ROWS]
 
 
 def dyn_find():
-    """G - A as a percentage of A, 100 (G - A) / A, of five statistics in two blocks (found more reliably: searches that end in
-    a climb, searches per hour, time in search; stronger: climb rate, mean exit duration). One dot per ground class and one,
-    larger and black, on every flight, with 90% bands: the band of G - A divided by the value of A, times 100."""
+    """100 (G - A) / A of five statistics in two blocks (found more reliably: searches that end in a climb, searches per hour, time
+    in search; stronger: climb rate, mean exit duration), with one dot per ground class and one, larger and black, on every flight,
+    and 90% bands: the band of the gap divided by the A value, times 100."""
     ph = phase_data()
-    rows = ((0, "Found more reliably?", None),
-            (0.95, "searches ending in a climb", "searches that end in a climb (%)"),
-            (2.4, "searches per hour", "searches per hour"),
-            (3.85, "time in search", "time in search (%)"),
-            (5.15, "Stronger?", None),
-            (6.1, "climb rate", "climb rate (m/s)"),
-            (7.55, "mean exit duration", "mean exit duration (s)"))
-    offsets = np.linspace(-0.47, 0.47, len(KEYS))
-    fig, ax = plt.subplots(figsize=(5.0, 3.9))
-    for r, label, stat in rows:
+    offsets = np.linspace(-0.4, 0.4, len(KEYS))
+    fig, ax = plt.subplots(figsize=(5.0, 4.9))
+    for r, label, stat in FIND_ROWS:
         if stat is None:
             continue
         for k, color, off in zip(KEYS, KCOLORS, offsets):
             a = ph[k]["statistics"]["A"][stat]["value"]
             g = ph[k]["gaps"]["G - A"][stat]
             q = {"value": 100 * g["value"] / a, "band": [100 * g["band"][0] / a, 100 * g["band"][1] / a]}
-            bar(ax, None, r + off, q, False, color, ms=6 if k == "all" else 3.5, zorder=3 if k == "all" else 2)
-    ax.set_ylim(8.2, -0.4)
-    ax.set_yticks([r for r, _, _ in rows], [label for _, label, _ in rows], fontsize=9.5)
-    for tick, (_, _, stat) in zip(ax.get_yticklabels(), rows):
+            bar(ax, None, r + off, q, False, color, ms=6 if k == "all" else 3.5, lw=1.3, capsize=2, fmt="o",
+                zorder=3 if k == "all" else 2)
+    ax.set_ylim(9.8, -0.4)
+    ax.set_yticks([r for r, _, _ in FIND_ROWS], [label for _, label, _ in FIND_ROWS], fontsize=9.5)
+    for tick, (_, _, stat) in zip(ax.get_yticklabels(), FIND_ROWS):
         if stat is None:
             tick.set(fontweight="bold", color=INK)
     ax.tick_params(axis="y", length=0)
@@ -502,10 +598,91 @@ def dyn_find():
     ax.tick_params(axis="x", labelsize=9.5)
     ax.set_xlabel("G − A (% of A)", fontsize=9.5)
     ax.spines[["top", "right", "left"]].set_visible(False)
-    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=6 if k == "all" else 4.5)
-                        for k, c in zip(KEYS, KCOLORS)], labels=SHORT[:-1] + ("every flight",), frameon=False,
-               loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.1, columnspacing=0.8)
-    write(fig, "dyn_find", rect=(0, 0, 1, 0.88))
+    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=6 if k == "all" else 4.5) for k, c in zip(KEYS, KCOLORS)],
+               labels=SHORT[:-1] + ("every flight",), frameon=False, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.0),
+               fontsize=8.5, handletextpad=0.05, columnspacing=0.6)
+    write(fig, "dyn_find", rect=(0, 0, 1, 0.94))
+
+
+DYN_BLOCKS = (("Glide", (("share of time", "time in glide (%)"), ("per hour", "glides per hour"), ("mean duration", "mean glide duration (s)"),
+                         ("glide speed", "glide speed (km/h)"), ("height lost/km", "height lost per km of glide (m/km)"))),
+              ("Search", (("share of time", "time in search (%)"), ("per hour", "searches per hour"), ("mean duration", "mean search duration (s)"),
+                          ("ending in\na climb", "searches that end in a climb (%)"))),
+              ("Climb", (("share of time", "time in climb (%)"), ("per hour", "climbs per hour"), ("mean duration", "mean climb duration (s)"),
+                         ("climb rate", "climb rate (m/s)"))))
+
+
+def percent_gap(ph, k, gap, base, stat):
+    """The gap `gap` of the class `k` for `stat` as a percentage of the statistic of `base` (A for G - A, S for A - S), with its band."""
+    a = ph[k]["statistics"][base][stat]["value"]
+    g = ph[k]["gaps"][gap][stat]
+    return {"value": 100 * g["value"] / a, "band": [100 * g["band"][0] / a, 100 * g["band"][1] / a]}
+
+
+def dyn_phases(full=False):
+    """The gaps of every statistic of the three phases, in % of the population they are measured against, one panel per phase
+    with its name in bold (glide: share of time, per hour, mean duration, glide speed, height lost per km; search: share of time,
+    per hour, mean duration, share ending in a climb; climb: share of time, per hour, mean duration, climb rate). 100 (G - A) / A
+    per ground class and on every flight (circles, the larger black one: every flight), with 90% bands; with `full`
+    (dyn_phases_full, the story's) every statistic has two lines, G - A above 100 (A - S) / S (squares), per class and on every
+    flight. The panels share the x axis."""
+    ph = phase_data()
+    fig, axes = plt.subplots(1, 3, figsize=(WIDE, 3.3 if full else 2.3), sharex=True)
+    for ax, (title, rows) in zip(axes, DYN_BLOCKS):
+        for r, (_, stat) in enumerate(rows):
+            if full:
+                for gap, base, fmt, shift in GAP_ROWS:
+                    for k, color, off in zip(KEYS, KCOLORS, np.linspace(-0.13, 0.13, len(KEYS))):
+                        bar(ax, None, r + 0.75 * shift + off, percent_gap(ph, k, gap, base, stat), False, color, ms=4.6 if k == "all" else 2.7,
+                            lw=1.0, capsize=1.3, fmt=fmt, zorder=3 if k == "all" else 2)
+            else:
+                for k, color, off in zip(KEYS, KCOLORS, np.linspace(-0.3, 0.3, len(KEYS))):
+                    bar(ax, None, r + off, percent_gap(ph, k, "G - A", "A", stat), False, color, ms=5 if k == "all" else 3, lw=1.1, capsize=1.5,
+                        zorder=3 if k == "all" else 2)
+        ax.set_ylim(len(rows) - 0.4, -0.6)
+        ax.set_yticks(range(len(rows)), [label for label, _ in rows], fontsize=8.5)
+        ax.tick_params(axis="y", length=0)
+        ax.tick_params(axis="x", labelsize=8.5)
+        ax.axvline(0, color="k", lw=0.8)
+        ax.grid(axis="x", color="#eeeeee", lw=0.5)
+        ax.set_axisbelow(True)
+        ax.spines[["top", "right", "left"]].set_visible(False)
+        ax.set_title(title, fontsize=10.5, fontweight="bold", color=INK, pad=3)
+        ax.set_xlabel("gap (%)", fontsize=8.5)
+    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=5 if k == "all" else 4) for k, c in zip(KEYS, KCOLORS)],
+               labels=SHORT[:-1] + ("every flight",), frameon=False, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.0), fontsize=9,
+               handletextpad=0.1, columnspacing=0.9)
+    handles = marker_legend(fig, 4) if full else [Line2D([], [], marker="o", ls="", color=GREY, ms=4, label="G − A (% of A)")]
+    fig.legend(handles=handles, frameon=False, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 0.925 if full else 0.9), fontsize=9,
+               handletextpad=0.1, columnspacing=1.2)
+    write(fig, "dyn_phases_full" if full else "dyn_phases", rect=(0, 0, 1, 0.88 if full else 0.84))
+
+
+def dyn_joins():
+    """The ratio of the share of the events observed in each phase to the share expected at random times of the time alone
+    (phase_joins.json), at the instant of entering group time (left) and of leaving it (right): one row per phase, one dot per ground
+    class and one, larger and black, on every flight, with 90% bands; the line at 1 is chance."""
+    j = read("phase_joins")
+    offsets = np.linspace(-0.36, 0.36, len(KEYS))
+    fig, axes = plt.subplots(1, 2, figsize=(WIDE, 1.9), sharex=True, sharey=True)
+    for ax, (kind, title) in zip(axes, (("join", "enter a group"), ("leave", "leave a group"))):
+        for r, phase in enumerate(j["phases"]):
+            for k, color, off in zip(KEYS, KCOLORS, offsets):
+                bar(ax, None, r + off, j[kind][k][phase]["ratio"], False, color, ms=5 if k == "all" else 3, lw=1.2, capsize=2,
+                    zorder=3 if k == "all" else 2)
+        ax.axvline(1, color="k", lw=0.8)
+        ax.set_ylim(len(j["phases"]) - 0.4, -0.6)
+        ax.set_yticks(range(len(j["phases"])), j["phases"], fontsize=8.5)
+        ax.tick_params(axis="y", length=0)
+        ax.grid(axis="x", color="#eeeeee", lw=0.5)
+        ax.set_axisbelow(True)
+        ax.spines[["top", "right", "left"]].set_visible(False)
+        ax.set_title(title, fontsize=9.5, fontweight="bold", color=INK, pad=3)
+        ax.set_xlabel("observed / chance", fontsize=8.5)
+    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=c, ms=5 if k == "all" else 3.5) for k, c in zip(KEYS, KCOLORS)],
+               labels=SHORT[:-1] + ("every flight",), frameon=False, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 1.0), fontsize=8,
+               handletextpad=0.1, columnspacing=1.0)
+    write(fig, "dyn_joins", rect=(0, 0, 1, 0.86))
 
 
 def dyn_glide():
@@ -517,6 +694,77 @@ def dyn_glide():
     for ax, (stat, title, ylabel) in zip(axes, panels):
         gap_panel(ax, ph, stat, title, ylabel)
     write(fig, "dyn_glide")
+
+
+def dyn_perf():
+    """phases_performance.pdf, three panels: G - A and A - S per ground class and on every flight of the height lost per km of glide,
+    the searches that end in a climb and the climb rate, with 90% bands."""
+    ph = phase_data()
+    panels = (("height lost per km of glide (m/km)", "height lost\nper km (m/km)"), ("searches that end in a climb (%)", "searches ending\nin a climb (%)"),
+              ("climb rate (m/s)", "climb rate (m/s)"))
+    fig, axes = plt.subplots(1, 3, figsize=(WIDE, 2.2), sharey=True)
+    for ax, (stat, title) in zip(axes, panels):
+        for i, k in enumerate(KEYS):
+            for gap, off in (("G - A", -0.17), ("A - S", 0.17)):
+                bar(ax, None, i + off, ph[k]["gaps"][gap][stat], False, GAP[gap], ms=4.5, lw=1.3, capsize=2)
+        ax.axvline(0, color="k", lw=0.6)
+        ax.set_title(title, fontsize=8.5)
+        ax.set_ylim(len(KEYS) - 0.4, -0.6)
+        ax.grid(axis="x", color="#eeeeee", lw=0.5)
+        ax.xaxis.set_major_locator(MaxNLocator(4))
+        ax.tick_params(labelsize=8)
+    axes[0].set_yticks(range(len(KEYS)), SHORT[:-1] + ("every flight",))
+    fig.legend(handles=[Line2D([], [], marker="o", ls="", color=GAP[g], ms=5, label=contrasts.title(g)) for g in ("G - A", "A - S")],
+               frameon=False, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0), fontsize=9, handletextpad=0.1, columnspacing=1.4)
+    write(fig, "dyn_perf", rect=(0, 0, 1, 0.88))
+
+
+def tail_panels(name, draw, ylabel, xlabel, xscale="log"):
+    """A row of three panels, glides, searches and climbs, on every flight; `draw(ax, phase, d)` fills one."""
+    d = read("phases_refit")["tails"]["all"]
+    fig, axes = plt.subplots(1, 3, figsize=(WIDE, 2.0), sharey=False)
+    for ax, (phase, title) in zip(axes, (("transition", "glides"), ("search", "searches (any outcome)"), ("climb", "climbs"))):
+        draw(ax, d[phase])
+        ax.axvline(d[phase]["xmin"]["common"], color=GREY, lw=1.0, ls=":")
+        ax.set_title(title, fontsize=9)
+        ax.set_xlabel(xlabel, fontsize=8.5)
+        ax.tick_params(labelsize=8)
+        ax.grid(color="#eeeeee", lw=0.5)
+    axes[0].set_ylabel(ylabel, fontsize=9)
+    fig.legend(handles=[Line2D([], [], color=COLORS[pop], lw=1.5, label=short) for pop, short in raw.POPS.items()] +
+               [Line2D([], [], color=GREY, lw=1.0, ls=":", label=r"common $x_\mathrm{min}$")], frameon=False, loc="upper center", ncol=4,
+               bbox_to_anchor=(0.5, 1.0), fontsize=8.5, handlelength=1.4, columnspacing=1.4)
+    write(fig, name, rect=(0, 0, 1, 0.9))
+
+
+def tails_survival():
+    """phases_tails.pdf, the panel of every flight of each phase: the survival P(X>x) of S, A, G with its 90% band; the common
+    threshold dotted."""
+    def draw(ax, d):
+        for pop, short in raw.POPS.items():
+            s = d["survival"][short]
+            g, v, b = np.array(s["grid"]), np.array(s["value"]), np.array(s["band"])
+            ok = v > 0
+            ax.fill_between(g[ok], np.maximum(b[0][ok], 1e-9), b[1][ok], color=COLORS[pop], alpha=0.25, lw=0)
+            ax.plot(g[ok], v[ok], color=COLORS[pop], lw=1.4)
+        ax.set(xscale="log", yscale="log", ylim=(1e-5, 1.2))
+        ax.set_yticks([1, 1e-2, 1e-4])
+        ax.minorticks_off()
+    tail_panels("survival", draw, "$P(X>x)$", "duration $x$ (s)")
+
+
+def tails_hill():
+    """phases_hill.pdf, the panel of every flight of each phase: the Hill exponent mu(x_min) of S, A, G with its 90% band; the common
+    threshold dotted."""
+    def draw(ax, d):
+        for pop, short in raw.POPS.items():
+            h = d["hill"][short]
+            ax.fill_between(h["xmin"], *h["band"], color=COLORS[pop], alpha=0.25, lw=0)
+            ax.plot(h["xmin"], h["value"], color=COLORS[pop], lw=1.4)
+        v = np.concatenate([d["hill"][short]["value"] for short in raw.POPS.values()])
+        ax.set(xscale="log", ylim=(0.9 * v.min(), 1.1 * v.max()))
+        ax.minorticks_off()
+    tail_panels("hill", draw, r"$\hat\mu(x_\mathrm{min})$", r"$x_\mathrm{min}$ (s)")
 
 
 def survival_panel(ax, phase, c, title, legend=False):
@@ -852,7 +1100,7 @@ def forest():
 
 ROWS = (("all", "every flight"), ("plains", "plains"), ("hills", "hills"), ("low mountains", "low mtn"),
         ("high mountains", "high mtn"))
-TAILS = (("transition", "glides"), ("search", "searches ending\nin a climb"), ("climb", "climbs"))
+TAILS = (("transition", "glides"), ("search", "searches\n(any outcome)"), ("climb", "climbs"))
 
 
 def tails():
@@ -1024,16 +1272,22 @@ def route_memory_chained():
     write(fig, "route_memory2", rect=(0, 0, 1, 0.9))
 
 
+def zero_crossing(lags, value):
+    """The lag where `value` first crosses zero from below, interpolated linearly in log lag between the two lags around the crossing."""
+    lags, v = np.array(lags, float), np.array(value, float)
+    i = next(i for i in range(1, len(v)) if v[i - 1] < 0 <= v[i])
+    return float(np.exp(np.log(lags[i - 1]) + (0 - v[i - 1]) / (v[i] - v[i - 1]) * (np.log(lags[i]) - np.log(lags[i - 1]))))
+
+
 def why_peak():
     """High mountains, two panels on a log lag axis up to the end of the solid part: C* of A and G of the route (top, 1/e dotted,
     tau_c of A as a hollow dot) and the absolute G - A of alpha* of the real path (bottom); the top panel has a right axis with C*_G - C*_A. Three zones on both panels: both
-    remember (up to the lag where the paired band of C*_G - C*_A first lies above zero), A forgets and G holds (up to tau_c of A),
-    both forget; the peak lag of G - A is the grey dashed line."""
+    remember (up to the lag where alpha*_G - alpha*_A of the bottom panel first crosses zero from below, interpolated linearly in
+    log tau between the two lags around the crossing), A forgets and G holds (up to tau_c of A), both forget; the peak lag of G - A
+    is the grey dashed line. Each panel has a legend of its own curves."""
     legs, c = read("legs"), "high mountains"
     chained, peak = legs["chained"]["strata"][c], legs["peak test chained"][c]
     gap_c = chained["G - A"]
-    lo = np.array(gap_c["band"][0], float)
-    lag1 = float(np.array(gap_c["lags"])[lo > 0][0])
     tc = chained["group_solo"]["tau_c"]["value"]
     x1 = cohorts.SELECTION_FREE
     fig, (top, bot) = plt.subplots(2, 1, figsize=(5.8, 2.9), sharex=True)
@@ -1047,6 +1301,7 @@ def why_peak():
     right.set_ylim(*gap_limits([gap_c]))
     right.set_ylabel(r"$C^*_G-C^*_A$", color=GAP["G - A"])
     g = read("contrasts_ground")[c]["gaps"]["G - A"]
+    lag1 = zero_crossing(g["lags"], g["value"])
     contrasts.curve(bot, g, GAP["G - A"])
     bot.axhline(0, color=INK, lw=0.6)
     top.set(xscale="log", xlim=(10, x1), ylim=(0, 1), ylabel=r"route memory $C^*$")
@@ -1064,8 +1319,11 @@ def why_peak():
         top.text(np.sqrt(a * b), 1.03, text, fontsize=8.5, ha="center", va="bottom", transform=top.get_xaxis_transform())
     for ax in (top, bot):
         ax.grid(color="#eeeeee", lw=0.5, zorder=1)
-    bot.legend([Line2D([], [], color=A, lw=1.5), Line2D([], [], color=G, lw=1.5), Line2D([], [], color=GAP["G - A"], lw=1.5)],
-               ["A", "G", r"$C^*_G-C^*_A$"], frameon=False, loc="upper left", ncol=3, fontsize=8, handlelength=1.5)
+    top.legend([Line2D([], [], color=A, lw=1.5), Line2D([], [], color=G, lw=1.5), Line2D([], [], color=GAP["G - A"], lw=1.5)],
+               ["A", "G", r"$C^*_G-C^*_A$"], frameon=False, loc="lower left", ncol=3, fontsize=8, handlelength=1.5,
+               borderaxespad=0.1, borderpad=0.1)
+    bot.legend([Line2D([], [], color=GAP["G - A"], lw=1.5)], [r"$\alpha^*_G-\alpha^*_A$"], frameon=False, loc="upper left", fontsize=8,
+               handlelength=1.5)
     write(fig, "why_peak")
 
 
@@ -1074,7 +1332,8 @@ def path_memory():
 
 
 def legs_tables():
-    """legs_macros.tex and legs_table.tex: the memory of the route (lag and length at which C falls to 1/e, lag at 0.5) from legs.json."""
+    """legs_macros.tex and legs_table.tex: the memory of the route (lag and length at which C falls to 1/e, lag at 0.5) from legs.json;
+    the table holds the two mountain classes, the plains and the hills (C does not fall to 1/e for any population) are asserted."""
     legs = read("legs")
     st, tmax = legs["strata"], int(legs["lags_s"][-1])
     first = lambda q: q["value"] is not None and np.isfinite(q["value"])
@@ -1109,13 +1368,18 @@ def legs_tables():
     pc = legs["peak test chained"]
     for c, tag in (("low mountains", "Low"), ("high mountains", "High")):
         macros[f"LegChainRatio{tag}"] = f"{pc[c]['peak_lag_s'] / pc[c]['A']['tau_c']['value']:.2f}"
+    high = pc["high mountains"]  # LegChainGapLagHigh: the lag where C*_G - C*_A peaks, the lag of the peak of alpha*_G - alpha*_A
+    assert high["gap_C"]["max_lag_s"] == high["peak_lag_s"]
+    macros["LegChainGapLagHigh"] = f"{high['gap_C']['max_lag_s']:.0f}"
     macros["LegThalfHillsA"] = f"{peak['hills']['route']['A']['tau_half']['value']:.0f}"
     for c, tag in (("low mountains", "Low"), ("high mountains", "High")):
         for P in ("A", "G"):
             macros[f"LegPathTc{tag}{P}"] = f"{peak[c]['path'][P]['tau_c']['value']:.0f}"
     (DECK / "tikz/legs_macros.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in macros.items()))
     rows = []
-    for cls in CLASSES:
+    for cls in CLASSES[:2]:  # the plains and the hills are one line of the frame: C never falls to 1/e within the lags
+        assert not any(first(st[cls][pop]["time"]["tau_c"]) for pop in ("solo", "group_solo", "group")), cls
+    for cls in CLASSES[2:]:
         for i, (pop, P) in enumerate((("solo", r"$\Sl$"), ("group_solo", r"$\A$"), ("group", r"$\G$"))):
             time, space = st[cls][pop]["time"], st[cls][pop]["space"]
             c, s = time["tau_c"], space["s_c"]
@@ -1129,10 +1393,13 @@ def legs_tables():
     (DECK / "tikz/legs_table.tex").write_text("\n".join(lines) + "\n")
 
 
+PHASES_ALL_SPLIT = 8  # rows of the full table of the phase statistics in its first frame: time, glide, search, climb rate
+
+
 def deck_tables():
     """The tables of the deck, from the generated tables of the report: the control events named as such, the three steps of every
-    flight (real, control, real - control), the block of every flight of the full table of the phase statistics, and the main
-    table of the phase statistics in two halves."""
+    flight (real, control, real - control), the block of every flight of the full table of the phase statistics (without G - S, the sum of the other two gaps) in two
+    frames of rows, and the main table of the phase statistics in two halves."""
     DECK.joinpath("tikz").mkdir(exist_ok=True)
     mock = (TABLES / "prepost_mock_table.tex").read_text()
     (DECK / "tikz/prepost_control_table.tex").write_text(re.sub(r"\{mock\}", "{control}", mock).replace("real $-$ mock", "real $-$ control"))
@@ -1144,7 +1411,15 @@ def deck_tables():
     lines = (TABLES / "phases_table.tex").read_text().splitlines()
     heads = [i for i, ln in enumerate(lines) if ln.startswith(r"\multicolumn")]
     last = max(i for i, ln in enumerate(lines) if "textit{all}" in ln)
-    (DECK / "tikz/phases_all_table.tex").write_text("\n".join(lines[:heads[0]] + lines[last:]) + "\n")
+    every = lines[:heads[0]] + lines[last:]
+    top = [i for i, ln in enumerate(every) if ln.startswith(r"\multicolumn")][0] + 1  # the first row of statistics
+    bottom = next(i for i, ln in enumerate(every) if ln.startswith(r"\bottomrule"))
+    drop_gs = lambda ln: " & ".join(ln.rstrip()[:-2].split(" & ")[:6]) + r" \\"  # G - S = (G - A) + (A - S)
+    head = [r"\begin{tabular}{@{}l r r r l l@{}}", *every[1:top - 1], every[top - 1].replace(r"\multicolumn{7}", r"\multicolumn{6}")]
+    head = [drop_gs(ln) if ln.startswith("statistic") else ln for ln in head]
+    rows = [drop_gs(ln) for ln in every[top:bottom]]
+    for name, part in (("a", rows[:PHASES_ALL_SPLIT]), ("b", rows[PHASES_ALL_SPLIT:])):
+        (DECK / f"tikz/phases_all_{name}.tex").write_text("\n".join(head + part + [r"\bottomrule", r"\end{tabular}"]) + "\n")
     main = (TABLES / "phases_main_table.tex").read_text()
     (DECK / "tikz/phases_main_a.tex").write_text(table_columns(main, (0, 1, 2)))
     (DECK / "tikz/phases_main_b.tex").write_text(table_columns(main, (3, 4)))
@@ -1168,8 +1443,10 @@ def km_tables():
 
 
 if __name__ == "__main__":
-    for f in (nested, chain_pool, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots, when_all, when_long, control_steps, carry,
-              dyn_time, dyn_find, dyn_glide, dyn_tails_glides, dyn_tails_sc, route, route_classes, route_check_slide, route_pops, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
+    for f in (nested, chain_pool, cohort_msd, cohort_gaps, weights, persistent, gaps, ground_gaps, where, scale, cycle, opening, opening_kind, opening_ground, pilots,
+              when_all, when_long, when_long_classes, control_steps, carry,
+              dyn_time, dyn_phases, lambda: dyn_phases(True), dyn_joins, dyn_find, dyn_glide, dyn_perf, tails_survival, tails_hill, dyn_tails_glides, dyn_tails_sc, route,
+              route_classes, route_check_slide, route_pops, route_memory, route_memory_chained, why_peak, path_memory, forest, tails):
         f()
     deck_tables()
     simpson()

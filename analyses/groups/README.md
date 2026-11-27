@@ -111,7 +111,8 @@ Results in `vs-solo/general/group_vs_solo.pdf @ 6e45daf`.
   population S, A, G the composition (shares of time, climbs per hour, the glide + climb cycle), the performance within the
   phase, the survival and the tail exponent of the durations above one Kolmogorov-Smirnov threshold chosen again in every
   draw (`tail_ks.py`), and the gaps G - A, A - S, G - S with the two-way bands: `phases_<labels>.json`, figures
-  `phases_*.pdf`. `redundancy.py --phases` picks the statistics of the main figures. `--rule context` (default): searches classified by their neighbours (found, failed, re-centring merged into the climb, exit, unknown dropped); `--rule plain`: the runs as labelled, outputs suffixed `_plain`.
+  `phases_*.pdf`. `redundancy.py --phases` picks the statistics of the main figures. `--rule context` (default): searches classified by their neighbours (found, refound after a climb, failed, exit, unknown dropped); the found, refound and failed ones are the searches. `phase_gaps.py` also gives the number per hour and the mean and median duration of each phase; `--rule plain`: the runs as labelled, outputs suffixed `_plain`.
+- **`phase_joins.py`** (`--declared-open --dt5`): the phase of a member at the instant it enters group time and leaves it, against the share of its time alone (A) in each phase (`phase_joins.json`).
 - **`openflights.py`**: `--declared-open` keeps the paragliders declared open on the FFVL catalogue (free
   distance, distance with 1 to 3 turn points), `--open` only those with an opening (takeoff to landing over
   the path flown) above 0.1; results in `out/<run>/open_declared` and `out/<run>/open_min0.1`. `closure.py`

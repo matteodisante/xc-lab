@@ -5,12 +5,15 @@ the cache of longlags.py, per ground class of ground.py and "all". The runs are 
 refit|vilpellet` (phase_terms.py); a run belongs whole to the population and the class of the piece that holds its
 middle (as raw.py). Unit = the flight part in a population; the statistics STATS are the estimator of budget.py
 ("average first, ratio after"); the bands are those of twoway.py, with the draws that contrasts.py uses, so that a
-gap has the band of its own draws. The cycle of a glide and a climb is 60 / climbs per hour, in minutes.
+gap has the band of its own draws. The cycle of a glide and a climb is 60 / climbs per hour, in minutes. PHYSICAL adds the
+number per hour and the mean duration of each phase, and the searches found after a climb (refound); KINDS the share of the
+runs and of the time of each kind of search run (found, refound, failed, exit), which add up to 100%.
 
-Durations of glides, of searches that end in a climb and of climbs: the survival of S, A, G and the tail exponent
+Durations of glides, of searches (found, refound and failed) and of climbs: the survival of S, A, G and the tail exponent
 mu above one threshold per phase and class, the largest of the three Kolmogorov-Smirnov thresholds, chosen again in
-every draw (tail_ks.py); the Hill mu(xmin) of each population on a grid of thresholds. The first row of the arrays
-of draws is the point estimate. For "all", powerlaw.Fit is run on each population as a check of the scan.
+every draw (tail_ks.py); the Hill mu(xmin) of each population on a grid of thresholds, and the mean and the median of the
+same durations. The first row of the arrays of draws is the point estimate. For "all", powerlaw.Fit is run on each population
+as a check of the scan.
 
     uv run python phase_gaps.py --declared-open --dt5 [--labels NAME] [--draws N]   # writes phases_<labels>.json
     # --rule context|plain (default context, see phase_terms.py): the files of the rule plain end in _plain
@@ -64,6 +67,18 @@ PERFORMANCE = {
     **({} if PLAIN else {"mean exit duration (s)": ("exit_s", "exits", 1, 0)}),
 }
 STATS = {**COMPOSITION, **PERFORMANCE}
+# Per hour and mean duration of each phase (a search is a found, refound or failed one; the mean duration is the time over the
+# count, average first, ratio after) and the refound searches; kept apart from STATS, which redundancy.py reads.
+PHYSICAL = {} if PLAIN else {
+    "glides per hour": ("glides", "hours", 1, 2), "mean glide duration (s)": ("transition_s", "glides", 1, 0),
+    "mean search duration (s)": ("search_s", "searches", 1, 0), "mean climb duration (s)": ("climb_s", "climbs", 1, 0),
+    "refound searches per hour": ("refound", "hours", 1, 2), "mean refound duration (s)": ("refound_s", "refound", 1, 0),
+    "found searches that follow a climb (%)": ("refound", "found", 100, 1)}
+# The four kinds of search run (found after a glide, refound after a climb, failed, exit) as shares of their runs and of their time.
+KINDS = {} if PLAIN else {f"{k}: share of {w} (%)": (c + ("_s" if w == "time" else ""), "kinds" + ("_s" if w == "time" else ""), 100, 1)
+                          for w in ("runs", "time") for k, c in (("found", "glide_found"), ("refound", "refound"), ("failed", "failed"),
+                                                                 ("exit", "exit" if w == "time" else "exits"))}
+MEASURED = {**STATS, **PHYSICAL, **KINDS}
 CYCLE = "cycle of a glide and a climb (min)"  # 60 / climbs per hour
 EXIT_MEDIAN = "median exit duration (s)"
 DERIVED = [CYCLE] + ([] if PLAIN else [EXIT_MEDIAN])
@@ -119,13 +134,13 @@ def stratum(runs, key):
 # ---- the statistics ----
 
 def unit_statistics(rows, code, counts):
-    """The STATS of the flights of `rows` (runs of one population): their values and the rows of draws, as an array
+    """The STATS and PHYSICAL of the flights of `rows` (runs of one population): their values and the rows of draws, as an array
     (1 + draws, statistics + derived), the derived being DERIVED (the cycle, and with the rule `context` the median
     exit duration); and the number of flights."""
     time = rows.groupby("flight")["s"].sum()
     time = time[time > 0]  # a flight part whose runs were all dropped has no unit
-    r, q = budget.unit_rates(rows, rows["flight"], time, STATS)
-    value, draws = budget.mean_ratios(r, q, code.reindex(time.index).to_numpy(), counts, STATS)
+    r, q = budget.unit_rates(rows, rows["flight"], time, MEASURED)
+    value, draws = budget.mean_ratios(r, q, code.reindex(time.index).to_numpy(), counts, MEASURED)
     out = np.vstack([value.to_numpy(), draws])
     derived = [60 / out[:, list(STATS).index("climbs per hour")]]
     if not PLAIN:
@@ -142,18 +157,16 @@ def quotes(rows, names):
 
 
 def contexts(mine):
-    """The searches of the runs `mine` by context (rule `context`): found, failed, re-centring (merged into a climb), exit and
-    unknown neighbour (dropped), as counts and as shares of all the searches."""
-    n = {"found": (mine["phase"] == "found").sum(), "failed": (mine["phase"] == "failed").sum(), "recentre": mine["recentres"].sum(),
-         "exit": (mine["phase"] == "exit").sum(), "unknown": (mine["phase"] == "unknown").sum()}
-    n = {k: int(v) for k, v in n.items()}
+    """The searches of the runs `mine` by context (rule `context`): found, refound (after a climb), failed, exit and unknown
+    neighbour (dropped), as counts and as shares of all the searches."""
+    n = {k: int((mine["phase"] == k).sum()) for k in (*phase_terms.SEARCHES, "exit", "unknown")}
     return {"count": n, "share": {k: v / sum(n.values()) for k, v in n.items()}}
 
 
 def phase_statistics(runs, code, counts):
-    """Per class: the flights and hours of S, A, G, their statistics (and DERIVED) and the gaps of GAPS; with the rule
-    `context`, also the searches by context."""
-    names = [*STATS, *DERIVED]
+    """Per class: the flights and hours of S, A, G, their statistics (STATS, PHYSICAL and DERIVED) and the gaps of GAPS; with
+    the rule `context`, also the searches by context."""
+    names = [*MEASURED, *DERIVED]
     out = {}
     for key in CLASS_KEYS:
         mine = stratum(runs, key)
@@ -173,11 +186,11 @@ def phase_statistics(runs, code, counts):
 
 def counted(rows, phase):
     """The durations and the cell code (flight) of the runs of `phase` that the survival counts (with the rule `plain` a
-    search only when it ends in a climb, with `context` the found and the failed ones), trimmed as durations.trim."""
+    search only when it ends in a climb, with `context` the found, refound and failed ones), trimmed as durations.trim."""
     if PLAIN:
         r = rows[(rows["phase"] == phase) & ((phase != "search") | (rows["found"] == 1))]
     else:
-        r = rows[rows["phase"].isin(("found", "failed") if phase == "search" else (phase,))]
+        r = rows[rows["phase"].isin(phase_terms.SEARCHES if phase == "search" else (phase,))]
     x = r["s"].to_numpy(float)
     keep = np.isin(x, trim(x)) if len(x) else np.zeros(0, bool)
     return x[keep], r["flight"].to_numpy()[keep]
@@ -188,9 +201,27 @@ def rows_of(v):
     return {"value": float(v[0]), "band": [float(x) for x in twoway.band(v[0], v[1:])]}
 
 
+def weighted_means(x, cell, counts, step=250):
+    """The mean of the durations `x` (cell codes `cell`) in the point estimate (row 0) and in each draw, a run weighing the count
+    of its cell: an array (1 + rows of `counts`)."""
+    top, size = np.bincount(cell, x, minlength=counts.shape[1]), np.bincount(cell, minlength=counts.shape[1])
+    return np.r_[top.sum() / size.sum(), *[(counts[a:a + step] @ top) / (counts[a:a + step] @ size) for a in range(0, len(counts), step)]]
+
+
+def duration_summary(samples, counts):
+    """The mean and the median of the durations of S, A, G (`samples` {population: (durations, cell codes)}) and their gaps, as
+    {statistic: {"values": {population: {value, band}}, "gaps": {gap: {value, band}}}}, the draws of both sides paired."""
+    ones = np.ones((1, counts.shape[1]), np.uint8)
+    draws = {"mean": {k: weighted_means(x, c, counts) for k, (x, c) in samples.items()},
+             "median": {k: np.r_[tail.median_draws(x, c, ones), tail.median_draws(x, c, counts)] for k, (x, c) in samples.items()}}
+    return {name: {"values": {k: rows_of(v) for k, v in d.items()}, "gaps": {gap: rows_of(d[a] - d[b]) for gap, (a, b) in GAPS.items()}}
+            for name, d in draws.items()}
+
+
 def tail_statistics(rows_by_pop, code, counts):
     """The tail of one phase of one class: `rows_by_pop` {S, A, G: runs of the phase}. The survival of each population, its
-    mu above the common threshold of the draw (thresholds of tail_ks), the gaps of mu, the thresholds, and the Hill mu(xmin)."""
+    mu above the common threshold of the draw (thresholds of tail_ks), the gaps of mu, the thresholds, the Hill mu(xmin), and
+    the mean and the median of the durations (duration_summary)."""
     cells = counts.shape[1]
     samples = {}
     for pop, (x, flight) in rows_by_pop.items():
@@ -210,6 +241,7 @@ def tail_statistics(rows_by_pop, code, counts):
             "runs_above": {k: int(point["n"][k][0]) for k in samples},
             "mu": {k: rows_of(v) for k, v in mu.items()},
             "gaps": {gap: rows_of(mu[a] - mu[b]) for gap, (a, b) in GAPS.items()},
+            "durations": duration_summary(samples, counts),
             "survival": {k: survival.survival_curve(x, c, counts, band=twoway.share_band) for k, (x, c) in samples.items()},
             "hill": {k: tail.mu_curve(x, c, counts, grid) for k, (x, c) in samples.items()}}
 
@@ -427,7 +459,7 @@ if __name__ == "__main__":
     runs = assign(phase_terms.table(LABELS_NAME, kept), p, classes)
     if COMMON:
         runs = runs[runs["flight"].isin(phase_terms.read_runs("vilpellet", kept)["flight"])]
-    result = {"labels": LABELS_NAME, "rule": phase_terms.RULE, "draws": DRAWS, "classes": CLASS_KEYS, "statistics": list(STATS), "cycle": CYCLE,
+    result = {"labels": LABELS_NAME, "rule": phase_terms.RULE, "draws": DRAWS, "classes": CLASS_KEYS, "statistics": list(MEASURED), "cycle": CYCLE,
               "phases": phase_statistics(runs, code, counts), "peaks": peaks()}
     result["tails"] = duration_statistics(runs, code, counts)
     longlags.RESULTS.mkdir(parents=True, exist_ok=True)

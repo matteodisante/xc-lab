@@ -9,6 +9,7 @@ import pytest
 
 # Imported by name, not from their files: the worker processes re-import them.
 sys.path.insert(0, str(Path(__file__).parent))
+import glide  # noqa: E402  (first: later imports put analyses/phases, which has another glide.py, ahead on sys.path)
 import age  # noqa: E402
 import blocks  # noqa: E402
 import breathing  # noqa: E402
@@ -18,7 +19,6 @@ import decomposition  # noqa: E402
 import describe  # noqa: E402
 import encounters  # noqa: E402
 import exits  # noqa: E402
-import glide  # noqa: E402
 import headings  # noqa: E402
 import longlags  # noqa: E402
 import marking  # noqa: E402

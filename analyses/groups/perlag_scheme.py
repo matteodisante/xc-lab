@@ -3,7 +3,7 @@ their alpha. perlag_scheme.pdf has the pool and the per-lag cohort; chained_sche
 
 Toy pieces: durations T_p log-uniform on [T_MIN, T_MAX], MSD_p(tau) = c_p tau^(2 ALPHA) with c_p = (T_p/T0)^BETA
 (the longest flights are straighter at every scale). The local exponent of the pool has the closed form
-alpha + BETA/2 g(y), g(y) = 1/y - 1/(e^y - 1), y = BETA ln(T_MAX SUPPORT / tau) (story.tex, Which cohort).
+alpha + BETA/2 g(y), g(y) = 1/y - 1/(e^y - 1), y = BETA ln(T_MAX SUPPORT / tau) (group_story.tex, Which cohort).
 
     uv run python perlag_scheme.py    # writes out/<run>/perlag_scheme.pdf, chained_scheme.pdf and perlag_scheme.json
 """

@@ -17,10 +17,13 @@ it counts in the time and the counts of budget.columns only.
 Rule for the searches (`--rule context`, the default, or `plain`): with `context`, runs are first merged where
 same-phase neighbours touch, then each search is classified by its neighbours in the labelled sequence (same segment,
 adjacent when less than max(MAX_GAP, 2 x interval) s lie between them, the labelling's own rule for a piece):
-transition-search-climb is a search that is found, transition-search-transition a search that fails, climb-search-climb
-is a re-centring and is merged into the climb (the two climbs and the search become one climb run), climb-search-
-transition is an exit (its own category) and a search with an unknown neighbour (the start or end of a segment) is
-dropped. With `plain` the runs are as labelled and a search is found when the next run of the flight is a climb.
+transition-search-climb is a search that is found, climb-search-climb a search found again after a climb (`refound`; the
+two climbs stay climbs of their own), transition-search-transition a search that fails, climb-search-transition an exit
+(its own category) and a search with an unknown neighbour (the start or end of a segment) is dropped. The searches are
+the found, the refound and the failed ones (SEARCHES); `found` counts the found and the refound ones, `refound` and
+`refound_s` the refound ones alone, `glide_found` and `failed` (with their `_s`) those found after a glide and the failed
+ones; an exit is not a search; `kinds` and `kinds_s` count the runs and the time of the four kinds together (found, refound,
+failed, exit). With `plain` the runs are as labelled and a search is found when the next run of the flight is a climb.
 
     uv run python phase_terms.py --declared-open --dt5 [--recompute]    # the pass over the fixes, about 10 min
     uv run python phase_terms.py --declared-open --dt5 --check          # the time base on a few flights
@@ -53,8 +56,10 @@ TERMS = CACHE / ("phase_terms.parquet" if RULE == "plain" else "phase_terms_cont
 MAX_GAP = 4  # s between two runs of one segment that are still adjacent (search_context.py)
 INDEX = DISK / "paragliders/ffvl_cfd_igc/derived/viewer/thermal-planes/thermal-cells.sqlite3"  # row groups of each flight
 MOVE_TERMS = ["gain_m", "climb_t", "drift_m", "climbs_m", "chord_m", "glide_t", "loss_m"]
+SEARCHES = ("found", "refound", "failed")  # the phases of a search that counts (rule `context`)
 COLUMNS = (["transition_s", "search_s", "climb_s", "climbs", "found", "searches"] if RULE == "plain" else
-           ["transition_s", "search_s", "climb_s", "exit_s", "climbs", "searches", "found", "exits", "recentres", "unknown"]) + MOVE_TERMS
+           ["transition_s", "search_s", "climb_s", "exit_s", "glides", "climbs", "searches", "found", "refound", "refound_s", "exits",
+            "glide_found", "glide_found_s", "failed", "failed_s", "kinds", "kinds_s", "unknown"]) + MOVE_TERMS
 # the terms the statistics of phase_gaps.py sum, kept as float32
 MOVING = ("climb", "transition")  # the phases that have a gain or a chord
 SHIFTS = (-60, -30, -10, 0, 10, 30, 60)  # s: the shifts of --check
@@ -100,35 +105,27 @@ def neighbours(r):
 
 def collapse(r, joined):
     """The runs of `r` with the runs j and j - 1 joined where joined[j]: the first row of each group with the end of
-    the last, and the group's size."""
+    the last."""
     first = np.flatnonzero(~joined)
     last = np.r_[first[1:] - 1, len(r) - 1]
     out = r.iloc[first].reset_index(drop=True)
     out["t_end"] = r["t_end"].to_numpy()[last]
     out["s"] = out["t_end"] - out["t_start"] + out["dt"]
-    return out, last - first + 1
+    return out
 
 
 def contextual(r):
     """The rule `context` on the runs `r` (read_runs): same-phase neighbours merged, then each search classified by its
-    neighbours: found, failed, exit or unknown, and the re-centrings merged into the climbs (recentres counts them).
-    Phase is a string: transition, climb, found, failed, exit, unknown."""
+    neighbours. Phase is a string: transition, climb, found, refound, failed, exit, unknown."""
     _, _, adj = neighbours(r)
     same = np.r_[False, adj & (r["phase"].to_numpy()[1:] == r["phase"].to_numpy()[:-1])]
-    r, _ = collapse(r, same)
+    r = collapse(r, same)
     before, after, _ = neighbours(r)
     code = r["phase"].astype(str).map(KINDS).to_numpy()
     srch = code == 1
-    kind = np.select([srch & (before == 2) & (after == 0), srch & (before == 2) & (after == 2), srch & (before == 0) & (after == 2)],
-                     ["found", "failed", "exit"], "unknown")
-    recentre = srch & (before == 0) & (after == 0)
-    joined = np.r_[False, recentre[1:] | recentre[:-1]] & np.r_[False, (code[1:] == 0) | (code[:-1] == 0)]
-    joined &= np.r_[False, ~(srch[1:] & srch[:-1])]
-    out, size = collapse(r.assign(phase=np.where(srch, kind, np.array(NAMES)[code])), joined)
-    merged = size > 1
-    out["phase"] = np.where(merged, "climb", out["phase"])
-    out["recentres"] = np.where(merged, (size - 1) // 2, 0)
-    return out
+    kind = np.select([srch & (before == 2) & (after == 0), srch & (before == 0) & (after == 0), srch & (before == 2) & (after == 2),
+                      srch & (before == 0) & (after == 2)], ["found", "refound", "failed", "exit"], "unknown")
+    return r.assign(phase=np.where(srch, kind, np.array(NAMES)[code]))
 
 
 def run_terms(fixes, runs):
@@ -185,11 +182,15 @@ def table(label_set, flights):
         runs = budget.columns(runs.assign(phase=kind, n_fixes=runs["s"], flight_id=runs["flight"], segment_id=0).drop(columns=["dz", "chord", "fid"]))
         runs = runs.assign(search_s=runs["found_s"] + runs["vain_s"])
     else:
-        found, failed, exit_, unknown = ((kind == k).to_numpy() for k in ("found", "failed", "exit", "unknown"))
+        found, refound, failed, exit_, unknown = ((kind == k).to_numpy() for k in (*SEARCHES, "exit", "unknown"))
         runs["s"] = np.where(unknown, 0.0, runs["s"])
         runs = runs.assign(hours=runs["s"] / 3600, transition_s=runs["s"] * (kind == "transition"), climb_s=runs["s"] * (kind == "climb"),
-                           search_s=runs["s"] * (found | failed), exit_s=runs["s"] * exit_, climbs=(kind == "climb") * 1.0,
-                           searches=(found | failed) * 1.0, found=found * 1.0, exits=exit_ * 1.0, unknown=unknown * 1.0)
+                           search_s=runs["s"] * (found | refound | failed), exit_s=runs["s"] * exit_, glides=(kind == "transition") * 1.0,
+                           climbs=(kind == "climb") * 1.0, searches=(found | refound | failed) * 1.0, found=(found | refound) * 1.0,
+                           refound=refound * 1.0, refound_s=runs["s"] * refound, exits=exit_ * 1.0, glide_found=found * 1.0,
+                           glide_found_s=runs["s"] * found, failed=failed * 1.0, failed_s=runs["s"] * failed,
+                           kinds=(found | refound | failed | exit_) * 1.0, kinds_s=runs["s"] * (found | refound | failed | exit_),
+                           unknown=unknown * 1.0)
     runs = runs.assign(t_mid=(runs["t_start"] + runs["t_end"]) / 2, phase=kind.astype("category"))
     runs[COLUMNS] = runs[COLUMNS].astype(np.float32)
     return runs[["flight", "phase", "t_mid", "s", "hours", *COLUMNS]]

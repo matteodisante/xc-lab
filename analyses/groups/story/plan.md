@@ -213,7 +213,7 @@ one module each, reusing what exists.
 | M7 | Grouping with our labels, sample of days | group-identification `contacts.py` | Appendix |
 | M8 | Viewer: the refit next to Vilpellet's on a track, agreement, switch (repo xc-viewer) | `data.load_vilpellet_phases`, `core/vilpellet` | Checks by eye |
 
-Order: (1) skeleton of story.tex (chapters with Q, Why, Tool, "To do"; existing material moved); (2) M1 and the
+Order: (1) skeleton of group_story.tex (chapters with Q, Why, Tool, "To do"; existing material moved); (2) M1 and the
 rerun of Ch. 1–4 on ≤ 5 s; (3) M4, M5 → Ch. 5, 6; (4) M2, then M8 (look at the labels before using them) and
 M7; (5) M3, M6 → Ch. 7, 8; (6) Ch. 9, 10.
 
@@ -229,5 +229,5 @@ M7; (5) M3, M6 → Ch. 7, 8; (6) Ch. 9, 10.
 ## Outside the story
 
 - `tamsd.summarize` and `longlags.curve` still pool the origins per flight (one weight per flight). No figure or
-  macro of story.tex uses them (its curves come from `cohorts.py`, one weight per piece), but `raw`, `pools`,
+  macro of group_story.tex uses them (its curves come from `cohorts.py`, one weight per piece), but `raw`, `pools`,
   `size`, `episodes`, `curvature` do.

@@ -648,7 +648,7 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
 
   \emph{What a search is.} The model labels search whatever is neither a climb nor a straight glide: a pilot
   turning without rising. The same label covers four moments of the cycle, about a quarter each
-  (\PhCtxFound\%, \PhCtxFailed\%, \PhCtxRecentre\%, \PhCtxExit\% of all the searches), told apart only by the runs
+  (\PhCtxFound\%, \PhCtxFailed\%, \PhCtxRefound\%, \PhCtxExit\% of all the searches), told apart only by the runs
   before and after it:
   \begin{center}\footnotesize
   \begin{tabular}{@{}l l l@{}}
@@ -657,23 +657,31 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   \midrule
   glide $\to$ search $\to$ climb & a search that finds a thermal & search \\
   glide $\to$ search $\to$ glide & a search that fails & search \\
-  climb $\to$ search $\to$ climb & the thermal lost and found again & part of the climb \\
+  climb $\to$ search $\to$ climb & the thermal lost and found again & search, found again \\
   climb $\to$ search $\to$ glide & leaving the thermal & exit, apart \\
   \bottomrule
   \end{tabular}
   \end{center}
-  So a search is what follows a glide; two climbs joined by a re-centring are one climb; the exit is kept out of
-  the searches and of the glides, and only its duration is read. Searches at the edge of a segment, whose
+  So a search is any of these runs but the exit: it follows a glide (found or failed) or a climb (found again); the
+  two climbs around a search found again stay two climbs; the exit is kept out of the searches and of the glides,
+  and its share of the runs and of the time is read apart. Searches at the edge of a segment, whose
   neighbour is unknown (\PhSearchDropped\%), are left out. The model alone cannot tell these moments apart,
   since the pilot turns without rising in all four; the sequence does it directly, with no new training. Vilpellet's
-  labels show the same four moments in shares within \PhCtxMaxDiff{} points.
+  labels show the same four moments in shares within \PhCtxMaxDiff{} points. Of the runs of the four kinds,
+  in $\G$ \PhKindExitRunsGAll\% are exits and \PhKindRefoundRunsGAll\% searches found again; in time, exits are
+  \PhKindExitTimeGAll\% and searches found again \PhKindRefoundTimeGAll\%:
+  \begin{center}\footnotesize
+  \input{../vs-solo/generated/comparisons/phases_kinds_table}
+  \end{center}
+  The four kinds of the table add up to 100\% in the runs and in the time of each population (every flight, 90\% bands on $\G-\A$).
 
   \emph{Statistics}, one value per flight and population (the part of the flight in it), then averaged over the
   flights:
   \begin{itemize}
   \item glide: share of time; glide speed; height lost per km;
-  \item search: share of time; searches per hour; share of searches that find a thermal, found over found
-    and failed;
+  \item search: share of time; searches per hour; share of searches that find a thermal, found (after a glide or a
+    climb) over found and failed;
+  \item every phase: number per hour and mean duration (the time over the count);
   \item exit: its duration;
   \item climb: climbs per hour; climb rate; share of time; per climb, the height gained (vertical) and the
     horizontal distance from its first to its last fix (its chord); the drift speed, chord over duration, a proxy
@@ -1297,8 +1305,8 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   the pilot flies? $\alpha^*$ in time mixes the shape of the path and the way it is flown; the phases say the
   second: how long the pilot glides, searches and climbs, how fast and how well.
 \Hyp Groups form mostly in the climbs, where the pilots circle together ($\G-\A<0$ at short lags,
-  Sec.~\ref{ch:identity}), so the climbs go to $\G$ and $\A$ keeps more glides; and a group finds the climbs sooner
-  (shorter searches, fewer weak climbs).
+  Sec.~\ref{ch:identity}), so the climbs go to $\G$ and $\A$ keeps more glides (measured below, \emph{Where groups
+  form}); and a group finds the climbs sooner (shorter searches, fewer weak climbs).
 \Tool The phase statistics and the tails of the durations (Sec.~\ref{phases}, \ref{tails}), for $\G-\A$ and
   $\A-\Sl$, per ground class.
 \Com The composition of the phases is to $\G-\A$ what the ground is to $\A-\Sl$: the grouping catches pilots in the
@@ -1314,6 +1322,36 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   is not higher (\PhRateGAAll~m/s \PhRateGAAllBand). \textbf{Tails} (Fig.~\ref{fig:phases-tails}): above
   \PhXminGlideAll~s the glides of $\G$ have a heavier tail on every flight, $\mu_\G-\mu_\A=\PhMuGlideGAAll$
   \PhMuGlideGAAllBand, resolved in the mountains only; searches and climbs differ within the bands.
+
+  \textbf{Cycle} (Table~\ref{tab:phases-units}, Fig.~\ref{fig:phases-all}): per hour, group time holds
+  \PhGlidePerHourGAAll{} glides \PhGlidePerHourGAAllBand, \PhSearchPerHourGAAll{} searches
+  \PhSearchPerHourGAAllBand{} and \PhCphGAAll{} climbs more than $\A$. A glide lasts \PhGlideMeanGAll~s on average in $\G$,
+  \PhGlideMeanAAll~s in $\A$ and \PhGlideMeanSAll~s in $\Sl$ ($\G-\A$: \PhGlideMeanGAAll~s \PhGlideMeanGAAllBand), a search
+  \PhSearchMeanGAll, \PhSearchMeanAAll{} and \PhSearchMeanSAll~s (\PhSearchMeanGAAll~s \PhSearchMeanGAAllBand), a climb
+  \PhClimbMeanGAll, \PhClimbMeanAAll{} and \PhClimbMeanSAll~s (\PhClimbMeanGAAll~s \PhClimbMeanGAAllBand). Against $\Sl$,
+  $\A$ glides longer (\PhGlideMeanASAll~s) and searches longer (\PhSearchMeanASAll~s). The four kinds of search run
+  (Sec.~\ref{phases}): in group time fewer fail (\PhKindFailedRunsGAAll{} points of the runs, \PhKindFailedTimeGAAll{} of the
+  time) and more are exits (\PhKindExitRunsGAAll{}, \PhKindExitTimeGAAll) or found again (\PhKindRefoundRunsGAAll{},
+  \PhKindRefoundTimeGAAll).
+  The mean and the median of the durations of the tail analysis (Table~\ref{tab:phases-durations}) agree: the median
+  glide lasts \PhDurMedianGlideGAll~s in $\G$ against \PhDurMedianGlideAAll~s in $\A$ (\PhDurMedianGlideGAAll~s
+  \PhDurMedianGlideGAAllBand), the Kaplan--Meier median search \PhDurMedianSearchGAll{} against
+  \PhDurMedianSearchAAll~s (\PhDurMedianSearchGAAll~s \PhDurMedianSearchGAAllBand), the mean search, restricted to the longest
+  search observed (\PhDurLimitAll~s), \PhDurMeanSearchGAll{} against \PhDurMeanSearchAAll~s, the median climb
+  \PhDurMedianClimbGAll{} against \PhDurMedianClimbAAll~s (\PhDurMedianClimbGAAll~s \PhDurMedianClimbGAAllBand).
+
+  \textbf{Where groups form} (Table~\ref{tab:joins}): the \EnterCountAll{} entries into group time of
+  \JoinFlightsAll{} flights fall \EnterShareGlideAll\% in a glide, \EnterShareSearchAll\% in a search and
+  \EnterShareClimbAll\% in a climb. If the pilots joined at random times of their time alone ($\A$), the entries of each
+  flight would fall in each phase as its time does: \EnterBaseGlideAll, \EnterBaseSearchAll{} and \EnterBaseClimbAll\%.
+  The ratio of the observed share to this chance is \EnterRatioClimbAll{} \EnterRatioClimbAllBand{} in a climb,
+  \EnterRatioGlideAll{} \EnterRatioGlideAllBand{} in a glide and \EnterRatioSearchAll{} \EnterRatioSearchAllBand{} in a
+  search. The \LeaveCountAll{} exits fall \LeaveShareGlideAll, \LeaveShareSearchAll{} and \LeaveShareClimbAll\%
+  (chance \LeaveBaseGlideAll, \LeaveBaseSearchAll, \LeaveBaseClimbAll\%; ratios \LeaveRatioGlideAll, \LeaveRatioSearchAll,
+  \LeaveRatioClimbAll). Entries and exits are the first and last second of a stretch of group time (the grouping of the run,
+  \EnterAtDeparture{} group stretches that start at the departure and \LeaveAtLanding{} that end at the landing are counted
+  apart; \EventsNoPhase{} instants fall in no run); the instant is that of the grouping rule
+  (Sec.~\ref{question}), not the moment the pilot decides.
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{open_declared_dt5/phases_composition.pdf}
@@ -1341,10 +1379,45 @@ the air. A \emph{block} is the set of flights joined by a group episode or by th
   common threshold of each phase (Sec.~\ref{tails}), 90\% bands with the threshold re-chosen in every draw.}
   \label{fig:phases-tails}
   \end{figure}
+  \begin{table}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{../vs-solo/generated/comparisons/phases_units_table}}
+  \caption{Number per hour and mean duration (s) of each phase on every flight, per flight and averaged first, ratio after
+  (Sec.~\ref{phases}): $\Sl$, $\A$, $\G$ and $\G-\A$ with its 90\% band.}
+  \label{tab:phases-units}
+  \end{table}
+  \begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{open_declared_dt5/slide_dyn_phases_full.pdf}
+  \caption{Every statistic of the three phases: $100\,(\G-\A)/\A$ (circles) and $100\,(\A-\Sl)/\Sl$ (squares), per ground
+  class (colours) and on every flight (black), 90\% bands.}
+  \label{fig:phases-all}
+  \end{figure}
+  \begin{table}[H]
+  \centering
+  \resizebox{0.8\textwidth}{!}{\input{../vs-solo/generated/comparisons/phases_duration_table}}
+  \caption{Mean and median duration (s) of glides, searches and climbs on every flight: the runs of the tail analysis (each
+  weighing the count of its cell in a draw) for glides and climbs; for searches the Kaplan--Meier median (failed searches
+  censored) and the mean restricted to the longest search observed, \PhDurLimitAll~s. $\Sl$, $\A$, $\G$ and $\G-\A$ with its
+  90\% band.}
+  \label{tab:phases-durations}
+  \end{table}
+  \begin{table}[H]
+  \centering
+  \resizebox{\textwidth}{!}{\input{../vs-solo/generated/comparisons/phases_joins_table}}
+  \caption{The phase of the pilot at the instant it enters and leaves group time: share of the events in each phase, share
+  expected at random times of its time alone ($\A$) and their ratio, with 90\% bands, per ground class and on every flight.}
+  \label{tab:joins}
+  \end{table}
 \Obs\mbox{}
   \begin{itemize}
   \item The hypothesis of the composition holds: group time is richer in climbs and climbs more often, in every
     ground class, consistent with $\G-\A<0$ at the short lags, where circling dominates.
+  \item Groups do not form mostly in the climbs: \EnterShareClimbAll\% of the entries fall in a climb, as the time alone
+    does (\EnterBaseClimbAll\%), and most in a glide (\EnterShareGlideAll\%), where pilots spend \EnterBaseGlideAll\% of their time
+    alone; fewer fall in a search than chance (\EnterRatioSearchAll). The excess of climb of group time
+    (\PhShareClimbGAll\% of the time against \PhShareClimbAAll\% in $\A$) builds up after the entry.
+  \item In a group the cycle is faster: glides and searches are shorter and climbs as long.
   \item Yet group time is more persistent at long lags. More climbs alone would lower $\alpha^*$ there: the gain
     comes from the other phases.
   \item In a group the pilot glides faster and more efficiently, and searches succeed more often; the climb is not
@@ -1816,7 +1889,7 @@ fewer pieces than the chained MSD at the lags of a window below $\tau^+$.
     model changes phase more often: \RefitSearchPerHourOurs{} searches per hour against \RefitSearchPerHourHis,
     \RefitSearchShareOurs\% of the time in search against \RefitSearchShareHis\%, at the expense of the glide. These
     count every run labelled search; the statistics of the text count fewer, since the context rule of
-    Sec.~\ref{phases} moves the re-centrings into the climbs and the exits apart.
+    Sec.~\ref{phases} sets the exits apart.
   \item \emph{The statistics of Sec.~\ref{ch:dynamics} with his labels} (on the 1-Hz flights his labels cover): the
     sign of the gaps $\G-\A$ and $\A-\Sl$ agrees in \PhSignAgree{} of \PhSignTotal{} cases.
   \item \emph{Grouping.} The phases enter it only through the heading condition, checked when both pilots glide

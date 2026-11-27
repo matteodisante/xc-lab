@@ -259,6 +259,38 @@ def test_contextual_classifies_the_searches_by_their_neighbours():
     r["phase"] = pd.Categorical(r["phase"], categories=["climb", "search", "transition"])
     r["s"] = r["t_end"] - r["t_start"] + 1
     out = pt.contextual(r)
-    assert list(out["phase"]) == ["transition", "found", "climb", "exit", "transition", "failed", "transition", "unknown"]
-    assert (out.loc[2, "t_start"], out.loc[2, "t_end"], out.loc[2, "recentres"]) == (151, 500, 1)
+    assert list(out["phase"]) == ["transition", "found", "climb", "refound", "climb", "exit", "transition", "failed", "transition", "unknown"]
+    assert (out.loc[2, "t_start"], out.loc[2, "t_end"], out.loc[4, "t_start"], out.loc[4, "t_end"]) == (151, 300, 331, 500)
     assert out["s"].sum() == r["s"].sum()
+
+
+def test_joins_phase_at_the_instant_and_the_time_alone_in_each_phase():
+    sys.argv += ["--declared-open", "--dt5"]
+    import phase_joins as pj
+
+    spans = pd.DataFrame({"flight": [1, 1, 1, 2], "population": ["group_solo", "group", "group_solo", "group"],
+                          "a": [0, 100, 300, 0], "b": [100, 300, 500, 50]})
+    ev = pj.events(spans)
+    assert {(r.flight, r.kind): r.t for r in ev.itertuples()} == {(1, "join"): 100, (1, "leave"): 299, (2, "join at departure"): 0,
+                                                                  (2, "leave at landing"): 49}
+    runs = pd.DataFrame({"flight": [1, 1, 1], "phase": ["transition", "climb", "found"], "t_start": [0, 100, 300],
+                         "t_end": [99, 299, 499], "dt": [1.0, 1.0, 1.0]})
+    assert pj.phase_at(runs, np.ones(4), np.array([100.0, 299.0, 350.0, 600.0])).tolist() == [2, 2, 1, -1]
+    assert pj.time_in(runs, np.ones(2), np.array([0.0, 300.0]), np.array([100.0, 500.0])).tolist() == [[100, 0, 0], [0, 200, 0]]
+
+
+def test_weighted_means_weigh_each_run_by_the_count_of_its_cell():
+    sys.argv += ["--declared-open", "--dt5"]
+    import phase_gaps as pg
+
+    out = pg.weighted_means(np.array([10.0, 20.0, 30.0]), np.array([0, 0, 1]), np.array([[1, 1], [2, 0]], np.uint8))
+    assert out.tolist() == [20.0, 20.0, 15.0]
+
+
+def test_the_kinds_of_search_run_name_columns_the_table_has():
+    sys.argv += ["--declared-open", "--dt5"]
+    import phase_gaps as pg
+    import phase_terms as pt
+
+    assert len(pg.KINDS) == 8
+    assert {c for num, den, *_ in pg.KINDS.values() for c in (num, den)} <= set(pt.COLUMNS)
